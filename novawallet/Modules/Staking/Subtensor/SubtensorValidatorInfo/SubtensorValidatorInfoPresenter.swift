@@ -6,6 +6,7 @@ final class SubtensorValidatorInfoPresenter {
 
     let target: SubtensorStakeTarget
     let hotkey: AccountId
+    let chain: ChainModel
     let interactor: SubtensorValInfoInteractorInputProtocol
     let wireframe: SubtensorValidatorInfoWireframeProtocol
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
@@ -20,6 +21,7 @@ final class SubtensorValidatorInfoPresenter {
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
+        chain: ChainModel,
         detail: SubtensorValidatorDirectoryItem?,
         needsChainDetail: Bool,
         interactor: SubtensorValInfoInteractorInputProtocol,
@@ -29,6 +31,7 @@ final class SubtensorValidatorInfoPresenter {
     ) {
         self.target = target
         self.hotkey = hotkey
+        self.chain = chain
         self.detail = detail
         self.needsChainDetail = needsChainDetail
         self.interactor = interactor
@@ -79,6 +82,19 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
 
         if detail == nil || needsChainDetail {
             loadDetail()
+        }
+    }
+
+    func presentAccountOptions() {
+        if
+            let view = view,
+            let address = try? hotkey.toAddress(using: chain.chainFormat) {
+            wireframe.presentAccountOptions(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: selectedLocale
+            )
         }
     }
 
