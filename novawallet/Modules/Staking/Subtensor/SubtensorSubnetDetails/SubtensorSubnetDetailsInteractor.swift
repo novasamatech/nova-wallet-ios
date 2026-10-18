@@ -137,13 +137,14 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
         }
     }
 
-    func loadHistory(for period: SubtensorPricePeriod) {
+    func loadHistory(for period: SubtensorPricePeriod, registrationDate: Date?) {
         historyCallStore.cancel()
 
         let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: selectedCurrency
+            currency: selectedCurrency,
+            registrationDate: registrationDate
         ) ?? .createWithResult(nil)
 
         load(wrapper, in: historyCallStore, label: "subnet price history") { [weak self] in

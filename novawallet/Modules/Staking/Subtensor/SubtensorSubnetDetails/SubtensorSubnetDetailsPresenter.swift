@@ -14,6 +14,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorState?
+    private var registrationDate: Date?
     private var isPositionsSyncFailed = false
     private var isParametersRequested = false
     private var isPresetRequested = false
@@ -60,7 +61,7 @@ private extension SubtensorSubnetDetailsPresenter {
 
     func loadHistory() {
         state.history = .loading
-        interactor.loadHistory(for: state.period)
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
     func existingPrimaryHotkey() -> AccountId? {
@@ -118,7 +119,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 
         interactor.setup()
         requestParametersIfNeeded()
-        interactor.loadHistory(for: state.period)
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
     func selectCurrency(at index: Int) {
@@ -214,6 +215,12 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         guard parameters.ref == subnetRef else { return }
         state.parameters = parameters
         state.isParametersLoaded = true
+        registrationDate = parameters.age.map { Date(timeIntervalSinceNow: -$0) }
+
+        if registrationDate != nil, state.history != .notListed, state.history != .failed {
+            interactor.loadHistory(for: state.period, registrationDate: registrationDate)
+        }
+
         provideViewModel()
     }
 

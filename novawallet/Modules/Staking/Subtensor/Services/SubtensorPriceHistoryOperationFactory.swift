@@ -62,8 +62,9 @@ extension SubtensorPriceHistoryOperationFactory {
         subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
         points: [SubtensorPricePoint],
-        registrationDate: Date
+        registrationDate: Date?
     ) -> SubtensorPriceHistory {
+        let registrationDate = registrationDate ?? .distantPast
         let registeredPoints = points.filter { $0.date >= registrationDate }
         let periodPoints = SubtensorPriceSeries.sliced(registeredPoints, for: period, date: \.date)
 
@@ -333,11 +334,10 @@ extension SubtensorPriceHistoryOperationFactory: SubtensorPriceHistoryOperationF
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
-        currency: Currency
+        currency: Currency,
+        registrationDate: Date?
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
         let marketsWrapper = marketsOperationFactory.createMarketsWrapper()
-        let chainTimeWrapper = createChainTimeWrapper()
-        let timeProvider = timeProvider
 
         let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -358,23 +358,14 @@ extension SubtensorPriceHistoryOperationFactory: SubtensorPriceHistoryOperationF
                 return nil
             }
 
-            let (headBlock, blockTime) = try chainTimeWrapper.targetOperation.extractNoCancellableResultData()
-            let registrationDate = Self.registrationDate(
-                of: subnet,
-                headBlock: headBlock,
-                blockTime: blockTime,
-                at: timeProvider()
-            )
-
             return Self.makeHistory(subnet: subnet, period: period, points: points, registrationDate: registrationDate)
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)
-        resultOperation.addDependency(chainTimeWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: marketsWrapper.allOperations + chainTimeWrapper.allOperations + pointsWrapper.allOperations
+            dependencies: marketsWrapper.allOperations + pointsWrapper.allOperations
         )
     }
 
