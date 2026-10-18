@@ -128,8 +128,10 @@ but survival across relaunch depends on ordinary settings persistence, not a fai
 write guarantee. Bearer and recovery writes remain separate, with conservative old recovery
 restrictions if interruption occurs after the bearer write but before recovery clearing.
 
-The shared Keychain holds one fingerprint-tagged `current` record per host namespace. Auth
-requires the Keychain access group, not an App Group filesystem container. Conditional removal
+The app's default Keychain access group holds one fingerprint-tagged `current` record, cached
+by the owner under its gate; store creation deletes the record an earlier build kept under the
+App Group. The settings record also keeps the refusal delay (deadline, tier, app version)
+beside the installation identity. Conditional removal
 matches the fingerprint atomically. Only the main writer under its gate may remove an untagged
 legacy record after conditional removal returns false and reload still equals that record.
 Corrupt reads remain nondestructive.
