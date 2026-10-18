@@ -4,7 +4,7 @@ import Operation_iOS
 import SubstrateSdk
 import XCTest
 
-final class SubtensorRecommendationServiceTests: XCTestCase {
+final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
     private let head: BlockNumber = 9_140_000
     private let subnet = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
     private let subnetKept = Data(repeating: 0x11, count: 32)
@@ -21,7 +21,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         let chainFactory = createChainFactory()
 
         let verification = try run(
-            createService(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: listed)
+            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: listed)
         )
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
@@ -42,7 +42,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         let chainFactory = createChainFactory()
 
         let verification = try run(
-            createService(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: [listedOnly])
+            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: [listedOnly])
         )
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
@@ -61,7 +61,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         let apiFactory = try createApiFactory(hotkeys: hotkeys)
         let chainFactory = createChainFactory()
 
-        let verified = try run(createService(apiFactory, chainFactory).createRecommendedValidatorsWrapper(for: subnet))
+        let verified = try run(createOperationFactory(apiFactory, chainFactory).createRecommendedValidatorsWrapper(for: subnet))
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory).createChainSnapshotWrapper(for: captor.capture())
@@ -77,9 +77,9 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             }
         }
         let chainFactory = createChainFactory()
-        let service = createService(apiFactory, chainFactory)
+        let operationFactory = createOperationFactory(apiFactory, chainFactory)
 
-        XCTAssertThrowsError(try run(service.createRecommendedValidatorsWrapper(for: subnet))) {
+        XCTAssertThrowsError(try run(operationFactory.createRecommendedValidatorsWrapper(for: subnet))) {
             guard case BittensorApiError.unavailable(code: nil, requestId: nil) = $0 else {
                 return XCTFail("Unexpected error \($0)")
             }
@@ -87,11 +87,11 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
-    private func createService(
+    private func createOperationFactory(
         _ apiFactory: BittensorApiOperationFactoryProtocol,
         _ chainFactory: SubtensorValidatorChainOperationFactoryProtocol
-    ) -> SubtensorRecommendationService {
-        SubtensorRecommendationService(
+    ) -> SubtensorRecommendationOperationFactory {
+        SubtensorRecommendationOperationFactory(
             apiOperationFactory: apiFactory,
             chainOperationFactory: chainFactory,
             operationQueue: OperationQueue()

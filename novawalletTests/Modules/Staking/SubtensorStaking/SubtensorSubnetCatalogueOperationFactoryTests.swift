@@ -3,7 +3,7 @@ import Cuckoo
 import Operation_iOS
 import XCTest
 
-final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
+final class SubtensorSubnetCatalogueOperationFactoryTests: XCTestCase {
     private typealias SubnetsResult = BittensorApiResult<BittensorApi.SubnetCollection>
 
     private let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
@@ -30,7 +30,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, result: .success(try fixtureSubnets()))
 
-        let catalogue = try run(createService(apiFactory).createCatalogueWrapper())
+        let catalogue = try run(createOperationFactory(apiFactory).createCatalogueWrapper())
 
         XCTAssertEqual(catalogue.subnets.map(\.netuid), [1, 64])
         XCTAssertEqual(catalogue.subnet(for: 64), SubtensorCatalogueSubnet(
@@ -51,7 +51,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, result: .success(try fixtureSubnets()))
 
-        let catalogue = try run(createService(apiFactory).createCatalogueWrapper())
+        let catalogue = try run(createOperationFactory(apiFactory).createCatalogueWrapper())
         let reregistered = SubtensorSubnetRef(netuid: chutesRef.netuid, registeredAt: chutesRef.registeredAt + 1)
 
         XCTAssertEqual(catalogue.subnet(for: chutesRef)?.ref, chutesRef)
@@ -62,17 +62,17 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, result: .failure(BittensorApiError.unavailable(code: nil, requestId: nil)))
 
-        XCTAssertThrowsError(try run(createService(apiFactory).createCatalogueWrapper())) { error in
+        XCTAssertThrowsError(try run(createOperationFactory(apiFactory).createCatalogueWrapper())) { error in
             guard case .unavailable(code: nil, requestId: nil) = error as? BittensorApiError else {
                 return XCTFail("Unexpected error \(error)")
             }
         }
     }
 
-    private func createService(
+    private func createOperationFactory(
         _ apiFactory: MockBittensorApiOperationFactoryProtocol
-    ) -> SubtensorSubnetCatalogueService {
-        SubtensorSubnetCatalogueService(apiOperationFactory: apiFactory)
+    ) -> SubtensorSubnetCatalogueOperationFactory {
+        SubtensorSubnetCatalogueOperationFactory(apiOperationFactory: apiFactory)
     }
 
     private func stubSubnets(

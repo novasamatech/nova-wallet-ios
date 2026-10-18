@@ -14,10 +14,10 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     }
 
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
 
@@ -34,10 +34,10 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         logger: LoggerProtocol
     ) {
         presetFactory = state.earnServices.validatorPresetFactory
-        yieldService = state.earnServices.yieldService
-        recommendationService = state.earnServices.recommendationService
-        maxApyProvider = state.earnServices.maxApyProvider
-        subnetsService = state.subnetsService
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        recommendationOperationFactory = state.earnServices.recommendationOperationFactory
+        maxApyOperationFactory = state.earnServices.maxApyOperationFactory
+        subnetsOperationFactory = state.subnetsOperationFactory
         earnSettings = state.earnServices.earnSettings
         self.blockTimeOperationFactory = blockTimeOperationFactory
 
@@ -55,14 +55,14 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 
 private extension SubtensorStakingSetupInteractor {
     func loadRemoteRankingView(keepingExpiredSeed: Bool) {
-        let recommendationService = recommendationService
-        let rankingWrapper = recommendationService.createRankedSubnetsWrapper()
+        let recommendationOperationFactory = recommendationOperationFactory
+        let rankingWrapper = recommendationOperationFactory.createRankedSubnetsWrapper()
 
         let resolveOperation = ClosureOperation<SubtensorRankedSubnets?> {
             do {
                 return try rankingWrapper.targetOperation.extractNoCancellableResultData()
             } catch BittensorApiError.generationStale {
-                return recommendationService.cachedRankedSubnets().value
+                return recommendationOperationFactory.cachedRankedSubnets().value
             }
         }
 
@@ -132,16 +132,16 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
 
     func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder, selectedRef: SubtensorSubnetRef?) {
         quickPickCallStore.cancel()
-        let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let apyWrapper = order == .apy ? maxApyProvider.createMaxApyWrapper() : .createWithResult([:])
-        let subnetsService = subnetsService
+        let catalogueWrapper = catalogueOperationFactory.createCatalogueWrapper()
+        let apyWrapper = order == .apy ? maxApyOperationFactory.createMaxApyWrapper() : .createWithResult([:])
+        let subnetsOperationFactory = subnetsOperationFactory
         let snapshotWrapper: CompoundOperationWrapper<SubtensorQuickPickSnapshot> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
                 let apy = try apyWrapper.targetOperation.extractNoCancellableResultData()
                 let ref = try selectedRef ?? SubtensorQuickPickVisit.select(order: order, from: catalogue, apy: apy)
 
-                return subnetsService.createSubnetInfoWrapper(for: ref.netuid).mapped {
+                return subnetsOperationFactory.createSubnetInfoWrapper(for: ref.netuid).mapped {
                     SubtensorQuickPickSnapshot(ref: ref, info: $0)
                 }
             }
@@ -179,7 +179,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         subnetCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
+            wrapper: subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetCallStore,
             runningCallbackIn: .main
@@ -203,11 +203,11 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     func loadYields(netuid: UInt16) {
         yieldsCallStore.cancel()
 
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
             label: "setup yields on netuid \(netuid)",
             deliver: { [weak self] in
@@ -219,9 +219,11 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     func loadRankingView() {
         rankingCallStore.cancel()
 
-        let recommendationService = recommendationService
+        let recommendationOperationFactory = recommendationOperationFactory
 
-        loadCached({ recommendationService.cachedRankedSubnets() }, in: rankingCallStore, then: { [weak self] cached in
+        loadCached({
+            recommendationOperationFactory.cachedRankedSubnets()
+        }, in: rankingCallStore, then: { [weak self] cached in
             if let rankingView = cached.value {
                 self?.presenter?.didReceiveRankingView(rankingView)
             }

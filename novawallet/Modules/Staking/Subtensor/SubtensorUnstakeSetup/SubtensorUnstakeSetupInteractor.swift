@@ -13,7 +13,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
 
@@ -26,7 +26,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         state: SubtensorStakingSharedStateProtocol,
         logger: LoggerProtocol
     ) {
-        subnetsService = state.subnetsService
+        subnetsOperationFactory = state.subnetsOperationFactory
         validatorFactory = state.earnServices.validatorPresetFactory
         groupHotkeyFactory = state.earnServices.groupHotkeyFactory
 
@@ -45,7 +45,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         subnetsInfoCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
+            wrapper: subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetsInfoCallStore,
             runningCallbackIn: .main

@@ -7,10 +7,10 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let parametersFactory: SubnetParametersFactoryProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
@@ -38,10 +38,10 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     ) {
         self.subnet = subnet
         chainAsset = state.stakingOption.chainAsset
-        priceHistoryService = state.earnServices.priceHistoryService
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
         self.parametersFactory = parametersFactory
         presetFactory = state.earnServices.validatorPresetFactory
-        yieldService = state.earnServices.yieldService
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         earnSettings = state.earnServices.earnSettings
         positionsSyncService = state.positionsSyncService
@@ -86,12 +86,12 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 
     func loadYields() {
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
         let netuid = subnet.netuid
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
             label: "subnet yields",
             deliver: { [weak self] in
@@ -140,7 +140,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     func loadHistory(for period: SubtensorPricePeriod) {
         historyCallStore.cancel()
 
-        let wrapper = priceHistoryService?.createHistoryWrapper(
+        let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
             currency: selectedCurrency

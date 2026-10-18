@@ -3,9 +3,9 @@ import Foundation
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
     let subnetLogosProvider: SubtensorConfigProviding
-    let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
+    let subnetMarketsOperationFactory: SubtensorSubnetMarketsOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol
 }
 
@@ -20,13 +20,17 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
-            subnetMarketsService: SubtensorSubnetMarketsService(coingeckoOperationFactory: CoingeckoOperationFactory()),
+            subnetMarketsOperationFactory: SubtensorSubnetMarketsOperationFactory(
+                coingeckoOperationFactory: CoingeckoOperationFactory()
+            ),
             costBasisService: SubtensorCostBasisService(
                 apiOperationFactory: apiOperationFactory,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
                 eventCenter: EventCenter.shared
             ),
-            catalogueService: SubtensorSubnetCatalogueService(apiOperationFactory: apiOperationFactory),
+            catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactory(
+                apiOperationFactory: apiOperationFactory
+            ),
             stakeStateSourceFactory: SubtensorStakeStateSourceFactory(
                 eventCenter: EventCenter.shared,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -35,36 +39,36 @@ extension SubtensorStakingProcessServices {
         )
     }()
 
-    func createYieldService(
+    func createYieldOperationFactory(
         operationQueue: OperationQueue,
         logger: LoggerProtocol
-    ) -> SubtensorYieldServiceProtocol {
-        SubtensorYieldService(
+    ) -> SubtensorYieldOperationFactoryProtocol {
+        SubtensorYieldOperationFactory(
             apiOperationFactory: bittensorApiOperationFactory,
             operationQueue: operationQueue,
             logger: logger
         )
     }
 
-    func createMaxApyProvider(
+    func createMaxApyOperationFactory(
         operationQueue: OperationQueue,
         logger: LoggerProtocol
-    ) -> SubtensorMaxApyProviderProtocol {
-        SubtensorMaxApyProvider(
+    ) -> SubtensorMaxApyOperationFactoryProtocol {
+        SubtensorMaxApyOperationFactory(
             apiOperationFactory: bittensorApiOperationFactory,
-            yieldService: createYieldService(operationQueue: operationQueue, logger: logger),
+            yieldOperationFactory: createYieldOperationFactory(operationQueue: operationQueue, logger: logger),
             operationQueue: operationQueue,
             logger: logger
         )
     }
 
-    func createAlphaPriceProvider(
+    func createAlphaPriceOperationFactory(
         chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
-    ) -> SubtensorAlphaPriceProviderProtocol {
-        SubtensorAlphaPriceProvider(
-            catalogueService: catalogueService,
+    ) -> SubtensorAlphaPriceOperationFactoryProtocol {
+        SubtensorAlphaPriceOperationFactory(
+            catalogueOperationFactory: catalogueOperationFactory,
             chainOperationFactory: chainOperationFactory,
             operationQueue: operationQueue,
             logger: logger
@@ -77,7 +81,7 @@ extension SubtensorStakingProcessServices {
         logger: LoggerProtocol
     ) -> SubtensorCataloguePricingTracker {
         SubtensorCataloguePricingTracker(
-            alphaPriceProvider: createAlphaPriceProvider(
+            alphaPriceOperationFactory: createAlphaPriceOperationFactory(
                 chainOperationFactory: chainOperationFactory,
                 operationQueue: operationQueue,
                 logger: logger

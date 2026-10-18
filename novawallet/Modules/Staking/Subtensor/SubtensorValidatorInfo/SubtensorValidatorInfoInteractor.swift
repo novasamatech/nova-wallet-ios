@@ -8,9 +8,9 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
     let hotkey: AccountId
     let chainAsset: ChainAsset
     let coverageFactory: ValidatorCoverageFactoryProtocol
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -35,9 +35,9 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
         self.hotkey = hotkey
         chainAsset = state.stakingOption.chainAsset
         self.coverageFactory = coverageFactory
-        directoryService = state.earnServices.validatorDirectoryService
-        yieldService = state.earnServices.yieldService
-        catalogueService = state.earnServices.catalogueService
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -56,7 +56,7 @@ private extension SubtensorValidatorInfoInteractor {
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
         let hotkey = hotkey
 
-        return yieldService.createAlphaYieldsWrapper(for: target.netuid).mapped { yields in
+        return yieldOperationFactory.createAlphaYieldsWrapper(for: target.netuid).mapped { yields in
             SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
         }
     }
@@ -64,14 +64,14 @@ private extension SubtensorValidatorInfoInteractor {
     func loadRate() {
         rateStore.cancel()
 
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
         let hotkey = hotkey
         let netuid = target.netuid
 
         load(
             createRateWrapper(),
             cached: {
-                yieldService.cachedAlphaYields(for: netuid).value.map {
+                yieldOperationFactory.cachedAlphaYields(for: netuid).value.map {
                     SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: $0)
                 }
             },
@@ -92,11 +92,11 @@ private extension SubtensorValidatorInfoInteractor {
         catalogueStore.cancel()
 
         let subnet = target.subnetRef
-        let catalogueService = catalogueService
+        let catalogueOperationFactory = catalogueOperationFactory
 
         load(
-            catalogueService.createCatalogueWrapper(),
-            cached: { catalogueService.cachedCatalogue().value },
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
             in: catalogueStore,
             label: "catalogue for the validator stake",
             deliver: { [weak self] in
@@ -124,7 +124,7 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
         detailStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDetailWrapper(for: hotkey, subnet: target.subnetRef),
+            wrapper: directoryOperationFactory.createDetailWrapper(for: hotkey, subnet: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: detailStore,
             runningCallbackIn: .main

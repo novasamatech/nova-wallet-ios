@@ -19,22 +19,22 @@ protocol SubtensorValidatorPresetFactoryProtocol {
 }
 
 final class SubtensorValidatorPresetFactory {
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        recommendationService: SubtensorRecommendationServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
+        directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol,
+        recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol,
+        yieldOperationFactory: SubtensorYieldOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.directoryService = directoryService
-        self.recommendationService = recommendationService
-        self.yieldService = yieldService
+        self.directoryOperationFactory = directoryOperationFactory
+        self.recommendationOperationFactory = recommendationOperationFactory
+        self.yieldOperationFactory = yieldOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -54,8 +54,8 @@ private extension SubtensorValidatorPresetFactory {
     func createRecommendedWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let recommendedWrapper = recommendationService.createRecommendedValidatorsWrapper(for: subnet)
-        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
+        let recommendedWrapper = recommendationOperationFactory.createRecommendedValidatorsWrapper(for: subnet)
+        let yieldsWrapper = yieldOperationFactory.createAlphaYieldsWrapper(for: subnet.netuid)
 
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(
@@ -118,7 +118,7 @@ private extension SubtensorValidatorPresetFactory {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let detailWrapper = directoryService.createDetailWrapper(for: hotkey, subnet: subnet)
+        let detailWrapper = directoryOperationFactory.createDetailWrapper(for: hotkey, subnet: subnet)
         let logger = logger
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
@@ -140,7 +140,7 @@ private extension SubtensorValidatorPresetFactory {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let listedWrapper = directoryService.createListedDetailWrapper(for: hotkey, subnet: subnet)
+        let listedWrapper = directoryOperationFactory.createListedDetailWrapper(for: hotkey, subnet: subnet)
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(

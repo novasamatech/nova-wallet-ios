@@ -10,10 +10,10 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     let selectedWalletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
-    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -48,10 +48,10 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
-        alphaPriceProvider = state.earnServices.alphaPriceProvider
-        yieldService = state.earnServices.yieldService
+        alphaPriceOperationFactory = state.earnServices.alphaPriceOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
-        priceHistoryService = state.earnServices.priceHistoryService
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -89,7 +89,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
     func loadHistories(for period: SubtensorPricePeriod) {
         guard
-            let priceHistoryService,
+            let priceHistoryOperationFactory,
             let accountSubject = try? account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat) else {
             presenter?.didFailHistories(for: period)
             return
@@ -97,7 +97,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
         historiesStore.cancel()
 
-        let wrapper = priceHistoryService.createPortfolioHistoryWrapper(
+        let wrapper = priceHistoryOperationFactory.createPortfolioHistoryWrapper(
             accountSubject: accountSubject,
             period: period,
             currency: selectedCurrency
@@ -114,7 +114,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         rootRateStore.cancel()
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
             in: rootRateStore,
             label: "portfolio root yields"
         ) { [weak self] in
@@ -126,7 +126,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         networkRootRateStore.cancel()
 
         load(
-            yieldService.createNetworkRootRateWrapper(),
+            yieldOperationFactory.createNetworkRootRateWrapper(),
             in: networkRootRateStore,
             label: "portfolio network root rate"
         ) { [weak self] in
@@ -137,13 +137,13 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func loadWeeklyChanges(for subnets: [SubtensorSubnetRef]) {
         weeklyChangesStore.cancel()
 
-        guard let priceHistoryService, !subnets.isEmpty else {
+        guard let priceHistoryOperationFactory, !subnets.isEmpty else {
             presenter?.didReceive(weeklyChanges: [:])
             return
         }
 
         load(
-            priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            priceHistoryOperationFactory.createWeeklyChangesWrapper(for: subnets),
             in: weeklyChangesStore,
             label: "portfolio weekly changes"
         ) { [weak self] in
@@ -180,7 +180,7 @@ private extension SubtensorPortfolioInteractor {
         pricesStore.cancel()
 
         load(
-            alphaPriceProvider.createPricesWrapper(for: netuids),
+            alphaPriceOperationFactory.createPricesWrapper(for: netuids),
             in: pricesStore,
             label: "portfolio alpha prices"
         ) { [weak self] in

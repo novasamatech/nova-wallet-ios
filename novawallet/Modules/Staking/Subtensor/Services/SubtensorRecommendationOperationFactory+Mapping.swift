@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorRecommendationService {
+extension SubtensorRecommendationOperationFactory {
     static func clientGates(_ gates: BittensorApi.ClientGates) throws -> SubtensorClientGates {
         try SubtensorClientGates(
             maxTake: BittensorApiDecimal.fraction(gates.maxTake),

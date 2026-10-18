@@ -1,11 +1,11 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorPriceHistoryService {
+final class SubtensorPriceHistoryOperationFactory {
     static let sparklineMaxCount = 48
     static let marketStalenessLimit = TimeInterval(24).secondsFromHours
 
-    let marketsService: SubtensorSubnetMarketsServiceProtocol
+    let marketsOperationFactory: SubtensorSubnetMarketsOperationFactoryProtocol
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
     let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
@@ -18,7 +18,7 @@ final class SubtensorPriceHistoryService {
     let logger: LoggerProtocol
 
     init(
-        marketsService: SubtensorSubnetMarketsServiceProtocol,
+        marketsOperationFactory: SubtensorSubnetMarketsOperationFactoryProtocol,
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
@@ -30,7 +30,7 @@ final class SubtensorPriceHistoryService {
         timeProvider: @escaping () -> TimeInterval = { Date().timeIntervalSince1970 },
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.marketsService = marketsService
+        self.marketsOperationFactory = marketsOperationFactory
         self.apiOperationFactory = apiOperationFactory
         self.coingeckoOperationFactory = coingeckoOperationFactory
         self.blockNumberOperationFactory = blockNumberOperationFactory
@@ -44,7 +44,7 @@ final class SubtensorPriceHistoryService {
     }
 }
 
-extension SubtensorPriceHistoryService {
+extension SubtensorPriceHistoryOperationFactory {
     static func registrationDate(
         of subnet: SubtensorSubnetRef,
         headBlock: BlockNumber,
@@ -111,7 +111,7 @@ extension SubtensorPriceHistoryService {
     }
 }
 
-private extension SubtensorPriceHistoryService {
+private extension SubtensorPriceHistoryOperationFactory {
     static func listedMarkets(
         for subnets: [SubtensorSubnetRef],
         in markets: SubtensorSubnetMarkets
@@ -126,7 +126,7 @@ private extension SubtensorPriceHistoryService {
         listedValuesWrapper: @escaping ([SubtensorSubnetRef: SubtensorSubnetMarket])
             -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]>
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-        let marketsWrapper = marketsService.createMarketsWrapper()
+        let marketsWrapper = marketsOperationFactory.createMarketsWrapper()
 
         let pricesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
@@ -306,7 +306,7 @@ private extension SubtensorPriceHistoryService {
                 let tao = try taoOperation.extractNoCancellableResultData()
                 let (headBlock, blockTime) = try chainTimeWrapper.targetOperation.extractNoCancellableResultData()
 
-                return SubtensorPriceHistoryService.marketChanges(
+                return SubtensorPriceHistoryOperationFactory.marketChanges(
                     of: listed,
                     taoWeekItems: tao.items,
                     headBlock: headBlock,
@@ -329,13 +329,13 @@ private extension SubtensorPriceHistoryService {
     }
 }
 
-extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
+extension SubtensorPriceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol {
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
-        let marketsWrapper = marketsService.createMarketsWrapper()
+        let marketsWrapper = marketsOperationFactory.createMarketsWrapper()
         let chainTimeWrapper = createChainTimeWrapper()
         let timeProvider = timeProvider
 

@@ -1,26 +1,26 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorMaxApyProvider {
+final class SubtensorMaxApyOperationFactory {
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
+        yieldOperationFactory: SubtensorYieldOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.apiOperationFactory = apiOperationFactory
-        self.yieldService = yieldService
+        self.yieldOperationFactory = yieldOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
-private extension SubtensorMaxApyProvider {
+private extension SubtensorMaxApyOperationFactory {
     static func makePairs(
         from response: BittensorApiResult<BittensorApi.RecommendationCollection>,
         logger: LoggerProtocol
@@ -40,17 +40,19 @@ private extension SubtensorMaxApyProvider {
     }
 }
 
-extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
+extension SubtensorMaxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol {
     func createMaxApyWrapper() -> CompoundOperationWrapper<[UInt16: Decimal]> {
         let responseWrapper = apiOperationFactory.createRecommendationsWrapper()
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
         let logger = logger
 
         let maxApyWrapper: CompoundOperationWrapper<[UInt16: Decimal]> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
                 let pairs = Self.makePairs(from: response, logger: logger)
-                let yieldWrappers = Set(pairs.map(\.netuid)).map { yieldService.createAlphaYieldsWrapper(for: $0) }
+                let yieldWrappers = Set(pairs.map(\.netuid)).map {
+                    yieldOperationFactory.createAlphaYieldsWrapper(for: $0)
+                }
 
                 let maxOperation = ClosureOperation<[UInt16: Decimal]> {
                     var rates: [UInt16: Decimal] = [:]

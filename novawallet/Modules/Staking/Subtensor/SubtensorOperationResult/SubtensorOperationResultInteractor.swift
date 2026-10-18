@@ -10,7 +10,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     let loadsSubnetData: Bool
     let operationService: SubtensorStakingOperationServiceProtocol
     let chainFactory: SubtensorResultChainFactoryProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let osMediator: OperatingSystemMediating
     let schedulerFactory: (SchedulerDelegate) -> SchedulerProtocol
@@ -27,7 +27,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         loadsSubnetData: Bool,
         operationService: SubtensorStakingOperationServiceProtocol,
         chainFactory: SubtensorResultChainFactoryProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         osMediator: OperatingSystemMediating,
         schedulerFactory: @escaping (SchedulerDelegate) -> SchedulerProtocol,
@@ -39,7 +39,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         self.loadsSubnetData = loadsSubnetData
         self.operationService = operationService
         self.chainFactory = chainFactory
-        self.catalogueService = catalogueService
+        self.catalogueOperationFactory = catalogueOperationFactory
         self.subnetLogosProvider = subnetLogosProvider
         self.osMediator = osMediator
         self.schedulerFactory = schedulerFactory
@@ -104,11 +104,11 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        let catalogueService = catalogueService
+        let catalogueOperationFactory = catalogueOperationFactory
 
         load(
-            catalogueService.createCatalogueWrapper(),
-            cached: { catalogueService.cachedCatalogue().value },
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
             in: catalogueStore,
             label: "catalogue for the result",
             deliver: { [weak self] in

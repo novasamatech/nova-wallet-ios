@@ -4,7 +4,7 @@ import BigInt
 import Operation_iOS
 import Cuckoo
 
-final class SubtensorSubnetsServiceTests: XCTestCase {
+final class SubtensorSubnetsOperationFactoryTests: XCTestCase {
     func testFetchMergesSubnetsPricesAndSubtokenEnabled() throws {
         let subnets = [
             generateDynamicInfo(netuid: 0),
@@ -18,11 +18,11 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             SubtensorStakingPallet.SubnetPrice(netuid: 5, price: 12_672_077)
         ]
 
-        let service = createService(
+        let operationFactory = createOperationFactory(
             apiFactory: createApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
         )
 
-        let info = try fetchInfo(service.createSubnetsInfoWrapper())
+        let info = try fetchInfo(operationFactory.createSubnetsInfoWrapper())
 
         XCTAssertEqual(info.subnets, subnets)
         XCTAssertEqual(info.prices, [0: 1_000_000_000, 1: 7_683_255, 5: 12_672_077])
@@ -42,7 +42,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             }
         }
 
-        XCTAssertThrowsError(try fetchInfo(createService(apiFactory: apiFactory).createSubnetsInfoWrapper()))
+        XCTAssertThrowsError(try fetchInfo(createOperationFactory(apiFactory: apiFactory).createSubnetsInfoWrapper()))
     }
 
     func testFetchSubnetWithoutDynamicInfoYieldsEmptyInfo() throws {
@@ -55,7 +55,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             }
         }
 
-        let info = try fetchInfo(createService(apiFactory: apiFactory).createSubnetInfoWrapper(for: 5))
+        let info = try fetchInfo(createOperationFactory(apiFactory: apiFactory).createSubnetInfoWrapper(for: 5))
 
         XCTAssertEqual(info, SubtensorSubnetsInfo(subnets: [], prices: [:], subtokenEnabled: []))
     }
@@ -86,10 +86,10 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         return apiFactory
     }
 
-    private func createService(
+    private func createOperationFactory(
         apiFactory: MockSubtensorApiOperationFactoryProtocol
-    ) -> SubtensorSubnetsService {
-        SubtensorSubnetsService(operationFactory: apiFactory, operationQueue: OperationQueue())
+    ) -> SubtensorSubnetsOperationFactory {
+        SubtensorSubnetsOperationFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
     }
 
     private func fetchInfo(_ wrapper: CompoundOperationWrapper<SubtensorSubnetsInfo>) throws -> SubtensorSubnetsInfo {
