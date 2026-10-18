@@ -21,13 +21,13 @@ flowchart TB
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
     CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
-    HOST["App identity + Keychain access group / host namespace<br/>SettingsManager set/read-back + three queues"] --> F
+    HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
     F --> OWNER["ONE NovaAuth owner<br/>installation + issuance coordination"]
     OWNER --> APPLE["DeviceCheck adapter"]
     OWNER --> STATE["Settings identity store"]
-    OWNER --> TOKEN["Shared Keychain token store"]
+    OWNER --> TOKEN["Keychain token store + gated record cache"]
     OWNER --> HTTP["HTTP transport<br/>bootstrap / reads / POSTs"]
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
@@ -35,15 +35,15 @@ flowchart TB
 ```
 
 - Root starts analytics before wallet setup. There is no `ServiceCoordinator → NovaAuth.setup` path; authentication is driven by consumer requests.
-- The facade rejects unsupported App Attest, missing app identity/shared-store configuration, and real-client creation under `-UNITTEST`.
-- Auth requires the shared Keychain access group and stable host namespace, but no longer resolves or requires an App Group filesystem container. Other host features still use that container.
+- The facade rejects unsupported App Attest, missing app identity, and real-client creation under `-UNITTEST`.
+- Auth stores the bearer in the app's default Keychain access group; it requires no App Group container, shared access group or Info.plist namespace. Other host features still use the App Group container.
 - Settings writes use the injected manager and verify cached read-back. The production manager calls synchronize internally, but neither operation proves durability or detects every refused disk write.
 - `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. Older configuration revisions cannot replace a newer accepted snapshot.
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
 - The facade compares a package invalidation ID around activation. Cold origin replacement/repair can invalidate observers before an endpoint was ever published; a failed replacement still notifies if its memory fence changed.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [host Keychain configuration](../../../novawallet/Configs/SharedContainerGroup.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -278,7 +278,7 @@ disk durability; no transaction/commit API is implied.
 Keychain contains one atomic version-2 bearer with origin/client/generation and boot-bound continuous
 deadline. Persistence precedes delivery. Conditional fingerprint deletion cannot erase a newer
 record; the sole owner under its gate may remove an untagged legacy record only after reload still
-matches. Corrupt token reads do not delete data. Host namespace separates signed app variants.
+matches. Corrupt token reads do not delete data. The default access group separates signed app variants, and the owner caches the loaded record under its gate.
 
 Both HTTP/native watchdogs remain. Called native leases release only on actual callback, even after
 local timeout. The flight's irreversible commitment stays sticky independently of its current step.

@@ -19,16 +19,15 @@ another request before sending permits one separate, bounded re-admission. Neith
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
 
-The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings, the shared Keychain
-access group, a required stable host-app namespace, and separate
-owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed host
-app with continuous-clock/boot metadata; preferences hold no bearer. The namespace is the
-host app's bundle identifier, explicitly injected into the app's build metadata.
-Auth no longer resolves or requires an App Group filesystem container; the Keychain access
-group is retained. Other host features still use the App Group container.
-Release and Staging share an App Group but use distinct Keychain services, so neither can
-read, overwrite or delete the other's bearer. All features within one host still share its
-single current record; origin, consumer and client UUID never select separate token pools.
+The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings and
+separate owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed
+host app in the app's default Keychain access group, with continuous-clock/boot metadata;
+preferences hold no bearer. Auth requires no App Group container, shared access group or
+Info.plist namespace; each signed app variant owns its own record, so Release and Staging can
+never read, overwrite or delete each other's bearer. All features within one host still share
+its single current record; origin, consumer and client UUID never select separate token pools.
+The owner caches the loaded record under its gate, so the Keychain is read once per launch and
+again only after a write or removal.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
@@ -175,4 +174,4 @@ Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS si
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
 bounded token replay, shared throttling and exchange release. App tests cover facade publication,
 Bittensor cache invalidation, domain recovery/presentation and Subtensor flows. Real App Attest,
-signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
+Keychain behavior, protected data and physical reboot behavior need device validation.

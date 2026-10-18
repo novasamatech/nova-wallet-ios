@@ -174,12 +174,10 @@ extension NovaAuthFacade {
     static let shared: NovaAuthFacade = {
         let client: NovaAuth?
         if !EnviromentVariables.isUnitTesting,
-           let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity,
-           let sharedStore = ApplicationConfig.shared.novaAuthSharedStore {
+           let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity {
             client = NovaAuth(configuration: NovaAuthConfiguration(
                 appIdentity: appIdentity,
                 settingsManager: SettingsManager.shared,
-                sharedStore: sharedStore,
                 ownerQueue: OperationManagerFacade.novaAuthOwnerQueue,
                 bootstrapQueue: OperationManagerFacade.novaAuthBootstrapQueue,
                 requestQueue: OperationManagerFacade.novaAuthRequestQueue,

@@ -78,7 +78,7 @@ Installation storage keeps its existing key/version and validates surviving secu
 Removed optional policy fields are ignored and disappear on the next existing write. Legacy
 `policyRefused` with a key resumes probing that binding. Version-1 bearers require fresh issuance
 while preserving valid installation identity; version 2 stores the flow-free bearer atomically
-in the host-namespaced Keychain service, before delivery.
+in the app's default Keychain access group, before delivery.
 
 Context fences advance before storage I/O. Failed saves preserve staged repair and token-removal
 debt, blocking admission until activation repairs them. Conditional token deletion protects newer

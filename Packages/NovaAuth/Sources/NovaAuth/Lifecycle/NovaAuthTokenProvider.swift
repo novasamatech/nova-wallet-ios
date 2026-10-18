@@ -59,11 +59,7 @@ extension NovaAuth {
     }
 
     func usableToken(context: NovaAuthContext, now: NovaAuthTime) throws -> NovaAuthTokenRecord? {
-        let record: NovaAuthTokenRecord?
-        do {
-            record = try dependencies.tokenStore.load()
-        } catch { throw NovaAuthError.storageUnavailable }
-        guard let record else { return nil }
+        guard let record = try loadToken() else { return nil }
         do { try rejectedCredentials.check(record, now: now) } catch { return nil }
         do {
             guard let clientID = state?.identity?.clientID else { throw NovaAuthError.credentialUnavailable }
@@ -161,9 +157,7 @@ extension NovaAuth {
             record, context: flight.context, clientID: clientID, now: dependencies.clock.now()
         )
         try setRegistration(.registered, flight: flight)
-        do {
-            try dependencies.tokenStore.replace(record)
-        } catch { throw NovaAuthError.storageUnavailable }
+        try storeToken(record)
         issuanceCooldown.clear()
         finish(.success(record), flight: flight)
     }

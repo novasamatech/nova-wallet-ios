@@ -29,22 +29,4 @@ extension ApplicationConfig {
                 .production
         #endif
     }
-
-    var novaAuthSharedStore: NovaAuthSharedStoreConfiguration? {
-        let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String
-
-        guard let hostAppNamespace else {
-            return nil
-        }
-
-        do {
-            return try NovaAuthSharedStoreConfiguration(
-                accessGroup: SharedContainerGroup.name,
-                hostAppNamespace: hostAppNamespace
-            )
-        } catch {
-            Logger.shared.error("NovaAuth shared store configuration rejected: \(error)")
-            return nil
-        }
-    }
 }
