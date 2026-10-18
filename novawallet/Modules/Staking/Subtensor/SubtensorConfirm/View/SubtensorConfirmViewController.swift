@@ -117,6 +117,7 @@ private extension SubtensorConfirmViewController {
         bindTile(rootView.pairsView.rigthAssetView, state: viewModel.receive)
 
         rootView.swapRateCell.bind(loadableViewModel: viewModel.swapRate)
+        rootView.swapRateCell.bind(attention: viewModel.isQuoteFailed ? .medium : .low)
 
         rootView.avgBuyPriceCell.bind(costBasisRow: viewModel.avgBuyPrice, locale: selectedLocale)
         rootView.youWillEarnCell.bind(costBasisRow: viewModel.youWillEarn, locale: selectedLocale)
