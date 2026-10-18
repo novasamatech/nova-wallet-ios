@@ -206,7 +206,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let rate = SubtensorRootRateCalculator.stakeWeightedRate(of: group.positions, in: state.rootYields)
+        let rate = SubtensorStakeRateCalculator.rootRate(of: group.positions, in: state.rootYields)
         let subtitle = state.rootYields != nil
             ? strings.stakingSubtensorUiPortfolioRootApyFormat(
                 SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)

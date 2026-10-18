@@ -79,6 +79,7 @@ extension Multistaking {
         let rootStake: BigUInt?
         let subnetCount: Int
         let rootRate: Decimal?
+        let subnetRate: Decimal?
         let isFullyPriced: Bool?
     }
 
@@ -93,6 +94,7 @@ extension Multistaking {
         let stake: BigUInt
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
+        let subnetRate: Decimal?
         let isFullyPriced: Bool?
     }
 }
