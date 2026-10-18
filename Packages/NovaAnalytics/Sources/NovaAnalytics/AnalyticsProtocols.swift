@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAppAttest
 
 public protocol AnalyticsEventQueueProtocol {
     func enqueueWrapper(
@@ -73,9 +72,7 @@ public protocol AnalyticsUploading: AnyObject {
 }
 
 public enum AnalyticsTransportError: Error, Equatable {
-    /// Retain the batch until the key is attested again.
-    case rejected(statusCode: Int)
-    /// Retain the batch and retry with a fresh proof, preserving the key and identity.
+    /// Retain a batch refused by the gateway.
     case proofRefused(statusCode: Int)
     case clientError(statusCode: Int)
     case retryLater(statusCode: Int, retryAfter: TimeInterval?)
@@ -83,14 +80,7 @@ public enum AnalyticsTransportError: Error, Equatable {
 }
 
 public protocol AnalyticsUploadOperationFactoryProtocol {
-    /// Use this same target for signing and sending the events request.
-    func eventsTarget() throws -> AttestationRequestTarget
-
-    func createUploadOperation(
-        target: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
-    ) -> BaseOperation<Void>
+    func createUploadWrapper(body: Data, beforeSend: @escaping () throws -> Void) -> CompoundOperationWrapper<Void>
 }
 
 public protocol BackgroundTaskRunning {

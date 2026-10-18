@@ -1,3 +1,4 @@
+import NovaAuth
 import XCTest
 @testable import NovaAnalytics
 
@@ -14,24 +15,22 @@ final class AnalyticsUploadResponseTests: XCTestCase {
             httpVersion: "HTTP/1.1",
             headerFields: retryAfter.map { ["Retry-After": $0] }
         ))
-        let body = code.map { Data(#"{"error":{"code":"\#($0)","message":"x"}}"#.utf8) }
+        let body = code.map { Data(#"{"error":{"code":"\#($0)","message":"x"}}"#.utf8) } ?? Data()
 
-        return AnalyticsUploadOperationFactory.deliveryError(
-            for: response,
-            data: body,
-            now: Date(timeIntervalSince1970: 0)
-        )
+        return AnalyticsUploadOperationFactory.deliveryError(for: NovaAuthResponse(response: response, body: body))
     }
 
     func testSuccessfulResponse() throws {
         XCTAssertNil(try deliveryError(204))
     }
 
-    func testErrorCodeDeterminesRejection() throws {
-        XCTAssertEqual(try deliveryError(401, code: "unknown_client"), .rejected(statusCode: 401))
-        XCTAssertEqual(try deliveryError(401, code: "invalid_challenge"), .proofRefused(statusCode: 401))
+    func testStatusAndGatewayCodeDetermineRejection() throws {
+        XCTAssertEqual(try deliveryError(401, code: "unknown_client"), .proofRefused(statusCode: 401))
+        XCTAssertEqual(try deliveryError(403), .proofRefused(statusCode: 403))
         XCTAssertEqual(try deliveryError(400, code: "invalid_target"), .proofRefused(statusCode: 400))
+        XCTAssertEqual(try deliveryError(400, code: "invalid_envelope"), .clientError(statusCode: 400))
         XCTAssertEqual(try deliveryError(400), .clientError(statusCode: 400))
+        XCTAssertEqual(try deliveryError(500), .serverError(statusCode: 500))
     }
 
     func testRetryAfterDelay() throws {
