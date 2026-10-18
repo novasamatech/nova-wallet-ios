@@ -40,8 +40,9 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
     }
 
     func testSubnetSellAllEncodesFullExitsInHotkeyOrderAndOneFeeTransfer() throws {
-        let operation = SubtensorStakingOperation.subnetSellAll(
-            hotkeys: [hotkey, groupHotkey],
+        let operation = SubtensorStakingOperation.subnetSellGroup(
+            exits: [hotkey, groupHotkey],
+            partials: [],
             netuid: 64,
             limitPrice: 73_431_000,
             quotedTaoOut: 4_145_000_000
@@ -52,6 +53,24 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         let expected = "0b020c" +
             "0767" + hotkey.toHex() + "4000" + "01" + "d877600400000000" +
             "0767" + groupHotkey.toHex() + "4000" + "01" + "d877600400000000" +
+            "050300" + productionBeneficiaryHex + "bab3f402"
+        XCTAssertEqual(calls, [expected])
+    }
+
+    func testSubnetSellGroupEncodesFullExitsThenThePartialRemoveAndOneFeeTransfer() throws {
+        let operation = SubtensorStakingOperation.subnetSellGroup(
+            exits: [groupHotkey],
+            partials: [SubtensorUnstakeSlice(hotkey: hotkey, alpha: 56_200_000_000)],
+            netuid: 64,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
+        )
+
+        let calls = try encodeCalls(operation)
+
+        let expected = "0b020c" +
+            "0767" + groupHotkey.toHex() + "4000" + "01" + "d877600400000000" +
+            "0759" + hotkey.toHex() + "4000" + "00f2c7150d000000" + "d877600400000000" + "00" +
             "050300" + productionBeneficiaryHex + "bab3f402"
         XCTAssertEqual(calls, [expected])
     }

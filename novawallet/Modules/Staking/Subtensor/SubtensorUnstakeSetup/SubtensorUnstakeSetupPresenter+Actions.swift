@@ -87,11 +87,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             return
         }
 
-        let dependencies = createValidationDependencies(amount: amount)
-
-        guard var model = createConfirmModel(for: dependencies) else {
-            return
+        if amount != requestedAmount() {
+            provideAmountInputViewModel()
         }
+
+        let dependencies = createValidationDependencies(amount: amount)
+        let model = createConfirmModel(for: dependencies)
 
         dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
             guard let self else {
@@ -99,6 +100,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             }
 
             view?.didStopLoading()
+
+            guard var model else {
+                return
+            }
+
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
             wireframe.showConfirmation(from: view, model: model)
         }
@@ -107,16 +113,19 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 
 extension SubtensorUnstakeSetupPresenter {
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
-        let exitHotkeys = exitHotkeys(for: amount)
-        let basis = basis
+        let plan = plan(for: amount)
+        let positions = Dictionary((basis?.positions ?? []).map { ($0.hotkey, $0.alpha) }) { first, _ in first }
 
         return SubtensorUnstakeValidatingDep(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
+            hotkey: group?.primaryHotkey,
             amount: amount,
-            positionAlpha: exitHotkeys != nil ? basis?.total : basis?.primaryAlpha,
+            positionAlpha: plan?.amount ?? maxAmount,
+            positions: positions,
+            plan: plan,
+            groupHotkeys: groupHotkeys,
             availability: group?.availability,
-            exitHotkeys: exitHotkeys,
             balance: balance,
             fee: fee,
             existentialDeposit: existentialDeposit,
@@ -134,13 +143,16 @@ extension SubtensorUnstakeSetupPresenter {
             onPositionsRefresh: { [weak self] in
                 self?.interactor.refreshPositions()
             },
+            onGroupHotkeysRefresh: { [weak self] in
+                self?.loadGroupHotkeys()
+            },
             onUnstakeAll: createUnstakeAllOffer(),
             quoteContext: createQuoteContext()
         )
     }
 
     func createUnstakeAllOffer() -> (() -> Void)? {
-        guard let basis, basis.canExitAll, remainingHoldBlocks(for: basis.hotkeys) == nil else {
+        guard let basis, basis.canExitAll else {
             return nil
         }
 
@@ -152,9 +164,10 @@ extension SubtensorUnstakeSetupPresenter {
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,
-            let primary = group?.primaryHotkey,
-            let amount = dependencies.amount, amount > 0,
-            let address = try? primary.toAddress(using: chainAsset.chain.chainFormat) else {
+            let group,
+            let plan = dependencies.plan,
+            let groupHotkeys = dependencies.groupHotkeys,
+            let address = try? group.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
 
@@ -163,15 +176,14 @@ extension SubtensorUnstakeSetupPresenter {
             account: selectedAccount,
             target: target,
             validator: SubtensorConfirmValidator(
-                hotkey: primary,
+                hotkey: group.primaryHotkey,
                 display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
                 annualRate: nil
             ),
             mode: .unstake(SubtensorUnstakeModel(
-                hotkey: primary,
                 netuid: netuid,
-                amount: amount,
-                exitHotkeys: dependencies.exitHotkeys
+                plan: plan,
+                groupHotkeys: groupHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)

@@ -182,17 +182,31 @@ private extension SubtensorOutcomeTarget {
             self.init(kind: .stake, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
         case let .rootUnstake(hotkey, _):
             self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
-        case let .rootUnstakeAll(hotkeys):
-            self.init(kind: .unstake, coldkey: coldkey, hotkeys: Set(hotkeys), netuid: rootNetuid)
+        case let .rootUnstakeGroup(exits, partials):
+            self.init(
+                kind: .unstake,
+                coldkey: coldkey,
+                hotkeys: Self.hotkeys(exits: exits, partials: partials),
+                netuid: rootNetuid
+            )
         case let .subnetBuy(hotkey, netuid, _, _):
             self.init(kind: .stake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
         case let .subnetSell(hotkey, netuid, _, _, _):
             self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
-        case let .subnetSellAll(hotkeys, netuid, _, _):
-            self.init(kind: .unstake, coldkey: coldkey, hotkeys: Set(hotkeys), netuid: netuid)
+        case let .subnetSellGroup(exits, partials, netuid, _, _):
+            self.init(
+                kind: .unstake,
+                coldkey: coldkey,
+                hotkeys: Self.hotkeys(exits: exits, partials: partials),
+                netuid: netuid
+            )
         case let .rootClaim(hotkey):
             self.init(kind: .claim, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
         }
+    }
+
+    static func hotkeys(exits: [AccountId], partials: [SubtensorUnstakeSlice]) -> Set<AccountId> {
+        Set(exits + partials.map(\.hotkey))
     }
 }
 

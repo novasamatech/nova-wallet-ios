@@ -26,7 +26,13 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
 
     func testSubnetSellAllSignaturePassesValidation() throws {
         let validity = try performValidation(
-            of: .subnetSellAll(hotkeys: hotkeys, netuid: netuid, limitPrice: limitPrice, quotedTaoOut: amount)
+            of: .subnetSellGroup(
+                exits: hotkeys,
+                partials: [],
+                netuid: netuid,
+                limitPrice: limitPrice,
+                quotedTaoOut: amount
+            )
         )
 
         XCTAssertEqual(validity, unfundedSignerRejection)

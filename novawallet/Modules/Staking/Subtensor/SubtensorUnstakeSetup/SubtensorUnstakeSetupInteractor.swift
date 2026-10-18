@@ -15,9 +15,11 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     let subnetsService: SubtensorSubnetsServiceProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
+    let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
+    private let groupHotkeysCallStore = CancellableCallStore()
 
     override init(
         flowServices: SubtensorFlowServices,
@@ -26,6 +28,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     ) {
         subnetsService = state.subnetsService
         validatorFactory = state.earnServices.validatorPresetFactory
+        groupHotkeyFactory = state.earnServices.groupHotkeyFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
@@ -33,6 +36,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     deinit {
         validatorCallStore.cancel()
         subnetsInfoCallStore.cancel()
+        groupHotkeysCallStore.cancel()
     }
 }
 
@@ -70,6 +74,28 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
             case let .failure(error):
                 self?.logger.warning("Subtensor unstake validator unavailable: \(error)")
                 self?.presenter?.didReceiveValidator(nil, hotkey: hotkey)
+            }
+        }
+    }
+
+    func loadGroupHotkeys(_ hotkeys: [AccountId], netuid: UInt16) {
+        groupHotkeysCallStore.cancel()
+
+        executeCancellable(
+            wrapper: groupHotkeyFactory.createInfoWrapper(
+                coldkey: selectedAccount.accountId,
+                hotkeys: hotkeys,
+                netuid: netuid
+            ),
+            inOperationQueue: operationQueue,
+            backingCallIn: groupHotkeysCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.presenter?.didReceiveGroupHotkeys(info)
+            case let .failure(error):
+                self?.logger.warning("Subtensor unstake group hotkeys unavailable: \(error)")
             }
         }
     }
