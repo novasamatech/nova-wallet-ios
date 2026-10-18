@@ -136,6 +136,28 @@ private extension SubtensorValidatorPresetFactory {
         return detailWrapper.insertingTail(operation: itemOperation)
     }
 
+    func createListedItemWrapper(
+        for hotkey: AccountId,
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        let listedWrapper = directoryService.createListedDetailWrapper(for: hotkey, subnet: subnet)
+
+        let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
+            OperationCombiningService.compoundOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                if let listed = try listedWrapper.targetOperation.extractNoCancellableResultData() {
+                    return .createWithResult(listed)
+                }
+
+                return self?.createItemWrapper(for: hotkey, subnet: subnet)
+            }
+
+        itemWrapper.addDependency(wrapper: listedWrapper)
+
+        return itemWrapper.insertingHead(operations: listedWrapper.allOperations)
+    }
+
     func createPresetWrapper(
         for subnet: SubtensorSubnetRef,
         existingWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>?
@@ -178,7 +200,7 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         createPresetWrapper(
             for: subnet,
-            existingWrapper: existingHotkey.map { directoryService.createListedDetailWrapper(for: $0, subnet: subnet) }
+            existingWrapper: existingHotkey.map { createListedItemWrapper(for: $0, subnet: subnet) }
         )
     }
 

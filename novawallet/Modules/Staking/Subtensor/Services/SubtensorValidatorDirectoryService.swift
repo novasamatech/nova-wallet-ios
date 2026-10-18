@@ -137,6 +137,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet, requiresListing: true)
+        let logger = logger
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -148,12 +149,26 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     return .createWithResult(nil)
                 }
 
-                return createChainItemWrapper(
+                let chainWrapper = createChainItemWrapper(
                     for: hotkey,
                     subnet: subnet,
                     name: listed.name,
                     stake: listed.reportedStake
-                ).mapped { Optional($0) }
+                )
+
+                let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
+                    do {
+                        return try chainWrapper.targetOperation.extractNoCancellableResultData()
+                    } catch {
+                        logger.warning("Subtensor validator chain detail unavailable, keeping the listing: \(error)")
+
+                        return listed
+                    }
+                }
+
+                itemOperation.addDependency(chainWrapper.targetOperation)
+
+                return chainWrapper.insertingTail(operation: itemOperation)
             }
 
         itemWrapper.addDependency(wrapper: listedWrapper)
