@@ -1,11 +1,11 @@
 import Foundation
 import Operation_iOS
 
-protocol ValidatorCoverageFactoryProtocol {
+protocol SubtensorValidatorCoverageFactoryProtocol {
     func createWrapper(for hotkey: AccountId) -> CompoundOperationWrapper<SubtensorValidatorCoverage?>
 }
 
-final class SubtensorValidatorCoverageFactory: ValidatorCoverageFactoryProtocol {
+final class SubtensorValidatorCoverageFactory: SubtensorValidatorCoverageFactoryProtocol {
     let apiFactory: SubtensorApiOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let operationQueue: OperationQueue

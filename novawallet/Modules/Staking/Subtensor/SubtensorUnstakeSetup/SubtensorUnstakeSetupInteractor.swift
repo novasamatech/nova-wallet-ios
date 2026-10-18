@@ -3,9 +3,9 @@ import SubstrateSdk
 import UIKit
 
 final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorUnstakeInteractorOutputProtocol? {
+    var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeInteractorOutputProtocol
+            basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
         }
 
         set {
@@ -40,7 +40,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     }
 }
 
-extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
+extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputProtocol {
     func loadSubnetsInfo(for netuid: UInt16) {
         subnetsInfoCallStore.cancel()
 

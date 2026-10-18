@@ -3,7 +3,7 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
-    weak var presenter: SubtensorResultInteractorOutputProtocol?
+    weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
     let operation: SubtensorStakingOperation
     let coldkey: AccountId
@@ -128,7 +128,7 @@ private extension SubtensorOperationResultInteractor {
     }
 }
 
-extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
+extension SubtensorOperationResultInteractor: SubtensorOperationResultInteractorInputProtocol {
     func setup() {
         provideSubnetData()
         submit()

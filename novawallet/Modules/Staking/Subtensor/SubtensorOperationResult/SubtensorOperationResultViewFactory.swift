@@ -85,7 +85,7 @@ private extension SubtensorOperationResultViewFactory {
     static func createPresentedView(
         for request: SubtensorOperationResultRequest,
         presenter: SubtensorOperationResultPresenter
-    ) -> SubtensorResultViewProtocol {
+    ) -> SubtensorOperationResultViewProtocol {
         guard request.target.isRoot else {
             let view = SubtensorOperationResultViewController(
                 presenter: presenter,

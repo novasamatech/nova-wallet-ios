@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorValidatorSelectWireframe: ValidatorSelectWireframeProtocol {
+final class SubtensorValidatorSelectWireframe: SubtensorValidatorSelectWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
     init(state: SubtensorStakingSharedStateProtocol) {

@@ -2,12 +2,12 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubtensorValInfoInteractorOutputProtocol?
+    weak var presenter: SubtensorValidatorInfoInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let chainAsset: ChainAsset
-    let coverageFactory: ValidatorCoverageFactoryProtocol
+    let coverageFactory: SubtensorValidatorCoverageFactoryProtocol
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
@@ -25,7 +25,7 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
         target: SubtensorStakeTarget,
         hotkey: AccountId,
         state: SubtensorStakingSharedStateProtocol,
-        coverageFactory: ValidatorCoverageFactoryProtocol,
+        coverageFactory: SubtensorValidatorCoverageFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -106,7 +106,7 @@ private extension SubtensorValidatorInfoInteractor {
     }
 }
 
-extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
+extension SubtensorValidatorInfoInteractor: SubtensorValidatorInfoInteractorInputProtocol {
     func setup() {
         load(
             coverageFactory.createWrapper(for: hotkey),

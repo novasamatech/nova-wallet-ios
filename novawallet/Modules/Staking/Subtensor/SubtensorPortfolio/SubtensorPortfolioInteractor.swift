@@ -3,7 +3,7 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubnetPortfolioInteractorOutputProtocol?
+    weak var presenter: SubtensorPortfolioInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
     let account: MetaChainAccountResponse
@@ -70,7 +70,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     }
 }
 
-extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
+extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtocol {
     func setup() {
         state.setup(for: account)
 

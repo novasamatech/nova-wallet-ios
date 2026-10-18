@@ -30,7 +30,7 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func retry()
 }
 
-protocol SubnetSelectInteractorInputProtocol: AnyObject {
+protocol SubtensorSubnetSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
     func refreshFavourites()
@@ -39,7 +39,7 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
     func loadApy()
 }
 
-protocol SubnetSelectInteractorOutputProtocol: AnyObject {
+protocol SubtensorSubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(entries: [SubtensorSubnetListItem])
     func didReceive(favourites: Set<SubtensorSubnetRef>)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)

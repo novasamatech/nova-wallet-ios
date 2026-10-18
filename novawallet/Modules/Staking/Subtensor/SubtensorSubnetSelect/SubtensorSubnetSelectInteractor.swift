@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
-    weak var presenter: SubnetSelectInteractorOutputProtocol?
+    weak var presenter: SubtensorSubnetSelectInteractorOutputProtocol?
 
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
@@ -90,7 +90,7 @@ private extension SubtensorSubnetSelectInteractor {
     }
 }
 
-extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
+extension SubtensorSubnetSelectInteractor: SubtensorSubnetSelectInteractorInputProtocol {
     func setup() {
         provideFavourites()
         provideEntries()

@@ -4,9 +4,9 @@ import Foundation_iOS
 final class SubtensorPortfolioPresenter {
     weak var view: SubtensorPortfolioViewProtocol?
 
-    let interactor: SubnetPortfolioInteractorInputProtocol
+    let interactor: SubtensorPortfolioInteractorInputProtocol
     let wireframe: SubtensorPortfolioWireframeProtocol
-    let viewModelFactory: SubnetPortfolioViewModelFactoryProtocol
+    let viewModelFactory: SubtensorPortfolioViewModelFactoryProtocol
     let wallet: MetaAccountModel
     let account: MetaChainAccountResponse
     let chainAsset: ChainAsset
@@ -20,9 +20,9 @@ final class SubtensorPortfolioPresenter {
     private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
-        interactor: SubnetPortfolioInteractorInputProtocol,
+        interactor: SubtensorPortfolioInteractorInputProtocol,
         wireframe: SubtensorPortfolioWireframeProtocol,
-        viewModelFactory: SubnetPortfolioViewModelFactoryProtocol,
+        viewModelFactory: SubtensorPortfolioViewModelFactoryProtocol,
         wallet: MetaAccountModel,
         account: MetaChainAccountResponse,
         chainAsset: ChainAsset,
@@ -143,7 +143,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 }
 
-extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
+extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtocol {
     func didReceive(state positions: Multistaking.SubtensorStakingState) {
         state.positions = positions
         requestRootRateIfNeeded()

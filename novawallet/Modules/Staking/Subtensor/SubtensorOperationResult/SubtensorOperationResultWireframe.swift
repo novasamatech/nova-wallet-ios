@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorOperationResultWireframe: SubtensorResultWireframeProtocol, MessageSheetPresentable,
+final class SubtensorOperationResultWireframe: SubtensorOperationResultWireframeProtocol, MessageSheetPresentable,
     ExtrinsicSigningErrorHandling {
     let state: SubtensorStakingSharedStateProtocol
 

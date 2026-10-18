@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPositionViewModelFactoryProtocol {
+protocol SubtensorPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel
     func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel?
 }
@@ -277,7 +277,7 @@ private extension SubtensorPositionViewModelFactory {
     }
 }
 
-extension SubtensorPositionViewModelFactory: SubnetPositionViewModelFactoryProtocol {
+extension SubtensorPositionViewModelFactory: SubtensorPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel {
         SubtensorPositionViewModel(
             title: createTitle(for: state, locale: locale),

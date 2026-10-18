@@ -32,12 +32,12 @@ protocol SubtensorValidatorInfoPresenterProtocol: AnyObject {
     func showTakeInfo()
 }
 
-protocol SubtensorValInfoInteractorInputProtocol: AnyObject {
+protocol SubtensorValidatorInfoInteractorInputProtocol: AnyObject {
     func setup()
     func loadDetail()
 }
 
-protocol SubtensorValInfoInteractorOutputProtocol: AnyObject {
+protocol SubtensorValidatorInfoInteractorOutputProtocol: AnyObject {
     func didReceive(coverage: SubtensorValidatorCoverage?)
     func didReceive(detail: SubtensorValidatorDirectoryItem)
     func didFailDetail(_ error: Error)

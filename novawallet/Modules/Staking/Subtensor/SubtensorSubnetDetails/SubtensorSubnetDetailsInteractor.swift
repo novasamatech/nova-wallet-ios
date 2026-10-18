@@ -3,12 +3,12 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubnetDetailsInteractorOutputProtocol?
+    weak var presenter: SubtensorSubnetDetailsInteractorOutputProtocol?
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
-    let parametersFactory: SubnetParametersFactoryProtocol
+    let parametersFactory: SubtensorSubnetParametersFactoryProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
@@ -29,7 +29,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     init(
         subnet: SubtensorSubnetRef,
         state: SubtensorStakingSharedStateProtocol,
-        parametersFactory: SubnetParametersFactoryProtocol,
+        parametersFactory: SubtensorSubnetParametersFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -111,7 +111,7 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
+extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInputProtocol {
     func setup() {
         provideFavorite()
         subscribeTaoPrice(currency: selectedCurrency)

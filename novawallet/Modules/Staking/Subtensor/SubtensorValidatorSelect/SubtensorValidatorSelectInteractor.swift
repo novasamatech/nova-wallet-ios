@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
-    weak var presenter: ValidatorSelectInteractorOutputProtocol?
+    weak var presenter: SubtensorValidatorSelectInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
@@ -129,7 +129,7 @@ private extension SubtensorValidatorSelectInteractor {
     }
 }
 
-extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
+extension SubtensorValidatorSelectInteractor: SubtensorValidatorSelectInteractorInputProtocol {
     func setup() {
         let subnet = target.subnetRef
         let isRoot = target.isRoot

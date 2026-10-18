@@ -3,9 +3,9 @@ import SubstrateSdk
 import UIKit
 
 final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorSetupInteractorOutputProtocol? {
+    var presenter: SubtensorStakingSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorSetupInteractorOutputProtocol
+            basePresenter as? SubtensorStakingSetupInteractorOutputProtocol
         }
 
         set {
@@ -112,7 +112,7 @@ private extension SubtensorStakingSetupInteractor {
     }
 }
 
-extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
+extension SubtensorStakingSetupInteractor: SubtensorStakingSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
     func loadBlockTime() {

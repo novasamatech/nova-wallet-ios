@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubnetParametersFactoryProtocol {
+protocol SubtensorSubnetParametersFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters>
 }
 
@@ -30,7 +30,7 @@ final class SubtensorSubnetParametersFactory {
     }
 }
 
-extension SubtensorSubnetParametersFactory: SubnetParametersFactoryProtocol {
+extension SubtensorSubnetParametersFactory: SubtensorSubnetParametersFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters> {
         let hash = apiFactory.createBestBlockHashWrapper()
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {

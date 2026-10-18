@@ -3,7 +3,7 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubnetPositionInteractorOutputProtocol?
+    weak var presenter: SubtensorPositionInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
     let netuid: UInt16
