@@ -189,8 +189,12 @@ final class FakeAuthServer: NovaAuthHTTPProtocol {
         requests.filter { $0.url?.path.hasSuffix(suffix) == true }.count
     }
 
-    func createResponseWrapper(for request: URLRequest, kind _: NovaAuthHTTPKind, beforeSend: @escaping () throws -> Void)
-        -> CompoundOperationWrapper<NovaAuthResponse> {
+    func createResponseWrapper<T>(
+        for request: URLRequest,
+        kind _: NovaAuthHTTPKind,
+        beforeSend: @escaping () throws -> Void,
+        decode: @escaping (NovaAuthResponse) throws -> T
+    ) -> CompoundOperationWrapper<T> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
             try beforeSend()
             lock.novaAuthLocked { sent.append(request) }
@@ -199,7 +203,7 @@ final class FakeAuthServer: NovaAuthHTTPProtocol {
             let response = try XCTUnwrap(HTTPURLResponse(
                 url: url, statusCode: reply.status, httpVersion: nil, headerFields: reply.headers
             ))
-            return NovaAuthResponse(response: response, body: reply.body)
+            return try decode(NovaAuthResponse(response: response, body: reply.body))
         })
     }
 

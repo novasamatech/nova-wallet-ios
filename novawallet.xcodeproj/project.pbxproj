@@ -6702,7 +6702,6 @@
 		FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
-		240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */; };
 		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 		000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */; };
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
@@ -13189,7 +13188,6 @@
 		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacade.swift; sourceTree = "<group>"; };
 		C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.staging.xcconfig"; sourceTree = "<group>"; };
 		D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionStaging.entitlements; sourceTree = "<group>"; };
-		E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacadeTests.swift; sourceTree = "<group>"; };
 		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
@@ -13310,14 +13308,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		307D6F6257E44BEC9ACF9B23 /* Auth */ = {
-			isa = PBXGroup;
-			children = (
-				E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */,
-			);
-			path = Auth;
-			sourceTree = "<group>";
-		};
 		A5C100000000000000000201 /* AnalyticsConsentScreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -19911,14 +19901,6 @@
 			path = AppearanceSettings;
 			sourceTree = "<group>";
 		};
-		3F2839BD3CD74DFC806B7019 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				307D6F6257E44BEC9ACF9B23 /* Auth */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
 		3F60E88CC8F32FE7AF3D245E /* DAppFavorites */ = {
 			isa = PBXGroup;
 			children = (
@@ -22086,7 +22068,6 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				3F2839BD3CD74DFC806B7019 /* Network */,
 				0CAA10092E7A0009007E41C4 /* Logger */,
 				FEEDAA0000000000000000D3 /* GlobalConfig */,
 				D0A100000000000000000008 /* Model */,
@@ -37986,7 +37967,6 @@
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
 				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
-				240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -85,14 +85,14 @@ private final class NovaAuthBusinessExchange {
         if let type = request.contentType { urlRequest.setValue(type, forHTTPHeaderField: "Content-Type") }
         if let body = request.body { urlRequest.setValue(String(body.count), forHTTPHeaderField: "Content-Length") }
         let kind: NovaAuthHTTPKind = request.method == .post ? .businessPost : .businessRead
-        let wrapper = owner.http.createResponseWrapper(for: urlRequest, kind: kind) { [self] in
+        let wrapper = owner.http.createResponseWrapper(for: urlRequest, kind: kind, beforeSend: { [self] in
             try cancellation.check()
             try checkCredential(record)
             do { try beforeSend() }
             catch { throw NovaAuthCallerAbort(underlying: error) }
             try cancellation.check()
             try checkCredential(record)
-        }
+        }, decode: { $0 })
         let target = wrapper.targetOperation
         target.completionBlock = { [self, weak target] in
             let result = target?.result ?? .failure(NovaAuthError.cancelled)
