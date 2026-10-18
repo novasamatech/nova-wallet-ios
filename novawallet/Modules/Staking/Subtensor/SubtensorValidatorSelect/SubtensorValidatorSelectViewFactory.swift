@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorValidatorSelectViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate

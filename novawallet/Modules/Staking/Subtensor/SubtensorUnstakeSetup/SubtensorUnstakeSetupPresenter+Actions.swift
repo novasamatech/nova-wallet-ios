@@ -102,11 +102,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 }
 
 extension SubtensorUnstakeSetupPresenter {
-    func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
+    func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDependencies {
         let plan = plan(for: amount)
         let positions = Dictionary((basis?.positions ?? []).map { ($0.hotkey, $0.alpha) }) { first, _ in first }
 
-        return SubtensorUnstakeValidatingDep(
+        return SubtensorUnstakeValidatingDependencies(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
             hotkey: group?.primaryHotkey,
@@ -151,7 +151,7 @@ extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
+    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDependencies) -> SubtensorConfirmModel? {
         guard
             let target,
             let group,

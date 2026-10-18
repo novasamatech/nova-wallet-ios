@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorValidatorInfoViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
         detail: SubtensorValidatorDirectoryItem?,
@@ -20,7 +20,7 @@ enum SubtensorValidatorInfoViewFactory {
             target: target,
             hotkey: hotkey,
             state: state,
-            coverageFactory: SubtensorValidatorCoverageFactory(
+            coverageOperationFactory: SubtensorValidatorCoverageOperationFactory(
                 apiFactory: state.apiOperationFactory,
                 catalogueOperationFactory: earnServices.catalogueOperationFactory,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue

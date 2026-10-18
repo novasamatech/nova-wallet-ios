@@ -1,7 +1,7 @@
 import UIKit
 
 protocol SubtensorValidatorInfoPresentable {
-    var state: SubtensorStakingSharedStateProtocol { get }
+    var state: SubtensorSharedStateProtocol { get }
 }
 
 extension SubtensorValidatorInfoPresentable {

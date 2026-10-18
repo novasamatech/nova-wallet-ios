@@ -56,7 +56,7 @@ private extension SubtensorPortfolioPresenter {
         if groups.isEmpty, !isNetworkRootRateRequested {
             isNetworkRootRateRequested = true
             interactor.loadNetworkRootRate()
-        } else if !isRootYieldsRequested, groups.contains(where: { $0.netuid == SubtensorStakingPallet.rootNetuid }) {
+        } else if !isRootYieldsRequested, groups.contains(where: { $0.netuid == SubtensorPallet.rootNetuid }) {
             isRootYieldsRequested = true
             interactor.loadRootYields()
         }
@@ -144,7 +144,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
 }
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtocol {
-    func didReceive(state positions: Multistaking.SubtensorStakingState) {
+    func didReceive(state positions: Multistaking.SubtensorState) {
         state.positions = positions
         requestRootRateIfNeeded()
         requestPriceDataIfNeeded()

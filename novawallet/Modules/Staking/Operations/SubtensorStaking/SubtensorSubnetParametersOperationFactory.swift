@@ -2,11 +2,11 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorSubnetParametersFactoryProtocol {
+protocol SubtensorSubnetParametersOperationFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters>
 }
 
-final class SubtensorSubnetParametersFactory {
+final class SubtensorSubnetParametersOperationFactory {
     let apiFactory: SubtensorApiOperationFactoryProtocol
     let runtimeConnectionStore: RuntimeConnectionStoring
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
@@ -30,7 +30,7 @@ final class SubtensorSubnetParametersFactory {
     }
 }
 
-extension SubtensorSubnetParametersFactory: SubtensorSubnetParametersFactoryProtocol {
+extension SubtensorSubnetParametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters> {
         let hash = apiFactory.createBestBlockHashWrapper()
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
@@ -42,7 +42,7 @@ extension SubtensorSubnetParametersFactory: SubtensorSubnetParametersFactoryProt
     }
 }
 
-private extension SubtensorSubnetParametersFactory {
+private extension SubtensorSubnetParametersOperationFactory {
     func value<T>(from operation: BaseOperation<T>, field: String) -> T? {
         do {
             return try operation.extractNoCancellableResultData()
@@ -69,11 +69,11 @@ private extension SubtensorSubnetParametersFactory {
             )
         let permits: CompoundOperationWrapper<[StorageResponse<[Bool]>]> = requestFactory.queryItems(
             engine: engine, keyParams: netuid, factory: factory,
-            storagePath: SubtensorStakingPallet.validatorPermitPath, at: blockHash
+            storagePath: SubtensorPallet.validatorPermitPath, at: blockHash
         )
         let enabled: CompoundOperationWrapper<[StorageResponse<Bool>]> = requestFactory.queryItems(
             engine: engine, keyParams: netuid, factory: factory,
-            storagePath: SubtensorStakingPallet.subnetEmissionEnabledPath, at: blockHash
+            storagePath: SubtensorPallet.subnetEmissionEnabledPath, at: blockHash
         )
         let reads = number.allOperations + permits.allOperations + enabled.allOperations
         reads.forEach { $0.addDependency(coder) }

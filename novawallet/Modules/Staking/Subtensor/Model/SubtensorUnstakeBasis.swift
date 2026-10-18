@@ -164,14 +164,14 @@ extension SubtensorGroupUnstakeBasis {
     static let floorMargin = BigRational.percent(of: 1)
 
     static func floorAlpha(minTao: Balance, price: Balance, feeRate: UInt16) -> Balance {
-        let denominator = BigUInt(SubtensorStakingPallet.perU16Denominator)
+        let denominator = BigUInt(SubtensorPallet.perU16Denominator)
         let divisor = price * denominator.subtractOrZero(BigUInt(feeRate))
 
         guard divisor > 0 else {
             return 0
         }
 
-        let net = minTao * SubtensorStakingPallet.alphaPriceScale * denominator
+        let net = minTao * SubtensorPallet.alphaPriceScale * denominator
         let floor = (net + divisor - 1) / divisor
         let margin = (floor * floorMargin.numerator + floorMargin.denominator - 1) / floorMargin.denominator
 

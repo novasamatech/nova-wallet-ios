@@ -19,18 +19,18 @@ extension SubtensorNovaFeeCalculator {
     }
 
     static func minimumTaoOut(alpha: Balance, limitPrice: Balance) throws -> Balance {
-        try SubtensorStakingPallet.ensureU64Amount(alpha)
-        try SubtensorStakingPallet.ensureU64Amount(limitPrice)
+        try SubtensorPallet.ensureU64Amount(alpha)
+        try SubtensorPallet.ensureU64Amount(limitPrice)
 
-        let minimumTaoOut = alpha * limitPrice / SubtensorStakingPallet.alphaPriceScale
+        let minimumTaoOut = alpha * limitPrice / SubtensorPallet.alphaPriceScale
 
-        try SubtensorStakingPallet.ensureU64Amount(minimumTaoOut)
+        try SubtensorPallet.ensureU64Amount(minimumTaoOut)
 
         return minimumTaoOut
     }
 
     static func grossUp(net: Balance, rate: BigRational) throws -> Balance {
-        try SubtensorStakingPallet.ensureU64Amount(net)
+        try SubtensorPallet.ensureU64Amount(net)
 
         guard net > 0 else {
             return 0
@@ -38,17 +38,17 @@ extension SubtensorNovaFeeCalculator {
 
         let gross = net + rate.mul(value: net - 1)
 
-        try SubtensorStakingPallet.ensureU64Amount(gross)
+        try SubtensorPallet.ensureU64Amount(gross)
 
         return gross
     }
 
     func fee(basis: Balance, rate: BigRational) throws -> SubtensorNovaFee? {
         guard let beneficiary else {
-            throw SubtensorStakingOperationError.novaFeeUnavailable
+            throw SubtensorOperationError.novaFeeUnavailable
         }
 
-        try SubtensorStakingPallet.ensureU64Amount(basis)
+        try SubtensorPallet.ensureU64Amount(basis)
 
         let amount = rate.asShareOfGross.mul(value: basis)
 

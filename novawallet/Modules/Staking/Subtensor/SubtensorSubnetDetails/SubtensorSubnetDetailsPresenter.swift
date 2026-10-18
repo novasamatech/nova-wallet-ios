@@ -13,7 +13,7 @@ final class SubtensorSubnetDetailsPresenter {
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
-    private var positions: Multistaking.SubtensorStakingState?
+    private var positions: Multistaking.SubtensorState?
     private var isPositionsSyncFailed = false
     private var isParametersRequested = false
     private var isPresetRequested = false
@@ -257,7 +257,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positions = state
         requestParametersIfNeeded()
         requestPresetIfReady()

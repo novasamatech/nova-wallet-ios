@@ -10,7 +10,7 @@ enum SubtensorRecommendationVerifier {
             return false
         }
 
-        let isSubnet = pair.netuid != SubtensorStakingPallet.rootNetuid
+        let isSubnet = pair.netuid != SubtensorPallet.rootNetuid
 
         if isSubnet, gates.requirePermit, status.hasPermit != true {
             return false

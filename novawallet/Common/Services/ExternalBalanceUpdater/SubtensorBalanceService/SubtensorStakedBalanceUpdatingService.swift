@@ -57,7 +57,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         stopSyncUp()
     }
 
-    private func persistPricedState(_ state: Multistaking.SubtensorStakingState) {
+    private func persistPricedState(_ state: Multistaking.SubtensorState) {
         guard state.subnetCount > 0 else {
             persistState(state)
             return
@@ -77,7 +77,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         )
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState) {
+    private func persistState(_ state: Multistaking.SubtensorState) {
         stakeStateSubscription.save(createSaveWrapper(for: state)) { [weak self] in
             self?.completeImmediate($0)
         }
@@ -85,7 +85,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
 }
 
 private extension SubtensorStakedBalanceUpdatingService {
-    func createSaveWrapper(for state: Multistaking.SubtensorStakingState) -> CompoundOperationWrapper<Void> {
+    func createSaveWrapper(for state: Multistaking.SubtensorState) -> CompoundOperationWrapper<Void> {
         let identifier = SubtensorStakedBalance.createIdentifier(from: chainAsset.chainAssetId, accountId: accountId)
 
         guard state.hasActiveStaking else {

@@ -3,12 +3,12 @@ import Foundation_iOS
 
 enum SubtensorPositionViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         group: SubtensorPortfolioGroup
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
-        let isRoot = group.netuid == SubtensorStakingPallet.rootNetuid
+        let isRoot = group.netuid == SubtensorPallet.rootNetuid
 
         let interactor = SubtensorPositionInteractor(
             state: state,

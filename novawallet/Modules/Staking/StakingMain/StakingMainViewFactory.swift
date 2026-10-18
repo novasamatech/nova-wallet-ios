@@ -8,7 +8,7 @@ enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
-        subtensorFlowState: SubtensorStakingFlowStateProtocol
+        subtensorFlowState: SubtensorFlowStateProtocol
     ) -> ControllerBackedProtocol? {
         if stakingOption.type == .subtensor {
             return SubtensorPortfolioViewFactory.createView(for: stakingOption, flowState: subtensorFlowState)

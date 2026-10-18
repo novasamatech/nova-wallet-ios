@@ -36,7 +36,7 @@ protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
     func didReceiveTaoPrice(_ price: PriceData?)
     func didChangeCurrency()
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
+    func didReceivePositions(_ state: Multistaking.SubtensorState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didBecomeActive()

@@ -6,7 +6,7 @@ struct SubtensorOperationResultPrices: Equatable {
 }
 
 struct SubtensorOperationResultRequest {
-    let operation: SubtensorStakingOperation
+    let operation: SubtensorOperation
     let origin: SubtensorOperationOrigin
     let account: MetaChainAccountResponse
     let target: SubtensorStakeTarget

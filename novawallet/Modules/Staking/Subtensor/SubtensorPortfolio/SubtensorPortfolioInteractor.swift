@@ -5,7 +5,7 @@ import Operation_iOS
 final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubtensorPortfolioInteractorOutputProtocol?
 
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
     let account: MetaChainAccountResponse
     let selectedWalletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
@@ -33,7 +33,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     }
 
     init(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         account: MetaChainAccountResponse,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
@@ -114,7 +114,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
         rootRateStore.cancel()
 
         load(
-            yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorPallet.rootNetuid),
             in: rootRateStore,
             label: "portfolio root yields"
         ) { [weak self] in

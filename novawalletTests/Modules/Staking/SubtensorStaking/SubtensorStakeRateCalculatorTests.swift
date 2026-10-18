@@ -11,10 +11,10 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
     func testRootRateIsWeightedByStake() {
         let rate = SubtensorStakeRateCalculator.rootRate(
             of: [
-                position(hotkey: ratedHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 30),
-                position(hotkey: otherRatedHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 10)
+                position(hotkey: ratedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 30),
+                position(hotkey: otherRatedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 10)
             ],
-            in: yields(netuid: SubtensorStakingPallet.rootNetuid, freshness: .fresh)
+            in: yields(netuid: SubtensorPallet.rootNetuid, freshness: .fresh)
         )
 
         XCTAssertEqual(rate, Decimal(string: "0.105"))
@@ -23,10 +23,10 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
     func testUnratedRootPositionHidesTheRate() {
         let rate = SubtensorStakeRateCalculator.rootRate(
             of: [
-                position(hotkey: unratedHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 90),
-                position(hotkey: ratedHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 10)
+                position(hotkey: unratedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 90),
+                position(hotkey: ratedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 10)
             ],
-            in: yields(netuid: SubtensorStakingPallet.rootNetuid, freshness: .fresh)
+            in: yields(netuid: SubtensorPallet.rootNetuid, freshness: .fresh)
         )
 
         XCTAssertNil(rate)
@@ -34,8 +34,8 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
 
     func testStaleYieldsHideTheRootRate() {
         let rate = SubtensorStakeRateCalculator.rootRate(
-            of: [position(hotkey: ratedHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 10)],
-            in: yields(netuid: SubtensorStakingPallet.rootNetuid, freshness: .stale)
+            of: [position(hotkey: ratedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 10)],
+            in: yields(netuid: SubtensorPallet.rootNetuid, freshness: .stale)
         )
 
         XCTAssertNil(rate)
@@ -51,7 +51,7 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
             otherSubnet: yields(netuid: otherSubnet, freshness: .fresh)
         ]
 
-        let scale = SubtensorStakingPallet.alphaPriceScale
+        let scale = SubtensorPallet.alphaPriceScale
 
         let rate = SubtensorStakeRateCalculator.subnetRate(
             of: positions,
@@ -63,8 +63,8 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
         XCTAssertNil(SubtensorStakeRateCalculator.subnetRate(of: positions, in: subnetYields, prices: prices([subnet: 1])))
     }
 
-    private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(hotkey: hotkey, netuid: netuid, stakeAlpha: stake, isRegistered: true)
+    private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorPosition {
+        SubtensorPosition(hotkey: hotkey, netuid: netuid, stakeAlpha: stake, isRegistered: true)
     }
 
     private func prices(_ taoPerAlpha: [UInt16: Balance]) -> SubtensorAlphaPrices {

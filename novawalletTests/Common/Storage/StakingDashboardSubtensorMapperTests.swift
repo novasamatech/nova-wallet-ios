@@ -14,16 +14,16 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
                 walletId: walletId,
                 option: .init(chainAssetId: ChainAssetId(chainId: "chain", assetId: 0), type: .subtensor)
             ),
-            state: Multistaking.SubtensorStakingState(
+            state: Multistaking.SubtensorState(
                 positions: [
-                    SubtensorStakingPosition(
+                    SubtensorPosition(
                         hotkey: hotkey,
-                        netuid: SubtensorStakingPallet.rootNetuid,
+                        netuid: SubtensorPallet.rootNetuid,
                         stakeAlpha: 1_234_567_890_123_456_789,
                         isRegistered: true
                     ),
-                    SubtensorStakingPosition(hotkey: hotkey, netuid: 3, stakeAlpha: 5, isRegistered: true),
-                    SubtensorStakingPosition(hotkey: hotkey, netuid: 7, stakeAlpha: 9, isRegistered: false)
+                    SubtensorPosition(hotkey: hotkey, netuid: 3, stakeAlpha: 5, isRegistered: true),
+                    SubtensorPosition(hotkey: hotkey, netuid: 7, stakeAlpha: 9, isRegistered: false)
                 ]
             ),
             stake: 100,

@@ -106,7 +106,7 @@ private extension SubtensorOperationResultViewModelFactory {
 
         let taoAmount = tile.isTao
             ? amount
-            : request.prices.alphaSpot.map { amount * $0 / SubtensorStakingPallet.alphaPriceScale }
+            : request.prices.alphaSpot.map { amount * $0 / SubtensorPallet.alphaPriceScale }
 
         let fiat = taoAmount.flatMap { formatTaoFiat($0, prices: request.prices, locale: locale) }
 
@@ -181,7 +181,7 @@ private extension SubtensorOperationResultViewModelFactory {
     }
 
     func failureDetails(
-        for failure: SubtensorStakingSubmissionFailure,
+        for failure: SubtensorSubmissionFailure,
         holdRemaining: TimeInterval?,
         request: SubtensorOperationResultRequest,
         locale: Locale

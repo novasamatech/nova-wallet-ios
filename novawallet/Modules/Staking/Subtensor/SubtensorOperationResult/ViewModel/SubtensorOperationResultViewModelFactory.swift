@@ -108,7 +108,7 @@ extension SubtensorOperationResultViewModelFactory {
     }
 
     func failureReason(
-        for failure: SubtensorStakingSubmissionFailure,
+        for failure: SubtensorSubmissionFailure,
         holdRemaining: TimeInterval?,
         request: SubtensorOperationResultRequest,
         locale: Locale
@@ -119,7 +119,7 @@ extension SubtensorOperationResultViewModelFactory {
             return strings.stakingSubtensorResultClaimFailedReason()
         }
 
-        switch failure.error as? SubtensorStakingSubmissionError {
+        switch failure.error as? SubtensorSubmissionError {
         case .slippageTooHigh, .priceLimitExceeded:
             if
                 !request.target.isRoot,
@@ -154,8 +154,8 @@ extension SubtensorOperationResultViewModelFactory {
         return strings.commonUndefinedErrorMessage()
     }
 
-    func isClaimRedeemFailure(_ failure: SubtensorStakingSubmissionFailure) -> Bool {
-        switch failure.error as? SubtensorStakingSubmissionError {
+    func isClaimRedeemFailure(_ failure: SubtensorSubmissionFailure) -> Bool {
+        switch failure.error as? SubtensorSubmissionError {
         case .amountTooLow, .insufficientLiquidity, .slippageTooHigh, .priceLimitExceeded:
             true
         case .some:

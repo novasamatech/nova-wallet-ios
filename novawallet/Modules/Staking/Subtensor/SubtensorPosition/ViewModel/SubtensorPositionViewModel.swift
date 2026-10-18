@@ -43,14 +43,14 @@ struct SubtensorPositionState {
     }
 
     var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
     var catalogue: SubtensorSubnetCatalogue? {
         prices?.catalogue
     }
 
-    var primaryPosition: SubtensorStakingPosition? {
+    var primaryPosition: SubtensorPosition? {
         group.flatMap { group in
             group.positions.first { $0.hotkey == group.primaryHotkey }
         }

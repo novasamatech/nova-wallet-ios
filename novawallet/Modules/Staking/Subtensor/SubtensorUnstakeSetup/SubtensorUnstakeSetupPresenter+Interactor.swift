@@ -1,7 +1,7 @@
 import Foundation
 
 private extension SubtensorUnstakeSetupPresenter {
-    func findGroup(in state: Multistaking.SubtensorStakingState?) -> SubtensorPortfolioGroup? {
+    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
         state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
@@ -140,7 +140,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         let previousBasis = basis
         let previousPlan = feePlan()
 
@@ -172,7 +172,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         provideViewModel()
     }
 
-    func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
+    func didReceivePreflight(_ preflight: SubtensorPreflight) {
         let previousPlan = feePlan()
 
         self.preflight = preflight

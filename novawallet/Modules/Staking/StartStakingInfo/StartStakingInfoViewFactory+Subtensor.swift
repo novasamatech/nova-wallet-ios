@@ -5,7 +5,7 @@ import Operation_iOS
 extension StartStakingInfoViewFactory {
     static func createSubtensorView(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -64,7 +64,7 @@ extension StartStakingInfoViewFactory {
     }
 
     private static func createSubtensorInteractor(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         currencyManager: CurrencyManagerProtocol
     ) -> StartStakingInfoSubtensorInteractor {
         let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
@@ -74,7 +74,7 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
-        let maxApyOperationFactory = SubtensorStakingProcessServices.shared.createMaxApyOperationFactory(
+        let maxApyOperationFactory = SubtensorProcessServices.shared.createMaxApyOperationFactory(
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
