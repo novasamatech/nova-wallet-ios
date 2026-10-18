@@ -20,13 +20,13 @@ flowchart TB
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
     CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
-    HOST["App identity + Keychain access group / host namespace<br/>SettingsManager set/read-back + three queues"] --> F
+    HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
     F --> OWNER["ONE NovaAuth owner<br/>installation + issuance coordination"]
     OWNER --> APPLE["DeviceCheck adapter"]
     OWNER --> STATE["Settings identity store"]
-    OWNER --> TOKEN["Shared Keychain token store"]
+    OWNER --> TOKEN["Keychain token store + gated record cache"]
     OWNER --> HTTP["HTTP transport<br/>bootstrap / reads / POSTs"]
   end
   HTTP --> BACKEND["Configured HTTPS backend"]

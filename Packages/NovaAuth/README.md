@@ -167,10 +167,10 @@ therefore permits one replay preserving the original method, path, query and bod
 Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
+
 The removed root-yield read returns unavailable/cache miss locally. Its optional presentation
 service returns nil without a request, keeping root staking screens usable without a rate.
 Alpha yields reject netuid 0 locally. New root staking APIs belong to their domain feature.
-
 ## Validation
 
 Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
@@ -178,4 +178,4 @@ Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS si
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
 bounded token replay, shared throttling and exchange release. App tests cover facade publication,
 Bittensor cache invalidation, domain recovery/presentation and Subtensor flows. Real App Attest,
-signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
+Keychain behavior, protected data and physical reboot behavior need device validation.
