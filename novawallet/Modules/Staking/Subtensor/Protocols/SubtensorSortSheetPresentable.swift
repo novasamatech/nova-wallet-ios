@@ -5,7 +5,7 @@ protocol SubtensorSortSheetPresentable {
     func showSortSheet(
         from view: ControllerBackedProtocol?,
         viewModel: SubtensorSortSheetViewModel,
-        onSelect: @escaping (Int) -> Void
+        delegate: SubtensorSortSheetDelegate
     )
 }
 
@@ -13,9 +13,9 @@ extension SubtensorSortSheetPresentable {
     func showSortSheet(
         from view: ControllerBackedProtocol?,
         viewModel: SubtensorSortSheetViewModel,
-        onSelect: @escaping (Int) -> Void
+        delegate: SubtensorSortSheetDelegate
     ) {
-        let sortSheet = SubtensorSortSheetViewController(viewModel: viewModel, onSelect: onSelect)
+        let sortSheet = SubtensorSortSheetViewController(viewModel: viewModel, delegate: delegate)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.novaManual)
 
