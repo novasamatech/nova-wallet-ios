@@ -122,16 +122,21 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
         MockSubtensorStakeStateFetchFactoryProtocol
     ) {
         let fetchFactory = MockSubtensorStakeStateFetchFactoryProtocol()
-        let runtimeService = RuntimeCodingServiceStub(
-            factory: try RuntimeCodingServiceStub.createBittensorCodingFactory()
-        )
+        let codingFactory = try RuntimeCodingServiceStub.createBittensorCodingFactory()
+        let runtimeProvider = MockRuntimeProviderProtocol()
+
+        stub(runtimeProvider) { stub in
+            when(stub.fetchCoderFactoryOperation()).then { BaseOperation.createWithResult(codingFactory) }
+        }
 
         let source = SubtensorStakeStateSource(
             accountId: coldkey,
             chainAssetId: ChainAssetId(chainId: "subtensor", assetId: 0),
             stakeStateFetchFactory: fetchFactory,
-            connection: TestJSONRPCEngine(),
-            runtimeService: runtimeService,
+            runtimeConnectionStore: StaticRuntimeConnectionStore(
+                connection: TestJSONRPCEngine(),
+                runtimeProvider: runtimeProvider
+            ),
             eventCenter: EventCenter.shared,
             operationQueue: OperationQueue(),
             workingQueue: DispatchQueue(label: "test.stake.state"),

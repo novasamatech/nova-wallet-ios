@@ -12,8 +12,7 @@ final class SubtensorStakeStateSource {
     let accountId: AccountId
     let chainAssetId: ChainAssetId
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
+    let runtimeConnectionStore: RuntimeConnectionStoring
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -22,6 +21,8 @@ final class SubtensorStakeStateSource {
     private let mutex = NSLock()
     private var handlers: [WeakWrapper] = []
     private var lastState: Multistaking.SubtensorStakingState?
+    private var connection: JSONRPCEngine?
+    private var runtimeService: RuntimeCodingServiceProtocol?
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
     private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<SubtensorHotkeySubnet>?
@@ -34,8 +35,7 @@ final class SubtensorStakeStateSource {
         accountId: AccountId,
         chainAssetId: ChainAssetId,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        runtimeConnectionStore: RuntimeConnectionStoring,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -44,8 +44,7 @@ final class SubtensorStakeStateSource {
         self.accountId = accountId
         self.chainAssetId = chainAssetId
         self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
+        self.runtimeConnectionStore = runtimeConnectionStore
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -110,6 +109,22 @@ final class SubtensorStakeStateSource {
 
 private extension SubtensorStakeStateSource {
     func subscribe() {
+        let connection: JSONRPCEngine
+        let runtimeService: RuntimeCodingServiceProtocol
+
+        do {
+            connection = try runtimeConnectionStore.getConnection()
+            runtimeService = try runtimeConnectionStore.getRuntimeProvider()
+        } catch {
+            logger.error("Subscription error: \(error)")
+
+            notifyHandlers { $0.handleStakeStateFailure(error) }
+            return
+        }
+
+        self.connection = connection
+        self.runtimeService = runtimeService
+
         let accountId = accountId
 
         let request = MapSubscriptionRequest(
@@ -139,6 +154,8 @@ private extension SubtensorStakeStateSource {
         isRefetchPending = false
 
         hotkeysSubscription = nil
+        connection = nil
+        runtimeService = nil
 
         alphaTriggerSubscription?.unsubscribe()
         alphaTriggerSubscription = nil
@@ -272,7 +289,7 @@ private extension SubtensorStakeStateSource {
         alphaTriggerSubscription = nil
         isAlphaTriggerPrimed = false
 
-        guard !newKeys.isEmpty else {
+        guard !newKeys.isEmpty, let connection, let runtimeService else {
             return
         }
 
