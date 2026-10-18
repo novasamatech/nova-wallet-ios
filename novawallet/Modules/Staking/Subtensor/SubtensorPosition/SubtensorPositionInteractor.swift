@@ -21,6 +21,8 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
 
     var priceProvider: StreamableProvider<PriceData>?
     private var failedHoldsHotkeys: [AccountId]?
+    private var isBlockFeedDown = false
+    private var lastGroup: SubtensorPortfolioGroup?
     private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -89,11 +91,15 @@ private extension SubtensorPositionInteractor {
                     return
                 }
 
-                presenter?.didReceive(group: findGroup(in: newState))
+                let group = findGroup(in: newState)
 
-                if !isRoot, !pricesStore.hasCall {
+                presenter?.didReceive(group: group)
+
+                if !isRoot, group != lastGroup, !pricesStore.hasCall {
                     loadPrices()
                 }
+
+                lastGroup = group
 
                 if isRoot {
                     presenter?.didReceive(
@@ -119,11 +125,18 @@ private extension SubtensorPositionInteractor {
                     }
                 case let .failure(error):
                     self?.logger.warning("Subtensor position block number unavailable: \(error)")
+                    self?.dropBlockFeed()
                 }
             }
         } catch {
             logger.warning("Subtensor position block number unavailable: \(error)")
+            dropBlockFeed()
         }
+    }
+
+    func dropBlockFeed() {
+        blockNumberSubscription?.unsubscribe()
+        isBlockFeedDown = true
     }
 
     func loadSubnetLogos() {
@@ -139,20 +152,6 @@ private extension SubtensorPositionInteractor {
             label: "position yields"
         ) { [weak self] in
             self?.presenter?.didReceive(yields: $0)
-        }
-    }
-
-    func loadPrices() {
-        pricesStore.cancel()
-
-        load(
-            alphaPriceProvider.createPricesWrapper(for: [netuid]),
-            in: pricesStore,
-            label: "position alpha prices"
-        ) { [weak self] in
-            self?.presenter?.didReceive(prices: $0)
-        } fail: { [weak self] in
-            self?.presenter?.didFailPrices()
         }
     }
 
@@ -199,6 +198,20 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         if !isRoot {
             loadPrices()
+        }
+    }
+
+    func loadPrices() {
+        pricesStore.cancel()
+
+        load(
+            alphaPriceProvider.createPricesWrapper(for: [netuid]),
+            in: pricesStore,
+            label: "position alpha prices"
+        ) { [weak self] in
+            self?.presenter?.didReceive(prices: $0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPrices()
         }
     }
 
@@ -289,6 +302,9 @@ extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
 
         if !isRoot {
             loadPrices()
+        } else if isBlockFeedDown {
+            isBlockFeedDown = false
+            subscribeBlockNumber()
         }
 
         presenter?.didBecomeActive()

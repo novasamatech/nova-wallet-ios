@@ -37,6 +37,7 @@ protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didBecomeActive()
 }
 
 protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
