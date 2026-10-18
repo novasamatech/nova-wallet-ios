@@ -235,7 +235,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             state: state,
             stake: valuation.stake,
             maxApy: maxApyUpdate,
-            rootRate: SubtensorAlphaApyFormatter.stakeWeightedRate(
+            rootRate: SubtensorRootRateCalculator.stakeWeightedRate(
                 of: state.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },
                 in: rootYields
             ),
