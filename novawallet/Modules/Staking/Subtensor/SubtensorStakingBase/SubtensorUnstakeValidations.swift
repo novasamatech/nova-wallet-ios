@@ -82,6 +82,14 @@ extension SubtensorUnstakeValidatingDep {
         return plan.hotkeys != hotkey.map { [$0] }
     }
 
+    var groupHotkeysCoverPlan: Bool {
+        guard let groupHotkeys else {
+            return false
+        }
+
+        return (plan?.hotkeys ?? []).allSatisfy { groupHotkeys[$0] != nil }
+    }
+
     var groupExitHolds: [SubtensorRootHold]? {
         guard !isSubnet, let plan, drawsBeyondPreflightHotkey else {
             return nil
@@ -213,7 +221,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
 
         if let onGroupHotkeysRefresh = dep.onGroupHotkeysRefresh {
             validations.append(
-                groupHotkeysLoaded(dep.groupHotkeys != nil, locale: locale, onRetry: onGroupHotkeysRefresh)
+                groupHotkeysLoaded(dep.groupHotkeysCoverPlan, locale: locale, onRetry: onGroupHotkeysRefresh)
             )
         }
 
