@@ -3,7 +3,7 @@ import SubstrateSdk
 import Operation_iOS
 
 struct SubtensorEarnServices {
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let subnetLogosProvider: SubtensorConfigProviding
     let earnSettings: SubtensorEarnSettingsProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
@@ -220,9 +220,9 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
             signer: signer,
             runtimeProvider: runtimeProvider,
-            positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
+            configProvider: earnServices.subnetLogosProvider,
             pendingRootClaims: flowState.pendingRootClaims,
             feeCalculator: novaFeeCalculator
         )

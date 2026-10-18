@@ -1,8 +1,6 @@
 import Foundation
 
 protocol SubtensorStakingErrorPresentable: SwapErrorPresentable {
-    func presentError(title: String, message: String, view: ControllerBackedProtocol, locale: Locale?)
-
     func presentPreflightNotReceived(
         _ view: ControllerBackedProtocol,
         onRetry: @escaping () -> Void,
@@ -30,6 +28,38 @@ protocol SubtensorStakingErrorPresentable: SwapErrorPresentable {
         minStake: String,
         action: @escaping () -> Void,
         unstakeAllAction: (() -> Void)?,
+        locale: Locale?
+    )
+
+    func presentSelfImpact(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentFeeReserveViolated(
+        _ view: ControllerBackedProtocol,
+        maxAmount: String,
+        reserve: String,
+        locale: Locale?
+    )
+
+    func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?)
+
+    func presentHotkeyNotFound(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentSubnetDisabled(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentColdkeySwapInProgress(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentSafeModeActive(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?)
+
+    func presentSellExceedsAvailable(_ view: ControllerBackedProtocol, available: String, locale: Locale?)
+
+    func presentSellBelowMinimum(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?)
+
+    func presentRemainderLocked(
+        _ view: ControllerBackedProtocol,
+        remainder: String,
+        minStake: String,
         locale: Locale?
     )
 }
@@ -142,5 +172,138 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+}
+
+extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
+    func presentSelfImpact(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorSelfImpactTitle(),
+            message: strings.stakingSubtensorSelfImpactMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentFeeReserveViolated(
+        _ view: ControllerBackedProtocol,
+        maxAmount: String,
+        reserve: String,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorReserveTitle(reserve),
+            message: strings.stakingSubtensorReserveMessage(maxAmount, reserve),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.amountTooLow(),
+            message: strings.stakingSetupAmountTooLow(minimum),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentHotkeyNotFound(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorHotkeyNotFoundTitle(),
+            message: strings.stakingSubtensorHotkeyNotFoundMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentSubnetDisabled(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorSubnetDisabledTitle(),
+            message: strings.stakingSubtensorSubnetDisabledMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentColdkeySwapInProgress(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorColdkeySwapTitle(),
+            message: strings.stakingSubtensorColdkeySwapMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentSafeModeActive(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorSafeModeTitle(),
+            message: strings.stakingSubtensorSafeModeMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorUnstakeLockedTitle(),
+            message: strings.stakingSubtensorUnstakeLockedMessage(eta),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentSellExceedsAvailable(_ view: ControllerBackedProtocol, available: String, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.commonAmountTooBig(),
+            message: strings.stakingSubtensorUnstakeExceedsAvailableMessage(available),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentSellBelowMinimum(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.amountTooLow(),
+            message: strings.stakingSubtensorUnstakeTooLowMessage(minimum),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentRemainderLocked(
+        _ view: ControllerBackedProtocol,
+        remainder: String,
+        minStake: String,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorRemainderLockedTitle(),
+            message: strings.stakingSubtensorRemainderLockedMessage(remainder, minStake),
+            view: view,
+            locale: locale
+        )
     }
 }

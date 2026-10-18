@@ -17,7 +17,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
                 createOperation(netuid: chutesNetuid, amountIn: "1.25", amountOut: "-25", price: "0.05"),
                 createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "0.512", price: "0.0512"),
                 createOperation(netuid: 19, amountIn: "2", amountOut: "250", price: "0.008"),
-                createOperation(netuid: chutesNetuid, amountIn: "5", amountOut: "5", price: "0.05", label: " Stake Move ")
+                createOperation(netuid: chutesNetuid, amountIn: "5", amountOut: "5", price: "0.05", label: " Stake Move "),
+                createOperation(netuid: chutesNetuid, amountIn: "2", amountOut: "40", price: "0.05", label: "StakeMoved")
             ]),
             createPage(2, nextPage: nil, rows: [
                 createOperation(netuid: chutesNetuid, amountIn: "3.000000001", amountOut: "50", price: "0.06")
@@ -51,6 +52,34 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         XCTAssertThrowsError(try run(wrapper)) { error in
             XCTAssertEqual(error as? SubtensorCostBasisError, .unclassifiedOperations(netuid: self.chutesNetuid))
         }
+    }
+
+    func testTruncatedHistoryIsIncompleteNotNoPurchases() throws {
+        let pages = (1 ... SubtensorCostBasisService.maxPages).map { page in
+            createPage(page, nextPage: page + 1, rows: [])
+        }
+        let service = createService(createApiOperationFactory(pages: pages))
+
+        let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
+
+        XCTAssertEqual(costBasis, .incompleteHistory)
+    }
+
+    func testLabelBreaksTieWhenPriceFitsBothSides() throws {
+        let apiOperationFactory = createApiOperationFactory(pages: [
+            createPage(1, nextPage: nil, rows: [
+                createOperation(netuid: chutesNetuid, amountIn: "4", amountOut: "4.6", price: "1.2", label: "remove_stake"),
+                createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "8", price: "1.2", label: "StakeAdded")
+            ])
+        ])
+        let service = createService(apiOperationFactory)
+
+        let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
+
+        XCTAssertEqual(
+            costBasis,
+            .average(SubtensorPurchaseTotals(paidTao: 5_000_000_000, receivedAlpha: 4_000_000_000))
+        )
     }
 
     func testOwnStakingChangeDropsCostBasisSeed() throws {

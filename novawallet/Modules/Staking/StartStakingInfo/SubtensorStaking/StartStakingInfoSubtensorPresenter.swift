@@ -5,7 +5,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
-    private var walletType: MetaAccountModelType?
+    private var wallet: MetaAccountModel?
     private var headlineRate: Decimal?
 
     init(
@@ -40,7 +40,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     }
 
     override func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
-        walletType = wallet.type
+        self.wallet = wallet
 
         super.didReceive(wallet: wallet, chainAccountId: chainAccountId)
     }
@@ -48,23 +48,30 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     override func didReceiveStakingEnabled() {}
 
     override func startStaking() {
-        startStakingWithGate { [self] in subtensorWireframe.showSetupAmount(from: view) }
+        startStakingWithGate { [weak self] in self?.subtensorWireframe.showSetupAmount(from: self?.view) }
     }
 
-    func startStakingWithGate(continuation: () -> Void) {
-        guard let view, let walletType, let accountExistense else { return }
-        if case .assetBalance = accountExistense,
-           case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: walletType) {
-            subtensorWireframe.presentSignerNotSupportedView(from: view, type: type) {}
+    func startStakingWithGate(continuation: @escaping () -> Void) {
+        guard let view, let wallet, let accountExistense else { return }
+
+        guard case .assetBalance = accountExistense else {
+            super.startStaking(continuation: continuation)
             return
         }
+
+        subtensorWireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.proceedStaking(continuation: continuation)
+        }
+    }
+
+    private func proceedStaking(continuation: () -> Void) {
         super.startStaking(continuation: continuation)
     }
 }
 
 extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenterProtocol {
     func seeAllOptions() {
-        startStakingWithGate { [self] in subtensorWireframe.showAllOptions(from: view) }
+        startStakingWithGate { [weak self] in self?.subtensorWireframe.showAllOptions(from: self?.view) }
     }
 
     func refreshContent() {

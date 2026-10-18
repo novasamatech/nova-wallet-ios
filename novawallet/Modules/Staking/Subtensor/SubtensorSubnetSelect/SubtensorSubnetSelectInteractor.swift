@@ -9,6 +9,7 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let maxApyProvider: SubtensorMaxApyProviderProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -23,6 +24,7 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
         maxApyProvider = state.earnServices.maxApyProvider
+        earnSettings = state.earnServices.earnSettings
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -77,6 +79,10 @@ private extension SubtensorSubnetSelectInteractor {
         }
     }
 
+    func provideFavourites() {
+        presenter?.didReceive(favourites: earnSettings.favouriteSubnets)
+    }
+
     func unavailablePrices<Value: Equatable>(
         for subnets: [SubtensorSubnetRef]
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
@@ -86,12 +92,22 @@ private extension SubtensorSubnetSelectInteractor {
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func setup() {
+        provideFavourites()
         provideEntries()
         provideSubnetLogos()
     }
 
     func refresh() {
         provideEntries()
+    }
+
+    func refreshFavourites() {
+        provideFavourites()
+    }
+
+    func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnetRef])
+        provideFavourites()
     }
 
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {

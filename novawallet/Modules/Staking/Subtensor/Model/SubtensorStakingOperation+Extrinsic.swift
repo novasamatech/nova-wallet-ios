@@ -2,30 +2,87 @@ import Foundation
 import SubstrateSdk
 
 extension SubtensorStakingOperation {
+    var novaFee: SubtensorNovaFee? {
+        switch self {
+        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
+            nil
+        case let .subnetBuy(_, _, _, _, novaFee),
+             let .subnetSell(_, _, _, _, _, novaFee),
+             let .subnetSellGroup(_, _, _, _, _, novaFee):
+            novaFee
+        }
+    }
+
+    var novaFeeBasis: Balance? {
+        switch self {
+        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
+            nil
+        case let .subnetBuy(_, _, grossTao, _, _):
+            grossTao
+        case let .subnetSell(_, _, _, _, quotedTaoOut, _), let .subnetSellGroup(_, _, _, _, quotedTaoOut, _):
+            quotedTaoOut
+        }
+    }
+
+    func pricing(novaFee: SubtensorNovaFee?) -> SubtensorStakingOperation {
+        switch self {
+        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
+            self
+        case let .subnetBuy(hotkey, netuid, grossTao, limitPrice, _):
+            .subnetBuy(hotkey: hotkey, netuid: netuid, grossTao: grossTao, limitPrice: limitPrice, novaFee: novaFee)
+        case let .subnetSell(hotkey, netuid, alpha, limitPrice, quotedTaoOut, _):
+            .subnetSell(
+                hotkey: hotkey,
+                netuid: netuid,
+                alpha: alpha,
+                limitPrice: limitPrice,
+                quotedTaoOut: quotedTaoOut,
+                novaFee: novaFee
+            )
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, quotedTaoOut, _):
+            .subnetSellGroup(
+                exits: exits,
+                partials: partials,
+                netuid: netuid,
+                limitPrice: limitPrice,
+                quotedTaoOut: quotedTaoOut,
+                novaFee: novaFee
+            )
+        }
+    }
+
     func ensureLimitPolicy() throws {
         switch self {
         case .rootStake, .rootUnstake, .rootClaim:
             return
         case let .rootUnstakeGroup(exits, partials):
             try Self.ensureHotkeyGroup(exits: exits, partials: partials)
-        case let .subnetBuy(_, netuid, _, limitPrice):
+        case let .subnetBuy(_, netuid, _, limitPrice, _):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
-        case let .subnetSell(_, netuid, _, limitPrice, quotedTaoOut):
+        case let .subnetSell(_, netuid, _, limitPrice, quotedTaoOut, _):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
-        case let .subnetSellGroup(exits, partials, netuid, limitPrice, quotedTaoOut):
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, quotedTaoOut, _):
             try Self.ensureHotkeyGroup(exits: exits, partials: partials)
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
         }
     }
 
-    func extrinsicBuilderClosure(
-        feeCalculator: SubtensorNovaFeeCalculator
-    ) throws -> ExtrinsicBuilderClosure {
-        try ensureLimitPolicy()
+    func ensureNovaFee(beneficiary: AccountId?) throws {
+        guard novaFeeBasis != nil else {
+            return
+        }
 
-        let novaFee = try feeCalculator.novaFee(for: self)
+        guard let beneficiary, (novaFee?.beneficiary ?? beneficiary) == beneficiary else {
+            throw SubtensorStakingOperationError.novaFeeUnavailable
+        }
+    }
+
+    func extrinsicBuilderClosure(novaFeeBeneficiary: AccountId?) throws -> ExtrinsicBuilderClosure {
+        try ensureLimitPolicy()
+        try ensureNovaFee(beneficiary: novaFeeBeneficiary)
+
         let stakingCallClosures = try createStakingCallClosures(novaFeeAmount: novaFee?.amount ?? 0)
 
         let feeTransferClosures: [ExtrinsicBuilderClosure] = novaFee.map { fee in
@@ -103,7 +160,7 @@ private extension SubtensorStakingOperation {
             ]
         case let .rootUnstakeGroup(exits, partials):
             return try Self.createGroupCalls(exits: exits, partials: partials, netuid: rootNetuid, limitPrice: nil)
-        case let .subnetBuy(hotkey, netuid, grossTao, limitPrice):
+        case let .subnetBuy(hotkey, netuid, grossTao, limitPrice, _):
             return try [
                 Self.addingClosure(
                     SubtensorStakingPallet.AddStakeLimitCall(
@@ -115,7 +172,7 @@ private extension SubtensorStakingOperation {
                     ).runtimeCall()
                 )
             ]
-        case let .subnetSell(hotkey, netuid, alpha, limitPrice, _):
+        case let .subnetSell(hotkey, netuid, alpha, limitPrice, _, _):
             return try [
                 Self.addingClosure(
                     SubtensorStakingPallet.RemoveStakeLimitCall(
@@ -127,7 +184,7 @@ private extension SubtensorStakingOperation {
                     ).runtimeCall()
                 )
             ]
-        case let .subnetSellGroup(exits, partials, netuid, limitPrice, _):
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, _, _):
             return try Self.createGroupCalls(exits: exits, partials: partials, netuid: netuid, limitPrice: limitPrice)
         case let .rootClaim(hotkey):
             return [

@@ -11,4 +11,10 @@ protocol SubtensorPriceHistoryServiceProtocol: AnyObject {
     func createWeeklyChangesWrapper(
         for subnets: [SubtensorSubnetRef]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]>
+
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: SubtensorPricePeriod,
+        currency: Currency
+    ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories>
 }

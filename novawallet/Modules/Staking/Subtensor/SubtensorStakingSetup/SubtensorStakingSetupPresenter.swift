@@ -47,6 +47,7 @@ final class SubtensorStakingSetupPresenter {
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
+    var isConfirmationShown = false
 
     init(
         interactor: SubtensorSetupInteractorInputProtocol,
@@ -231,7 +232,13 @@ extension SubtensorStakingSetupPresenter {
                 return nil
             }
 
-            return .subnetBuy(hotkey: hotkey, netuid: target.netuid, grossTao: amount, limitPrice: limitPrice)
+            return .subnetBuy(
+                hotkey: hotkey,
+                netuid: target.netuid,
+                grossTao: amount,
+                limitPrice: limitPrice,
+                novaFee: nil
+            )
         }
     }
 
@@ -312,6 +319,15 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         startMode()
     }
 
+    func didAppear() {
+        guard isConfirmationShown else {
+            return
+        }
+
+        isConfirmationShown = false
+        forceQuoteRefresh()
+    }
+
     func retry() {
         if presetError != nil {
             retryPreset()
@@ -373,6 +389,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
 
             view?.didStopLoading()
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            isConfirmationShown = true
             wireframe.showConfirmation(from: view, model: model)
         }
     }

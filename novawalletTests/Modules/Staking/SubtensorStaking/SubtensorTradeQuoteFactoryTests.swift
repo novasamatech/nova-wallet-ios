@@ -190,6 +190,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     func testBuyQuoteWithoutBeneficiaryFailsClosed() {
         let factory = SubtensorTradeQuoteFactory(
             operationFactory: MockSubtensorApiOperationFactoryProtocol(),
+            configProvider: MockSubtensorConfigProviding(),
             operationQueue: OperationQueue(),
             feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil)
         )
@@ -202,8 +203,16 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     }
 
     private func createFactory(apiFactory: MockSubtensorApiOperationFactoryProtocol) -> SubtensorTradeQuoteFactory {
-        SubtensorTradeQuoteFactory(
+        let configProvider = MockSubtensorConfigProviding()
+
+        stub(configProvider) { stub in
+            when(stub.createNovaFeeRateWrapper())
+                .thenReturn(CompoundOperationWrapper.createWithResult(SubtensorNovaFeeConstants.fallbackRate))
+        }
+
+        return SubtensorTradeQuoteFactory(
             operationFactory: apiFactory,
+            configProvider: configProvider,
             operationQueue: OperationQueue(),
             feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary)
         )

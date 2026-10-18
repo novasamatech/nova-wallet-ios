@@ -34,6 +34,12 @@ final class SubtensorStakingSetupViewController: UIViewController, ViewHolder, I
 
         presenter.setup()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.didAppear()
+    }
 }
 
 private extension SubtensorStakingSetupViewController {

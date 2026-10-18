@@ -15,7 +15,7 @@ protocol SubnetDetailsViewModelFactoryProtocol {
 final class SubtensorSubnetDetailsViewModelFactory {
     let subnet: SubtensorCatalogueSubnet
     let chainAsset: ChainAsset
-    let currency: Currency
+    let currencyManager: CurrencyManagerProtocol
     let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
@@ -28,13 +28,13 @@ final class SubtensorSubnetDetailsViewModelFactory {
     init(
         subnet: SubtensorCatalogueSubnet,
         chainAsset: ChainAsset,
-        currency: Currency,
+        currencyManager: CurrencyManagerProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         let formatterFactory = AssetBalanceFormatterFactory()
         self.subnet = subnet
         self.chainAsset = chainAsset
-        self.currency = currency
+        self.currencyManager = currencyManager
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
@@ -89,7 +89,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             period: state.period,
             isFiat: state.isFiat,
             taoPrice: state.taoPrice,
-            currencyId: currency.id,
+            currencyId: currencyManager.selectedCurrency.id,
             chartEndDate: state.chartEndDate
         )
     }
@@ -106,7 +106,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
         )
 
         let currencyViewModel = SubtensorSubnetCurrencyViewModel(
-            titles: [chainAsset.assetDisplayInfo.symbol, currency.code],
+            titles: [chainAsset.assetDisplayInfo.symbol, currencyManager.selectedCurrency.code],
             selectedIndex: state.isFiat ? 1 : 0,
             isEnabled: state.taoPrice != nil || state.isFiat
         )

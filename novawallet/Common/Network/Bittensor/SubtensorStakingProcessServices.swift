@@ -2,7 +2,7 @@ import Foundation
 
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let subnetLogosProvider: SubtensorConfigProviding
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol

@@ -20,8 +20,6 @@ enum SubtensorSubnetSelectViewFactory {
         delegate: SubtensorSubnetSelectDelegate,
         browseState: SubtensorSubnetBrowseState
     ) -> SubtensorSubnetSelectViewProtocol? {
-        let earnServices = state.earnServices
-
         let interactor = SubtensorSubnetSelectInteractor(
             state: state,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -35,7 +33,6 @@ enum SubtensorSubnetSelectViewFactory {
             wireframe: SubtensorSubnetSelectWireframe(state: state),
             viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: state.stakingOption.chainAsset),
             delegate: delegate,
-            earnSettings: earnServices.earnSettings,
             localizationManager: localizationManager,
             browseState: browseState
         )

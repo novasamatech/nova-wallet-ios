@@ -13,6 +13,7 @@ struct SubtensorPurchaseTotals: Equatable {
 enum SubtensorCostBasis: Equatable {
     case average(SubtensorPurchaseTotals)
     case noPurchases
+    case incompleteHistory
 }
 
 enum SubtensorCostBasisError: Error, Equatable {
