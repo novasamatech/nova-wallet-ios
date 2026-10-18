@@ -133,7 +133,6 @@ sources = [
     "novawallet/Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/Hydra/HydraFeeOraclePriceFactory.swift",
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
     "Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsProtocols.swift",
-    "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
     "novawallet/Common/Substrate/Operations/SubtensorApi/SubtensorApiOperationFactory.swift",
     "novawallet/Common/Services/Multistaking/Subtensor/SubtensorStakeStateFetchFactory.swift",
     "novawallet/Common/Services/Multistaking/MultistakingServices.swift",
@@ -169,7 +168,6 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingOperationServiceProtocol.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/ExtrinsicStatusService/ExtrinsicSubmissionMonitor.swift",
     "novawallet/Common/Network/Coingecko/CoingeckoOperationFactory.swift",
-    "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
     "novawallet/Common/Logger/Logger.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetCatalogueServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorRankingViewServiceProtocol.swift",
@@ -194,6 +192,8 @@ sources = [
     "novawallet/Common/Services/Announcements/AnnouncementsRepository.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorMaxApyProviderProtocol.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/BlockNumberOperationFactory.swift",
+    "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
+    "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
 ]
 
 exclude = [
