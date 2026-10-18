@@ -1,33 +1,6 @@
 import Foundation
 
-enum SubtensorConfirmQuoteVerdict: Equatable {
-    case proceed(latest: SubtensorTradeQuote, limitPrice: Balance)
-    case quoteMissing
-    case priceMoved
-}
-
 enum SubtensorConfirmTapRule {
-    static func quoteVerdict(
-        latest: SubtensorTradeQuote?,
-        acknowledged: SubtensorTradeQuote?,
-        now: Date = Date()
-    ) -> SubtensorConfirmQuoteVerdict {
-        guard
-            let latest,
-            let acknowledged,
-            now.timeIntervalSince(latest.quote.capturedAt) <= SubtensorStakingFlowConstants.quoteStalenessWindow else {
-            return .quoteMissing
-        }
-
-        let limitPrice = latest.tighterLimit(than: acknowledged.limitPrice)
-
-        guard latest.isFillable(atLimit: limitPrice) else {
-            return .priceMoved
-        }
-
-        return .proceed(latest: latest, limitPrice: limitPrice)
-    }
-
     static func verifiedExitHotkeys(
         for unstakeModel: SubtensorUnstakeModel,
         in state: Multistaking.SubtensorStakingState?

@@ -61,11 +61,11 @@ extension SubtensorStakingSetupPresenter {
         )
     }
 
-    func createConfirmModel() -> SubtensorConfirmModel? {
+    func createConfirmModel(for dependencies: SubtensorStakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,
             let validator = validatorState.validator,
-            let amount = inputAmount(),
+            let amount = dependencies.amount,
             let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
@@ -81,7 +81,7 @@ extension SubtensorStakingSetupPresenter {
             ),
             mode: .stake(amount: amount),
             tolerance: target.isRoot ? nil : slippage,
-            acknowledgedQuote: target.isRoot ? nil : quoteFlow.freshQuote
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
     }
 }

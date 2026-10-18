@@ -88,13 +88,18 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         }
 
         let dependencies = createValidationDependencies(amount: amount)
-        let model = createConfirmModel(for: dependencies)
+
+        guard var model = createConfirmModel(for: dependencies) else {
+            return
+        }
 
         dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
-            guard let self, let model else {
+            guard let self else {
                 return
             }
 
+            view?.didStopLoading()
+            model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
             wireframe.showConfirmation(from: view, model: model)
         }
     }
@@ -169,7 +174,7 @@ extension SubtensorUnstakeSetupPresenter {
                 exitHotkeys: dependencies.exitHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
-            acknowledgedQuote: dependencies.quoteContext?.latestQuote
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
     }
 }

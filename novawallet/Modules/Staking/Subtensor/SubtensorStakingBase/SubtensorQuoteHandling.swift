@@ -30,11 +30,14 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
     var chainAsset: ChainAsset { get }
     var inputResult: AmountInputResult? { get set }
     var quoteFlow: SubtensorQuoteFlowModel { get set }
+    var acceptedQuote: SubtensorTradeQuote? { get set }
     var isQuoteFailed: Bool { get set }
     var tradesUnavailable: Bool { get set }
     var isRoot: Bool { get }
     var logger: LoggerProtocol { get }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { get }
+    var loadingView: LoadableViewProtocol? { get }
+    var alphaDisplayInfo: AssetBalanceDisplayInfo { get }
 
     func inputAmount() -> Balance?
     func quoteRequest() -> SubtensorTradeQuoteRequest?
@@ -87,20 +90,31 @@ extension SubtensorQuoteHandling {
     }
 
     func createQuoteContext() -> SubtensorQuoteValidatingContext? {
-        guard !isRoot else {
+        guard !isRoot, let request = quoteRequest() else {
             return nil
         }
 
         let latestQuote = quoteFlow.freshQuote
+        acceptedQuote = nil
 
         return SubtensorQuoteValidatingContext(
             latestQuote: latestQuote,
             acknowledgedLimit: latestQuote?.limitPrice,
             tradesUnavailable: tradesUnavailable,
-            onQuoteRefresh: { [weak self] in
-                self?.forceQuoteRefresh()
+            alphaDisplayInfo: alphaDisplayInfo,
+            loadingView: loadingView,
+            onQuoteRequest: { [weak self] completion in
+                self?.quoteInteractor.requestValidatingQuote(for: request, completion: completion)
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.acceptedQuote = quote
+                self?.didReceiveQuote(quote)
             }
         )
+    }
+
+    func acknowledgedQuote(for context: SubtensorQuoteValidatingContext?) -> SubtensorTradeQuote? {
+        acceptedQuote ?? context?.latestQuote
     }
 
     func didReceiveQuote(_ quote: SubtensorTradeQuote) {

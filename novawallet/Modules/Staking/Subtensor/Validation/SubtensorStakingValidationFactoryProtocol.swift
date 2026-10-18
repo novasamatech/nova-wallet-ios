@@ -1,11 +1,25 @@
 import BigInt
 import Foundation
 
+typealias SubtensorQuoteRequestClosure = (@escaping (Result<SubtensorTradeQuote, Error>) -> Void) -> Void
+
 struct SubtensorQuoteValidatingContext {
     let latestQuote: SubtensorTradeQuote?
     let acknowledgedLimit: Balance?
     let tradesUnavailable: Bool
-    let onQuoteRefresh: () -> Void
+    let alphaDisplayInfo: AssetBalanceDisplayInfo
+    weak var loadingView: LoadableViewProtocol?
+    let onQuoteRequest: SubtensorQuoteRequestClosure
+    let onQuoteUpdate: (SubtensorTradeQuote) -> Void
+    var onPriceMoved: ((SubtensorTradeQuote) -> Void)?
+
+    var signingLimit: Balance? {
+        guard let latestQuote, let acknowledgedLimit else {
+            return nil
+        }
+
+        return latestQuote.tighterLimit(than: acknowledgedLimit)
+    }
 }
 
 protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
@@ -22,10 +36,14 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         locale: Locale
     ) -> DataValidating
 
-    func hasFreshQuote(
+    func hasQuote(
         _ quote: SubtensorTradeQuote?,
-        locale: Locale,
-        onRetry: @escaping () -> Void
+        locale: Locale
+    ) -> DataValidating
+
+    func passesRealtimeQuote(
+        _ context: SubtensorQuoteValidatingContext?,
+        locale: Locale
     ) -> DataValidating
 
     func positionsAreFresh(

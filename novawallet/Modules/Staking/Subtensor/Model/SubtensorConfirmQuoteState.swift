@@ -22,6 +22,10 @@ struct SubtensorConfirmQuoteState {
         flow.freshQuote
     }
 
+    var displayed: SubtensorTradeQuote? {
+        latest ?? acknowledged
+    }
+
     var latestCrossesAcknowledgedLimit: Bool {
         guard let latest, let acknowledged else {
             return false
@@ -31,11 +35,11 @@ struct SubtensorConfirmQuoteState {
     }
 
     var signingLimit: Balance? {
-        guard let latest, let acknowledged else {
+        guard let displayed, let acknowledged else {
             return nil
         }
 
-        return latest.tighterLimit(than: acknowledged.limitPrice)
+        return displayed.tighterLimit(than: acknowledged.limitPrice)
     }
 
     mutating func apply(latest quote: SubtensorTradeQuote) -> Bool {
@@ -54,15 +58,9 @@ struct SubtensorConfirmQuoteState {
         return true
     }
 
-    mutating func acknowledgeLatest() -> Bool {
-        guard let latest else {
-            return false
-        }
-
-        acknowledged = latest
+    mutating func acknowledgeLatest() {
+        acknowledged = latest ?? acknowledged
         isPriceMoved = false
-
-        return true
     }
 
     mutating func raisePriceMovedIfCrossed() -> Bool {
@@ -81,10 +79,11 @@ struct SubtensorConfirmQuoteState {
 
     mutating func invalidateLatest() {
         flow.clearQuote()
+        isPriceMoved = false
     }
 
     mutating func markLatestFailed() {
-        flow.clearQuote()
+        invalidateLatest()
         isLatestFailed = true
     }
 }

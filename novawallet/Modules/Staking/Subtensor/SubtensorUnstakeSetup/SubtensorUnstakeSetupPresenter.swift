@@ -35,6 +35,7 @@ final class SubtensorUnstakeSetupPresenter {
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
     var quoteFlow = SubtensorQuoteFlowModel()
+    var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
@@ -321,6 +322,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+    var alphaDisplayInfo: AssetBalanceDisplayInfo { inputDisplayInfo }
 }
 
 extension SubtensorUnstakeSetupPresenter: Localizable {

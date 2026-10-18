@@ -17,19 +17,19 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
-    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
     private let feeCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
+    private let validatingQuoteCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
@@ -52,7 +52,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
-        generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
+        blockNumberSubscription = flowServices.blockNumberSubscription
         runtimeProvider = flowServices.runtimeProvider
         operationQueue = flowServices.operationQueue
         self.logger = logger
@@ -64,11 +64,13 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         feeCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
+        validatingQuoteCallStore.cancel()
         catalogueCallStore.cancel()
         logosCallStore.cancel()
         costBasisCallStore.cancel()
         holdsCallStore.cancel()
 
+        blockNumberSubscription?.unsubscribe()
         positionsSyncService.remove(observer: self)
     }
 }
@@ -93,7 +95,20 @@ private extension SubtensorStakingBaseInteractor {
     }
 
     func makeBlockNumberSubscription() {
-        blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
+        do {
+            try blockNumberSubscription?.start { [weak self] result in
+                switch result {
+                case let .success(blockNumber):
+                    if let blockNumber {
+                        self?.basePresenter?.didReceiveBlockNumber(blockNumber)
+                    }
+                case let .failure(error):
+                    self?.logger.error("Block number subscription failed: \(error)")
+                }
+            }
+        } catch {
+            logger.error("Block number subscription failed: \(error)")
+        }
     }
 
     func makePositionsSubscription() {
@@ -218,6 +233,21 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         }
     }
 
+    func requestValidatingQuote(
+        for request: SubtensorTradeQuoteRequest,
+        completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
+    ) {
+        validatingQuoteCallStore.cancel()
+
+        executeCancellable(
+            wrapper: tradeQuoteFactory.createTradeQuoteWrapper(for: request),
+            inOperationQueue: operationQueue,
+            backingCallIn: validatingQuoteCallStore,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
+    }
+
     func refreshPositions() {
         positionsSyncService.refresh()
     }
@@ -292,22 +322,6 @@ extension SubtensorStakingBaseInteractor: PriceLocalStorageSubscriber, PriceLoca
             basePresenter?.didReceivePrice(priceData)
         case let .failure(error):
             logger.error("Price subscription failed: \(error)")
-        }
-    }
-}
-
-extension SubtensorStakingBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId _: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber {
-                basePresenter?.didReceiveBlockNumber(blockNumber)
-            }
-        case let .failure(error):
-            logger.error("Block number subscription failed: \(error)")
         }
     }
 }

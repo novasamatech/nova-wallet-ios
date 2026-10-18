@@ -13,7 +13,7 @@ enum SubtensorOperationResultViewFactory {
         let chain = state.stakingOption.chainAsset.chain
 
         guard
-            let services = SubtensorFlowServicesFactory.createServices(for: state),
+            let services = SubtensorFlowServicesFactory.createServices(for: state, observesBlocks: false),
             services.isFlowAccount(request.account),
             let connection = state.chainRegistry.getConnection(for: chain.chainId) else {
             return nil

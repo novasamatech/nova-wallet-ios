@@ -244,6 +244,14 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
 
         rootView.applyAction(viewModel.action)
     }
+
+    func didStartLoading() {
+        rootView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.stopLoading()
+    }
 }
 
 extension SubtensorStakingSetupViewController: AmountInputAccessoryViewDelegate {

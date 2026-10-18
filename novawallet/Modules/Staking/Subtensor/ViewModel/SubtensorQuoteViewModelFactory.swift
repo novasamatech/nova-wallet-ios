@@ -189,13 +189,14 @@ extension AssetBalanceFormatterFactoryProtocol {
         outInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> String? {
+        let rate = Decimal.rateFromSubstrate(
+            amount1: amountIn,
+            amount2: amountOut,
+            precision1: inInfo.assetPrecision,
+            precision2: outInfo.assetPrecision
+        ) ?? 0
+
         guard
-            let rate = Decimal.rateFromSubstrate(
-                amount1: amountIn,
-                amount2: amountOut,
-                precision1: inInfo.assetPrecision,
-                precision2: outInfo.assetPrecision
-            ),
             let oneIn = createTokenFormatter(for: inInfo).value(for: locale).stringFromDecimal(1),
             let rateOut = createTokenFormatter(for: outInfo).value(for: locale).stringFromDecimal(rate) else {
             return nil

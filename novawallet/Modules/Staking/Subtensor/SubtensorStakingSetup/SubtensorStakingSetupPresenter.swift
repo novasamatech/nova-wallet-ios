@@ -43,6 +43,7 @@ final class SubtensorStakingSetupPresenter {
     var validatorItem: SubtensorValidatorDirectoryItem?
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
+    var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
@@ -289,6 +290,15 @@ extension SubtensorStakingSetupPresenter: SubtensorQuoteHandling {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+
+    var alphaDisplayInfo: AssetBalanceDisplayInfo {
+        guard let target else {
+            return chainAsset.assetDisplayInfo
+        }
+
+        return chainAsset.assetDisplayInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
+    }
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol {
@@ -350,14 +360,19 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             return
         }
 
-        dataValidationFactory.validateStake(
-            for: createValidationDependencies(for: target),
-            locale: selectedLocale
-        ) { [weak self] in
-            guard let self, let model = createConfirmModel() else {
+        let dependencies = createValidationDependencies(for: target)
+
+        guard var model = createConfirmModel(for: dependencies) else {
+            return
+        }
+
+        dataValidationFactory.validateStake(for: dependencies, locale: selectedLocale) { [weak self] in
+            guard let self else {
                 return
             }
 
+            view?.didStopLoading()
+            model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
             wireframe.showConfirmation(from: view, model: model)
         }
     }

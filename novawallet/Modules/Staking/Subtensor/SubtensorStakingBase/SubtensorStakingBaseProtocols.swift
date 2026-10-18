@@ -3,8 +3,6 @@ import Foundation
 enum SubtensorStakingFlowConstants {
     static let priceImpactWarningThreshold = BigRational(numerator: 1, denominator: 100)
 
-    static let quoteStalenessWindow: TimeInterval = 15
-
     static func isHighPriceImpact(_ impact: BigRational) -> Bool {
         let threshold = priceImpactWarningThreshold
 
@@ -28,6 +26,10 @@ protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func estimateFee(for operation: SubtensorStakingOperation)
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
     func refreshQuote(for request: SubtensorTradeQuoteRequest)
+    func requestValidatingQuote(
+        for request: SubtensorTradeQuoteRequest,
+        completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
+    )
     func refreshPositions()
     func loadCatalogue()
     func loadSubnetLogos()

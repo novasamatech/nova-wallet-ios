@@ -22,6 +22,8 @@ final class SubtensorStakingValidationFactory {
         priceAssetInfoFactory: priceAssetInfoFactory
     )
 
+    private let formatterFactory = AssetBalanceFormatterFactory()
+
     init(
         presentable: SubtensorStakingErrorPresentable,
         assetDisplayInfo: AssetBalanceDisplayInfo,
@@ -100,6 +102,85 @@ final class SubtensorStakingValidationFactory {
 
         return grossStake
     }
+
+    private func formatRate(
+        _ quote: SubtensorTradeQuote,
+        alphaDisplayInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> String {
+        let isStake = if case .stake = quote.quote.args.direction { true } else { false }
+
+        return formatterFactory.subtensorSwapRate(
+            amountIn: quote.amountIn,
+            amountOut: quote.expectedOut,
+            inInfo: isStake ? assetDisplayInfo : alphaDisplayInfo,
+            outInfo: isStake ? alphaDisplayInfo : assetDisplayInfo,
+            locale: locale
+        ) ?? ""
+    }
+
+    private func presentQuoteChange(
+        _ change: SubtensorQuoteChange,
+        context: SubtensorQuoteValidatingContext,
+        delegate: DataValidatingDelegate,
+        locale: Locale
+    ) {
+        guard let view else {
+            return
+        }
+
+        switch change {
+        case let .rateChange(_, new) where context.onPriceMoved != nil:
+            context.onPriceMoved?(new)
+        case let .rateChange(old, new):
+            presentable.presentRateUpdated(
+                from: view,
+                oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                newRate: formatRate(new, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                onConfirm: {
+                    context.onQuoteUpdate(new)
+                    delegate.didCompleteAsyncHandling()
+                },
+                locale: locale
+            )
+        case .unavailable:
+            presentable.presentNotEnoughLiquidity(from: view, locale: locale)
+        }
+    }
+
+    private func checkRealtimeQuote(
+        _ context: SubtensorQuoteValidatingContext?,
+        completion: @escaping (SubtensorQuoteChange?) -> Void
+    ) {
+        guard let context, let current = context.latestQuote, let limit = context.acknowledgedLimit else {
+            completion(.unavailable)
+            return
+        }
+
+        context.loadingView?.didStartLoading()
+
+        context.onQuoteRequest { result in
+            let change: SubtensorQuoteChange? = switch result {
+            case let .success(new) where new.isFillable(atLimit: new.tighterLimit(than: limit)):
+                nil
+            case let .success(new):
+                .rateChange(old: current, new: new)
+            case .failure:
+                .unavailable
+            }
+
+            if change != nil {
+                context.loadingView?.didStopLoading()
+            }
+
+            completion(change)
+        }
+    }
+}
+
+private enum SubtensorQuoteChange {
+    case rateChange(old: SubtensorTradeQuote, new: SubtensorTradeQuote)
+    case unavailable
 }
 
 extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryProtocol {
@@ -134,25 +215,43 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         })
     }
 
-    func hasFreshQuote(
+    func hasQuote(
         _ quote: SubtensorTradeQuote?,
-        locale: Locale,
-        onRetry: @escaping () -> Void
+        locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let self, let view else {
                 return
             }
 
-            presentable.presentQuoteMissing(view, onRetry: onRetry, locale: locale)
+            presentable.presentNotEnoughLiquidity(from: view, locale: locale)
         }, preservesCondition: {
-            guard let quote else {
-                return false
-            }
-
-            return Date().timeIntervalSince(quote.quote.capturedAt) <=
-                SubtensorStakingFlowConstants.quoteStalenessWindow
+            quote != nil
         })
+    }
+
+    func passesRealtimeQuote(
+        _ context: SubtensorQuoteValidatingContext?,
+        locale: Locale
+    ) -> DataValidating {
+        var change: SubtensorQuoteChange?
+
+        return AsyncWarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard let self, let context, let change else {
+                    return
+                }
+
+                presentQuoteChange(change, context: context, delegate: delegate, locale: locale)
+            },
+            preservesCondition: { [weak self] callback in
+                self?.checkRealtimeQuote(context) { result in
+                    change = result
+
+                    callback(result == nil)
+                }
+            }
+        )
     }
 
     func orderWithinSlippageTolerance(
@@ -164,7 +263,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
             (strings.stakingSubtensorSelfImpactTitle(), strings.stakingSubtensorSelfImpactMessage())
         }, preservesCondition: {
             guard let quote, let limitPrice else {
-                return false
+                return true
             }
 
             return quote.isFillable(atLimit: limitPrice)

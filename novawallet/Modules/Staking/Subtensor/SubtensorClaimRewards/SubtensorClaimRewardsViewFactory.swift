@@ -9,7 +9,7 @@ enum SubtensorClaimRewardsViewFactory {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
-            let services = SubtensorFlowServicesFactory.createServices(for: state),
+            let services = SubtensorFlowServicesFactory.createServices(for: state, observesBlocks: false),
             services.isFlowAccount(model.account) else {
             return nil
         }

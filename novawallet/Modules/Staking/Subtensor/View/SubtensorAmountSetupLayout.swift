@@ -38,12 +38,16 @@ class SubtensorAmountSetupLayout: UIView {
 
     let bottomPanel = SubtensorBottomPanelView()
 
-    let actionButton: TriangularedButton = .create { button in
-        button.applyDefaultStyle()
+    let actionLoadableView = LoadableActionView()
+
+    var actionButton: TriangularedButton {
+        actionLoadableView.actionButton
     }
 
     private var bottomStackConstraint: Constraint?
     private var scrollBottomConstraint: Constraint?
+    private var isInputEnabled = true
+    private var isLoading = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -95,6 +99,29 @@ class SubtensorAmountSetupLayout: UIView {
         super.layoutSubviews()
     }
 
+    func setAmountInputEnabled(_ isEnabled: Bool) {
+        isInputEnabled = isEnabled
+        applyInputAvailability()
+    }
+
+    func startLoading() {
+        isLoading = true
+        amountInputView.textField.resignFirstResponder()
+        actionLoadableView.startLoading()
+        applyInputAvailability()
+    }
+
+    func stopLoading() {
+        isLoading = false
+        actionLoadableView.stopLoading()
+        applyInputAvailability()
+    }
+
+    private func applyInputAvailability() {
+        amountInputView.isUserInteractionEnabled = isInputEnabled && !isLoading
+        amountTitleView.button.isUserInteractionEnabled = !isLoading
+    }
+
     func applyAction(_ viewModel: SubtensorSetupActionViewModel) {
         if viewModel.isEnabled {
             actionButton.applyEnabledStyle()
@@ -110,8 +137,8 @@ class SubtensorAmountSetupLayout: UIView {
     func setupLayout() {
         addSubview(containerView)
 
-        bottomPanel.contentView.addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        bottomPanel.contentView.addSubview(actionLoadableView)
+        actionLoadableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalTo(UIConstants.actionHeight)
         }
