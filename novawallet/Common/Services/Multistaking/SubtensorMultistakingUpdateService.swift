@@ -130,8 +130,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private func completeSync(_ error: Error?, for state: Multistaking.SubtensorStakingState) {
         let isAwaitingMaxApy = !state.hasActiveStaking && maxApyUpdate == .keep && maxApyCallStore.hasCall
-        let isAwaitingSubnetYields = state.rootStakeInRao == nil && subnetYields.isEmpty &&
-            subnetYieldsCallStore.hasCall
+        let isAwaitingSubnetYields = state.rootStakeInRao == nil &&
+            !state.heldSubnetNetuids.isSubset(of: subnetYields.keys) && subnetYieldsCallStore.hasCall
 
         isSyncCompletionDeferred = error == nil && (isAwaitingMaxApy || isAwaitingSubnetYields)
 
@@ -206,7 +206,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performSubnetYieldsFetch() {
-        guard !subnetYieldsCallStore.hasCall, let lastState, lastState.rootStakeInRao == nil else {
+        guard let lastState, lastState.rootStakeInRao == nil else {
             return
         }
 
@@ -217,6 +217,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         requestedSubnetNetuids = netuids
+        subnetYieldsCallStore.cancel()
 
         let yieldWrappers = netuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
 
