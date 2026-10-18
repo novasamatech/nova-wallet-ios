@@ -81,8 +81,8 @@ Four configurations, each with an xcconfig in `novawallet/Configs/`:
 NovaAuth needs no build setting or Info.plist key: the bearer lives in each app's default
 Keychain access group, so Debug/Dev/Staging/Release records are isolated by bundle id, and the
 store deletes the record an earlier build kept under the App Group. Existing App Group
-entitlements remain for other host features. The NovaAuth privacy manifest no longer declares
-FileTimestamp/C617.1.
+entitlements remain for other host features. The NovaAuth privacy manifest declares UserDefaults
+(CA92.1) and SystemBootTime (35F9.1).
 
 Flag semantics in code:
 

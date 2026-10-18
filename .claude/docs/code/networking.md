@@ -155,8 +155,8 @@ business allowlist or flow/scope. Consumers own method/path/body validation and 
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
 expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
 HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
-POST transport/5xx failures never replay. Native GET/HEAD caching follows server-owned public,
-max-age and must-revalidate headers, without extending credential lifetime. No refresh token
+POST transport/5xx failures never replay. The NovaAuth session has no URL cache; any response
+reuse belongs to the consumer and never extends credential lifetime. No refresh token
 exists; renewal obtains a fresh token challenge and App Attest assertion. See
 [NovaAuth](../../../Packages/NovaAuth/README.md) and the
 [client diagrams](../architecture/novaauth-client-diagrams.md).
