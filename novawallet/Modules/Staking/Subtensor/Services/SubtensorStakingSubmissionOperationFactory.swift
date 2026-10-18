@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-final class SubtensorStakingOperationService {
+final class SubtensorStakingSubmissionOperationFactory {
     let chainAsset: ChainAsset
     let accountId: AccountId
     let extrinsicService: ExtrinsicServiceProtocol
@@ -44,7 +44,7 @@ final class SubtensorStakingOperationService {
     }
 }
 
-private extension SubtensorStakingOperationService {
+private extension SubtensorStakingSubmissionOperationFactory {
     func createFinalizer(signer: SubtensorRecordingSigner) -> SubtensorStakingSubmissionFinalizer {
         SubtensorStakingSubmissionFinalizer(
             chainAssetId: chainAsset.chainAssetId,
@@ -114,7 +114,7 @@ private extension SubtensorStakingOperationService {
     }
 }
 
-extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProtocol {
+extension SubtensorStakingSubmissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol {
     func createFeeWrapper(
         for operation: SubtensorStakingOperation
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {

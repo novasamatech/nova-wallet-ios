@@ -71,7 +71,7 @@ private extension SubtensorOperationResultViewFactory {
             operation: request.operation,
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
-            operationService: services.operationService,
+            submissionOperationFactory: services.submissionOperationFactory,
             chainFactory: chainFactory,
             catalogueOperationFactory: state.earnServices.catalogueOperationFactory,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,

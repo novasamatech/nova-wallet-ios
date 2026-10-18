@@ -5,7 +5,7 @@ import Operation_iOS
 import SubstrateSdk
 import XCTest
 
-final class SubtensorStakingOperationServiceTests: XCTestCase {
+final class SubtensorStakingSubmissionOperationFactoryTests: XCTestCase {
     private let coldkey = Data(repeating: 0x11, count: 32)
     private let hotkey = Data(repeating: 0x22, count: 32)
     private let beneficiary = Data(repeating: 0xBB, count: 32)
@@ -47,7 +47,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         let eventCaptor = ArgumentCaptor<EventProtocol>()
         verify(context.eventCenter, times(1)).notify(with: eventCaptor.capture())
         let changed = try XCTUnwrap(eventCaptor.value as? SubtensorStakingChanged)
-        XCTAssertEqual(changed.chainAssetId, context.service.chainAsset.chainAssetId)
+        XCTAssertEqual(changed.chainAssetId, context.operationFactory.chainAsset.chainAssetId)
         XCTAssertEqual(changed.accountId, coldkey)
     }
 
@@ -113,7 +113,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
     }
 
     private struct Context {
-        let service: SubtensorStakingOperationService
+        let operationFactory: SubtensorStakingSubmissionOperationFactory
         let eventCenter: MockEventCenterProtocol
         let sharedOperation: SharedOperation
     }
@@ -127,7 +127,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         let eventCenter = MockEventCenterProtocol().applyingDefaultStub()
         let sharedOperation = SharedOperation()
 
-        let service = try SubtensorStakingOperationService(
+        let operationFactory = try SubtensorStakingSubmissionOperationFactory(
             chainAsset: chainAsset,
             accountId: coldkey,
             extrinsicService: ExtrinsicServiceStub.dummy(),
@@ -141,7 +141,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         )
 
         return Context(
-            service: service,
+            operationFactory: operationFactory,
             eventCenter: eventCenter,
             sharedOperation: sharedOperation
         )
@@ -166,7 +166,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             quotedTaoOut: 4_145_000_000,
             novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: Data(repeating: 0xBB, count: 32))
         )
-        let wrapper = context.service.createSubmitWrapper(for: operation) {}
+        let wrapper = context.operationFactory.createSubmitWrapper(for: operation) {}
         let completed = expectation(description: "submission completed")
         wrapper.targetOperation.completionBlock = { DispatchQueue.main.async { completed.fulfill() } }
 

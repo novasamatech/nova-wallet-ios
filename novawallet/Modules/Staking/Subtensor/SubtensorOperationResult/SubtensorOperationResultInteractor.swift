@@ -8,7 +8,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     let operation: SubtensorStakingOperation
     let coldkey: AccountId
     let loadsSubnetData: Bool
-    let operationService: SubtensorStakingOperationServiceProtocol
+    let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
     let chainFactory: SubtensorResultChainFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
@@ -25,7 +25,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         operation: SubtensorStakingOperation,
         coldkey: AccountId,
         loadsSubnetData: Bool,
-        operationService: SubtensorStakingOperationServiceProtocol,
+        submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol,
         chainFactory: SubtensorResultChainFactoryProtocol,
         catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
@@ -37,7 +37,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         self.operation = operation
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
-        self.operationService = operationService
+        self.submissionOperationFactory = submissionOperationFactory
         self.chainFactory = chainFactory
         self.catalogueOperationFactory = catalogueOperationFactory
         self.subnetLogosProvider = subnetLogosProvider
@@ -68,7 +68,7 @@ private extension SubtensorOperationResultInteractor {
     func submit() {
         osMediator.disableScreenSleep()
 
-        let wrapper = operationService.createSubmitWrapper(for: operation) { [weak self] in
+        let wrapper = submissionOperationFactory.createSubmitWrapper(for: operation) { [weak self] in
             DispatchQueue.main.async {
                 self?.startConfirmationCap()
             }

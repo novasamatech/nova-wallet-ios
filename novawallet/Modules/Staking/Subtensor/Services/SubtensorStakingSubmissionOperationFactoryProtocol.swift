@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorStakingOperationServiceProtocol: AnyObject {
+protocol SubtensorStakingSubmissionOperationFactoryProtocol: AnyObject {
     func createFeeWrapper(
         for operation: SubtensorStakingOperation
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol>

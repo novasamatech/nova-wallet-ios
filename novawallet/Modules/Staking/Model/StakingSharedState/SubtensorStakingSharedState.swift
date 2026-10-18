@@ -37,12 +37,12 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     func throttle()
     func startSharedOperation() -> SharedOperationProtocol
 
-    func createStakingOperationService(
+    func createSubmissionOperationFactory(
         for accountId: AccountId,
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol
-    ) throws -> SubtensorStakingOperationServiceProtocol
+    ) throws -> SubtensorStakingSubmissionOperationFactoryProtocol
 }
 
 final class SubtensorStakingSharedState {
@@ -201,19 +201,19 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
         return operation
     }
 
-    func createStakingOperationService(
+    func createSubmissionOperationFactory(
         for accountId: AccountId,
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol
-    ) throws -> SubtensorStakingOperationServiceProtocol {
+    ) throws -> SubtensorStakingSubmissionOperationFactoryProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        return SubtensorStakingOperationService(
+        return SubtensorStakingSubmissionOperationFactory(
             chainAsset: stakingOption.chainAsset,
             accountId: accountId,
             extrinsicService: extrinsicService,

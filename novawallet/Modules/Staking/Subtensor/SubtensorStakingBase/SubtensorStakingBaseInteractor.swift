@@ -10,7 +10,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
-    let operationService: SubtensorStakingOperationServiceProtocol
+    let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
@@ -46,7 +46,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         positionsSyncService = flowServices.positionsSyncService
         preflightFactory = flowServices.preflightFactory
         tradeQuoteFactory = flowServices.tradeQuoteFactory
-        operationService = flowServices.operationService
+        submissionOperationFactory = flowServices.submissionOperationFactory
         catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         costBasisService = state.earnServices.costBasisService
         rootHoldFactory = state.earnServices.rootHoldFactory
@@ -141,7 +141,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
             feeCallStore.cancel()
 
-            let wrapper = operationService.createFeeWrapper(for: operation)
+            let wrapper = submissionOperationFactory.createFeeWrapper(for: operation)
 
             executeCancellable(
                 wrapper: wrapper,

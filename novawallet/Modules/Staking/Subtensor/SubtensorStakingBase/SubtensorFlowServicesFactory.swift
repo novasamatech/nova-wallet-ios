@@ -5,7 +5,7 @@ struct SubtensorFlowServices {
     let account: MetaChainAccountResponse
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
-    let operationService: SubtensorStakingOperationServiceProtocol
+    let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -54,7 +54,7 @@ enum SubtensorFlowServicesFactory {
 
         let signer = createSigner(for: account)
 
-        guard let operationService = try? state.createStakingOperationService(
+        guard let submissionOperationFactory = try? state.createSubmissionOperationFactory(
             for: account.chainAccount.accountId,
             extrinsicService: extrinsicService,
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
@@ -67,7 +67,7 @@ enum SubtensorFlowServicesFactory {
             account: account,
             positionsSyncService: positionsSyncService,
             runtimeProvider: runtimeProvider,
-            operationService: operationService,
+            submissionOperationFactory: submissionOperationFactory,
             preflightFactory: createPreflightFactory(for: state, operationQueue: operationQueue),
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
