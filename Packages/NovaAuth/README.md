@@ -16,16 +16,15 @@ another request before sending permits one separate, bounded re-admission. Neith
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
 
-The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings, the shared Keychain
-access group, a required stable host-app namespace, and separate
-owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed host
-app with continuous-clock/boot metadata; preferences hold no bearer. The namespace is the
-host app's bundle identifier, explicitly injected into the app's build metadata.
-Auth no longer resolves or requires an App Group filesystem container; the Keychain access
-group is retained. Other host features still use the App Group container.
-Release and Staging share an App Group but use distinct Keychain services, so neither can
-read, overwrite or delete the other's bearer. All features within one host still share its
-single current record; origin, consumer and client UUID never select separate token pools.
+The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings and
+separate owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed
+host app in the app's default Keychain access group, with continuous-clock/boot metadata;
+preferences hold no bearer. Auth requires no App Group container, shared access group or
+Info.plist namespace; each signed app variant owns its own record, so Release and Staging can
+never read, overwrite or delete each other's bearer. All features within one host still share
+its single current record; origin, consumer and client UUID never select separate token pools.
+The owner caches the loaded record under its gate, so the Keychain is read once per launch and
+again only after a write or removal.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
@@ -48,7 +47,8 @@ A failed authentication attempt fails the caller's operation. NovaAuth schedules
 owns no interaction or presentation policy. Every independently created later operation has
 the same permission to try again after the short protocol cooldown. Concurrent demands join
 one issuance flight, which attempts at most one new key generation. Retirement fails that
-flight; it never recursively creates another identity. Bearer replay preserves its original
+flight, except that a key found invalid at assertion time (for example after a backup restore)
+is replaced by one fresh UUID/key within the same flight. Bearer replay preserves its original
 client binding and cannot turn the same business operation into identity replacement.
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
@@ -71,7 +71,8 @@ other wait ends with a boot discontinuity.
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
 | Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
-| Platform invalid key, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
+| Platform invalid key at attestation, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
@@ -146,6 +147,9 @@ and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-
 Ingress authenticates before protected business handlers execute. A conclusive token denial
 therefore permits one replay preserving the original method, path, query and body. Other
 401/403, 429, 5xx and uncertain transport outcomes do not authorize replay or reset identity.
+Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
+package's own envelope parser: status, lowercase code up to 64 characters, sanitized
+`X-Request-ID` and numeric Retry-After clamped to 905 seconds.
 
 ## Validation
 
@@ -153,4 +157,4 @@ Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS si
 `swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
 bounded token replay, shared throttling and exchange release. Real App Attest,
-signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
+Keychain behavior, protected data and physical reboot behavior need device validation.
