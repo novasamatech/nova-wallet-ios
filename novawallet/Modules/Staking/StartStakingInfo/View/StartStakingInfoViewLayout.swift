@@ -39,13 +39,16 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     let actionView = LoadableActionView()
 
+    let secondaryButton: TriangularedButton?
+
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
     var paragraphViews: [ParagraphView] = []
 
     lazy var footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
         actionView,
+        secondaryButton,
         balanceLabel
-    ])
+    ].compactMap { $0 })
 
     var onAnnouncementLinkTap: (() -> Void)?
 
@@ -53,9 +56,14 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private var announcementViewModel: AnnouncementViewModel?
     private var appliedFooterExtra: CGFloat = 0
 
-    init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
+    init(
+        headerStyle: MultiColorTextStyle,
+        paragraphStyle: MultiColorTextStyle,
+        hasSecondaryAction: Bool = false
+    ) {
         self.headerStyle = headerStyle
         self.paragraphStyle = paragraphStyle
+        secondaryButton = hasSecondaryAction ? Self.createSecondaryButton() : nil
 
         super.init(frame: .zero)
     }
@@ -90,6 +98,10 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         footer.addSubview(footerContentView)
 
         actionView.snp.makeConstraints {
+            $0.height.equalTo(Constants.actionViewHeight)
+        }
+
+        secondaryButton?.snp.makeConstraints {
             $0.height.equalTo(Constants.actionViewHeight)
         }
 
@@ -133,6 +145,11 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         ).localizable.stakingStartTitle()
     }
 
+    func updateSecondaryButton(title: String) {
+        secondaryButton?.imageWithTitleView?.title = title
+        secondaryButton?.invalidateLayout()
+    }
+
     func setAnnouncement(viewModel: AnnouncementViewModel?) {
         announcementViewModel = viewModel
 
@@ -167,7 +184,9 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             )
         }
 
-        let extra = bannerHeight.map { $0 + Constants.footerSpacing } ?? 0
+        let bannerExtra = bannerHeight.map { $0 + Constants.footerSpacing } ?? 0
+        let secondaryActionExtra = secondaryButton != nil ? Constants.actionViewHeight + Constants.footerSpacing : 0
+        let extra = bannerExtra + secondaryActionExtra
 
         guard bounds.width > 0, abs(extra - appliedFooterExtra) > 0.5 else {
             return
@@ -186,6 +205,12 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         }
 
         stackView.layoutMargins.bottom = Constants.containerInsets.bottom + extra
+    }
+
+    private static func createSecondaryButton() -> TriangularedButton {
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+        return button
     }
 
     private func set(title: AccentTextModel) {
