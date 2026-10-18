@@ -9,9 +9,9 @@ final class SubtensorStakingOperationService {
     let extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let signer: SigningWrapperProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let sharedOperation: SharedOperationProtocol?
     let eventCenter: EventCenterProtocol
+    let configProvider: SubtensorConfigProviding
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol?
     let errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper()
     let feeCalculator: SubtensorNovaFeeCalculator
@@ -24,9 +24,9 @@ final class SubtensorStakingOperationService {
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         sharedOperation: SharedOperationProtocol?,
         eventCenter: EventCenterProtocol,
+        configProvider: SubtensorConfigProviding,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator()
     ) {
@@ -36,9 +36,9 @@ final class SubtensorStakingOperationService {
         self.extrinsicSubmitMonitor = extrinsicSubmitMonitor
         self.signer = signer
         self.runtimeProvider = runtimeProvider
-        self.positionsSyncService = positionsSyncService
         self.sharedOperation = sharedOperation
         self.eventCenter = eventCenter
+        self.configProvider = configProvider
         self.pendingRootClaims = pendingRootClaims
         self.feeCalculator = feeCalculator
     }
@@ -51,10 +51,23 @@ private extension SubtensorStakingOperationService {
             accountId: accountId,
             novaFeeBeneficiary: feeCalculator.beneficiary,
             signer: signer,
-            positionsSyncService: positionsSyncService,
             eventCenter: eventCenter,
             errorMapper: errorMapper
         )
+    }
+
+    func createEstimateOperation(
+        resolving operationClosure: @escaping () throws -> SubtensorStakingOperation
+    ) -> BaseOperation<ExtrinsicFeeProtocol> {
+        AsyncClosureOperation { [extrinsicService, workingQueue, feeCalculator] completion in
+            let builderClosure = try operationClosure().extrinsicBuilderClosure(
+                novaFeeBeneficiary: feeCalculator.beneficiary
+            )
+
+            extrinsicService.estimateFee(builderClosure, runningIn: workingQueue) { result in
+                completion(result)
+            }
+        }
     }
 
     func createSubmissionWrapper(
@@ -105,21 +118,21 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
     func createFeeWrapper(
         for operation: SubtensorStakingOperation
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        let builderClosure: ExtrinsicBuilderClosure
-
-        do {
-            builderClosure = try operation.extrinsicBuilderClosure(feeCalculator: feeCalculator)
-        } catch {
-            return .createWithError(error)
+        guard let basis = operation.novaFeeBasis, operation.novaFee == nil else {
+            return CompoundOperationWrapper(targetOperation: createEstimateOperation { operation })
         }
 
-        let feeOperation = AsyncClosureOperation<ExtrinsicFeeProtocol> { [extrinsicService, workingQueue] completion in
-            extrinsicService.estimateFee(builderClosure, runningIn: workingQueue) { result in
-                completion(result)
-            }
+        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+
+        let estimateOperation = createEstimateOperation { [feeCalculator] in
+            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try operation.pricing(novaFee: feeCalculator.fee(basis: basis, rate: rate))
         }
 
-        return CompoundOperationWrapper(targetOperation: feeOperation)
+        estimateOperation.addDependency(rateWrapper.targetOperation)
+
+        return rateWrapper.insertingTail(operation: estimateOperation)
     }
 
     func createSubmitWrapper(
@@ -129,7 +142,7 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
         let builderClosure: ExtrinsicBuilderClosure
 
         do {
-            builderClosure = try operation.extrinsicBuilderClosure(feeCalculator: feeCalculator)
+            builderClosure = try operation.extrinsicBuilderClosure(novaFeeBeneficiary: feeCalculator.beneficiary)
         } catch {
             return .createWithError(SubtensorStakingSubmissionFailure(stage: .notSubmitted, error: error))
         }
@@ -191,7 +204,6 @@ private struct SubtensorStakingSubmissionFinalizer {
     let accountId: AccountId
     let novaFeeBeneficiary: AccountId?
     let signer: SubtensorRecordingSigner
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let eventCenter: EventCenterProtocol
     let errorMapper: SubtensorStakingErrorMapping
 
@@ -266,7 +278,6 @@ private extension SubtensorStakingSubmissionFinalizer {
     }
 
     func notifyStakingChanged() {
-        positionsSyncService?.refresh()
         eventCenter.notify(with: SubtensorStakingChanged(chainAssetId: chainAssetId, accountId: accountId))
     }
 }

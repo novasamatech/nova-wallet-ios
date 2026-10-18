@@ -194,8 +194,11 @@ enum SubtensorPortfolioValueSeriesCalculator {
             portfolio.isFullyPriced,
             let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision),
             points.last.map({ $0.date < now }) ?? true {
-            let fiatValue = totalTao * currentTaoPrice
-            points.append(SubtensorPortfolioValuePoint(date: now, taoValue: totalTao, fiatValue: fiatValue))
+            let livePrice = histories.taoFiat == nil
+                ? reportedUsdPerTao(in: histories, now: now) ?? currentTaoPrice
+                : currentTaoPrice
+
+            points.append(SubtensorPortfolioValuePoint(date: now, taoValue: totalTao, fiatValue: totalTao * livePrice))
         }
 
         return SubtensorPortfolioValueSeries(
@@ -229,6 +232,22 @@ private extension SubtensorPortfolioValueSeriesCalculator {
         return SubtensorPriceSeries.nearestIndex(to: time, in: taoFiatTimes, tolerance: tolerance).map { index in
             SubtensorPortfolioValuePoint(date: date, taoValue: taoValue, fiatValue: taoValue * taoFiat[index].value)
         }
+    }
+
+    static func reportedUsdPerTao(in histories: SubtensorPortfolioPriceHistories, now: Date) -> Decimal? {
+        histories.portfolio.points.reversed().lazy.compactMap { point -> Decimal? in
+            guard
+                let date = BittensorApi.instant(from: point.timestamp),
+                now.timeIntervalSince(date) <= histories.period.coverageTolerance,
+                let taoValue = try? BittensorApiDecimal.decimal(point.reportedValueTao),
+                let usdValue = try? BittensorApiDecimal.decimal(point.reportedValueUsd),
+                taoValue > 0,
+                usdValue > 0 else {
+                return nil
+            }
+
+            return usdValue / taoValue
+        }.first
     }
 
     static func change(

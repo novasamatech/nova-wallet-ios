@@ -240,7 +240,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
 
         let estimatedEarnings = chainAsset.asset.hasSubtensorStaking
-            ? createSubtensorMaxApy(from: model.maxApy, isSyncing: model.isOffchainSync, locale: locale)
+            ? createSubtensorMaxApy(from: model.maxApy, isSyncing: model.isOnchainSync, locale: locale)
             : createEstimatedEarnings(from: model.maxApy, isSyncing: model.isOffchainSync, locale: locale)
 
         let balance = createAmount(

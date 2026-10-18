@@ -18,7 +18,13 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
 
     func testSubnetBuySignaturePassesValidation() throws {
         let validity = try performValidation(
-            of: .subnetBuy(hotkey: hotkeys[0], netuid: netuid, grossTao: amount, limitPrice: limitPrice)
+            of: .subnetBuy(
+                hotkey: hotkeys[0],
+                netuid: netuid,
+                grossTao: amount,
+                limitPrice: limitPrice,
+                novaFee: novaFee(basis: amount)
+            )
         )
 
         XCTAssertEqual(validity, unfundedSignerRejection)
@@ -31,11 +37,16 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
                 partials: [],
                 netuid: netuid,
                 limitPrice: limitPrice,
-                quotedTaoOut: amount
+                quotedTaoOut: amount,
+                novaFee: novaFee(basis: amount)
             )
         )
 
         XCTAssertEqual(validity, unfundedSignerRejection)
+    }
+
+    private func novaFee(basis: Balance) throws -> SubtensorNovaFee? {
+        try SubtensorNovaFeeCalculator().fee(basis: basis, rate: SubtensorNovaFeeConstants.fallbackRate)
     }
 
     private func performValidation(of operation: SubtensorStakingOperation) throws -> JSON {
@@ -85,7 +96,9 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
             ).createOperationFactory(account: account, chain: chain)
 
             let extrinsicWrapper = try extrinsicOperationFactory.buildExtrinsic(
-                operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator()),
+                operation.extrinsicBuilderClosure(
+                    novaFeeBeneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary
+                ),
                 signer: signer,
                 payingFeeIn: nil
             )

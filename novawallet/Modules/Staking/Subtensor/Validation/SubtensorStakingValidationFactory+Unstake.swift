@@ -79,11 +79,14 @@ extension SubtensorStakingValidationFactory {
         let hold = SubtensorRootHold(interval: unlockInterval ?? 0, lastStakeBlock: lastStakeBlock ?? 0)
         let remainingBlocks = hold.remainingBlocks(at: currentBlock.map { UInt64($0) } ?? 0)
 
-        return errorCondition(locale: locale, alert: { _, strings in
+        return errorCondition(presenting: { factory, view in
             let remainingTime = TimeInterval(remainingBlocks) * blockTime.timeInterval
-            let eta = remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale)
 
-            return (strings.stakingSubtensorUnstakeLockedTitle(), strings.stakingSubtensorUnstakeLockedMessage(eta))
+            factory.presentable.presentUnstakeLocked(
+                view,
+                eta: remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale),
+                locale: locale
+            )
         }, preservesCondition: {
             guard (unlockInterval ?? 0) > 0, lastStakeBlock != nil else {
                 return true
@@ -100,20 +103,24 @@ private extension SubtensorStakingValidationFactory {
         assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
-            let available = factory.formatAmount(maxSell, assetDisplayInfo: assetDisplayInfo, locale: locale)
-
-            return (strings.commonAmountTooBig(), strings.stakingSubtensorUnstakeExceedsAvailableMessage(available))
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentSellExceedsAvailable(
+                view,
+                available: factory.formatAmount(maxSell, assetDisplayInfo: assetDisplayInfo, locale: locale),
+                locale: locale
+            )
         }, preservesCondition: {
             false
         })
     }
 
     func createSellBelowMinimumOut(minStake: Balance, locale: Locale) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
-            let minimum = factory.formatAmount(minStake, locale: locale)
-
-            return (strings.amountTooLow(), strings.stakingSubtensorUnstakeTooLowMessage(minimum))
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentSellBelowMinimum(
+                view,
+                minimum: factory.formatAmount(minStake, locale: locale),
+                locale: locale
+            )
         }, preservesCondition: {
             false
         })
@@ -145,13 +152,12 @@ private extension SubtensorStakingValidationFactory {
     }
 
     func createErasedRemainderError(for input: SubtensorSellPlanInput, locale: Locale) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
-            let remainder = factory.formatAmount(input.remainderTaoValue, locale: locale)
-            let minStake = factory.formatAmount(input.nominatorMinStake, locale: locale)
-
-            return (
-                strings.stakingSubtensorRemainderLockedTitle(),
-                strings.stakingSubtensorRemainderLockedMessage(remainder, minStake)
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentRemainderLocked(
+                view,
+                remainder: factory.formatAmount(input.remainderTaoValue, locale: locale),
+                minStake: factory.formatAmount(input.nominatorMinStake, locale: locale),
+                locale: locale
             )
         }, preservesCondition: {
             false

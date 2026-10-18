@@ -29,44 +29,33 @@ extension SubtensorNovaFeeCalculator {
         return minimumTaoOut
     }
 
-    static func grossUp(net: Balance) throws -> Balance {
+    static func grossUp(net: Balance, rate: BigRational) throws -> Balance {
         try SubtensorStakingPallet.ensureU64Amount(net)
 
         guard net > 0 else {
             return 0
         }
 
-        let gross = net + SubtensorNovaFeeRateStore.shared.rate.mul(value: net - 1)
+        let gross = net + rate.mul(value: net - 1)
 
         try SubtensorStakingPallet.ensureU64Amount(gross)
 
         return gross
     }
 
-    func fee(basis: Balance) throws -> SubtensorNovaFee? {
+    func fee(basis: Balance, rate: BigRational) throws -> SubtensorNovaFee? {
         guard let beneficiary else {
             throw SubtensorStakingOperationError.novaFeeUnavailable
         }
 
         try SubtensorStakingPallet.ensureU64Amount(basis)
 
-        let amount = SubtensorNovaFeeRateStore.shared.rate.asShareOfGross.mul(value: basis)
+        let amount = rate.asShareOfGross.mul(value: basis)
 
         guard amount > 0 else {
             return nil
         }
 
         return SubtensorNovaFee(amount: amount, beneficiary: beneficiary)
-    }
-
-    func novaFee(for operation: SubtensorStakingOperation) throws -> SubtensorNovaFee? {
-        switch operation {
-        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
-            return nil
-        case let .subnetBuy(_, _, grossTao, _):
-            return try fee(basis: grossTao)
-        case let .subnetSell(_, _, _, _, quotedTaoOut), let .subnetSellGroup(_, _, _, _, quotedTaoOut):
-            return try fee(basis: quotedTaoOut)
-        }
     }
 }

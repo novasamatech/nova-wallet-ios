@@ -128,9 +128,11 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
 
         let service = SubtensorStakingPositionsSyncService(
             accountId: coldkey,
+            chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: 0),
             stakeStateFetchFactory: fetchFactory,
             connection: TestJSONRPCEngine(),
             runtimeService: runtimeService,
+            eventCenter: MockEventCenterProtocol().applyingDefaultStub(),
             operationQueue: OperationQueue(),
             workingQueue: DispatchQueue(label: "test.positions.sync"),
             logger: Logger.shared

@@ -15,6 +15,14 @@ final class SubtensorCataloguePricingTracker {
     private var requestedNetuids: Set<UInt16> = []
     private let callStore = CancellableCallStore()
 
+    var alphaPrices: SubtensorAlphaPrices? {
+        guard case let .success(alphaPrices) = prices else {
+            return nil
+        }
+
+        return alphaPrices
+    }
+
     init(
         alphaPriceProvider: SubtensorAlphaPriceProviderProtocol,
         operationQueue: OperationQueue,
@@ -26,11 +34,20 @@ final class SubtensorCataloguePricingTracker {
     }
 
     func seed() {
+        guard prices == nil else {
+            return
+        }
+
         prices = alphaPriceProvider.cachedPrices().map { .success($0) }
     }
 
     func cancel() {
         callStore.cancel()
+    }
+
+    func reset() {
+        callStore.cancel()
+        prices = nil
     }
 
     func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {

@@ -28,6 +28,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         guard !isRoot else {
             return
@@ -38,6 +39,15 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         interactor.loadCatalogue()
         interactor.loadSubnetLogos()
         interactor.loadCostBasis(for: netuid)
+    }
+
+    func didAppear() {
+        guard isConfirmationShown else {
+            return
+        }
+
+        isConfirmationShown = false
+        forceQuoteRefresh()
     }
 
     func showValidatorInfo() {
@@ -106,6 +116,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             }
 
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            isConfirmationShown = true
             wireframe.showConfirmation(from: view, model: model)
         }
     }

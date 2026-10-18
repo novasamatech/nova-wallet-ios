@@ -34,6 +34,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private let logosCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
+    private var rootHoldsHotkeys: [AccountId] = []
 
     init(
         flowServices: SubtensorFlowServices,
@@ -122,21 +123,6 @@ private extension SubtensorStakingBaseInteractor {
             }
         )
     }
-
-    func provideExistentialDeposit() {
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeProvider,
-            operationQueue: operationQueue
-        ) { [weak self] (result: Result<Balance, Error>) in
-            switch result {
-            case let .success(deposit):
-                self?.basePresenter?.didReceiveExistentialDeposit(deposit)
-            case let .failure(error):
-                self?.logger.error("Existential deposit fetch failed: \(error)")
-            }
-        }
-    }
 }
 
 extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputProtocol {
@@ -145,8 +131,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePriceSubscription()
         makeBlockNumberSubscription()
         makePositionsSubscription()
-
-        provideExistentialDeposit()
     }
 
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
@@ -252,6 +236,21 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         positionsSyncService.refresh()
     }
 
+    func loadExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeProvider,
+            operationQueue: operationQueue
+        ) { [weak self] (result: Result<Balance, Error>) in
+            switch result {
+            case let .success(deposit):
+                self?.basePresenter?.didReceiveExistentialDeposit(deposit)
+            case let .failure(error):
+                self?.basePresenter?.didReceiveBaseError(.existentialDepositFailed(error))
+            }
+        }
+    }
+
     func loadCatalogue() {
         catalogueCallStore.cancel()
 
@@ -282,6 +281,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
     func loadRootHolds(for hotkeys: [AccountId]) {
         holdsCallStore.cancel()
+        rootHoldsHotkeys = hotkeys
 
         executeCancellable(
             wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
@@ -293,9 +293,13 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
             case let .success((holds, _)):
                 self?.basePresenter?.didReceiveRootHolds(holds)
             case let .failure(error):
-                self?.logger.warning("Subtensor root holds unavailable: \(error)")
+                self?.basePresenter?.didReceiveBaseError(.rootHoldsFailed(error))
             }
         }
+    }
+
+    func retryRootHolds() {
+        loadRootHolds(for: rootHoldsHotkeys)
     }
 }
 

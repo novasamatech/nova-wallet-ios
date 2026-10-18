@@ -10,6 +10,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func showAllSubnets()
     func retry()
     func setup()
+    func didAppear()
     func updateAmount(_ newValue: Decimal?)
     func selectMax()
     func selectAmountPercentage(_ percentage: Float)

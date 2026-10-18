@@ -38,6 +38,12 @@ final class SubtensorUnstakeSetupVC: UIViewController, ViewHolder, ImportantView
 
         presenter.setup()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.didAppear()
+    }
 }
 
 private extension SubtensorUnstakeSetupVC {

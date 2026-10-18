@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
+final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubnetDetailsInteractorOutputProtocol?
 
     let subnet: SubtensorSubnetRef
@@ -12,10 +12,10 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -43,12 +43,13 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
         presetFactory = state.earnServices.validatorPresetFactory
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
+        earnSettings = state.earnServices.earnSettings
         positionsSyncService = state.positionsSyncService
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.currencyManager = currencyManager
         self.operationQueue = operationQueue
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -80,6 +81,10 @@ private extension SubtensorSubnetDetailsInteractor {
         )
     }
 
+    func provideFavorite() {
+        presenter?.didReceive(isFavorite: earnSettings.favouriteSubnets.contains(subnet))
+    }
+
     func loadYields() {
         load(
             yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
@@ -107,7 +112,8 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func setup() {
-        subscribeTaoPrice(currency: currencyManager.selectedCurrency)
+        provideFavorite()
+        subscribeTaoPrice(currency: selectedCurrency)
         subscribePositions()
 
         loadYields()
@@ -136,7 +142,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         let wrapper = priceHistoryService?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: currencyManager.selectedCurrency
+            currency: selectedCurrency
         ) ?? .createWithResult(nil)
 
         executeCancellable(
@@ -153,6 +159,11 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
                 self?.presenter?.didFailHistory(for: period)
             }
         }
+    }
+
+    func toggleFavorite() {
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnet])
+        provideFavorite()
     }
 
     func presetValidator(existingHotkey: AccountId?) {
@@ -179,5 +190,17 @@ extension SubtensorSubnetDetailsInteractor: ApplicationHandlerDelegate {
 extension SubtensorSubnetDetailsInteractor: SubtensorTaoPriceSubscribing {
     func deliverTaoPrice(_ price: PriceData?) {
         presenter?.didReceiveTaoPrice(price)
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
+        presenter?.didChangeCurrency()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

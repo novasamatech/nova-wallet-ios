@@ -19,6 +19,7 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func cachedPrices() -> SubtensorAlphaPrices?
     func cachedYields() -> SubtensorAlphaYields?
     func setup()
+    func refreshPendingClaims()
     func refreshPositions()
     func loadPrices()
     func loadSubnetsInfo()
@@ -40,6 +41,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didFailValidator(for hotkey: AccountId)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
+    func didReceive(pendingClaimHotkeys: Set<AccountId>)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
@@ -47,7 +49,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorValidatorInfoPresentable {
+protocol SubtensorPositionWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorValidatorInfoPresentable {
     func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)

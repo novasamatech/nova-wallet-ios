@@ -1,12 +1,16 @@
 import Foundation
 
 extension SubtensorConfirmPresenter {
-    func createStakeOperation(amount: Balance, limitPrice: Balance?) -> SubtensorStakingOperation? {
+    func createStakeOperation(
+        amount: Balance,
+        limitPrice: Balance?,
+        quote: SubtensorTradeQuote?
+    ) -> SubtensorStakingOperation? {
         guard !model.target.isRoot else {
             return .rootStake(hotkey: model.validator.hotkey, amount: amount)
         }
 
-        guard let limitPrice else {
+        guard let limitPrice, let quote else {
             return nil
         }
 
@@ -14,7 +18,8 @@ extension SubtensorConfirmPresenter {
             hotkey: model.validator.hotkey,
             netuid: model.target.netuid,
             grossTao: amount,
-            limitPrice: limitPrice
+            limitPrice: limitPrice,
+            novaFee: quote.novaFee
         )
     }
 

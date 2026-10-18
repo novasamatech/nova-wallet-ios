@@ -33,7 +33,8 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
             netuid: netuid,
             alpha: 500_000_000_000,
             limitPrice: 7_644_839,
-            quotedTaoOut: 3_859_500_000
+            quotedTaoOut: 3_859_500_000,
+            novaFee: SubtensorNovaFee(amount: 11_467_258, beneficiary: beneficiary)
         )
 
         let outcome = try parse(events, for: operation)
@@ -59,7 +60,8 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
             hotkey: hotkey,
             netuid: netuid,
             grossTao: 10_000_000_000,
-            limitPrice: 74_169_000
+            limitPrice: 74_169_000,
+            novaFee: SubtensorNovaFee(amount: 84_283_589, beneficiary: beneficiary)
         )
 
         let outcome = try parse(events, for: operation)

@@ -15,18 +15,6 @@ struct ExtrinsicStatusUpdate {
         }
     }
 
-    func getTerminalBlockHash(trackingTill: ExtrinsicTrackingTill) -> BlockHash? {
-        switch (trackingTill, extrinsicStatus) {
-        case let (.finalized, .finalized(blockHash)):
-            blockHash
-        case let (.inBlock, .inBlock(blockHash)),
-             let (.inBlock, .finalized(blockHash)):
-            blockHash
-        default:
-            nil
-        }
-    }
-
     func getFinalExtrinsicFailure() -> FinalExtrinsicStatusError? {
         switch extrinsicStatus {
         case .invalid:

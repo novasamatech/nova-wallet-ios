@@ -157,7 +157,7 @@ extension SubtensorCostBasisViewModelFactory {
         switch costBasis {
         case .loading:
             return .loading
-        case .unavailable:
+        case .unavailable, .resolved(.incompleteHistory):
             return createUnknownValue(locale: locale)
         case .resolved(.noPurchases):
             return createNoPurchasesValue(locale: locale)

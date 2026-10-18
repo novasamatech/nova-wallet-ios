@@ -4,7 +4,7 @@ extension SubtensorConfirmPresenter {
     func createUnstakeOperation(
         for unstakeModel: SubtensorUnstakeModel,
         limitPrice: Balance?,
-        quotedTaoOut: Balance?
+        quote: SubtensorTradeQuote?
     ) -> SubtensorStakingOperation? {
         guard !model.target.isRoot else {
             let amount = SubtensorAmountPolicy.rootUnstakeAmount(
@@ -17,14 +17,15 @@ extension SubtensorConfirmPresenter {
             return unstakeModel.plan.rootOperation(amount: amount)
         }
 
-        guard let limitPrice, let quotedTaoOut else {
+        guard let limitPrice, let quote else {
             return nil
         }
 
         return unstakeModel.plan.subnetOperation(
             netuid: unstakeModel.netuid,
             limitPrice: limitPrice,
-            quotedTaoOut: quotedTaoOut
+            quotedTaoOut: quote.quote.sim.taoAmount,
+            novaFee: quote.novaFee
         )
     }
 
@@ -80,7 +81,7 @@ extension SubtensorConfirmPresenter {
 
     func emptiesPosition(_ operation: SubtensorStakingOperation, group: SubtensorPortfolioGroup?) -> Bool {
         switch operation {
-        case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _):
+        case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _, _):
             let groupHotkeys = Set(group?.positions.map(\.hotkey) ?? [])
             return partials.isEmpty && groupHotkeys.isSubset(of: Set(exits))
         case .rootStake, .rootUnstake, .rootClaim, .subnetBuy, .subnetSell:
