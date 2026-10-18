@@ -17,6 +17,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
     private var rootYields: SubtensorAlphaYields?
     private var subnetYields: [UInt16: SubtensorAlphaYields] = [:]
+    private var requestedSubnetNetuids: Set<UInt16>?
     private var isSyncCompletionDeferred = false
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
@@ -78,6 +79,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
         subnetYieldsCallStore.cancel()
+        requestedSubnetNetuids = nil
         cataloguePricing.cancel()
         stakeStateSubscription.unsubscribe()
     }
@@ -94,7 +96,11 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private func handle(state: Multistaking.SubtensorStakingState) {
         persistState(state)
-        performMaxApyFetch()
+
+        if !state.hasActiveStaking {
+            performMaxApyFetch()
+        }
+
         performRootYieldsFetch()
         performSubnetYieldsFetch()
         performCataloguePricingRefresh()
@@ -200,15 +206,19 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performSubnetYieldsFetch() {
-        guard
-            !subnetYieldsCallStore.hasCall,
-            let lastState,
-            lastState.rootStakeInRao == nil,
-            !lastState.heldSubnetNetuids.isEmpty else {
+        guard !subnetYieldsCallStore.hasCall, let lastState, lastState.rootStakeInRao == nil else {
             return
         }
 
-        let yieldWrappers = lastState.heldSubnetNetuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
+        let netuids = lastState.heldSubnetNetuids
+
+        guard !netuids.isEmpty, netuids != requestedSubnetNetuids else {
+            return
+        }
+
+        requestedSubnetNetuids = netuids
+
+        let yieldWrappers = netuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
 
         let mergeOperation = ClosureOperation<[UInt16: SubtensorAlphaYields]> {
             try yieldWrappers.reduce(into: [:]) { result, wrapper in
@@ -234,6 +244,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 self?.updateSubnetYields(yields)
             case let .failure(error):
                 self?.logger.warning("Subnet yields fetch error: \(error)")
+                self?.requestedSubnetNetuids = nil
                 self?.completeDeferredSync()
             }
         }
@@ -322,6 +333,9 @@ extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProt
             return
         }
 
+        requestedSubnetNetuids = nil
+
+        performMaxApyFetch()
         stakeStateSubscription.refresh()
     }
 }
