@@ -110,9 +110,11 @@ private extension SubtensorStakingSharedState {
 
         let service = SubtensorStakingPositionsSyncService(
             accountId: accountId,
+            chainAssetId: stakingOption.chainAsset.chainAssetId,
             stakeStateFetchFactory: stakeStateFetchFactory,
             connection: connection,
             runtimeService: runtimeService,
+            eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger
@@ -223,7 +225,6 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
             signer: signer,
             runtimeProvider: runtimeProvider,
-            positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
             configProvider: earnServices.subnetLogosProvider,

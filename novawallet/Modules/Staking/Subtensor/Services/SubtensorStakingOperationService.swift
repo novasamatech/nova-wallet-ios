@@ -9,7 +9,6 @@ final class SubtensorStakingOperationService {
     let extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let signer: SigningWrapperProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let sharedOperation: SharedOperationProtocol?
     let eventCenter: EventCenterProtocol
     let configProvider: SubtensorConfigProviding
@@ -25,7 +24,6 @@ final class SubtensorStakingOperationService {
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         sharedOperation: SharedOperationProtocol?,
         eventCenter: EventCenterProtocol,
         configProvider: SubtensorConfigProviding,
@@ -38,7 +36,6 @@ final class SubtensorStakingOperationService {
         self.extrinsicSubmitMonitor = extrinsicSubmitMonitor
         self.signer = signer
         self.runtimeProvider = runtimeProvider
-        self.positionsSyncService = positionsSyncService
         self.sharedOperation = sharedOperation
         self.eventCenter = eventCenter
         self.configProvider = configProvider
@@ -54,7 +51,6 @@ private extension SubtensorStakingOperationService {
             accountId: accountId,
             novaFeeBeneficiary: feeCalculator.beneficiary,
             signer: signer,
-            positionsSyncService: positionsSyncService,
             eventCenter: eventCenter,
             errorMapper: errorMapper
         )
@@ -208,7 +204,6 @@ private struct SubtensorStakingSubmissionFinalizer {
     let accountId: AccountId
     let novaFeeBeneficiary: AccountId?
     let signer: SubtensorRecordingSigner
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let eventCenter: EventCenterProtocol
     let errorMapper: SubtensorStakingErrorMapping
 
@@ -283,7 +278,6 @@ private extension SubtensorStakingSubmissionFinalizer {
     }
 
     func notifyStakingChanged() {
-        positionsSyncService?.refresh()
         eventCenter.notify(with: SubtensorStakingChanged(chainAssetId: chainAssetId, accountId: accountId))
     }
 }

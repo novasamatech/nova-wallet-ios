@@ -44,7 +44,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             blockHash: blockHash
         ))
         XCTAssertEqual(context.sharedOperation.status, .sent)
-        verify(context.positionsSyncService, times(1)).refresh()
         let eventCaptor = ArgumentCaptor<EventProtocol>()
         verify(context.eventCenter, times(1)).notify(with: eventCaptor.capture())
         let changed = try XCTUnwrap(eventCaptor.value as? SubtensorStakingChanged)
@@ -69,7 +68,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         XCTAssertEqual(failure.stage, .dispatched(blockHash: blockHash, extrinsicHash: extrinsicHash))
         XCTAssertEqual(failure.error as? SubtensorStakingSubmissionError, .slippageTooHigh)
         XCTAssertEqual(context.sharedOperation.status, .composing)
-        verify(context.positionsSyncService, never()).refresh()
         verify(context.eventCenter, never()).notify(with: any())
     }
 
@@ -94,7 +92,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         XCTAssertEqual(failure.stage, .unconfirmed(extrinsicHash: nil))
         XCTAssertEqual(context.sharedOperation.status, .sent)
-        verify(context.positionsSyncService, times(1)).refresh()
         verify(context.eventCenter, times(1)).notify(with: any())
     }
 
@@ -117,7 +114,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
     private struct Context {
         let service: SubtensorStakingOperationService
-        let positionsSyncService: MockSubtensorPositionsSyncServiceProtocol
         let eventCenter: MockEventCenterProtocol
         let sharedOperation: SharedOperation
     }
@@ -128,10 +124,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
     ) throws -> Context {
         let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42)
         let chainAsset = try XCTUnwrap(chain.utilityChainAsset())
-        let positionsSyncService = MockSubtensorPositionsSyncServiceProtocol()
-        stub(positionsSyncService) { stub in
-            when(stub.refresh()).thenDoNothing()
-        }
         let eventCenter = MockEventCenterProtocol().applyingDefaultStub()
         let sharedOperation = SharedOperation()
 
@@ -142,7 +134,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             extrinsicSubmitMonitor: submitMonitor,
             signer: DummySigner(cryptoType: .sr25519),
             runtimeProvider: RuntimeCodingServiceStub(factory: RuntimeCodingServiceStub.createBittensorCodingFactory()),
-            positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
             configProvider: MockSubtensorConfigProviding(),
@@ -151,7 +142,6 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         return Context(
             service: service,
-            positionsSyncService: positionsSyncService,
             eventCenter: eventCenter,
             sharedOperation: sharedOperation
         )
