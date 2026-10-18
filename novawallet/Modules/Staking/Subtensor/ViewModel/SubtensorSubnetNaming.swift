@@ -91,6 +91,21 @@ extension AssetBalanceDisplayInfo {
 
         return subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
     }
+
+    func subtensorAlphaAmount(
+        _ amount: Balance,
+        netuid: UInt16,
+        catalogue: SubtensorSubnetCatalogue?,
+        locale: Locale
+    ) -> String {
+        let alphaInfo = subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+
+        let text = AssetBalanceFormatterFactory().createTokenFormatter(for: alphaInfo)
+            .value(for: locale)
+            .stringFromDecimal(amount.decimal(assetInfo: self)) ?? .subtensorUnknown(for: locale)
+
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
+    }
 }
 
 extension String {

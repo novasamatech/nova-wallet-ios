@@ -1,9 +1,8 @@
 import Foundation
 
 struct SubtensorQuickPickSnapshot {
-    let catalogue: SubtensorSubnetCatalogue
+    let ref: SubtensorSubnetRef
     let info: SubtensorSubnetsInfo
-    let apy: [UInt16: Decimal]
 }
 
 /// A visit owns its draw, including across retries while the selected subnet is not yet ready to trade.
@@ -15,7 +14,7 @@ final class SubtensorQuickPickVisit {
     }
 
     let order: SubtensorQuickPickOrder
-    private var selectedRef: SubtensorSubnetRef?
+    private(set) var selectedRef: SubtensorSubnetRef?
     private(set) var isManuallyReplaced = false
     private(set) var isLoading = false
     private(set) var error: Error?
@@ -41,7 +40,7 @@ final class SubtensorQuickPickVisit {
 
         do {
             let snapshot = try result.get()
-            let ref = try selectedRef ?? select(from: snapshot.catalogue, apy: snapshot.apy)
+            let ref = snapshot.ref
             selectedRef = ref
 
             guard let subnet = snapshot.info.subnets.first(where: { $0.netuid == ref.netuid }) else {
@@ -65,8 +64,12 @@ final class SubtensorQuickPickVisit {
     }
 }
 
-private extension SubtensorQuickPickVisit {
-    func select(from catalogue: SubtensorSubnetCatalogue, apy: [UInt16: Decimal]) throws -> SubtensorSubnetRef {
+extension SubtensorQuickPickVisit {
+    static func select(
+        order: SubtensorQuickPickOrder,
+        from catalogue: SubtensorSubnetCatalogue,
+        apy: [UInt16: Decimal]
+    ) throws -> SubtensorSubnetRef {
         let eligible = catalogue.subnets.filter {
             $0.taoReserve >= SubtensorSubnetListBuilder.thinPoolThreshold && (order != .apy || apy[$0.netuid] != nil)
         }

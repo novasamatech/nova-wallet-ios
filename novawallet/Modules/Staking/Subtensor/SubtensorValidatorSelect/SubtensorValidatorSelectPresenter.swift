@@ -122,7 +122,6 @@ private extension SubtensorValidatorSelectPresenter {
 
 extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
         provideState()
         interactor.setup()
     }
@@ -192,6 +191,11 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
 }
 
 extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProtocol {
+    func didReceive(snapshot: SubtensorValidatorSelectSnapshot) {
+        seed(from: snapshot)
+        provideState()
+    }
+
     func didReceive(directory: SubtensorValidatorDirectory) {
         apply(directory: directory)
         provideState()

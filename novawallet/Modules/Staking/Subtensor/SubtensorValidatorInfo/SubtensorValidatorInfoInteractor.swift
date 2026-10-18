@@ -64,9 +64,23 @@ private extension SubtensorValidatorInfoInteractor {
     func loadRate() {
         rateStore.cancel()
 
-        load(createRateWrapper(), in: rateStore, label: "validator reward rate") { [weak self] in
-            self?.presenter?.didReceive(annualRate: $0 ?? nil)
-        }
+        let yieldService = yieldService
+        let hotkey = hotkey
+        let netuid = target.netuid
+
+        load(
+            createRateWrapper(),
+            cached: {
+                yieldService.cachedAlphaYields(for: netuid).value.map {
+                    SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: $0)
+                }
+            },
+            in: rateStore,
+            label: "validator reward rate",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(annualRate: $0 ?? nil)
+            }
+        )
     }
 
     func loadAlphaPrice() {
@@ -78,32 +92,21 @@ private extension SubtensorValidatorInfoInteractor {
         catalogueStore.cancel()
 
         let subnet = target.subnetRef
+        let catalogueService = catalogueService
 
         load(
             catalogueService.createCatalogueWrapper(),
+            cached: { catalogueService.cachedCatalogue().value },
             in: catalogueStore,
-            label: "catalogue for the validator stake"
-        ) { [weak self] in
-            self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
-        }
+            label: "catalogue for the validator stake",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
+            }
+        )
     }
 }
 
 extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorValidatorInfoSnapshot {
-        let hotkey = hotkey
-        let subnet = target.subnetRef
-
-        return SubtensorValidatorInfoSnapshot(
-            annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
-                SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
-            },
-            alphaPrice: target.isRoot
-                ? .miss
-                : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
-        )
-    }
-
     func setup() {
         load(
             coverageFactory.createWrapper(for: hotkey),

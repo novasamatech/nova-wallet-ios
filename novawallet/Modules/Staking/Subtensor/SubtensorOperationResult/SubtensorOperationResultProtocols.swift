@@ -14,7 +14,6 @@ protocol SubtensorResultPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorResultInteractorInputProtocol: AnyObject {
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue>
     func setup()
     func fetchBlockTimestamp(at blockHash: BlockHash)
     func fetchRootHoldRemainingBlocks(for hotkeys: [AccountId])

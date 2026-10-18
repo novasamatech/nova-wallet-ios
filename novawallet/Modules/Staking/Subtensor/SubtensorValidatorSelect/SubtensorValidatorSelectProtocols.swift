@@ -76,12 +76,12 @@ protocol ValidatorSelectPresenterProtocol: AnyObject {
 }
 
 protocol ValidatorSelectInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot
     func setup()
     func retry()
 }
 
 protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
+    func didReceive(snapshot: SubtensorValidatorSelectSnapshot)
     func didReceive(directory: SubtensorValidatorDirectory)
     func didFailDirectory(_ error: Error)
     func didReceive(yields: SubtensorAlphaYields?)

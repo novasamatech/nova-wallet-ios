@@ -6,7 +6,7 @@ extension SubtensorStakingSetupPresenter {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         quickPickVisit.beginRequest()
         provideViewModel()
-        interactor.loadQuickPickSnapshot(for: quickPickVisit.order)
+        interactor.loadQuickPickSnapshot(for: quickPickVisit.order, selectedRef: quickPickVisit.selectedRef)
     }
 
     func retryQuickPick() {

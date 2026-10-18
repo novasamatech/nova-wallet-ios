@@ -10,6 +10,8 @@ struct SubtensorSubnetsInfo: Equatable {
 
 protocol SubtensorSubnetsServiceProtocol: AnyObject {
     func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo>
+
+    func createSubnetInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorSubnetsInfo>
 }
 
 final class SubtensorSubnetsService {
@@ -64,6 +66,37 @@ extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
             targetOperation: mergeOperation,
             dependencies: dynamicInfoWrapper.allOperations + pricesWrapper.allOperations +
                 subtokenWrapper.allOperations
+        )
+    }
+
+    func createSubnetInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
+        let dynamicInfoWrapper = operationFactory.createDynamicInfoWrapper(for: netuid)
+        let priceWrapper = operationFactory.createAlphaPriceWrapper(for: netuid, blockHash: nil)
+        let subtokenWrapper = operationFactory.createSubtokenEnabledWrapper(for: [netuid])
+
+        let mergeOperation = ClosureOperation<SubtensorSubnetsInfo> {
+            let dynamicInfo = try dynamicInfoWrapper.targetOperation.extractNoCancellableResultData()
+            let price = try priceWrapper.targetOperation.extractNoCancellableResultData()
+            let subtokenEnabled = try subtokenWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let dynamicInfo else {
+                return SubtensorSubnetsInfo(subnets: [], prices: [:], subtokenEnabled: [])
+            }
+
+            return SubtensorSubnetsInfo(
+                subnets: [dynamicInfo],
+                prices: [netuid: price],
+                subtokenEnabled: subtokenEnabled
+            )
+        }
+
+        mergeOperation.addDependency(dynamicInfoWrapper.targetOperation)
+        mergeOperation.addDependency(priceWrapper.targetOperation)
+        mergeOperation.addDependency(subtokenWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: dynamicInfoWrapper.allOperations + priceWrapper.allOperations + subtokenWrapper.allOperations
         )
     }
 }

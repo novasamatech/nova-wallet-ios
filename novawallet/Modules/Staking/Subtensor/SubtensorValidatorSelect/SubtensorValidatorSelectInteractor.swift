@@ -130,20 +130,25 @@ private extension SubtensorValidatorSelectInteractor {
 }
 
 extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
-        let subnet = target.subnetRef
-
-        return SubtensorValidatorSelectSnapshot(
-            directory: directoryService.cachedDirectory(for: subnet),
-            yields: yieldService.cachedAlphaYields(for: subnet.netuid),
-            alphaPrice: target.isRoot
-                ? .miss
-                : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
-        )
-    }
-
     func setup() {
-        loadAll()
+        let subnet = target.subnetRef
+        let isRoot = target.isRoot
+        let directoryService = directoryService
+        let yieldService = yieldService
+        let catalogueService = catalogueService
+
+        loadCached({
+            SubtensorValidatorSelectSnapshot(
+                directory: directoryService.cachedDirectory(for: subnet),
+                yields: yieldService.cachedAlphaYields(for: subnet.netuid),
+                alphaPrice: isRoot
+                    ? .miss
+                    : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+            )
+        }, in: directoryStore, then: { [weak self] snapshot in
+            self?.presenter?.didReceive(snapshot: snapshot)
+            self?.loadAll()
+        })
     }
 
     func retry() {

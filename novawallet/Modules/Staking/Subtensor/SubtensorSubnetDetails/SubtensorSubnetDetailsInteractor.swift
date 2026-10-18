@@ -86,13 +86,18 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 
     func loadYields() {
+        let yieldService = yieldService
+        let netuid = subnet.netuid
+
         load(
-            yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            yieldService.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
-            label: "subnet yields"
-        ) { [weak self] in
-            self?.presenter?.didReceiveYields($0)
-        }
+            label: "subnet yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveYields($0)
+            }
+        )
     }
 
     func loadSubnetLogos() {
@@ -107,10 +112,6 @@ private extension SubtensorSubnetDetailsInteractor {
 }
 
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
-    func cachedYields() -> SubtensorAlphaYields? {
-        yieldService.cachedAlphaYields(for: subnet.netuid).value
-    }
-
     func setup() {
         provideFavorite()
         subscribeTaoPrice(currency: selectedCurrency)
@@ -145,19 +146,10 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
             currency: selectedCurrency
         ) ?? .createWithResult(nil)
 
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: historyCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(history):
-                self?.presenter?.didReceiveHistory(history, for: period)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet price history unavailable: \(error)")
-                self?.presenter?.didFailHistory(for: period)
-            }
+        load(wrapper, in: historyCallStore, label: "subnet price history") { [weak self] in
+            self?.presenter?.didReceiveHistory($0, for: period)
+        } fail: { [weak self] in
+            self?.presenter?.didFailHistory(for: period)
         }
     }
 
