@@ -2,7 +2,8 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConstantFetching {
+final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConstantFetching,
+    MultistakingOnchainSyncServiceProtocol {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset

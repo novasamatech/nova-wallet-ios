@@ -8,10 +8,6 @@ struct SubtensorStakingPosition: Equatable {
     let isRegistered: Bool
 }
 
-enum SubtensorStakingStateError: Error {
-    case staleRootRedeemable
-}
-
 extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
@@ -35,10 +31,6 @@ extension Multistaking {
             rootClaimPreviews.filter(SubtensorRootClaimRule.isClaimable).reduce(into: [:]) { accum, preview in
                 accum[preview.hotkey, default: .zero] += preview.redeemable
             }
-        }
-
-        var rootRedeemableError: SubtensorStakingStateError? {
-            isRootRedeemableStale ? .staleRootRedeemable : nil
         }
 
         var totalRootRedeemable: BigUInt {

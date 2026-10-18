@@ -8,15 +8,18 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
     let configProvider: GlobalConfigProviding
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
+    let subtensorProcessServices: SubtensorStakingProcessServices
 
     init(
         configProvider: GlobalConfigProviding,
         storageFacade: StorageFacadeProtocol,
-        chainRegistry: ChainRegistryProtocol
+        chainRegistry: ChainRegistryProtocol,
+        subtensorProcessServices: SubtensorStakingProcessServices
     ) {
         self.configProvider = configProvider
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
+        self.subtensorProcessServices = subtensorProcessServices
     }
 
     func createService(for wallet: MetaAccountModel) -> MultistakingSyncServiceProtocol {
@@ -41,7 +44,8 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
             providerFactory: providerFactory,
             multistakingRepositoryFactory: multistakingRepositoryFactory,
             substrateRepositoryFactory: substrateRepositoryFactory,
-            offchainOperationFactory: offchainOperationFactory
+            offchainOperationFactory: offchainOperationFactory,
+            subtensorProcessServices: subtensorProcessServices
         )
     }
 }
