@@ -26,7 +26,6 @@ enum SubtensorPositionViewFactory {
             wallet: SelectedWalletSettings.shared.value,
             account: state.selectedAccount,
             chainAsset: state.stakingOption.chainAsset,
-            pendingRootClaims: state.flowState.pendingRootClaims,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
             viewModelFactory: SubtensorPositionViewModelFactory(

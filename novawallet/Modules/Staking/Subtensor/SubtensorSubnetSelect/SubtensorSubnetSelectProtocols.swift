@@ -37,12 +37,15 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
 protocol SubnetSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func refreshFavourites()
+    func toggleFavorite(_ subnetRef: SubtensorSubnetRef)
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef])
     func loadApy()
 }
 
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(entries: [SubtensorSubnetListItem])
+    func didReceive(favourites: Set<SubtensorSubnetRef>)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didReceive(apy: [UInt16: Decimal]?)
