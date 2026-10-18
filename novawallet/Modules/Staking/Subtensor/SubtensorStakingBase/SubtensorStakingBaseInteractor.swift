@@ -34,6 +34,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private let logosCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
+    private var rootHoldsHotkeys: [AccountId] = []
 
     init(
         flowServices: SubtensorFlowServices,
@@ -282,6 +283,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
     func loadRootHolds(for hotkeys: [AccountId]) {
         holdsCallStore.cancel()
+        rootHoldsHotkeys = hotkeys
 
         executeCancellable(
             wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
@@ -293,9 +295,13 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
             case let .success((holds, _)):
                 self?.basePresenter?.didReceiveRootHolds(holds)
             case let .failure(error):
-                self?.logger.warning("Subtensor root holds unavailable: \(error)")
+                self?.basePresenter?.didReceiveBaseError(.rootHoldsFailed(error))
             }
         }
+    }
+
+    func retryRootHolds() {
+        loadRootHolds(for: rootHoldsHotkeys)
     }
 }
 
