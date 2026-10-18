@@ -6301,7 +6301,7 @@
 		9A6D2E122E60000100000002 /* SubtensorSubnetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E122E60000100000001 /* SubtensorSubnetCell.swift */; };
 		9A6D2E122E60000100000012 /* SubtensorSubnetCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E122E60000100000011 /* SubtensorSubnetCardCell.swift */; };
 		9A6D2E132E60000100000002 /* SubtensorSubnetSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E132E60000100000001 /* SubtensorSubnetSelectViewModel.swift */; };
-		9A76E7020D9845458C6D865D /* SubtensorChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E8F6A6F9384272AA487DBE /* SubtensorChanged.swift */; };
+		9A76E7020D9845458C6D865D /* SubtensorStakeChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E8F6A6F9384272AA487DBE /* SubtensorStakeChanged.swift */; };
 		6C012AEC273A584076B18BAC /* SubtensorMaxApyFetched.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6795DBFDC0CFAF4BD76EC35A /* SubtensorMaxApyFetched.swift */; };
 		9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA49A762B2FBB66FD6A55FC /* ControllerAccountConfirmationProtocols.swift */; };
 		9AA018D4BDEEECF00018F049 /* DelegatedSignFeeValidationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AAAF09837D225A05769A7D /* DelegatedSignFeeValidationPresenter.swift */; };
@@ -13715,7 +13715,7 @@
 		E0D139E39F5ECE929FF724B8 /* SwapExecutionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapExecutionViewController.swift; sourceTree = "<group>"; };
 		E0DB3702730ED133BBEA68C3 /* MainTabBarIndex+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainTabBarIndex+Analytics.swift"; sourceTree = "<group>"; };
 		E0DB5EA5195D9433A4B90793 /* AdvancedWalletWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedWalletWireframe.swift; sourceTree = "<group>"; };
-		E0E8F6A6F9384272AA487DBE /* SubtensorChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorChanged.swift; sourceTree = "<group>"; };
+		E0E8F6A6F9384272AA487DBE /* SubtensorStakeChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeChanged.swift; sourceTree = "<group>"; };
 		6795DBFDC0CFAF4BD76EC35A /* SubtensorMaxApyFetched.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMaxApyFetched.swift; sourceTree = "<group>"; };
 		E0EA7825FB14692DDB4D527A /* HydraEmaOracle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraEmaOracle.swift; sourceTree = "<group>"; };
 		E11575D8B4F64C2E805372A5 /* AccountExportPasswordViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordViewFactory.swift; sourceTree = "<group>"; };
@@ -28995,7 +28995,7 @@
 				0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */,
 				2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */,
 				0C4169212D7892ED000514EE /* StakingRewardInfoChanged.swift */,
-				E0E8F6A6F9384272AA487DBE /* SubtensorChanged.swift */,
+				E0E8F6A6F9384272AA487DBE /* SubtensorStakeChanged.swift */,
 				6795DBFDC0CFAF4BD76EC35A /* SubtensorMaxApyFetched.swift */,
 			);
 			path = Events;
@@ -39600,7 +39600,7 @@
 				2C2EACB3BF054FFAB053911C /* SubtensorSubmissionOperationFactoryProtocol.swift in Sources */,
 				2CB055478B454B89BDBC3BE2 /* SubtensorValidatorChainOperationFactoryProtocol.swift in Sources */,
 				31D977DC16C84A2BA2D1E3E8 /* SubtensorTradeQuoteOperationFactoryProtocol.swift in Sources */,
-				9A76E7020D9845458C6D865D /* SubtensorChanged.swift in Sources */,
+				9A76E7020D9845458C6D865D /* SubtensorStakeChanged.swift in Sources */,
 				6C012AEC273A584076B18BAC /* SubtensorMaxApyFetched.swift in Sources */,
 				076FD3832C6F4CE0B296785F /* SubtensorOperation+Extrinsic.swift in Sources */,
 				043895DBC2234F49B638338E /* SubtensorSubnetCatalogue.swift in Sources */,

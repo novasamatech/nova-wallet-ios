@@ -9,7 +9,7 @@ protocol EventVisitorProtocol: AnyObject {
     func processEraStakersInfoChanged(event: EraStakersInfoChanged)
     func processEraNominationPoolsChanged(event: EraNominationPoolsChanged)
     func processStakingRewardsInfoChanged(event: StakingRewardInfoChanged)
-    func processSubtensorChanged(event: SubtensorChanged)
+    func processSubtensorStakeChanged(event: SubtensorStakeChanged)
     func processSubtensorMaxApyFetched(event: SubtensorMaxApyFetched)
 
     func processChainSyncDidStart(event: ChainSyncDidStart)
@@ -45,7 +45,7 @@ extension EventVisitorProtocol {
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {}
     func processEraNominationPoolsChanged(event _: EraNominationPoolsChanged) {}
     func processStakingRewardsInfoChanged(event _: StakingRewardInfoChanged) {}
-    func processSubtensorChanged(event _: SubtensorChanged) {}
+    func processSubtensorStakeChanged(event _: SubtensorStakeChanged) {}
     func processSubtensorMaxApyFetched(event _: SubtensorMaxApyFetched) {}
 
     func processChainSyncDidStart(event _: ChainSyncDidStart) {}
