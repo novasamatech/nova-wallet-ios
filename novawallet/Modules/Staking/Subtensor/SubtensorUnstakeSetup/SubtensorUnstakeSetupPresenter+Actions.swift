@@ -87,11 +87,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             return
         }
 
-        let dependencies = createValidationDependencies(amount: amount)
-
-        guard var model = createConfirmModel(for: dependencies) else {
-            return
+        if amount != requestedAmount() {
+            provideAmountInputViewModel()
         }
+
+        let dependencies = createValidationDependencies(amount: amount)
+        let model = createConfirmModel(for: dependencies)
 
         dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
             guard let self else {
@@ -99,6 +100,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             }
 
             view?.didStopLoading()
+
+            guard var model else {
+                return
+            }
+
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
             wireframe.showConfirmation(from: view, model: model)
         }
@@ -107,16 +113,21 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 
 extension SubtensorUnstakeSetupPresenter {
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
-        let exitHotkeys = exitHotkeys(for: amount)
+        let plan = plan(for: amount)
         let basis = basis
+
+        let positionAlpha = plan.map { plan in
+            plan.partial.flatMap { basis?.position(of: $0.hotkey) } ?? plan.amount
+        } ?? basis?.drawable
 
         return SubtensorUnstakeValidatingDep(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
+            hotkey: group?.primaryHotkey,
             amount: amount,
-            positionAlpha: exitHotkeys != nil ? basis?.total : basis?.primaryAlpha,
+            positionAlpha: positionAlpha,
+            plan: plan,
             availability: group?.availability,
-            exitHotkeys: exitHotkeys,
             balance: balance,
             fee: fee,
             existentialDeposit: existentialDeposit,
@@ -140,7 +151,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func createUnstakeAllOffer() -> (() -> Void)? {
-        guard let basis, basis.canExitAll, remainingHoldBlocks(for: basis.hotkeys) == nil else {
+        guard let basis, basis.canExitAll else {
             return nil
         }
 
@@ -152,9 +163,9 @@ extension SubtensorUnstakeSetupPresenter {
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,
-            let primary = group?.primaryHotkey,
-            let amount = dependencies.amount, amount > 0,
-            let address = try? primary.toAddress(using: chainAsset.chain.chainFormat) else {
+            let group,
+            let plan = dependencies.plan,
+            let address = try? group.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
 
@@ -163,15 +174,14 @@ extension SubtensorUnstakeSetupPresenter {
             account: selectedAccount,
             target: target,
             validator: SubtensorConfirmValidator(
-                hotkey: primary,
+                hotkey: group.primaryHotkey,
                 display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
                 annualRate: nil
             ),
             mode: .unstake(SubtensorUnstakeModel(
-                hotkey: primary,
                 netuid: netuid,
-                amount: amount,
-                exitHotkeys: dependencies.exitHotkeys
+                plan: plan,
+                groupHotkeys: group.positions.map(\.hotkey)
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)

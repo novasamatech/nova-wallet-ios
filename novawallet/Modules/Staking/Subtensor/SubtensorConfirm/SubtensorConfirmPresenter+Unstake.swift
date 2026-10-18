@@ -14,26 +14,14 @@ extension SubtensorConfirmPresenter {
                 existentialDeposit: existentialDeposit
             )
 
-            return unstakeModel.exitHotkeys.map { .rootUnstakeAll(hotkeys: $0) } ??
-                .rootUnstake(hotkey: unstakeModel.hotkey, amount: amount)
+            return unstakeModel.plan.rootOperation(amount: amount)
         }
 
         guard let limitPrice, let quotedTaoOut else {
             return nil
         }
 
-        guard let exitHotkeys = unstakeModel.exitHotkeys else {
-            return .subnetSell(
-                hotkey: unstakeModel.hotkey,
-                netuid: unstakeModel.netuid,
-                alpha: unstakeModel.amount,
-                limitPrice: limitPrice,
-                quotedTaoOut: quotedTaoOut
-            )
-        }
-
-        return .subnetSellAll(
-            hotkeys: exitHotkeys,
+        return unstakeModel.plan.subnetOperation(
             netuid: unstakeModel.netuid,
             limitPrice: limitPrice,
             quotedTaoOut: quotedTaoOut
@@ -45,7 +33,9 @@ extension SubtensorConfirmPresenter {
             return nil
         }
 
-        let after = unstakeModel.isFullUnstake ? 0 : group.totalAlpha.subtractOrZero(unstakeModel.amount)
+        let plan = unstakeModel.plan
+        let removed = plan.rebuilt(from: group)?.amount ?? plan.amount
+        let after = plan.emptiesGroup(group) ? 0 : group.totalAlpha.subtractOrZero(removed)
 
         return SubtensorConfirmStakeChange(before: group.totalAlpha, after: after)
     }
@@ -54,11 +44,11 @@ extension SubtensorConfirmPresenter {
         guard
             model.target.isRoot,
             case let .unstake(unstakeModel) = model.mode,
-            let exitHotkeys = unstakeModel.exitHotkeys, exitHotkeys.count > 1 else {
+            unstakeModel.plan.hotkeys != [model.validator.hotkey] else {
             return
         }
 
-        interactor.loadRootHolds(for: exitHotkeys)
+        interactor.loadRootHolds(for: unstakeModel.plan.hotkeys)
     }
 
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
@@ -66,11 +56,11 @@ extension SubtensorConfirmPresenter {
     }
 
     func isExitGroupUnchanged() -> Bool {
-        guard case let .unstake(unstakeModel) = model.mode, unstakeModel.isFullUnstake else {
+        guard case let .unstake(unstakeModel) = model.mode, unstakeModel.plan.single == nil else {
             return true
         }
 
-        return SubtensorConfirmTapRule.verifiedExitHotkeys(for: unstakeModel, in: positionsState) != nil
+        return SubtensorConfirmTapRule.verifiedPlan(for: unstakeModel, in: positionsState) != nil
     }
 
     func presentGroupChanged() {
@@ -90,9 +80,9 @@ extension SubtensorConfirmPresenter {
 
     func emptiesPosition(_ operation: SubtensorStakingOperation, group: SubtensorPortfolioGroup?) -> Bool {
         switch operation {
-        case let .rootUnstakeAll(hotkeys), let .subnetSellAll(hotkeys, _, _, _):
+        case let .rootUnstakeGroup(exits, partial), let .subnetSellGroup(exits, partial, _, _, _):
             let groupHotkeys = Set(group?.positions.map(\.hotkey) ?? [])
-            return groupHotkeys.isSubset(of: Set(hotkeys))
+            return partial == nil && groupHotkeys.isSubset(of: Set(exits))
         case .rootStake, .rootUnstake, .rootClaim, .subnetBuy, .subnetSell:
             return false
         }
@@ -100,15 +90,23 @@ extension SubtensorConfirmPresenter {
 
     func confirmUnstake(_ unstakeModel: SubtensorUnstakeModel) {
         let group = liveGroup()
-        let primaryAlpha = group?.positions.first { $0.hotkey == unstakeModel.hotkey }?.stakeAlpha
+        let plan = unstakeModel.plan
+        let liveAmount = group.flatMap { plan.rebuilt(from: $0)?.amount }
+
+        let positionAlpha: Balance? = if let partial = plan.partial {
+            group?.positions.first { $0.hotkey == partial.hotkey }?.stakeAlpha
+        } else {
+            liveAmount
+        }
 
         var dependencies = SubtensorUnstakeValidatingDep(
             netuid: unstakeModel.netuid,
             accountId: model.account.chainAccount.accountId,
-            amount: unstakeModel.isFullUnstake ? group?.totalAlpha : unstakeModel.amount,
-            positionAlpha: unstakeModel.isFullUnstake ? group?.totalAlpha : primaryAlpha,
+            hotkey: model.validator.hotkey,
+            amount: liveAmount,
+            positionAlpha: positionAlpha,
+            plan: plan,
             availability: group?.availability,
-            exitHotkeys: unstakeModel.exitHotkeys,
             balance: balance,
             fee: fee,
             existentialDeposit: existentialDeposit,
