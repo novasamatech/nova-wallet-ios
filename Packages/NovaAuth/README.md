@@ -79,14 +79,18 @@ other wait ends with a boot discontinuity.
 | Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
 | Registration `401 attestation_failed`, `403 app_not_allowed` or `403 binding_not_allowed` | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
-| Platform invalid key, interrupted/unrecoverable/expired attestation, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
+| Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
+| Platform invalid key, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
 `appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
 the current flight/context must match and the saved attempt must be on the same boot with
-age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. Expiry
-retires and fails the current operation. The 20-second margin cannot guarantee native completion.
+age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. A deferred
+attempt past its budget keeps the key and takes a fresh challenge in the same flight; expiry after
+Apple's result drops the key, keeps the client UUID and fails the current operation. The 20-second
+margin cannot guarantee native completion.
 
 Both watchdogs remain: bootstrap HTTP has total 20-second issuance / 100-second registration
 bounds; native calls have their existing local timeout. Before invocation, a failed guard

@@ -86,7 +86,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         XCTAssertEqual(harness.server.count("/register"), 1)
     }
 
-    func testExpiredDeferredAttestationFailsThenLaterDemandReplacesIt() throws {
+    func testExpiredDeferredAttestationTakesAFreshChallengeWithTheSameKey() throws {
         let harness = try AuthHarness()
         harness.apple.attestationError = NovaAuthAppAttestError.serverUnavailable
         let auth = harness.makeAuth()
@@ -94,12 +94,10 @@ final class NovaAuthLifecycleTests: XCTestCase {
         assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context))
         harness.apple.attestationError = nil
         harness.clock.advance(41)
-        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context))
-        XCTAssertEqual(harness.apple.attestations, 1)
+        try execute(auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 1)
-        harness.clock.advance(2)
-        try execute(harness.relaunch().createAdmissionWrapper(in: context))
-        XCTAssertEqual(harness.apple.keys, 2)
+        XCTAssertEqual(harness.apple.attestations, 2)
+        XCTAssertEqual(harness.server.count("/challenges"), 2)
     }
 
     func testDeferredAttestationInsideTheWindowRetriesTheSavedKeyAndAttempt() throws {
