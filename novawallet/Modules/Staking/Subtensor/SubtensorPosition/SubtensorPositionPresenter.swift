@@ -227,7 +227,9 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
         let detail = state.isValidatorResolved ? state.validator : nil
 
-        wireframe.showValidatorInfo(from: view, target: target, hotkey: hotkey, detail: detail)
+        wireframe.showValidatorInfo(
+            from: view, target: target, hotkey: hotkey, detail: detail, needsChainDetail: detail?.status == nil
+        )
     }
 
     func retrySync() {
