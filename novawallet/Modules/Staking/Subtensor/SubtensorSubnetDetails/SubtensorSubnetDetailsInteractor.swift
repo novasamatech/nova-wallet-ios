@@ -159,7 +159,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         presetCallStore.cancel()
 
         load(
-            presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            presetFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in

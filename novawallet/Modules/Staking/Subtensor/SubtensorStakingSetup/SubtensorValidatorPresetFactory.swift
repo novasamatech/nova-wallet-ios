@@ -7,6 +7,11 @@ protocol SubtensorValidatorPresetFactoryProtocol {
         existingHotkey: AccountId?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
 
+    func createListedPresetWrapper(
+        for subnet: SubtensorSubnetRef,
+        existingHotkey: AccountId?
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
+
     func createLockedWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
@@ -130,18 +135,14 @@ private extension SubtensorValidatorPresetFactory {
 
         return detailWrapper.insertingTail(operation: itemOperation)
     }
-}
 
-extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtocol {
     func createPresetWrapper(
         for subnet: SubtensorSubnetRef,
-        existingHotkey: AccountId?
+        existingWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        guard let existingHotkey else {
+        guard let existingWrapper else {
             return createRecommendedWrapper(for: subnet)
         }
-
-        let existingWrapper = createItemWrapper(for: existingHotkey, subnet: subnet)
 
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(
@@ -157,6 +158,28 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
         presetWrapper.addDependency(wrapper: existingWrapper)
 
         return presetWrapper.insertingHead(operations: existingWrapper.allOperations)
+    }
+}
+
+extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtocol {
+    func createPresetWrapper(
+        for subnet: SubtensorSubnetRef,
+        existingHotkey: AccountId?
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        createPresetWrapper(
+            for: subnet,
+            existingWrapper: existingHotkey.map { createItemWrapper(for: $0, subnet: subnet) }
+        )
+    }
+
+    func createListedPresetWrapper(
+        for subnet: SubtensorSubnetRef,
+        existingHotkey: AccountId?
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        createPresetWrapper(
+            for: subnet,
+            existingWrapper: existingHotkey.map { directoryService.createListedDetailWrapper(for: $0, subnet: subnet) }
+        )
     }
 
     func createLockedWrapper(
