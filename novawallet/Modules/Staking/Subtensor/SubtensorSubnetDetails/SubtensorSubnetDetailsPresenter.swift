@@ -14,6 +14,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorState?
+    private var registrationDate: Date?
     private var isPositionsSyncFailed = false
     private var isParametersRequested = false
     private var isPresetRequested = false
@@ -60,7 +61,28 @@ private extension SubtensorSubnetDetailsPresenter {
 
     func loadHistory() {
         state.history = .loading
-        interactor.loadHistory(for: state.period)
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
+    }
+
+    func historyNeedsRegistrationClip() -> Bool {
+        guard let registrationDate else {
+            return false
+        }
+
+        switch state.history {
+        case .loading:
+            return true
+        case let .available(history):
+            guard
+                let lastDate = history.points.last?.date,
+                let windowStart = history.period.startDate(endingAt: lastDate) else {
+                return false
+            }
+
+            return registrationDate > windowStart
+        case .notListed, .failed:
+            return false
+        }
     }
 
     func existingPrimaryHotkey() -> AccountId? {
@@ -118,7 +140,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 
         interactor.setup()
         requestParametersIfNeeded()
-        interactor.loadHistory(for: state.period)
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
     func selectCurrency(at index: Int) {
@@ -206,6 +228,10 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
             return
         }
 
+        if case .available = state.history {
+            return
+        }
+
         state.history = .failed
         provideViewModel()
     }
@@ -214,6 +240,12 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         guard parameters.ref == subnetRef else { return }
         state.parameters = parameters
         state.isParametersLoaded = true
+        registrationDate = parameters.age.map { Date(timeIntervalSinceNow: -$0) }
+
+        if historyNeedsRegistrationClip() {
+            interactor.loadHistory(for: state.period, registrationDate: registrationDate)
+        }
+
         provideViewModel()
     }
 

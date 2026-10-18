@@ -20,7 +20,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
 protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func loadParameters()
-    func loadHistory(for period: SubtensorPricePeriod)
+    func loadHistory(for period: SubtensorPricePeriod, registrationDate: Date?)
     func toggleFavorite()
     func presetValidator(existingHotkey: AccountId?)
 }

@@ -5,7 +5,8 @@ protocol SubtensorPriceHistoryOperationFactoryProtocol: AnyObject {
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
-        currency: Currency
+        currency: Currency,
+        registrationDate: Date?
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?>
 
     func createWeeklyChangesWrapper(
