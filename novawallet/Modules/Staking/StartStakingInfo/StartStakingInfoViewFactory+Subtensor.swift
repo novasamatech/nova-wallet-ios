@@ -51,9 +51,13 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
-        let view = StartStakingInfoSubtensorViewController(
+        let view = StartStakingInfoViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!,
+            secondaryActionTitle: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorQuickAllOptions()
+            }
         )
 
         presenter.view = view
