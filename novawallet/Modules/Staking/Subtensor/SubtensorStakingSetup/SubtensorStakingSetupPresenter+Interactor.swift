@@ -138,6 +138,10 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
     }
 
     func didReceiveBlockNumber(_: BlockNumber) {
+        guard !isConfirmationShown else {
+            return
+        }
+
         forceQuoteRefresh()
     }
 

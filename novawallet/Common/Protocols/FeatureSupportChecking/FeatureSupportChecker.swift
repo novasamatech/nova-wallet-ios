@@ -26,6 +26,12 @@ protocol FeatureSupportCheckerProtocol {
         chains: [ChainModel],
         completion: @escaping FeatureSupportCheckerClosure
     )
+
+    func checkImmediateExecutionSupport(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        completion: @escaping (Bool) -> Void
+    )
 }
 
 extension FeatureSupportCheckerProtocol {
@@ -306,6 +312,14 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
                 completion(result)
             }
         }
+    }
+
+    func checkImmediateExecutionSupport(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        completion: @escaping (Bool) -> Void
+    ) {
+        executeAccountExistenceAndDelay(wallet: wallet, chain: chain, completion: completion)
     }
 }
 

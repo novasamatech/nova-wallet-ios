@@ -143,10 +143,7 @@ extension SubtensorConfirmPresenter {
     func refreshFee() {
         let acknowledged = quoteState?.acknowledged
 
-        guard let operation = createOperation(
-            limitPrice: acknowledged?.limitPrice,
-            quotedTaoOut: acknowledged?.quote.sim.taoAmount
-        ) else {
+        guard let operation = createOperation(limitPrice: acknowledged?.limitPrice, quote: acknowledged) else {
             refreshQuote()
             return
         }
@@ -158,12 +155,12 @@ extension SubtensorConfirmPresenter {
         interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
     }
 
-    func createOperation(limitPrice: Balance?, quotedTaoOut: Balance?) -> SubtensorStakingOperation? {
+    func createOperation(limitPrice: Balance?, quote: SubtensorTradeQuote?) -> SubtensorStakingOperation? {
         switch model.mode {
         case let .stake(amount):
-            return createStakeOperation(amount: amount, limitPrice: limitPrice)
+            return createStakeOperation(amount: amount, limitPrice: limitPrice, quote: quote)
         case let .unstake(unstakeModel):
-            return createUnstakeOperation(for: unstakeModel, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut)
+            return createUnstakeOperation(for: unstakeModel, limitPrice: limitPrice, quote: quote)
         }
     }
 
@@ -244,17 +241,14 @@ extension SubtensorConfirmPresenter {
         }
 
         guard let state = quoteState else {
-            return createOperation(limitPrice: nil, quotedTaoOut: nil).map { ($0, nil) }
+            return createOperation(limitPrice: nil, quote: nil).map { ($0, nil) }
         }
 
         guard let verified = state.verified, let limitPrice = state.signingLimit, !state.isPriceMoved else {
             return nil
         }
 
-        return createOperation(
-            limitPrice: limitPrice,
-            quotedTaoOut: verified.quote.sim.taoAmount
-        ).map { ($0, verified) }
+        return createOperation(limitPrice: limitPrice, quote: verified).map { ($0, verified) }
     }
 
     func handOffAtTap() {
