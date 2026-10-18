@@ -67,6 +67,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     override func performSyncUp() {
         seedRootYields()
+        seedSubnetYields()
         cataloguePricing.seed()
 
         stakeStateSubscription.subscribe()
@@ -95,6 +96,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func handle(state: Multistaking.SubtensorStakingState) {
+        seedSubnetYields()
         persistState(state)
 
         if !state.hasActiveStaking {
@@ -203,6 +205,20 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         rootYields = newRootYields
 
         persistLastStateIfIdle()
+    }
+
+    private func seedSubnetYields() {
+        guard let lastState, lastState.rootStakeInRao == nil else {
+            return
+        }
+
+        for netuid in lastState.heldSubnetNetuids where subnetYields[netuid] == nil {
+            guard case let .fresh(yields) = yieldService.cachedAlphaYields(for: netuid) else {
+                continue
+            }
+
+            subnetYields[netuid] = yields
+        }
     }
 
     private func performSubnetYieldsFetch() {
