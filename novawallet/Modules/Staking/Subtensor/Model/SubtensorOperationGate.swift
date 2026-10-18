@@ -9,10 +9,12 @@ enum SubtensorOperationGate {
 
     static func verdict(for walletType: MetaAccountModelType) -> Verdict {
         switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig:
+        case .secrets, .paritySigner, .polkadotVault, .multisig:
             return .allowed
         case .ledger, .genericLedger:
             return .signerNotSupported(.ledger)
+        case .proxied:
+            return .signerNotSupported(.proxy)
         case .watchOnly:
             return .noSigning
         }
@@ -28,17 +30,10 @@ extension SubtensorOperationGating {
         from view: ControllerBackedProtocol?,
         onAllowed: @escaping () -> Void
     ) {
-        if case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: wallet.type) {
-            presentSignerNotSupported(type, from: view)
-            return
-        }
-
         guard wallet.isDelegated() else {
-            onAllowed()
+            proceedOnVerdict(for: wallet.type, from: view, onAllowed: onAllowed)
             return
         }
-
-        let delayedType: NoSigningSupportType = wallet.type == .multisig ? .multisig : .proxy
 
         FeatureSupportChecker(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -46,12 +41,25 @@ extension SubtensorOperationGating {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         ).checkImmediateExecutionSupport(for: wallet, chain: chain) { [weak self] isSupported in
             guard isSupported else {
-                self?.presentSignerNotSupported(delayedType, from: view)
+                self?.presentSignerNotSupported(.multisig, from: view)
                 return
             }
 
-            onAllowed()
+            self?.proceedOnVerdict(for: wallet.type, from: view, onAllowed: onAllowed)
         }
+    }
+
+    private func proceedOnVerdict(
+        for walletType: MetaAccountModelType,
+        from view: ControllerBackedProtocol?,
+        onAllowed: () -> Void
+    ) {
+        guard case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: walletType) else {
+            onAllowed()
+            return
+        }
+
+        presentSignerNotSupported(type, from: view)
     }
 
     private func presentSignerNotSupported(_ type: NoSigningSupportType, from view: ControllerBackedProtocol?) {
