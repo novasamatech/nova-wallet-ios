@@ -64,6 +64,27 @@ private extension SubtensorSubnetDetailsPresenter {
         interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
+    func historyNeedsRegistrationClip() -> Bool {
+        guard let registrationDate else {
+            return false
+        }
+
+        switch state.history {
+        case .loading:
+            return true
+        case let .available(history):
+            guard
+                let lastDate = history.points.last?.date,
+                let windowStart = history.period.startDate(endingAt: lastDate) else {
+                return false
+            }
+
+            return registrationDate > windowStart
+        case .notListed, .failed:
+            return false
+        }
+    }
+
     func existingPrimaryHotkey() -> AccountId? {
         positions.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: subnetRef.netuid)?.primaryHotkey }
     }
@@ -221,7 +242,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         state.isParametersLoaded = true
         registrationDate = parameters.age.map { Date(timeIntervalSinceNow: -$0) }
 
-        if registrationDate != nil, state.history != .notListed, state.history != .failed {
+        if historyNeedsRegistrationClip() {
             interactor.loadHistory(for: state.period, registrationDate: registrationDate)
         }
 
