@@ -362,16 +362,18 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
 
         let dependencies = createValidationDependencies(for: target)
 
+        guard var model = createConfirmModel(for: dependencies) else {
+            return
+        }
+
         dataValidationFactory.validateStake(for: dependencies, locale: selectedLocale) { [weak self] in
             guard let self else {
                 return
             }
 
             view?.didStopLoading()
-
-            if let model = createConfirmModel(for: dependencies) {
-                wireframe.showConfirmation(from: view, model: model)
-            }
+            model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            wireframe.showConfirmation(from: view, model: model)
         }
     }
 }

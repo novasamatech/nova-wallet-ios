@@ -12,7 +12,7 @@ struct SubtensorConfirmModel {
     let validator: SubtensorConfirmValidator
     let mode: Mode
     let tolerance: BigRational?
-    let acknowledgedQuote: SubtensorTradeQuote?
+    var acknowledgedQuote: SubtensorTradeQuote?
 
     var amount: Balance {
         switch mode {
