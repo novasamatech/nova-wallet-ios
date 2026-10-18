@@ -22,10 +22,12 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func loadParameters()
     func loadHistory(for period: SubtensorPricePeriod)
+    func toggleFavorite()
     func presetValidator(existingHotkey: AccountId?)
 }
 
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
+    func didReceive(isFavorite: Bool)
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters)
@@ -34,6 +36,7 @@ protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didFailPreset()
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
     func didReceiveTaoPrice(_ price: PriceData?)
+    func didChangeCurrency()
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)

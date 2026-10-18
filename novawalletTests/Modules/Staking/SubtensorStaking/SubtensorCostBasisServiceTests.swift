@@ -53,6 +53,34 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         }
     }
 
+    func testTruncatedHistoryIsIncompleteNotNoPurchases() throws {
+        let pages = (1 ... SubtensorCostBasisService.maxPages).map { page in
+            createPage(page, nextPage: page + 1, rows: [])
+        }
+        let service = createService(createApiOperationFactory(pages: pages))
+
+        let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
+
+        XCTAssertEqual(costBasis, .incompleteHistory)
+    }
+
+    func testLabelBreaksTieWhenPriceFitsBothSides() throws {
+        let apiOperationFactory = createApiOperationFactory(pages: [
+            createPage(1, nextPage: nil, rows: [
+                createOperation(netuid: chutesNetuid, amountIn: "4", amountOut: "4.6", price: "1.2", label: "remove_stake"),
+                createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "8", price: "1.2", label: "StakeAdded")
+            ])
+        ])
+        let service = createService(apiOperationFactory)
+
+        let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
+
+        XCTAssertEqual(
+            costBasis,
+            .average(SubtensorPurchaseTotals(paidTao: 5_000_000_000, receivedAlpha: 4_000_000_000))
+        )
+    }
+
     func testOwnStakingChangeDropsCostBasisSeed() throws {
         let apiOperationFactory = createApiOperationFactory(pages: [
             createPage(1, nextPage: nil, rows: [
