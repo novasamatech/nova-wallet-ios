@@ -4,7 +4,6 @@ These diagrams describe the Swift client. “Backend” is only the HTTPS peer t
 
 **Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → analytics.
 
-**Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → Bittensor → analytics.
 The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Bittensor and analytics receive the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
 
 ## 1. Ownership and app composition
@@ -15,18 +14,17 @@ The facade is the app’s composition boundary. It creates the package owner onc
 flowchart TB
   subgraph APP["Main iOS app"]
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
-    AF --> AA["AnalyticsAuthAdapter"]
     BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
-    AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
+    AF -- "authProvider" --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
-    CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
-    HOST["App identity + Keychain access group / host namespace<br/>SettingsManager set/read-back + three queues"] --> F
+    CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
+    HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
     F --> OWNER["ONE NovaAuth owner<br/>installation + issuance coordination"]
     OWNER --> APPLE["DeviceCheck adapter"]
     OWNER --> STATE["Settings identity store"]
-    OWNER --> TOKEN["Shared Keychain token store"]
+    OWNER --> TOKEN["Keychain token store + gated record cache"]
     OWNER --> HTTP["HTTP transport<br/>bootstrap / reads / POSTs"]
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
@@ -285,56 +283,6 @@ sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state 
 Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [redacted failures](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift)
 
 ## 8. Analytics: shared authentication, separate consent and data
-## 8. Bittensor: admission, two cache layers and presentation
-Bittensor adds domain request sharing, decoded display seeds and typed error handling around NovaAuth. Its decoded cache never substitutes for native HTTP freshness. On-chain balances and chain enrichment use the chain connection separately from NovaAuth.
-```mermaid
-sequenceDiagram
-  participant UI as Interactor /<br/>domain service
-  participant F as Bittensor<br/>operation factory
-  participant C as Decoded<br/>response cache
-  participant T as Authorized<br/>transport
-  participant N as Shared<br/>NovaAuth
-  participant H as HTTP cache /<br/>backend
-  UI->>F: Optional synchronous peek
-  F->>C: Read seed with latest<br/>invalidation revision
-  C-->>UI: Expired seed only, via factory
-  UI->>F: Create ordinary protected request
-  F->>C: Create job: admit + fetch
-  C->>T: Admit first
-  T->>N: Resolve context,<br/>demand credential
-  N-->>T: Admission succeeds
-  T-->>C: Auth scope + shared endpoint<br/>with immutable invalidation revision
-  C->>C: Reconcile invalidation floor<br/>then check negatives / join flight
-  opt No negative result and no existing flight
-    C->>T: Fetch with<br/>admitted endpoint
-    T->>N: createResponseWrapper(request)
-    N->>N: Demand again +<br/>pre-send fences
-    N->>H: Authorized GET or<br/>operations-search POST
-    H-->>N: Response, possibly native<br/>cache / revalidation
-    N-->>T: Response or<br/>typed auth error
-    T-->>C: HTTP grading + factory<br/>decode / wire validation
-    C->>C: Reconcile invalidation floor,<br/>auth scope and dataset generation
-  end
-  C-->>UI: Result/error via factory and domain service
-  Note over T,UI: bindingConflict / invalidRequest: generic, no retry<br/>attestationRejected: device-bound, no retry
-  UI->>UI: Combine chain data,<br/>update Presenter on main
-```
-- Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
-- Decoded cache keys include auth scope plus method/path/query/body digest. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
-- Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
-- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Separate context observers invalidate max-APY resolution, cost-basis histories and validator directories, including cold replacement or a failed replacement after the memory fence changes.
-- Cost basis/P&L reads **`POST /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
-- Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
-| Response/error | Bittensor type | Device-bound | User retry |
-| --- | --- | --- | --- |
-| Bootstrap `401 attestation_failed` | `attestationRejected` | Yes | No |
-| `409 client_already_registered`, bootstrap or business | `bindingConflict` | No | No |
-| `403 insufficient_scope`, bootstrap or business | `invalidRequest` (generic presentation) | No | No |
-| Bootstrap `401 invalid_challenge` or 503 | `attestationUnavailable` | No | Yes |
-| Transport failure | `transport` | No | Yes |
-These presentation mappings and later retries belong to Bittensor; NovaAuth returns ordinary business failures.
-The max-APY walk stops on registration refusal, binding conflict, final authorization denial, unsupported device, configuration failure or authentication backoff. It propagates that error without an outer retry or a successful partial result, so the one-hour result cache remains empty. Ordinary route/data gaps can still skip a target, and transient failures keep their bounded retry policy.
-Sources: [shared domain composition](../../../novawallet/Modules/Staking/Model/StakingSharedState/StakingSharedStateFactory+Subtensor.swift) · [transport admission and send](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift) · [factory and decoding](../../../novawallet/Common/Network/Bittensor/BittensorApiOperationFactory.swift) · [decoded cache](../../../novawallet/Common/Network/Bittensor/BittensorApiResponseCache.swift) · [HTTP/auth error grading](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift) · [portfolio refresh/failure](../../../novawallet/Modules/Staking/Subtensor/SubtensorPortfolio/SubtensorPortfolioInteractor.swift) · [device/retry properties](../../../novawallet/Common/Network/Bittensor/BittensorApiError+Recovery.swift) · [bootstrap error mapping](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift)
 
 ```mermaid
 flowchart TB
