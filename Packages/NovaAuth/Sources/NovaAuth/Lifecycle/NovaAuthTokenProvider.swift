@@ -17,6 +17,7 @@ extension NovaAuth {
             gate.novaAuthLocked {
                 do {
                     try cancellation.check()
+                    if storageFailed { try retryStorageWork() }
                     try validate(context: context)
                     try validateReadmission(clientID: expectedClientID)
                     guard isSupported else { throw NovaAuthError.unsupported }
