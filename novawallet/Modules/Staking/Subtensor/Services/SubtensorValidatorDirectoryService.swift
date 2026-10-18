@@ -66,8 +66,6 @@ private extension SubtensorValidatorDirectoryService {
                 return nil
             }
 
-            // A decoded directory is only a display seed. Refresh through admission and
-            // native HTTP caching before using backend metadata in a new detail result.
             let listingWrapper = createListingWrapper(for: subnet.netuid)
             let rowOperation = ClosureOperation<Row?> {
                 guard
