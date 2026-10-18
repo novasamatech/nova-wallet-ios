@@ -7,7 +7,7 @@ and one persisted current bearer serve every protected consumer; renewal replace
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
-GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
+GET and HEAD reads and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
@@ -30,14 +30,15 @@ build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
 A later ordinary demand, including consented Analytics, may initialize the installation.
-This local product policy replaces the supplied profile-3 protocol's user-driven re-creation
-wording at lines 511–514; it is an explicit eligibility change, not behavioral equivalence.
+This local product policy replaces the profile-3 protocol's user-driven re-creation
+wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
-must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
+must-revalidate`; POSTs and bootstrap use `no-store`.
+Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
 The host maps `infraUrl` to one endpoint per process and memoises it.
@@ -121,8 +122,8 @@ record. Corrupt token reads do not delete unrelated data. Version-1 bearer recor
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
 
-Analytics retains batches
-silently for its normal later-flush policy; consent is checked before every send and replay.
+Analytics retains batches silently for its normal later-flush policy; consent is checked before
+every send and replay.
 
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
@@ -130,7 +131,7 @@ requests, state, tokens, UUID/key, proof or body. Successful transitions are not
 Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown and the
 refusal delay are persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
 
-Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
+Source walkthrough: [eight client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
 [retirement](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
 [shared origin protection](Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift),
 [settings storage](Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift), and
@@ -147,7 +148,7 @@ substitute. This implementation retains the mandated reboot detection and existi
 See [Apple's calendar-clock implementation](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/clock.c)
 and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-18-release-notes).
 
-## Protected requests and optional yields
+## Protected requests
 
 Ingress authenticates before protected business handlers execute. A conclusive token denial
 therefore permits one replay preserving the original method, path, query and body. Other

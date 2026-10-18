@@ -133,10 +133,10 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
 has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. There is no request coalescing, negative availability TTL or client TTL.
-Config is
+provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
-observes config or context changes. Chain data is never cached client-side.
+observes config or context changes. Host
+activation authorizes later demand-driven bootstrap.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business
@@ -145,14 +145,9 @@ transport failures pass to domain retry handling. Success does not clear an acti
 Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
 the operation. A later independently created operation can retry after short auth backoff; proof
 or policy denial preserves an existing binding rather than rotating its key. A refused registration
-keeps the client ID and drops only its key.
-
-`409 client_already_registered` maps to non-device-bound `bindingConflict`, also
-without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
-the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
-
-No result is kept
-between requests, so nothing can mask authentication recovery in the same context.
+keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
+(the default), which re-register at once, from `.background` ones (analytics), which wait
+for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.

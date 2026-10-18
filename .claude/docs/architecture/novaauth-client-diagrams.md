@@ -1,10 +1,10 @@
 # NovaAuth — client architecture
 
-Implementation snapshot: **`feature/nova-auth` · 13 October 2026**.
+These diagrams describe the Swift client. “Backend” is only the HTTPS peer that the client calls; its internal behavior and deployed permissions are outside this document.
 
-These diagrams describe the Swift client on this branch. Architecture claims come from implementation and call-site searches, not the infrastructure PR or a planned design. “Backend” is only the HTTPS peer that the client calls; its internal behavior and deployed permissions are outside this document.
+**Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → analytics.
 
-The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. analytics receive the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
+The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Analytics receives the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
 
 ## 1. Ownership and app composition
 
@@ -16,7 +16,6 @@ flowchart TB
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
     AF --> AA["AnalyticsAuthAdapter"]
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
-    TR --> F
     CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
@@ -48,6 +47,7 @@ This is the successful path for a new installation. All four backend calls are P
 ```mermaid
 sequenceDiagram
   autonumber
+  participant C as Analytics
   participant N as NovaAuth owner
   participant S as Persistent stores
   participant A as Apple DeviceCheck
@@ -166,7 +166,7 @@ availability failure. Stored retired states wait for later demand replacement an
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
-policy replaces the supplied profile-3 protocol's user-driven re-creation wording at lines 511–514.**
+policy replaces the profile-3 protocol's user-driven re-creation wording.**
 The package exposes no reset API. Removed optional legacy quota/gate/delay fields are ignored.
 
 Sources: [state](../../../Packages/NovaAuth/Sources/NovaAuth/Contracts/NovaAuthModels.swift) · [registration](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [pending backoff](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthPendingRecovery.swift) · [retirement](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift)
@@ -229,8 +229,7 @@ flowchart TB
   R -- "Other response" --> C["Return to caller grading/retry policy"]
 ```
 
-NovaAuth has no HTTP cache. A store hit cannot
-extend bearer validity; on a miss admission precedes the fetch, with no request coalescing. Endpoint availability is insufficient.
+NovaAuth has no HTTP cache.
 
 Conclusive replay requires the exact expected HTTPS origin, status 401 and exact
 `WWW-Authenticate: Bearer error="invalid_token"`; GET/POST also need a valid invalid-token body,
@@ -282,7 +281,7 @@ sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state 
 
 Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [redacted failures](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift)
 
-## 9. Analytics: shared authentication, separate consent and data
+## 8. Analytics: shared authentication, separate consent and data
 
 ```mermaid
 flowchart TB
