@@ -279,7 +279,7 @@ deadline. Persistence precedes delivery. Conditional fingerprint deletion cannot
 record; the sole owner under its gate may remove an untagged legacy record only after reload still
 matches. Corrupt token reads do not delete data. The default access group separates signed app variants, and the owner caches the loaded record under its gate.
 
-Both HTTP/native watchdogs remain. Called native leases release only on actual callback, even after
+The session's request/resource timeouts and the native watchdog remain. Called native leases release only on actual callback, even after
 local timeout. The flight's irreversible commitment stays sticky independently of its current step.
 Failure-only logs are asynchronous: fixed step/category, numeric status, allowlisted code and
 sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state are never logged.

@@ -35,8 +35,8 @@ wording at lines 511–514; it is an explicit eligibility change, not behavioral
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
-NovaAuth has no HTTP cache: every session is ephemeral, stores nothing and sends each
-authorized request to the network. Fresh, complete 200 reads carry `public, max-age=N,
+NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
+sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
 must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. The app's
 `BittensorApiResponseCache` reuses a fresh decoded body above admission for its `max-age`, so
 NovaAuth sees only misses, and a reused body neither confirms nor extends the credential deadline.
@@ -91,8 +91,8 @@ attempt past its budget keeps the key and takes a fresh challenge in the same fl
 Apple's result drops the key, keeps the client UUID and fails the current operation. The 20-second
 margin cannot guarantee native completion.
 
-Both watchdogs remain: bootstrap HTTP has total 20-second issuance / 100-second registration
-bounds; native calls have their existing local timeout. Before invocation, a failed guard
+The shared session bounds every call with a 20-second request timeout (100 seconds for
+registration) and a 100-second resource timeout; native calls have their existing local timeout. Before invocation, a failed guard
 releases the unused lease. Once called, only the actual DeviceCheck callback releases its
 per-key lease, even after local timeout/cancellation. An assertion timeout preserves the
 registered key. Busy keys fail before fetching a token challenge. If Apple never calls back,

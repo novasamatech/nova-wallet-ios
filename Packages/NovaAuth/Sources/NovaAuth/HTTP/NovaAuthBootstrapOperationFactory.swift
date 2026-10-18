@@ -94,17 +94,10 @@ private extension NovaAuthBootstrapOperationFactory {
             request.setValue(contentType, forHTTPHeaderField: "Content-Type")
             request.setValue(String(bytes.count), forHTTPHeaderField: "Content-Length")
             let clock = clock
-            let wrapper = http.createResponseWrapper(for: request, kind: .bootstrap, beforeSend: {
+            return http.createResponseWrapper(for: request, kind: .bootstrap, beforeSend: {
                 _ = try clock.now()
                 try beforeSend()
-            })
-            let operation = ClosureOperation<T> {
-                let response = try wrapper.targetOperation.extractNoCancellableResultData()
-                guard response.response.url == url else { throw NovaAuthError.invalidResponse }
-                return try decode(response)
-            }
-            operation.addDependency(wrapper.targetOperation)
-            return wrapper.insertingTail(operation: operation)
+            }, decode: decode)
         } catch { return .createWithError(error) }
     }
 }
