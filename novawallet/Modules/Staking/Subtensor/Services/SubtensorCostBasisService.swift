@@ -96,7 +96,7 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {
-    func processSubtensorChanged(event: SubtensorChanged) {
+    func processSubtensorStakeChanged(event: SubtensorStakeChanged) {
         guard let accountSubject = try? event.accountId.toAddress(using: .defaultSubstrateFormat) else {
             return
         }

@@ -17,7 +17,7 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
     }
 
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition) {
-        guard let setupView = SubtensorSetupViewFactory.createAddStakeView(for: state, position: position) else {
+        guard let setupView = SubtensorStakeSetupViewFactory.createAddStakeView(for: state, position: position) else {
             return
         }
 
@@ -25,7 +25,7 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
     }
 
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition) {
-        guard let setupView = SubtensorSetupViewFactory.createBuyMoreView(for: state, position: position) else {
+        guard let setupView = SubtensorStakeSetupViewFactory.createBuyMoreView(for: state, position: position) else {
             return
         }
 

@@ -2,7 +2,7 @@ import Foundation_iOS
 import UIKit
 
 final class SubtensorUnstakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
-    typealias RootViewType = SubtensorUnstakeSetupLayout
+    typealias RootViewType = SubtensorUnstakeSetupViewLayout
 
     let presenter: SubtensorUnstakeSetupPresenterProtocol
     let isRoot: Bool
@@ -26,7 +26,7 @@ final class SubtensorUnstakeSetupViewController: UIViewController, ViewHolder, I
     }
 
     override func loadView() {
-        view = SubtensorUnstakeSetupLayout()
+        view = SubtensorUnstakeSetupViewLayout()
     }
 
     override func viewDidLoad() {

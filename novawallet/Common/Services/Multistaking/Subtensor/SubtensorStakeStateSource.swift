@@ -325,7 +325,7 @@ private extension SubtensorStakeStateSource {
 }
 
 extension SubtensorStakeStateSource: EventVisitorProtocol {
-    func processSubtensorChanged(event: SubtensorChanged) {
+    func processSubtensorStakeChanged(event: SubtensorStakeChanged) {
         guard event.accountId == accountId, event.chainAssetId == chainAssetId else {
             return
         }

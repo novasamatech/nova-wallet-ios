@@ -218,7 +218,7 @@ private struct SubtensorSubmissionFinalizer {
             return SubtensorSubmissionFailure(stage: .notSubmitted, error: mappedError)
         }
 
-        notifyStakingChanged()
+        notifyStakeChanged()
 
         return SubtensorSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: mappedError)
     }
@@ -261,7 +261,7 @@ private struct SubtensorSubmissionFinalizer {
             )
         }
 
-        notifyStakingChanged()
+        notifyStakeChanged()
 
         return outcome
     }
@@ -277,8 +277,8 @@ private extension SubtensorSubmissionFinalizer {
         }
     }
 
-    func notifyStakingChanged() {
-        eventCenter.notify(with: SubtensorChanged(chainAssetId: chainAssetId, accountId: accountId))
+    func notifyStakeChanged() {
+        eventCenter.notify(with: SubtensorStakeChanged(chainAssetId: chainAssetId, accountId: accountId))
     }
 }
 

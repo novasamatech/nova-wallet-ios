@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorSetupPresenter: SubtensorSubnetSelectDelegate {
+extension SubtensorStakeSetupPresenter: SubtensorSubnetSelectDelegate {
     func didSelectStakeTarget(_ target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?) {
         guard !mode.isLocked else {
             return
@@ -20,7 +20,7 @@ extension SubtensorSetupPresenter: SubtensorSubnetSelectDelegate {
     }
 }
 
-extension SubtensorSetupPresenter: SubtensorValidatorSelectDelegate {
+extension SubtensorStakeSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
         guard !mode.isLocked, target.subnetRef == subnetRef else {
             return
@@ -30,7 +30,7 @@ extension SubtensorSetupPresenter: SubtensorValidatorSelectDelegate {
     }
 }
 
-extension SubtensorSetupPresenter: RampFlowManaging, RampDelegate {
+extension SubtensorStakeSetupPresenter: RampFlowManaging, RampDelegate {
     func rampDidComplete(action: RampActionType, chainAsset _: ChainAsset) {
         wireframe.popTopControllers(from: view) { [weak self] in
             guard let self else {
@@ -42,7 +42,7 @@ extension SubtensorSetupPresenter: RampFlowManaging, RampDelegate {
     }
 }
 
-extension SubtensorSetupPresenter {
+extension SubtensorStakeSetupPresenter {
     func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDependencies {
         SubtensorStakeValidatingDependencies(
             amount: inputAmount(),

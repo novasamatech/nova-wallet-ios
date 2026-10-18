@@ -32,34 +32,34 @@ struct SubtensorStakeValidatingDependencies {
 
 extension SubtensorValidationFactoryProtocol {
     func validateStake(
-        for dep: SubtensorStakeValidatingDependencies,
+        for dependencies: SubtensorStakeValidatingDependencies,
         locale: Locale,
         onSuccess: @escaping () -> Void
     ) {
         var validations: [DataValidating] = [
             has(
-                fee: dep.fee,
+                fee: dependencies.fee,
                 locale: locale,
-                onError: { dep.onFeeRefresh() }
+                onError: { dependencies.onFeeRefresh() }
             ),
 
             hasPreflight(
-                dep.preflight,
+                dependencies.preflight,
                 locale: locale,
-                onRetry: { dep.onPreflightRefresh() }
+                onRetry: { dependencies.onPreflightRefresh() }
             )
         ]
 
-        if dep.isSubnet {
-            validations.append(contentsOf: createQuoteValidations(for: dep.quoteContext, locale: locale))
+        if dependencies.isSubnet {
+            validations.append(contentsOf: createQuoteValidations(for: dependencies.quoteContext, locale: locale))
         }
 
-        validations.append(contentsOf: createStakeBalanceValidations(for: dep, locale: locale))
-        validations.append(contentsOf: createStakePreflightValidations(for: dep, locale: locale))
+        validations.append(contentsOf: createStakeBalanceValidations(for: dependencies, locale: locale))
+        validations.append(contentsOf: createStakePreflightValidations(for: dependencies, locale: locale))
 
-        if dep.isSubnet {
-            validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
-            validations.append(passesRealtimeQuote(dep.quoteContext, locale: locale))
+        if dependencies.isSubnet {
+            validations.append(priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale))
+            validations.append(passesRealtimeQuote(dependencies.quoteContext, locale: locale))
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
@@ -105,57 +105,57 @@ extension SubtensorValidationFactoryProtocol {
 
 private extension SubtensorValidationFactoryProtocol {
     func createStakeBalanceValidations(
-        for dep: SubtensorStakeValidatingDependencies,
+        for dependencies: SubtensorStakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         [
             canSpendAmountInPlank(
-                balance: dep.balance?.transferable,
-                spendingAmount: dep.amountDecimal,
-                asset: dep.assetDisplayInfo,
+                balance: dependencies.balance?.transferable,
+                spendingAmount: dependencies.amountDecimal,
+                asset: dependencies.assetDisplayInfo,
                 locale: locale
             ),
 
             canPayFeeSpendingAmountInPlank(
-                balance: dep.balance?.transferable,
-                fee: dep.fee,
-                spendingAmount: dep.amountDecimal,
-                asset: dep.assetDisplayInfo,
+                balance: dependencies.balance?.transferable,
+                fee: dependencies.fee,
+                spendingAmount: dependencies.amountDecimal,
+                asset: dependencies.assetDisplayInfo,
                 locale: locale
             ),
 
             respectsFeeReserve(
-                amount: dep.amount,
-                transferable: dep.balance?.transferable,
-                networkFee: dep.fee?.amountForCurrentAccount,
+                amount: dependencies.amount,
+                transferable: dependencies.balance?.transferable,
+                networkFee: dependencies.fee?.amountForCurrentAccount,
                 locale: locale
             ),
 
             hasMinStakeAmount(
-                stakedAmount: dep.stakedAmount,
-                minStake: dep.preflight?.minStake,
-                quotedSwapFee: dep.quoteContext?.latestQuote?.quote.poolFee,
-                includesNovaFee: dep.isSubnet,
+                stakedAmount: dependencies.stakedAmount,
+                minStake: dependencies.preflight?.minStake,
+                quotedSwapFee: dependencies.quoteContext?.latestQuote?.quote.poolFee,
+                includesNovaFee: dependencies.isSubnet,
                 locale: locale
             )
         ]
     }
 
     func createStakePreflightValidations(
-        for dep: SubtensorStakeValidatingDependencies,
+        for dependencies: SubtensorStakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         [
             hotkeyIsRegistered(
-                hotkeyExists: dep.preflight?.hotkeyExists,
+                hotkeyExists: dependencies.preflight?.hotkeyExists,
                 locale: locale
             ),
 
             subnetStakingEnabled(
-                subnetExists: dep.preflight?.subnetExists,
-                subtokenEnabled: dep.preflight?.subtokenEnabled,
+                subnetExists: dependencies.preflight?.subnetExists,
+                subtokenEnabled: dependencies.preflight?.subtokenEnabled,
                 locale: locale
             )
-        ] + createNetworkStateValidations(for: dep.preflight, locale: locale)
+        ] + createNetworkStateValidations(for: dependencies.preflight, locale: locale)
     }
 }

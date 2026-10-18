@@ -4,7 +4,7 @@ import Foundation_iOS
 
 final class SubtensorUnstakeSetupPresenter {
     weak var view: SubtensorUnstakeSetupViewProtocol?
-    let wireframe: SubtensorSetupWireframeProtocol
+    let wireframe: SubtensorStakeSetupWireframeProtocol
     let interactor: SubtensorUnstakeSetupInteractorInputProtocol
     let logger: LoggerProtocol
 
@@ -47,7 +47,7 @@ final class SubtensorUnstakeSetupPresenter {
 
     init(
         interactor: SubtensorUnstakeSetupInteractorInputProtocol,
-        wireframe: SubtensorSetupWireframeProtocol,
+        wireframe: SubtensorStakeSetupWireframeProtocol,
         netuid: UInt16,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,

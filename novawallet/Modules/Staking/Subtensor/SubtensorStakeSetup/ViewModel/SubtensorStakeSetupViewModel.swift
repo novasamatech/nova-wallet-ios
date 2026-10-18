@@ -1,7 +1,7 @@
 import BigInt
 import Foundation
 
-struct SubtensorSetupViewModel {
+struct SubtensorStakeSetupViewModel {
     let title: String
     let amountTitle: String
     let maxAmount: String?
@@ -170,8 +170,8 @@ struct SubtensorSetupSubnetData {
     let blockTime: BlockTime?
 }
 
-struct SubtensorSetupViewModelInput {
-    let mode: SubtensorSetupMode
+struct SubtensorStakeSetupViewModelInput {
+    let mode: SubtensorStakeSetupMode
     let target: SubtensorStakeTarget?
     let subnetData: SubtensorSetupSubnetData
     let transferable: Balance?

@@ -1,6 +1,6 @@
 import Foundation
 
-enum SubtensorSetupMode: Equatable {
+enum SubtensorStakeSetupMode: Equatable {
     case quickPick(SubtensorQuickPickOrder)
     case rootDetails
     case subnetPick(target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?)
@@ -8,7 +8,7 @@ enum SubtensorSetupMode: Equatable {
     case buyMore(position: SubtensorPosition)
 }
 
-extension SubtensorSetupMode {
+extension SubtensorStakeSetupMode {
     var origin: SubtensorOperationOrigin {
         switch self {
         case .quickPick, .rootDetails, .subnetPick:
