@@ -35,7 +35,8 @@ extension SubtensorPriceWidgetViewModelFactory {
         return SubtensorPriceChartViewModel.DatedSeries(
             points: visible,
             range: range,
-            predecessor: points.last { $0.date < start }
+            predecessor: points.last { $0.date < start },
+            coverageTolerance: params.period.coverageTolerance
         )
     }
 
