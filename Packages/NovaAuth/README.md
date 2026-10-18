@@ -160,6 +160,9 @@ and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-
 Ingress authenticates before protected business handlers execute. A conclusive token denial
 therefore permits one replay preserving the original method, path, query and body. Other
 401/403, 429, 5xx and uncertain transport outcomes do not authorize replay or reset identity.
+Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
+package's own envelope parser: status, lowercase code up to 64 characters, sanitized
+`X-Request-ID` and numeric Retry-After clamped to 905 seconds.
 
 The removed root-yield read returns unavailable/cache miss locally. Its optional presentation
 service returns nil without a request, keeping root staking screens usable without a rate.

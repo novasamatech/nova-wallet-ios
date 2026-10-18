@@ -53,6 +53,9 @@ public struct NovaAuthResponse {
         self.response = response
         self.body = body
     }
+
+    public var requestID: String? { NovaAuthWire.requestID(response) }
+    public var serverError: NovaAuthServerError { NovaAuthWire.serverError(self) }
 }
 
 public protocol NovaAuthClientProtocol: AnyObject {

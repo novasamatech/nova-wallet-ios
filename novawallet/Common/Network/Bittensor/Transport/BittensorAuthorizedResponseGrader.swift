@@ -3,31 +3,31 @@ import NovaAuth
 
 enum BittensorAuthorizedResponseGrader {
     static func grade(_ result: NovaAuthResponse) throws -> BittensorApiRawResponse {
-        let response = result.response
-        let status = response.statusCode
-        let requestId = bounded(response.value(forHTTPHeaderField: "X-Request-ID"))
+        let status = result.response.statusCode
         if (200 ..< 300).contains(status) {
             return BittensorApiRawResponse(
-                requestId: requestId, body: result.body, directives: HTTPCacheDirectives(response: response)
+                requestId: result.requestID,
+                body: result.body,
+                directives: HTTPCacheDirectives(response: result.response)
             )
         }
-        let code = errorCode(result.body)
+        let server = result.serverError
         let isRejected: Bool
         switch status {
         case 400, 405, 413, 415, 422:
             isRejected = true
         case 403:
-            isRejected = code == "insufficient_scope"
+            isRejected = server.code == "insufficient_scope"
         case 404:
-            isRejected = code == "route_not_found"
+            isRejected = server.code == "route_not_found"
         case 409:
-            isRejected = code == "client_already_registered"
+            isRejected = server.code == "client_already_registered"
         default:
             isRejected = false
         }
         throw isRejected
-            ? BittensorApiError.rejected(code: code, requestId: requestId)
-            : BittensorApiError.unavailable(code: code, requestId: requestId)
+            ? BittensorApiError.rejected(code: server.code, requestId: server.requestID)
+            : BittensorApiError.unavailable(code: server.code, requestId: server.requestID)
     }
 
     static func map(_ error: Error) -> BittensorApiError {
@@ -60,19 +60,5 @@ enum BittensorAuthorizedResponseGrader {
         case .cancelled:
             return .transport(URLError(.cancelled))
         }
-    }
-
-    private static func errorCode(_ data: Data) -> String? {
-        guard data.count <= 8192,
-              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let error = root["error"] as? [String: Any], let code = error["code"] as? String,
-              code.utf8.count <= 64, code.utf8.allSatisfy({ (97 ... 122).contains($0) || $0 == 95 }) else { return nil }
-        return code
-    }
-
-    private static func bounded(_ value: String?) -> String? {
-        guard let value, (1 ... 128).contains(value.utf8.count),
-              value.utf8.allSatisfy({ (33 ... 126).contains($0) }) else { return nil }
-        return value
     }
 }
