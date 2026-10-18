@@ -84,6 +84,7 @@ private extension StartStakingInfoSubtensorInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(maxApy):
+                self?.eventCenter.notify(with: SubtensorMaxApyFetched())
                 self?.presenter?.didReceive(headlineRate: maxApy.values.max())
             case let .failure(error):
                 self?.logger.warning("Max APY fetch error: \(error)")
