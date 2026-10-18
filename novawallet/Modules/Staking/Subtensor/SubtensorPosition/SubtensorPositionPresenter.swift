@@ -104,7 +104,7 @@ private extension SubtensorPositionPresenter {
         }
 
         guard let subnet = state.catalogue?.subnet(for: state.netuid)?.ref else {
-            state.history = .notListed
+            state.history = state.prices == nil ? .failed : .notListed
             state.hasResolvedHistory = true
             return
         }
@@ -137,6 +137,13 @@ private extension SubtensorPositionPresenter {
         case .unstake, .sell:
             wireframe.showUnstake(from: view, netuid: state.netuid)
         }
+    }
+
+    func resolveCatalogue() {
+        state.isCatalogueResolved = true
+        loadValidatorIfNeeded()
+        requestHistoryIfNeeded()
+        provideViewModel()
     }
 
     func retrySubnetsInfoIfUnavailable() {
@@ -225,11 +232,19 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
     func retrySync() {
         interactor.refreshPositions()
+        loadValidatorIfNeeded()
     }
 
     func retryHistory() {
         historyRequest = nil
-        requestHistoryIfNeeded()
+
+        if state.prices == nil {
+            state.history = .loading
+            interactor.loadPrices()
+        } else {
+            requestHistoryIfNeeded()
+        }
+
         provideViewModel()
     }
 
@@ -273,12 +288,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(prices: SubtensorAlphaPrices?) {
+    func didReceive(prices: SubtensorAlphaPrices) {
         state.prices = prices
-        state.isCatalogueResolved = true
-        loadValidatorIfNeeded()
-        requestHistoryIfNeeded()
-        provideViewModel()
+        resolveCatalogue()
+    }
+
+    func didFailPrices() {
+        resolveCatalogue()
     }
 
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?) {
@@ -311,6 +327,14 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.validatorHotkey = hotkey
         state.validator = validator
         provideViewModel()
+    }
+
+    func didFailValidator(for hotkey: AccountId) {
+        guard hotkey == validatorRequest?.hotkey else {
+            return
+        }
+
+        validatorRequest = nil
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
@@ -355,6 +379,10 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.history = .failed
         state.hasResolvedHistory = true
         provideViewModel()
+    }
+
+    func didBecomeActive() {
+        loadValidatorIfNeeded()
     }
 }
 
