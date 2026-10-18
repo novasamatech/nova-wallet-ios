@@ -67,7 +67,8 @@ final class MultistakingSyncTests: XCTestCase {
             providerFactory: providerFactory,
             multistakingRepositoryFactory: multistakingRepositoryFactory,
             substrateRepositoryFactory: substrateRepositoryFactory,
-            offchainOperationFactory: subqueryFactory
+            offchainOperationFactory: subqueryFactory,
+            subtensorProcessServices: .shared
         )
 
         // when

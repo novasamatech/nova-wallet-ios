@@ -49,6 +49,7 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
                 rootStake: entity.subtensorRootStake.flatMap { BigUInt($0) },
                 subnetCount: subnetCount.intValue,
                 rootRate: entity.subtensorRootRate as Decimal?,
+                subnetRate: entity.subtensorSubnetRate as Decimal?,
                 isFullyPriced: entity.subtensorIsFullyPriced?.boolValue
             )
         }

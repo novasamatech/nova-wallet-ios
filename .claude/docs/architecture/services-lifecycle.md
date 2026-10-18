@@ -112,6 +112,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
 | `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
+| `SubtensorStakingProcessServices.shared`      | Bittensor backend API + response cache, subnet config, markets, cost basis, catalogue, one TAO stake-state source per account |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
@@ -177,8 +178,10 @@ retains batches silently for its normal later flushes, checking consent before e
 
 The cost basis keeps no ledger of its own: its seed is peeked from the store's `operations/search`
 pages, an own trade drops those pages and blocks the seed for 300 s, and the next open refetches.
-Max APY keeps no result between bursts and relies on the store's max-age. The dashboard runs one
-burst per `performSyncUp()` and, if it fails, again after later state fetches until one succeeds. Local calculations do not require a separate auth request. The package exposes a
+Max APY keeps no result of its own and relies on the store's max-age: the dashboard asks again on every
+`performSyncUp()`, `refreshOffchain()` and `refreshMaxApy()` (the dashboard appearing, or the landing posting
+`SubtensorMaxApyFetched` after its own fetch), and on a stake-state change only while the account holds no TAO stake. For an account without TAO stake the
+updater keeps its sync flag on until the first answer, so the "Earn up to" row loads instead of blanking. Local calculations do not require a separate auth request. The package exposes a
 context invalidation ID so the facade also detects a cold origin replacement/repair before
 publishing its first endpoint.
 Failed adoption notifies when its memory fence changed.

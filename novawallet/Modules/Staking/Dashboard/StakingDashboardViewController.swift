@@ -48,6 +48,8 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         updateLoadingState()
+
+        presenter.becomeActive()
     }
 
     private func setupCollectionView() {

@@ -213,6 +213,7 @@
         <attribute name="subtensorRootRate" optional="YES" attributeType="Decimal"/>
         <attribute name="subtensorRootStake" optional="YES" attributeType="String"/>
         <attribute name="subtensorSubnetCount" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="subtensorSubnetRate" optional="YES" attributeType="Decimal"/>
         <attribute name="totalRewards" optional="YES" attributeType="String"/>
         <attribute name="walletId" attributeType="String"/>
     </entity>

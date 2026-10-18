@@ -51,7 +51,7 @@ final class SubtensorStakingSharedState {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol
     let earnServices: SubtensorEarnServices
     let flowState: SubtensorStakingFlowStateProtocol
     let eventCenter: EventCenterProtocol
@@ -72,7 +72,7 @@ final class SubtensorStakingSharedState {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
+        stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol,
         earnServices: SubtensorEarnServices,
         flowState: SubtensorStakingFlowStateProtocol,
         eventCenter: EventCenterProtocol,
@@ -86,7 +86,7 @@ final class SubtensorStakingSharedState {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.subnetsService = subnetsService
         self.apiOperationFactory = apiOperationFactory
-        self.stakeStateFetchFactory = stakeStateFetchFactory
+        self.stakeStateSourceFactory = stakeStateSourceFactory
         self.earnServices = earnServices
         self.flowState = flowState
         self.eventCenter = eventCenter
@@ -99,22 +99,17 @@ final class SubtensorStakingSharedState {
 
 private extension SubtensorStakingSharedState {
     func setupPositionsSyncService(for accountId: AccountId) {
-        let chainId = stakingOption.chainAsset.chain.chainId
-
-        guard
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            logger.error("Connection or runtime unavailable for \(chainId)")
+        guard let stakeStateSource = stakeStateSourceFactory.getSource(
+            for: accountId,
+            chainAsset: stakingOption.chainAsset,
+            chainRegistry: chainRegistry
+        ) else {
+            logger.error("Connection or runtime unavailable for \(stakingOption.chainAsset.chain.chainId)")
             return
         }
 
         let service = SubtensorStakingPositionsSyncService(
-            accountId: accountId,
-            chainAssetId: stakingOption.chainAsset.chainAssetId,
-            stakeStateFetchFactory: stakeStateFetchFactory,
-            connection: connection,
-            runtimeService: runtimeService,
-            eventCenter: eventCenter,
+            stakeStateSource: stakeStateSource,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger

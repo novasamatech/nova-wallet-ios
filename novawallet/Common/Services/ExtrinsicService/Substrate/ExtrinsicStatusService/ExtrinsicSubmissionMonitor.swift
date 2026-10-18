@@ -26,11 +26,6 @@ extension ExtrinsicSubmitMonitorFactoryProtocol {
     }
 }
 
-enum ExtrinsicTrackingTill: Equatable {
-    case inBlock
-    case finalized
-}
-
 extension FinalExtrinsicStatusError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
@@ -49,19 +44,16 @@ final class ExtrinsicSubmissionMonitorFactory {
     let submissionService: ExtrinsicServiceProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
-    let trackingTill: ExtrinsicTrackingTill
     let processingQueue = DispatchQueue(label: "io.novawallet.extrinsic.monitor.\(UUID().uuidString)")
 
     init(
         submissionService: ExtrinsicServiceProtocol,
         statusService: ExtrinsicStatusServiceProtocol,
-        operationQueue: OperationQueue,
-        trackingTill: ExtrinsicTrackingTill = .inBlock
+        operationQueue: OperationQueue
     ) {
         self.submissionService = submissionService
         self.statusService = statusService
         self.operationQueue = operationQueue
-        self.trackingTill = trackingTill
     }
 
     convenience init(
@@ -178,7 +170,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
     ) -> Result<SubmissionResult, Error>? {
         switch result {
         case let .success(model):
-            if let blockHash = model.statusUpdate.getTerminalBlockHash(trackingTill: trackingTill) {
+            if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
                 let response = SubmissionResult(
                     blockHash: blockHash,
                     extrinsicHash: model.statusUpdate.extrinsicHash,
