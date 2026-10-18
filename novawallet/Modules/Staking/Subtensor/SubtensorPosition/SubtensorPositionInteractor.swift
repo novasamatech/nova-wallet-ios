@@ -245,7 +245,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         subnetsInfoStore.cancel()
 
         load(
-            state.subnetsService.createSubnetsInfoWrapper(),
+            state.subnetsService.createSubnetInfoWrapper(for: netuid),
             in: subnetsInfoStore,
             label: "position subnets"
         ) { [weak self] in

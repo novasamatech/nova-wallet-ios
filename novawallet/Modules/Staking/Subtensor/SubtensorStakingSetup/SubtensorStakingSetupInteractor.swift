@@ -130,25 +130,26 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         }
     }
 
-    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder) {
+    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder, selectedRef: SubtensorSubnetRef?) {
         quickPickCallStore.cancel()
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let infoWrapper = subnetsService.createSubnetsInfoWrapper()
         let apyWrapper = order == .apy ? maxApyProvider.createMaxApyWrapper() : .createWithResult([:])
-        let mergeOperation = ClosureOperation<SubtensorQuickPickSnapshot> {
-            SubtensorQuickPickSnapshot(
-                catalogue: try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
-                info: try infoWrapper.targetOperation.extractNoCancellableResultData(),
-                apy: try apyWrapper.targetOperation.extractNoCancellableResultData()
-            )
-        }
-        mergeOperation.addDependency(catalogueWrapper.targetOperation)
-        mergeOperation.addDependency(infoWrapper.targetOperation)
-        mergeOperation.addDependency(apyWrapper.targetOperation)
+        let subnetsService = subnetsService
+        let snapshotWrapper: CompoundOperationWrapper<SubtensorQuickPickSnapshot> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
+                let apy = try apyWrapper.targetOperation.extractNoCancellableResultData()
+                let ref = try selectedRef ?? SubtensorQuickPickVisit.select(order: order, from: catalogue, apy: apy)
+
+                return subnetsService.createSubnetInfoWrapper(for: ref.netuid).mapped {
+                    SubtensorQuickPickSnapshot(ref: ref, info: $0)
+                }
+            }
+        snapshotWrapper.addDependency(wrapper: catalogueWrapper)
+        snapshotWrapper.addDependency(wrapper: apyWrapper)
         executeCancellable(
-            wrapper: CompoundOperationWrapper(
-                targetOperation: mergeOperation,
-                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations + apyWrapper.allOperations
+            wrapper: snapshotWrapper.insertingHead(
+                operations: catalogueWrapper.allOperations + apyWrapper.allOperations
             ),
             inOperationQueue: operationQueue,
             backingCallIn: quickPickCallStore,
@@ -178,7 +179,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         subnetCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetsInfoWrapper(),
+            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetCallStore,
             runningCallbackIn: .main

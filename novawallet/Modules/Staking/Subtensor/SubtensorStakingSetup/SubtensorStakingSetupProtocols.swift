@@ -24,7 +24,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder)
+    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder, selectedRef: SubtensorSubnetRef?)
     func cancelQuickPickSnapshot()
     func loadBlockTime()
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
