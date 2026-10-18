@@ -111,7 +111,7 @@ final class TestRandom: NovaAuthRandomProtocol {
 final class TestApple: NovaAuthAppAttestProtocol {
     let isSupported = true
     var attestationError: Error?
-    var assertionError: Error?
+    var lostKeyIDs: Set<String> = []
     private(set) var keys = 0
     private(set) var attestations = 0
 
@@ -131,8 +131,8 @@ final class TestApple: NovaAuthAppAttestProtocol {
         return CompoundOperationWrapper(targetOperation: ClosureOperation { try beforeAttest(); return Data([1]) })
     }
 
-    func createAssertionWrapper(keyID _: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
-        if let assertionError { return .createWithError(assertionError) }
+    func createAssertionWrapper(keyID: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
+        if lostKeyIDs.contains(keyID) { return .createWithError(NovaAuthAppAttestError.invalidKey) }
         return .createWithResult(Data([2]))
     }
 }

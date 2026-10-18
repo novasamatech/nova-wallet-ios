@@ -32,17 +32,16 @@ final class NovaAuthLifecycleTests: XCTestCase {
         XCTAssertEqual(harness.apple.keys, 2)
     }
 
-    func testLostKeyFailsWithoutReplacingUntilLaterIndependentDemand() throws {
+    func testLostKeyReplacesTheIdentityWithinTheSameDemand() throws {
         let harness = try AuthHarness()
         let (auth, context) = try registered(harness)
-        harness.apple.assertionError = NovaAuthAppAttestError.invalidKey
+        let lostKey = try XCTUnwrap(auth.state?.identity?.keyID)
+        harness.apple.lostKeyIDs = [lostKey]
         harness.clock.advance(1000)
-        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context))
-        XCTAssertEqual(harness.apple.keys, 1)
-        harness.apple.assertionError = nil
-        harness.clock.advance(2)
         try execute(auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 2)
+        XCTAssertEqual(harness.random.clientIDs, 2)
+        XCTAssertEqual(harness.server.count("/register"), 2)
     }
 
     func testTokenRefusalPreservesRegisteredBindingForLaterDemand() throws {

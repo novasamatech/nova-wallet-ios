@@ -59,11 +59,7 @@ extension NovaAuth {
     }
 
     func usableToken(context: NovaAuthContext, now: NovaAuthTime) throws -> NovaAuthTokenRecord? {
-        let record: NovaAuthTokenRecord?
-        do {
-            record = try dependencies.tokenStore.load()
-        } catch { throw NovaAuthError.storageUnavailable }
-        guard let record else { return nil }
+        guard let record = try loadToken() else { return nil }
         do { try rejectedCredentials.check(record, now: now) } catch { return nil }
         do {
             guard let clientID = state?.identity?.clientID else { throw NovaAuthError.credentialUnavailable }
@@ -106,7 +102,7 @@ extension NovaAuth {
             flight.step = .assertion
             let assertionWrapper = dependencies.appAttest.createAssertionWrapper(keyID: keyID, clientDataHash: hash)
             run(assertionWrapper, flight: flight) { [self] result in
-                let assertion = try assertion(from: result, flight: flight)
+                guard let assertion = try assertion(from: result, flight: flight) else { return }
                 let request = NovaAuthTokenRequest(
                     origin: flight.context.origin,
                     clientID: identity.clientID,
@@ -161,9 +157,7 @@ extension NovaAuth {
             record, context: flight.context, clientID: clientID, now: dependencies.clock.now()
         )
         try setRegistration(.registered, flight: flight)
-        do {
-            try dependencies.tokenStore.replace(record)
-        } catch { throw NovaAuthError.storageUnavailable }
+        try storeToken(record)
         issuanceCooldown.clear()
         finish(.success(record), flight: flight)
     }
@@ -209,10 +203,11 @@ private extension NovaAuth {
         if case .retired = identity.registration { throw NovaAuthError.keyUnavailable }
     }
 
-    func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data {
+    func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data? {
         do { return try result.get() } catch NovaAuthAppAttestError.invalidKey {
             try retire(.lostKey, flight: flight)
-            throw NovaAuthAppAttestError.invalidKey
+            try createKey(flight: flight)
+            return nil
         }
     }
 
