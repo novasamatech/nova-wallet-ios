@@ -20,7 +20,7 @@ final class SubtensorStakeSetupPresenter {
 
     var mode: SubtensorStakeSetupMode
     var target: SubtensorStakeTarget?
-    var validatorState: SubtensorSetupValidatorState = .pending
+    var validatorState: SubtensorStakeSetupValidatorState = .pending
     var isPresetRequested = false
     var presetError: Error?
     var inputResult: AmountInputResult?
@@ -135,9 +135,9 @@ extension SubtensorStakeSetupPresenter {
         loadSubnetDataIfNeeded()
 
         if let hotkey = mode.lockedHotkey {
-            validatorState = .selected(SubtensorSetupValidator(hotkey: hotkey, name: nil))
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: hotkey, name: nil))
         } else if let picked = mode.pickedValidator {
-            validatorState = .selected(SubtensorSetupValidator(hotkey: picked.hotkey, name: picked.name))
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: picked.hotkey, name: picked.name))
             validatorItem = picked
         }
 
@@ -190,7 +190,7 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
-        validatorState = .selected(SubtensorSetupValidator(hotkey: item.hotkey, name: item.name))
+        validatorState = .selected(SubtensorStakeSetupValidator(hotkey: item.hotkey, name: item.name))
         validatorItem = item
         presetError = nil
         preflight = nil

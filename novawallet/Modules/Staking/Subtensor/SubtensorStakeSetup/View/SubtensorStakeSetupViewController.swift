@@ -114,7 +114,7 @@ private extension SubtensorStakeSetupViewController {
         }
     }
 
-    func applyDetails(_ details: SubtensorSetupDetailsViewModel) {
+    func applyDetails(_ details: SubtensorStakeSetupDetailsViewModel) {
         rootView.setSelection(details.selection)
         switch details {
         case let .selection(viewModel):

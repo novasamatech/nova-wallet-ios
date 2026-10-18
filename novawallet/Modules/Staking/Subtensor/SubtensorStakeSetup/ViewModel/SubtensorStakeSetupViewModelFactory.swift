@@ -29,7 +29,7 @@ final class SubtensorStakeSetupViewModelFactory {
     ) -> SubtensorStakeSetupViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let details: SubtensorSetupDetailsViewModel
+        let details: SubtensorStakeSetupDetailsViewModel
         if case let .quickPick(order) = input.mode {
             details = .selection(createSelection(order: order, locale: locale))
         } else {
@@ -136,7 +136,7 @@ extension SubtensorStakeSetupViewModelFactory {
     func createRootDetails(
         for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorSetupRootViewModel {
+    ) -> SubtensorStakeSetupRootViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let compact = createValidator(for: input, locale: locale)
         let name: String?
@@ -147,7 +147,7 @@ extension SubtensorStakeSetupViewModelFactory {
         case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
         let annualRate = input.subnetData.annualRate
-        let validator: SubtensorSetupRootValidatorViewModel
+        let validator: SubtensorStakeSetupRootValidatorViewModel
         if case .addStake = input.mode {
             validator = .rows(
                 validator: StackCellViewModel(details: name ?? "", imageViewModel: icon),
@@ -166,7 +166,7 @@ extension SubtensorStakeSetupViewModelFactory {
         let networkFee = createNetworkFee(for: input, locale: locale)
         let isQuickPick = input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
 
-        return SubtensorSetupRootViewModel(
+        return SubtensorStakeSetupRootViewModel(
             validator: validator,
             pickCard: isQuickPick ? SubtensorPickCardViewModel(
                 validator: compact,

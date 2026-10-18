@@ -8,7 +8,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
 
         if let lockedHotkey = mode.lockedHotkey {
             if let validator, validator.hotkey == lockedHotkey {
-                validatorState = .selected(SubtensorSetupValidator(hotkey: lockedHotkey, name: validator.name))
+                validatorState = .selected(SubtensorStakeSetupValidator(hotkey: lockedHotkey, name: validator.name))
                 validatorItem = validator
                 provideViewModel()
             }
