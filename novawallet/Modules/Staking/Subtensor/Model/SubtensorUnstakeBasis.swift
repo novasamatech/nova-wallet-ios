@@ -85,14 +85,7 @@ struct SubtensorGroupUnstakeBasis: Equatable {
                 continue
             }
 
-            return adjustedPlan(
-                exits: exits,
-                partials: partials,
-                position: position,
-                needed: needed,
-                floor: floor,
-                max: max
-            )
+            return adjustedPlan(exits: exits, partials: partials, position: position, needed: needed, floor: floor)
         }
 
         return SubtensorUnstakePlan(exits: exits, partials: partials)
@@ -105,11 +98,11 @@ private extension SubtensorGroupUnstakeBasis {
         partials: [SubtensorUnstakeSlice],
         position: SubtensorUnstakePosition,
         needed: Balance,
-        floor: Balance,
-        max: Balance
+        floor: Balance
     ) -> SubtensorUnstakePlan {
         let drawn = (exits + partials).reduce(0) { $0 + $1.alpha }
         let drawable = position.drawable(floor: floor)
+        let max = max(floor: floor)
 
         func fits(_ slice: Balance) -> Bool {
             guard slice > 0, slice < drawable else {
