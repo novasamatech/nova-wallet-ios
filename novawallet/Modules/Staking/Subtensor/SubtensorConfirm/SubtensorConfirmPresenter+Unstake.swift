@@ -5,7 +5,7 @@ extension SubtensorConfirmPresenter {
         for unstakeModel: SubtensorUnstakeModel,
         limitPrice: Balance?,
         quote: SubtensorTradeQuote?
-    ) -> SubtensorStakingOperation? {
+    ) -> SubtensorOperation? {
         guard !model.target.isRoot else {
             let amount = SubtensorAmountPolicy.rootUnstakeAmount(
                 requested: unstakeModel.amount,
@@ -79,7 +79,7 @@ extension SubtensorConfirmPresenter {
         )
     }
 
-    func emptiesPosition(_ operation: SubtensorStakingOperation, group: SubtensorPortfolioGroup?) -> Bool {
+    func emptiesPosition(_ operation: SubtensorOperation, group: SubtensorPortfolioGroup?) -> Bool {
         switch operation {
         case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _, _):
             let groupHotkeys = Set(group?.positions.map(\.hotkey) ?? [])
@@ -102,7 +102,7 @@ extension SubtensorConfirmPresenter {
         let liveAmount = rebuilt?.amount
         let positions = Dictionary((group?.positions ?? []).map { ($0.hotkey, $0.stakeAlpha) }) { first, _ in first }
 
-        var dependencies = SubtensorUnstakeValidatingDep(
+        var dependencies = SubtensorUnstakeValidatingDependencies(
             netuid: unstakeModel.netuid,
             accountId: model.account.chainAccount.accountId,
             hotkey: model.validator.hotkey,

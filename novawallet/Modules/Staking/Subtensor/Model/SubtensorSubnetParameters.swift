@@ -9,7 +9,7 @@ struct SubtensorSubnetParameters {
 
     init(
         ref: SubtensorSubnetRef,
-        rows: [SubtensorStakingPallet.DynamicInfo?]?,
+        rows: [SubtensorPallet.DynamicInfo?]?,
         blockNumber: BlockNumber?,
         permits: [Bool]?,
         emissionEnabled: Bool?,
@@ -34,7 +34,7 @@ private extension SubtensorSubnetParameters {
 
     static func emission(
         ref: SubtensorSubnetRef,
-        rows: [SubtensorStakingPallet.DynamicInfo?]?,
+        rows: [SubtensorPallet.DynamicInfo?]?,
         enabled: Bool?
     ) -> Decimal? {
         let population = rows?.compactMap { $0 } ?? []

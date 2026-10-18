@@ -49,7 +49,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
         subnetLogos: SubtensorSubnetLogos?,
         locale: Locale
     ) -> AssetViewModel {
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
+        guard netuid != SubtensorPallet.rootNetuid else {
             let info = chainAsset.assetDisplayInfo
 
             return AssetViewModel(
@@ -140,7 +140,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
                 return nil
             }
 
-            taoAmount = amount * spot / SubtensorStakingPallet.alphaPriceScale
+            taoAmount = amount * spot / SubtensorPallet.alphaPriceScale
         }
 
         let taoDecimal = taoAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)

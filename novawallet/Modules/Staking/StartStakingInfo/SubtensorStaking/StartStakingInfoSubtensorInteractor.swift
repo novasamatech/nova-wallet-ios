@@ -12,7 +12,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         }
     }
 
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
     let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
@@ -22,7 +22,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     private var hasReportedAccountChange = false
 
     init(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,

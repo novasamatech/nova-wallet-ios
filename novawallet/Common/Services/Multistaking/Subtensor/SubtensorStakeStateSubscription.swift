@@ -7,10 +7,10 @@ final class SubtensorStakeStateSubscription {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let onSyncing: () -> Void
-    let onState: (Multistaking.SubtensorStakingState) -> Void
+    let onState: (Multistaking.SubtensorState) -> Void
     let onFailure: (Error) -> Void
 
-    private(set) var lastState: Multistaking.SubtensorStakingState?
+    private(set) var lastState: Multistaking.SubtensorState?
     private(set) var isFetching = false
     private var isSubscribed = false
     private var saveCallStore = CancellableCallStore()
@@ -21,7 +21,7 @@ final class SubtensorStakeStateSubscription {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         onSyncing: @escaping () -> Void,
-        onState: @escaping (Multistaking.SubtensorStakingState) -> Void,
+        onState: @escaping (Multistaking.SubtensorState) -> Void,
         onFailure: @escaping (Error) -> Void
     ) {
         self.source = source
@@ -93,7 +93,7 @@ extension SubtensorStakeStateSubscription: SubtensorStakeStateHandler {
         onSyncing()
     }
 
-    func handleStakeState(_ state: Multistaking.SubtensorStakingState) {
+    func handleStakeState(_ state: Multistaking.SubtensorState) {
         mutex.lock()
 
         defer {

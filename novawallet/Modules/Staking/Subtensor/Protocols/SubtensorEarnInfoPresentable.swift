@@ -6,7 +6,7 @@ extension SubtensorEarnInfoPresentable {
     func presentSubtensorEarnInfo(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) {
         guard
             let view,

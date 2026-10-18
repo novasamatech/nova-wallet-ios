@@ -2,9 +2,9 @@ import Foundation
 import Foundation_iOS
 
 final class SubtensorPortfolioWireframe: SubtensorPortfolioWireframeProtocol {
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
 
-    init(state: SubtensorStakingSharedStateProtocol) { self.state = state }
+    init(state: SubtensorSharedStateProtocol) { self.state = state }
 
     func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup) {
         guard let positionView = SubtensorPositionViewFactory.createView(for: state, group: group) else { return }

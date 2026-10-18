@@ -56,7 +56,7 @@ extension SubtensorUnstakePlan {
         partials.isEmpty && Set(group.positions.map(\.hotkey)).isSubset(of: exits.map(\.hotkey))
     }
 
-    func rootOperation(amount: Balance) -> SubtensorStakingOperation {
+    func rootOperation(amount: Balance) -> SubtensorOperation {
         guard let single else {
             return .rootUnstakeGroup(exits: exits.map(\.hotkey), partials: partials)
         }
@@ -69,7 +69,7 @@ extension SubtensorUnstakePlan {
         limitPrice: Balance,
         quotedTaoOut: Balance,
         novaFee: SubtensorNovaFee?
-    ) -> SubtensorStakingOperation {
+    ) -> SubtensorOperation {
         guard let single else {
             return .subnetSellGroup(
                 exits: exits.map(\.hotkey),

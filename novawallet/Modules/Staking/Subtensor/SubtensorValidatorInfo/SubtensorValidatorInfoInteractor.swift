@@ -7,7 +7,7 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let chainAsset: ChainAsset
-    let coverageFactory: SubtensorValidatorCoverageFactoryProtocol
+    let coverageOperationFactory: SubtensorValidatorCoverageOperationFactoryProtocol
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
@@ -24,8 +24,8 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        state: SubtensorStakingSharedStateProtocol,
-        coverageFactory: SubtensorValidatorCoverageFactoryProtocol,
+        state: SubtensorSharedStateProtocol,
+        coverageOperationFactory: SubtensorValidatorCoverageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -34,7 +34,7 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
         self.target = target
         self.hotkey = hotkey
         chainAsset = state.stakingOption.chainAsset
-        self.coverageFactory = coverageFactory
+        self.coverageOperationFactory = coverageOperationFactory
         directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
         yieldOperationFactory = state.earnServices.yieldOperationFactory
         catalogueOperationFactory = state.earnServices.catalogueOperationFactory
@@ -109,7 +109,7 @@ private extension SubtensorValidatorInfoInteractor {
 extension SubtensorValidatorInfoInteractor: SubtensorValidatorInfoInteractorInputProtocol {
     func setup() {
         load(
-            coverageFactory.createWrapper(for: hotkey),
+            coverageOperationFactory.createWrapper(for: hotkey),
             in: coverageStore,
             label: "validator coverage"
         ) { [weak self] in

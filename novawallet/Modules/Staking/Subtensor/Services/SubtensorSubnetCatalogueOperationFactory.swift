@@ -37,7 +37,7 @@ private extension SubtensorSubnetCatalogueOperationFactory {
         var subnets: [SubtensorCatalogueSubnet] = []
 
         for (index, item) in response.value.items.enumerated() {
-            guard item.netuid != SubtensorStakingPallet.rootNetuid, !listedNetuids.contains(item.netuid) else {
+            guard item.netuid != SubtensorPallet.rootNetuid, !listedNetuids.contains(item.netuid) else {
                 logger.warning("Skipped the subnet catalogue row items[\(index)] with netuid \(item.netuid)")
                 continue
             }

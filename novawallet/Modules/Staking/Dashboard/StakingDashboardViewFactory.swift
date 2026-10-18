@@ -21,7 +21,7 @@ struct StakingDashboardViewFactory {
         let wireframe = StakingDashboardWireframe(
             stateObserver: stateObserver,
             delegatedAccountSyncService: delegatedAccountSyncService,
-            subtensorFlowState: SubtensorStakingFlowState(
+            subtensorFlowState: SubtensorFlowState(
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
                 assetListObservable: assetListObservable
             )

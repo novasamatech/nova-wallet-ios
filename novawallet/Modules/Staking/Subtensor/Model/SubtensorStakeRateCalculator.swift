@@ -2,7 +2,7 @@ import Foundation
 
 enum SubtensorStakeRateCalculator {
     static func rootRate(
-        of positions: [SubtensorStakingPosition],
+        of positions: [SubtensorPosition],
         in yields: SubtensorAlphaYields?
     ) -> Decimal? {
         stakeWeightedRate(of: positions) { position in
@@ -11,7 +11,7 @@ enum SubtensorStakeRateCalculator {
     }
 
     static func subnetRate(
-        of positions: [SubtensorStakingPosition],
+        of positions: [SubtensorPosition],
         in yields: [UInt16: SubtensorAlphaYields],
         prices: SubtensorAlphaPrices?
     ) -> Decimal? {
@@ -25,7 +25,7 @@ enum SubtensorStakeRateCalculator {
 }
 
 private extension SubtensorStakeRateCalculator {
-    static func annualRate(for position: SubtensorStakingPosition, in yields: SubtensorAlphaYields?) -> Decimal? {
+    static func annualRate(for position: SubtensorPosition, in yields: SubtensorAlphaYields?) -> Decimal? {
         guard let yields, yields.stamp.freshness == .fresh else {
             return nil
         }
@@ -34,8 +34,8 @@ private extension SubtensorStakeRateCalculator {
     }
 
     static func stakeWeightedRate(
-        of positions: [SubtensorStakingPosition],
-        rateAndStake: (SubtensorStakingPosition) -> (Decimal?, Balance?)
+        of positions: [SubtensorPosition],
+        rateAndStake: (SubtensorPosition) -> (Decimal?, Balance?)
     ) -> Decimal? {
         var totalStake = Decimal.zero
         var weightedRate = Decimal.zero

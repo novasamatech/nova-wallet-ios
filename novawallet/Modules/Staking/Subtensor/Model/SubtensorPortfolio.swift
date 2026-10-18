@@ -2,11 +2,11 @@ import Foundation
 
 struct SubtensorPortfolioGroup: Equatable {
     let netuid: UInt16
-    let positions: [SubtensorStakingPosition]
+    let positions: [SubtensorPosition]
     let totalAlpha: Balance
     let redeemable: Balance
     let taoValue: Balance?
-    let availability: SubtensorStakingPallet.StakeAvailability?
+    let availability: SubtensorPallet.StakeAvailability?
     let primaryHotkey: AccountId
 }
 
@@ -25,7 +25,7 @@ struct SubtensorPortfolio: Equatable {
     }
 
     func group(netuid: UInt16) -> SubtensorPortfolioGroup? {
-        netuid == SubtensorStakingPallet.rootNetuid ? stakedRoot : subnets.first { $0.netuid == netuid }
+        netuid == SubtensorPallet.rootNetuid ? stakedRoot : subnets.first { $0.netuid == netuid }
     }
 }
 

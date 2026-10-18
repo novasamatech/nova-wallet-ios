@@ -3,12 +3,12 @@ import Foundation
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     let stateObserver: Observable<StakingDashboardModel>
     let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
-    let subtensorFlowState: SubtensorStakingFlowStateProtocol
+    let subtensorFlowState: SubtensorFlowStateProtocol
 
     init(
         stateObserver: Observable<StakingDashboardModel>,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
-        subtensorFlowState: SubtensorStakingFlowStateProtocol
+        subtensorFlowState: SubtensorFlowStateProtocol
     ) {
         self.stateObserver = stateObserver
         self.delegatedAccountSyncService = delegatedAccountSyncService

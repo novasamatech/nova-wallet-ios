@@ -4,7 +4,7 @@ import UIKit
 
 enum SubtensorSubnetSelectViewFactory {
     static func createPicker(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         delegate: SubtensorSubnetSelectDelegate,
         browseState: SubtensorSubnetBrowseState
     ) -> UIViewController? {
@@ -16,7 +16,7 @@ enum SubtensorSubnetSelectViewFactory {
     }
 
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         delegate: SubtensorSubnetSelectDelegate,
         browseState: SubtensorSubnetBrowseState
     ) -> SubtensorSubnetSelectViewProtocol? {

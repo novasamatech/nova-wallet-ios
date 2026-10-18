@@ -8,25 +8,25 @@ protocol SubtensorApiOperationFactoryProtocol {
     func createStakeInfoWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.StakeInfo]>
 
     func createStakeAvailabilityWrapper(
         for coldkeys: [AccountId],
         netuids: [UInt16],
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.ColdkeyStakeAvailability]>
 
     func createAllDynamicInfoWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DynamicInfo?]>
 
-    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorStakingPallet.DynamicInfo?>
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorPallet.DynamicInfo?>
 
     func createDelegatesWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]>
 
-    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]>
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorPallet.SubnetPrice]>
 
     func createAlphaPriceWrapper(
         for netuid: UInt16,
@@ -37,13 +37,13 @@ protocol SubtensorApiOperationFactoryProtocol {
         netuid: UInt16,
         taoAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult>
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult>
 
     func createSimSwapAlphaForTaoWrapper(
         netuid: UInt16,
         alphaAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult>
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult>
 
     func createFeeRateWrapper(
         for netuid: UInt16,
@@ -55,11 +55,11 @@ protocol SubtensorApiOperationFactoryProtocol {
     func createRootClaimPreviewsWrapper(
         coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.BasketClaimPreview]>
 
     func createRootClaimableThresholdWrapper(
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?>
+    ) -> CompoundOperationWrapper<SubtensorPallet.FixedPoint96F32?>
 }
 
 final class SubtensorApiOperationFactory {
@@ -122,9 +122,9 @@ final class SubtensorApiOperationFactory {
         netuid: UInt16,
         amount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         do {
-            try SubtensorStakingPallet.ensureU64Amount(amount)
+            try SubtensorPallet.ensureU64Amount(amount)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -200,9 +200,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
     func createStakeInfoWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.StakeInfo]> {
         createWrapper(
-            path: SubtensorStakingPallet.stakeInfoForColdkeyApi,
+            path: SubtensorPallet.stakeInfoForColdkeyApi,
             blockHash: blockHash,
             paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
         )
@@ -212,9 +212,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         for coldkeys: [AccountId],
         netuids: [UInt16],
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.ColdkeyStakeAvailability]> {
         createWrapper(
-            path: SubtensorStakingPallet.stakeAvailabilityForColdkeysApi,
+            path: SubtensorPallet.stakeAvailabilityForColdkeysApi,
             blockHash: blockHash,
             paramsClosure: { runtimeApi, encoder, context in
                 let paramsCount = runtimeApi.method.inputs.count
@@ -239,17 +239,17 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
 
     func createAllDynamicInfoWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DynamicInfo?]> {
         createWrapper(
-            path: SubtensorStakingPallet.allDynamicInfoApi,
+            path: SubtensorPallet.allDynamicInfoApi,
             blockHash: blockHash,
             paramsClosure: nil
         )
     }
 
-    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorStakingPallet.DynamicInfo?> {
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorPallet.DynamicInfo?> {
         createWrapper(
-            path: SubtensorStakingPallet.dynamicInfoApi,
+            path: SubtensorPallet.dynamicInfoApi,
             blockHash: nil,
             paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
@@ -257,16 +257,16 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
 
     func createDelegatesWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]> {
         createWrapper(
-            path: SubtensorStakingPallet.delegatesApi,
+            path: SubtensorPallet.delegatesApi,
             blockHash: blockHash,
             paramsClosure: nil
         )
     }
 
-    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
-        createWrapper(path: SubtensorStakingPallet.alphaPriceAllApi, blockHash: nil, paramsClosure: nil)
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorPallet.SubnetPrice]> {
+        createWrapper(path: SubtensorPallet.alphaPriceAllApi, blockHash: nil, paramsClosure: nil)
     }
 
     func createAlphaPriceWrapper(
@@ -274,7 +274,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<Balance> {
         let priceWrapper: CompoundOperationWrapper<StringScaleMapper<Balance>> = createWrapper(
-            path: SubtensorStakingPallet.alphaPriceApi,
+            path: SubtensorPallet.alphaPriceApi,
             blockHash: blockHash,
             paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
@@ -286,9 +286,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         netuid: UInt16,
         taoAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         createSimSwapWrapper(
-            path: SubtensorStakingPallet.simSwapTaoForAlphaApi,
+            path: SubtensorPallet.simSwapTaoForAlphaApi,
             netuid: netuid,
             amount: taoAmount,
             blockHash: blockHash
@@ -299,9 +299,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         netuid: UInt16,
         alphaAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         createSimSwapWrapper(
-            path: SubtensorStakingPallet.simSwapAlphaForTaoApi,
+            path: SubtensorPallet.simSwapAlphaForTaoApi,
             netuid: netuid,
             amount: alphaAmount,
             blockHash: blockHash
@@ -319,12 +319,12 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                     engine: engine,
                     keyParams: { [StringScaleMapper(value: netuid)] },
                     factory: factory,
-                    storagePath: SubtensorStakingPallet.feeRatePath,
+                    storagePath: SubtensorPallet.feeRatePath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
             },
             mapping: { (responses: [StorageResponse<StringScaleMapper<UInt16>>]) in
-                responses.first?.value?.value ?? SubtensorStakingPallet.defaultFeeRate
+                responses.first?.value?.value ?? SubtensorPallet.defaultFeeRate
             }
         )
     }
@@ -337,7 +337,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                     engine: engine,
                     keyParams: { netuids.map { StringScaleMapper(value: $0) } },
                     factory: factory,
-                    storagePath: SubtensorStakingPallet.subtokenEnabledPath,
+                    storagePath: SubtensorPallet.subtokenEnabledPath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
             },
@@ -354,9 +354,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
     func createRootClaimPreviewsWrapper(
         coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.BasketClaimPreview]> {
         createWrapper(
-            path: SubtensorStakingPallet.rootBasketClaimPreviewsApi,
+            path: SubtensorPallet.rootBasketClaimPreviewsApi,
             blockHash: blockHash,
             paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
         )
@@ -364,19 +364,19 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
 
     func createRootClaimableThresholdWrapper(
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.FixedPoint96F32?> {
         createStorageWrapper(
             blockHash: blockHash,
             query: { engine, factory, atBlock in
                 self.requestFactory.queryItems(
                     engine: engine,
-                    keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
+                    keyParams: { [StringScaleMapper(value: SubtensorPallet.rootNetuid)] },
                     factory: factory,
-                    storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
+                    storagePath: SubtensorPallet.rootClaimableThresholdPath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
             },
-            mapping: { (responses: [StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]) in
+            mapping: { (responses: [StorageResponse<SubtensorPallet.FixedPoint96F32>]) in
                 responses.first?.value
             }
         )

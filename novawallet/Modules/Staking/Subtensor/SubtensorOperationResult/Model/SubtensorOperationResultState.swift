@@ -6,8 +6,8 @@ enum SubtensorOperationResultConstants {
 
 enum SubtensorOperationResultState {
     case progress
-    case done(outcome: SubtensorStakingOperationOutcome, time: Date)
-    case failed(failure: SubtensorStakingSubmissionFailure, time: Date, holdRemaining: TimeInterval?)
+    case done(outcome: SubtensorOperationOutcome, time: Date)
+    case failed(failure: SubtensorSubmissionFailure, time: Date, holdRemaining: TimeInterval?)
     case unconfirmed(time: Date)
 
     var acceptsSubmissionResult: Bool {
@@ -38,7 +38,7 @@ enum SubtensorResultInfoRow: Equatable {
     case networkFee
 }
 
-extension SubtensorStakingSubmissionFailure {
+extension SubtensorSubmissionFailure {
     var isSigningCancelled: Bool {
         guard stage == .notSubmitted else {
             return false
@@ -56,11 +56,11 @@ extension SubtensorStakingSubmissionFailure {
     }
 
     var isRetryable: Bool {
-        if error is SubtensorStakingOperationError {
+        if error is SubtensorOperationError {
             return false
         }
 
-        switch error as? SubtensorStakingSubmissionError {
+        switch error as? SubtensorSubmissionError {
         case .subnetNotExists,
              .subtokenDisabled,
              .hotkeyNotRegistered,
@@ -75,7 +75,7 @@ extension SubtensorStakingSubmissionFailure {
     }
 }
 
-extension SubtensorStakingOperation {
+extension SubtensorOperation {
     var tradeDirection: SubtensorTradeDirection? {
         switch self {
         case .subnetBuy:

@@ -30,7 +30,7 @@ private extension SubtensorClaimTapRule {
             return false
         }
 
-        let threshold = SubtensorStakingFlowConstants.priceImpactWarningThreshold
+        let threshold = SubtensorFlowConstants.priceImpactWarningThreshold
 
         return (shown - fresh) * threshold.denominator > threshold.numerator * shown
     }

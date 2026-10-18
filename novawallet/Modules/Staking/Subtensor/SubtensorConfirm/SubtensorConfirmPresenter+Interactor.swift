@@ -11,7 +11,7 @@ extension SubtensorConfirmPresenter {
     }
 }
 
-extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtocol {
+extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
 
@@ -32,7 +32,7 @@ extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtoco
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positionsState = state
 
         provideViewModel()
@@ -54,7 +54,7 @@ extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtoco
         refreshQuote()
     }
 
-    func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
+    func didReceivePreflight(_ preflight: SubtensorPreflight) {
         self.preflight = preflight
     }
 
@@ -85,7 +85,7 @@ extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtoco
         provideViewModel()
     }
 
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
+    func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Error: \(error)")
 
         guard !error.isNovaFeeUnavailable else {
@@ -141,7 +141,7 @@ extension SubtensorConfirmPresenter: SubtensorOperationResultDelegate {
 extension SubtensorConfirmPresenter: SubtensorBaseRetrying {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
-    var retryInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var retryInteractor: SubtensorBaseInteractorInputProtocol { interactor }
 }
 
 extension SubtensorConfirmPresenter: Localizable {

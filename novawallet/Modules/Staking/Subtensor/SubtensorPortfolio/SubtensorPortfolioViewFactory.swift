@@ -4,7 +4,7 @@ import Foundation_iOS
 enum SubtensorPortfolioViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> SubtensorPortfolioViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -68,7 +68,7 @@ enum SubtensorPortfolioViewFactory {
 
 private extension SubtensorPortfolioViewFactory {
     static func createInteractor(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         account: MetaChainAccountResponse,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue

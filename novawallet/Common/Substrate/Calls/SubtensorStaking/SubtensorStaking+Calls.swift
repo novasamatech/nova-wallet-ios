@@ -2,14 +2,14 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-enum SubtensorStakingCallError: Error {
+enum SubtensorCallError: Error {
     case amountExceedsMaxU64(BigUInt)
 }
 
-extension SubtensorStakingPallet {
+extension SubtensorPallet {
     static func ensureU64Amount(_ amount: BigUInt) throws {
         guard amount <= BigUInt(UInt64.max) else {
-            throw SubtensorStakingCallError.amountExceedsMaxU64(amount)
+            throw SubtensorCallError.amountExceedsMaxU64(amount)
         }
     }
 
@@ -25,10 +25,10 @@ extension SubtensorStakingPallet {
         @StringCodable var amountStaked: Balance
 
         func runtimeCall() throws -> RuntimeCall<Self> {
-            try SubtensorStakingPallet.ensureU64Amount(amountStaked)
+            try SubtensorPallet.ensureU64Amount(amountStaked)
 
             return .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "add_stake",
                 args: self
             )
@@ -47,10 +47,10 @@ extension SubtensorStakingPallet {
         @StringCodable var amountUnstaked: Balance
 
         func runtimeCall() throws -> RuntimeCall<Self> {
-            try SubtensorStakingPallet.ensureU64Amount(amountUnstaked)
+            try SubtensorPallet.ensureU64Amount(amountUnstaked)
 
             return .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "remove_stake",
                 args: self
             )
@@ -73,11 +73,11 @@ extension SubtensorStakingPallet {
         let allowPartial: Bool
 
         func runtimeCall() throws -> RuntimeCall<Self> {
-            try SubtensorStakingPallet.ensureU64Amount(amountStaked)
-            try SubtensorStakingPallet.ensureU64Amount(limitPrice)
+            try SubtensorPallet.ensureU64Amount(amountStaked)
+            try SubtensorPallet.ensureU64Amount(limitPrice)
 
             return .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "add_stake_limit",
                 args: self
             )
@@ -100,11 +100,11 @@ extension SubtensorStakingPallet {
         let allowPartial: Bool
 
         func runtimeCall() throws -> RuntimeCall<Self> {
-            try SubtensorStakingPallet.ensureU64Amount(amountUnstaked)
-            try SubtensorStakingPallet.ensureU64Amount(limitPrice)
+            try SubtensorPallet.ensureU64Amount(amountUnstaked)
+            try SubtensorPallet.ensureU64Amount(limitPrice)
 
             return .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "remove_stake_limit",
                 args: self
             )
@@ -124,11 +124,11 @@ extension SubtensorStakingPallet {
 
         func runtimeCall() throws -> RuntimeCall<Self> {
             if let limitPrice {
-                try SubtensorStakingPallet.ensureU64Amount(limitPrice)
+                try SubtensorPallet.ensureU64Amount(limitPrice)
             }
 
             return .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "remove_stake_full_limit",
                 args: self
             )
@@ -140,7 +140,7 @@ extension SubtensorStakingPallet {
 
         func runtimeCall() -> RuntimeCall<Self> {
             .init(
-                moduleName: SubtensorStakingPallet.name,
+                moduleName: SubtensorPallet.name,
                 callName: "claim_root_with_hotkey",
                 args: self
             )

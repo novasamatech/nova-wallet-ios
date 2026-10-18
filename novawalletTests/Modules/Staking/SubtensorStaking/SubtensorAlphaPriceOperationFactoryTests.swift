@@ -104,7 +104,7 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
                 }
 
                 return CompoundOperationWrapper.createWithResult(
-                    chain.map { SubtensorStakingPallet.SubnetPrice(netuid: $0.key, price: $0.value) }
+                    chain.map { SubtensorPallet.SubnetPrice(netuid: $0.key, price: $0.value) }
                 )
             }
         }

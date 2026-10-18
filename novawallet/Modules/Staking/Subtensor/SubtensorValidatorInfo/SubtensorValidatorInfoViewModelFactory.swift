@@ -67,7 +67,7 @@ final class SubtensorValidatorInfoViewModelFactory {
 
         return BigRational(
             numerator: stake.numerator * alphaPrice,
-            denominator: stake.denominator * SubtensorStakingPallet.alphaPriceScale
+            denominator: stake.denominator * SubtensorPallet.alphaPriceScale
         ).decimalValue
     }
 }

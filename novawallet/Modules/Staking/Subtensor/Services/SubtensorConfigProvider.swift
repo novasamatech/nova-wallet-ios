@@ -27,7 +27,7 @@ extension SubtensorConfigProvider: SubtensorConfigProviding {
                 let config = try configWrapper.targetOperation.extractNoCancellableResultData()
                 return config.novaFeeRate ?? SubtensorNovaFeeConstants.fallbackRate
             } catch {
-                throw SubtensorStakingOperationError.novaFeeUnavailable
+                throw SubtensorOperationError.novaFeeUnavailable
             }
         }
 

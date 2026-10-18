@@ -3,14 +3,14 @@ import Foundation
 
 enum SubtensorStakeTarget: Equatable {
     case root
-    case subnet(info: SubtensorStakingPallet.DynamicInfo, price: Balance)
+    case subnet(info: SubtensorPallet.DynamicInfo, price: Balance)
 }
 
 extension SubtensorStakeTarget {
     var netuid: UInt16 {
         switch self {
         case .root:
-            return SubtensorStakingPallet.rootNetuid
+            return SubtensorPallet.rootNetuid
         case let .subnet(info, _):
             return info.netuid
         }
@@ -24,7 +24,7 @@ extension SubtensorStakeTarget {
         return false
     }
 
-    var subnetInfo: SubtensorStakingPallet.DynamicInfo? {
+    var subnetInfo: SubtensorPallet.DynamicInfo? {
         if case let .subnet(info, _) = self {
             return info
         }
