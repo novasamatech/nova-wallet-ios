@@ -153,7 +153,10 @@ business send checks shared-origin protection before network access. Only busine
 transport failures pass to domain retry handling. Success does not clear an active shared deadline.
 Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
 the operation. A later independently created operation can retry after short auth backoff; proof
-or policy denial preserves an existing binding rather than rotating its key.
+or policy denial preserves an existing binding rather than rotating its key. A refused registration
+keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
+(Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
+for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
 
 Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
 no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also

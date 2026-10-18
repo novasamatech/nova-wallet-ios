@@ -134,7 +134,9 @@ flowchart TB
   A -- "Valid attestation; persist before send" --> P["registrationPending"]
   P -- "Register 204 or successful bearer installation" --> R["registered"]
   A -- "Interrupted, expired or unrecoverable" --> X["retired; current flight fails"]
-  P -- "Conclusive refusal or confirmed absence" --> X
+  P -- "Confirmed absence or other code-bearing 4xx" --> X
+  P -- "401 attestation_failed / 403 app_not_allowed / binding_not_allowed" --> F["key dropped; UUID kept; refusal delay saved"]
+  F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
   X -- "Later independent demand; short backoff" --> K["At most one fresh UUID/key in this flight"]
   K --> U
@@ -144,7 +146,9 @@ flowchart TB
 
 Retirement fails the current caller operation; no recursive identity replacement or proof resend
 occurs. A later independently created demand may replace after short backoff. Concurrency joins one
-issuance flight. There is no lifetime replacement quota or human/background privilege.
+issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
+demands re-register at once after a refusal while background demands wait for the persisted
+1 h / 6 h / 24 h delay, which resets on an app version or context change.
 
 Pending probes preserve UUID/key/start and reserve persisted backoff before sending. A same-boot
 token-challenge/issuance `401 unknown_client` before 120 seconds keeps pending state and fails. Outside that window or after
@@ -156,8 +160,7 @@ original window until successful bearer installation. A registered binding recei
 Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
 registered UUID/key/counter. Later operations obtain a fresh challenge; no proof is reused and no
 key rotates to bypass policy. Status and code are considered together: `503 invalid_proof` is
-availability failure. Legacy `policyRefused` with a key normalizes to registered/same-binding probing;
-other unusable retired states wait for later demand replacement.
+availability failure. Stored retired states wait for later demand replacement.
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
@@ -259,7 +262,8 @@ flowchart TB
 Settings keeps the current installation storage key/version, context, UUID/key/registration, exact
 saved attestation attempt, pending start/cooldown and token-removal debt. Removed optional legacy
 fields are ignored even when malformed; surviving security fields remain validated. The next
-existing write encodes the reduced schema. Legacy policyRefused with a key resumes the same binding.
+existing write encodes the reduced schema. A saved refusal delay survives relaunch and resets on an app
+version or context change.
 
 State adoption happens before I/O. A failed write never rolls back the active memory fence; staged
 write and token deletion retry during activation and block admission until repaired. Reset/corrupt
