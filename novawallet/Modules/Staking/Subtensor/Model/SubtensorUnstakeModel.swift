@@ -6,6 +6,7 @@ struct SubtensorUnstakeSlice: Equatable {
 }
 
 struct SubtensorGroupHotkeyInfo: Equatable {
+    let owner: AccountId?
     let collateral: Balance
 }
 

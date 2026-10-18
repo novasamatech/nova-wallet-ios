@@ -112,10 +112,18 @@ private extension SubtensorUnstakeValidatingDep {
             availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
             minimumTaoOut: bases.minimumTaoOut,
             sellLimitPrice: bases.sellLimitPrice,
-            isOwnHotkey: sliceHotkey == hotkey && preflight.hotkeyOwner == accountId,
+            isOwnHotkey: owner(of: sliceHotkey, preflight: preflight) == accountId,
             minStake: preflight.minStake,
             nominatorMinStake: preflight.effectiveNominatorMinStake
         )
+    }
+
+    func owner(of sliceHotkey: AccountId?, preflight: SubtensorStakingPreflight) -> AccountId? {
+        guard let sliceHotkey else {
+            return nil
+        }
+
+        return groupHotkeys?[sliceHotkey]?.owner ?? (sliceHotkey == hotkey ? preflight.hotkeyOwner : nil)
     }
 
     func sellPlanBases(for requestedAlpha: Balance) -> (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
