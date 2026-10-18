@@ -97,7 +97,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         XCTAssertEqual(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value, costBasis)
 
         eventCenter.notify(
-            with: SubtensorStakingChanged(
+            with: SubtensorStakeChanged(
                 chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: AssetModel.utilityAssetId),
                 accountId: accountId
             )
@@ -125,7 +125,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         let service = createService(apiOperationFactory, eventCenter: eventCenter, timeProvider: { now })
 
         eventCenter.notify(
-            with: SubtensorStakingChanged(
+            with: SubtensorStakeChanged(
                 chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: AssetModel.utilityAssetId),
                 accountId: accountId
             )

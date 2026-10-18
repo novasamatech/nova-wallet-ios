@@ -4,7 +4,7 @@ import Foundation_iOS
 struct StakingMoreOptionsViewFactory {
     static func createView(
         stateObserver: Observable<StakingDashboardModel>,
-        subtensorFlowState: SubtensorStakingFlowStateProtocol
+        subtensorFlowState: SubtensorFlowStateProtocol
     ) -> StakingMoreOptionsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil

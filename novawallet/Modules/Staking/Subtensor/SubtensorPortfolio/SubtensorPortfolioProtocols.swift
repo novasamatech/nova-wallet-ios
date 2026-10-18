@@ -14,7 +14,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func selectChartPoint(at index: Int?)
 }
 
-protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
+protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
     func loadHistories(for period: SubtensorPricePeriod)
@@ -23,8 +23,8 @@ protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
     func loadNetworkRootRate()
 }
 
-protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
-    func didReceive(state: Multistaking.SubtensorStakingState)
+protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
+    func didReceive(state: Multistaking.SubtensorState)
     func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(rootYields: SubtensorAlphaYields?)

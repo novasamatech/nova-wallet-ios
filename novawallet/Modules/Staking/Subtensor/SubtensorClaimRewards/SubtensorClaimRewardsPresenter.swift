@@ -4,23 +4,23 @@ import Foundation_iOS
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
     let wireframe: SubtensorConfirmWireframeProtocol
-    let interactor: SubtensorStakingBaseInteractorInputProtocol
+    let interactor: SubtensorBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorClaimRewardsModel
     let signing: SubtensorOperationGate.Verdict
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
-    let viewModelFactory: SubtensorClaimViewModelFactoryProtocol
-    let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
+    let viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol
+    let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
 
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
-    var positionsState: Multistaking.SubtensorStakingState?
+    var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var claimable: [SubtensorRootClaimPreview]?
-    var preflight: SubtensorStakingPreflight?
+    var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
     private(set) var shownPreview: SubtensorRootClaimPreview
     private(set) var isNothingToClaim = false
@@ -30,13 +30,13 @@ final class SubtensorClaimRewardsPresenter {
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorStakingBaseInteractorInputProtocol,
+        interactor: SubtensorBaseInteractorInputProtocol,
         wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,
-        viewModelFactory: SubtensorClaimViewModelFactoryProtocol,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol,
+        dataValidationFactory: SubtensorValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -98,7 +98,7 @@ extension SubtensorClaimRewardsPresenter {
     }
 
     func refreshPreflight() {
-        interactor.refreshPreflight(for: hotkey, netuid: SubtensorStakingPallet.rootNetuid)
+        interactor.refreshPreflight(for: hotkey, netuid: SubtensorPallet.rootNetuid)
     }
 
     func applySilently(_ claimable: [SubtensorRootClaimPreview]) {

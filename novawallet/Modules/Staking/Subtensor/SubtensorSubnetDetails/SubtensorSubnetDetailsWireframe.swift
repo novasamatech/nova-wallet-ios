@@ -1,9 +1,9 @@
 import UIKit
 
 final class SubtensorSubnetDetailsWireframe: SubtensorSubnetPickerCompleting {
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
 
-    init(state: SubtensorStakingSharedStateProtocol) {
+    init(state: SubtensorSharedStateProtocol) {
         self.state = state
     }
 }

@@ -20,7 +20,7 @@ enum SubtensorPortfolioHistoriesState: Equatable {
 }
 
 struct SubtensorPortfolioState {
-    var positions: Multistaking.SubtensorStakingState? {
+    var positions: Multistaking.SubtensorState? {
         didSet {
             rebuildPortfolio()
         }
@@ -57,7 +57,7 @@ struct SubtensorPortfolioState {
     private(set) var groups: [SubtensorPortfolioGroup] = []
 
     var isValuationPending: Bool {
-        !isCatalogueResolved && groups.contains { $0.netuid != SubtensorStakingPallet.rootNetuid }
+        !isCatalogueResolved && groups.contains { $0.netuid != SubtensorPallet.rootNetuid }
     }
 
     var subnetRefs: [SubtensorSubnetRef] {
@@ -71,11 +71,11 @@ struct SubtensorPortfolioState {
     }
 
     var isRootRateUnavailable: Bool {
-        isRootRateResolved && rootYields == nil && groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
+        isRootRateResolved && rootYields == nil && groups.contains { $0.netuid == SubtensorPallet.rootNetuid }
     }
 
     var isCatalogueUnavailable: Bool {
-        let heldNetuids = groups.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }
+        let heldNetuids = groups.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid }
 
         guard isCatalogueResolved, !heldNetuids.isEmpty else {
             return false

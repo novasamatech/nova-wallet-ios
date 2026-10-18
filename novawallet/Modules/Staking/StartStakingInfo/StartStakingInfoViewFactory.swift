@@ -7,7 +7,7 @@ struct StartStakingInfoViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         selectedStakingType: StakingType?,
-        subtensorFlowState: SubtensorStakingFlowStateProtocol
+        subtensorFlowState: SubtensorFlowStateProtocol
     ) -> StartStakingInfoViewProtocol? {
         let optMainStakingType = chainAsset.asset.stakings?.sorted { type1, type2 in
             type1.isMorePreferred(than: type2)

@@ -7,7 +7,7 @@ final class SubtensorCataloguePricingTracker {
         let isFullyPriced: Bool?
     }
 
-    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -24,11 +24,11 @@ final class SubtensorCataloguePricingTracker {
     }
 
     init(
-        alphaPriceProvider: SubtensorAlphaPriceProviderProtocol,
+        alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.alphaPriceProvider = alphaPriceProvider
+        self.alphaPriceOperationFactory = alphaPriceOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -38,7 +38,7 @@ final class SubtensorCataloguePricingTracker {
             return
         }
 
-        prices = alphaPriceProvider.cachedPrices().map { .success($0) }
+        prices = alphaPriceOperationFactory.cachedPrices().map { .success($0) }
     }
 
     func cancel() {
@@ -50,7 +50,7 @@ final class SubtensorCataloguePricingTracker {
         prices = nil
     }
 
-    func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {
+    func valuation(of state: Multistaking.SubtensorState) -> Valuation {
         let portfolio = SubtensorPortfolioBuilder.build(state: state, prices: try? prices?.get())
 
         let isFullyPriced = portfolio.isFullyPriced || prices != nil ? portfolio.isFullyPriced : nil
@@ -59,7 +59,7 @@ final class SubtensorCataloguePricingTracker {
     }
 
     func refresh(
-        latestState: @escaping () -> Multistaking.SubtensorStakingState?,
+        latestState: @escaping () -> Multistaking.SubtensorState?,
         runningCallbackIn callbackQueue: DispatchQueue,
         mutex: NSLock,
         onUpdate: @escaping (Bool) -> Void
@@ -76,7 +76,7 @@ final class SubtensorCataloguePricingTracker {
         callStore.cancel()
 
         executeCancellable(
-            wrapper: alphaPriceProvider.createPricesWrapper(for: netuids),
+            wrapper: alphaPriceOperationFactory.createPricesWrapper(for: netuids),
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue,
@@ -90,7 +90,7 @@ final class SubtensorCataloguePricingTracker {
 private extension SubtensorCataloguePricingTracker {
     func apply(
         _ result: Result<SubtensorAlphaPrices, Error>,
-        to state: Multistaking.SubtensorStakingState?,
+        to state: Multistaking.SubtensorState?,
         onUpdate: (Bool) -> Void
     ) {
         if case let .failure(error) = result {

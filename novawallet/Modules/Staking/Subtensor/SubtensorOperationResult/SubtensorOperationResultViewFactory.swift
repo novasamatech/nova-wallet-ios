@@ -6,7 +6,7 @@ import UIKit_iOS
 
 enum SubtensorOperationResultViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
         delegate: SubtensorOperationResultDelegate
     ) -> ControllerBackedProtocol? {
@@ -45,18 +45,18 @@ enum SubtensorOperationResultViewFactory {
 
 private extension SubtensorOperationResultViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
         connection: JSONRPCEngine,
         services: SubtensorFlowServices
     ) -> SubtensorOperationResultInteractor {
         let operationQueue = services.operationQueue
 
-        let chainFactory = SubtensorResultChainFactory(
+        let chainOperationFactory = SubtensorOperationResultChainOperationFactory(
             chain: state.stakingOption.chainAsset.chain,
             connection: connection,
             runtimeProvider: services.runtimeProvider,
-            rootHoldFactory: state.earnServices.rootHoldFactory,
+            rootHoldOperationFactory: state.earnServices.rootHoldOperationFactory,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: state.chainRegistry,
                 operationQueue: operationQueue
@@ -71,9 +71,9 @@ private extension SubtensorOperationResultViewFactory {
             operation: request.operation,
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
-            operationService: services.operationService,
-            chainFactory: chainFactory,
-            catalogueService: state.earnServices.catalogueService,
+            submissionOperationFactory: services.submissionOperationFactory,
+            chainOperationFactory: chainOperationFactory,
+            catalogueOperationFactory: state.earnServices.catalogueOperationFactory,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
             osMediator: OperatingSystemMediator(),
             schedulerFactory: { Scheduler(with: $0, callbackQueue: .main) },
@@ -85,7 +85,7 @@ private extension SubtensorOperationResultViewFactory {
     static func createPresentedView(
         for request: SubtensorOperationResultRequest,
         presenter: SubtensorOperationResultPresenter
-    ) -> SubtensorResultViewProtocol {
+    ) -> SubtensorOperationResultViewProtocol {
         guard request.target.isRoot else {
             let view = SubtensorOperationResultViewController(
                 presenter: presenter,

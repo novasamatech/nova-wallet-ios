@@ -5,7 +5,7 @@ extension SubtensorConfirmPresenter {
         amount: Balance,
         limitPrice: Balance?,
         quote: SubtensorTradeQuote?
-    ) -> SubtensorStakingOperation? {
+    ) -> SubtensorOperation? {
         guard !model.target.isRoot else {
             return .rootStake(hotkey: model.validator.hotkey, amount: amount)
         }
@@ -34,7 +34,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func confirmStake(amount: Balance) {
-        var dependencies = SubtensorStakeValidatingDep(
+        var dependencies = SubtensorStakeValidatingDependencies(
             amount: amount,
             balance: balance,
             fee: fee,

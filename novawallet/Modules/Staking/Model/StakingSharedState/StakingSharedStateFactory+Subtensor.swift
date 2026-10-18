@@ -6,8 +6,8 @@ import SubstrateSdk
 extension StakingSharedStateFactory {
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
-    ) throws -> SubtensorStakingSharedStateProtocol {
+        flowState: SubtensorFlowStateProtocol
+    ) throws -> SubtensorSharedStateProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         guard chainRegistry.getConnection(for: chainId) != nil else {
@@ -26,7 +26,7 @@ extension StakingSharedStateFactory {
 
         let novaFeeCalculator = SubtensorNovaFeeCalculator()
 
-        return SubtensorStakingSharedState(
+        return SubtensorSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
@@ -35,12 +35,12 @@ extension StakingSharedStateFactory {
                 operationManager: OperationManager(operationQueue: repositoryOperationQueue),
                 logger: logger
             ),
-            subnetsService: SubtensorSubnetsService(
+            subnetsOperationFactory: SubtensorSubnetsOperationFactory(
                 operationFactory: apiOperationFactory,
                 operationQueue: syncOperationQueue
             ),
             apiOperationFactory: apiOperationFactory,
-            stakeStateSourceFactory: SubtensorStakingProcessServices.shared.stakeStateSourceFactory,
+            stakeStateSourceFactory: SubtensorProcessServices.shared.stakeStateSourceFactory,
             earnServices: createSubtensorEarnServices(
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore,
@@ -63,24 +63,26 @@ extension StakingSharedStateFactory {
         runtimeConnectionStore: RuntimeConnectionStoring,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         novaFeeCalculator: SubtensorNovaFeeCalculator,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> SubtensorEarnServices {
-        let processServices = SubtensorStakingProcessServices.shared
+        let processServices = SubtensorProcessServices.shared
 
         let validatorChainOperationFactory = SubtensorValidatorChainOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
-        let yieldService = processServices.createYieldService(operationQueue: syncOperationQueue, logger: logger)
+        let yieldOperationFactory = processServices.createYieldOperationFactory(
+            operationQueue: syncOperationQueue, logger: logger
+        )
 
-        let recommendationService = SubtensorRecommendationService(
+        let recommendationOperationFactory = SubtensorRecommendationOperationFactory(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
-        let validatorDirectoryService = SubtensorValidatorDirectoryService(
+        let validatorDirectoryOperationFactory = SubtensorValidatorDirectoryOperationFactory(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
             operationQueue: syncOperationQueue,
@@ -90,34 +92,36 @@ extension StakingSharedStateFactory {
         return SubtensorEarnServices(
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
-            catalogueService: processServices.catalogueService,
-            alphaPriceProvider: processServices.createAlphaPriceProvider(
+            catalogueOperationFactory: processServices.catalogueOperationFactory,
+            alphaPriceOperationFactory: processServices.createAlphaPriceOperationFactory(
                 chainOperationFactory: apiOperationFactory, operationQueue: syncOperationQueue, logger: logger
             ),
-            yieldService: yieldService,
-            maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
-            recommendationService: recommendationService,
-            validatorDirectoryService: validatorDirectoryService,
-            priceHistoryService: createSubtensorPriceHistoryService(
+            yieldOperationFactory: yieldOperationFactory,
+            maxApyOperationFactory: processServices.createMaxApyOperationFactory(
+                operationQueue: syncOperationQueue, logger: logger
+            ),
+            recommendationOperationFactory: recommendationOperationFactory,
+            validatorDirectoryOperationFactory: validatorDirectoryOperationFactory,
+            priceHistoryOperationFactory: createSubtensorPriceHistoryOperationFactory(
                 for: stakingOption, runtimeConnectionStore: runtimeConnectionStore, flowState: flowState
             ),
-            tradeQuoteFactory: SubtensorTradeQuoteFactory(
+            tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactory(
                 operationFactory: apiOperationFactory,
                 configProvider: processServices.subnetLogosProvider,
                 operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
-            rootHoldFactory: SubtensorRootHoldFactory(
+            rootHoldOperationFactory: SubtensorRootHoldOperationFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
-            groupHotkeyFactory: SubtensorGroupHotkeyFactory(
+            groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
             ),
-            validatorPresetFactory: SubtensorValidatorPresetFactory(
-                directoryService: validatorDirectoryService,
-                recommendationService: recommendationService,
-                yieldService: yieldService,
+            validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactory(
+                directoryOperationFactory: validatorDirectoryOperationFactory,
+                recommendationOperationFactory: recommendationOperationFactory,
+                yieldOperationFactory: yieldOperationFactory,
                 operationQueue: syncOperationQueue,
                 logger: logger
             ),
@@ -125,19 +129,19 @@ extension StakingSharedStateFactory {
         )
     }
 
-    private func createSubtensorPriceHistoryService(
+    private func createSubtensorPriceHistoryOperationFactory(
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
-        flowState: SubtensorStakingFlowStateProtocol
-    ) -> SubtensorPriceHistoryServiceProtocol? {
+        flowState: SubtensorFlowStateProtocol
+    ) -> SubtensorPriceHistoryOperationFactoryProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
-        let processServices = SubtensorStakingProcessServices.shared
+        let processServices = SubtensorProcessServices.shared
 
-        return SubtensorPriceHistoryService(
-            marketsService: processServices.subnetMarketsService,
+        return SubtensorPriceHistoryOperationFactory(
+            marketsOperationFactory: processServices.subnetMarketsOperationFactory,
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             coingeckoOperationFactory: flowState.coingeckoOperationFactory,
             blockNumberOperationFactory: BlockNumberOperationFactory(

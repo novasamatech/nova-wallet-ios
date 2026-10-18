@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputProtocol {
+extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -20,7 +20,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputPr
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positionsState = state
 
         if let state, !state.isRootRedeemableStale {
@@ -39,7 +39,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputPr
 
     func didReceiveBlockNumber(_: BlockNumber) {}
 
-    func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
+    func didReceivePreflight(_ preflight: SubtensorPreflight) {
         self.preflight = preflight
 
         provideViewModel()
@@ -59,7 +59,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputPr
         existentialDeposit = deposit
     }
 
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
+    func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Error: \(error)")
 
         presentBaseRetry(for: error)
@@ -81,7 +81,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
 extension SubtensorClaimRewardsPresenter: SubtensorBaseRetrying {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
-    var retryInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var retryInteractor: SubtensorBaseInteractorInputProtocol { interactor }
 }
 
 extension SubtensorClaimRewardsPresenter: Localizable {

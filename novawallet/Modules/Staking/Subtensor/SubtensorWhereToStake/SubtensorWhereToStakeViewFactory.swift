@@ -1,7 +1,7 @@
 import Foundation_iOS
 
 enum SubtensorWhereToStakeViewFactory {
-    static func createView(for state: SubtensorStakingSharedStateProtocol) -> SubtensorWhereToStakeViewProtocol {
+    static func createView(for state: SubtensorSharedStateProtocol) -> SubtensorWhereToStakeViewProtocol {
         let localizationManager = LocalizationManager.shared
         let presenter = SubtensorWhereToStakePresenter(
             wireframe: SubtensorWhereToStakeWireframe(state: state),

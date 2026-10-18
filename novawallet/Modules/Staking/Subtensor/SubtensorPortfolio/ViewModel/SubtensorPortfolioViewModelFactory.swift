@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryProtocol {
+protocol SubtensorPortfolioViewModelFactoryProtocol: SubtensorPortfolioChartFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel
 }
 
@@ -277,13 +277,13 @@ private extension SubtensorPortfolioViewModelFactory {
     }
 }
 
-extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryProtocol {
+extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel {
         let groups = state.groups
 
         guard let portfolio = state.portfolio, !state.isValuationPending else {
             let rootRows = groups
-                .filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+                .filter { $0.netuid == SubtensorPallet.rootNetuid }
                 .map { createRootRow(for: $0, state: state, locale: locale) }
             let loadingRows = state.portfolio == nil ? Self.placeholderRows : groups.count - rootRows.count
             let header = createLoadingHeader(for: state, locale: locale)
@@ -304,7 +304,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         }
 
         let rows = groups.map { group in
-            group.netuid == SubtensorStakingPallet.rootNetuid
+            group.netuid == SubtensorPallet.rootNetuid
                 ? createRootRow(for: group, state: state, locale: locale)
                 : createSubnetRow(for: group, state: state, locale: locale)
         }

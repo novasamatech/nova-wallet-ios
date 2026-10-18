@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorSubnetDetailsViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         delegate: SubtensorSubnetSelectDelegate
@@ -54,7 +54,7 @@ enum SubtensorSubnetDetailsViewFactory {
 
 private extension SubtensorSubnetDetailsViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         currencyManager: CurrencyManagerProtocol
     ) -> SubtensorSubnetDetailsInteractor {
@@ -63,7 +63,7 @@ private extension SubtensorSubnetDetailsViewFactory {
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
             state: state,
-            parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
+            parametersOperationFactory: createParametersOperationFactory(state: state, operationQueue: operationQueue),
             applicationHandler: ApplicationHandler(),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
@@ -74,12 +74,12 @@ private extension SubtensorSubnetDetailsViewFactory {
 }
 
 extension SubtensorSubnetDetailsViewFactory {
-    static func createParametersFactory(
-        state: SubtensorStakingSharedStateProtocol,
+    static func createParametersOperationFactory(
+        state: SubtensorSharedStateProtocol,
         operationQueue: OperationQueue
-    ) -> SubnetParametersFactoryProtocol {
+    ) -> SubtensorSubnetParametersOperationFactoryProtocol {
         let chain = state.stakingOption.chainAsset.chain
-        return SubtensorSubnetParametersFactory(
+        return SubtensorSubnetParametersOperationFactory(
             apiFactory: state.apiOperationFactory,
             runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
                 chainId: chain.chainId, chainRegistry: state.chainRegistry

@@ -2,12 +2,12 @@ import Foundation
 import Foundation_iOS
 
 final class SubtensorOperationResultPresenter {
-    weak var view: SubtensorResultViewProtocol?
+    weak var view: SubtensorOperationResultViewProtocol?
     weak var delegate: SubtensorOperationResultDelegate?
 
-    let wireframe: SubtensorResultWireframeProtocol
-    let interactor: SubtensorResultInteractorInputProtocol
-    let viewModelFactory: SubtensorResultViewModelFactoryProtocol
+    let wireframe: SubtensorOperationResultWireframeProtocol
+    let interactor: SubtensorOperationResultInteractorInputProtocol
+    let viewModelFactory: SubtensorOperationResultViewModelFactoryProtocol
     let request: SubtensorOperationResultRequest
     let stakingOption: Multistaking.ChainAssetOption
 
@@ -20,9 +20,9 @@ final class SubtensorOperationResultPresenter {
     init(
         request: SubtensorOperationResultRequest,
         stakingOption: Multistaking.ChainAssetOption,
-        interactor: SubtensorResultInteractorInputProtocol,
-        wireframe: SubtensorResultWireframeProtocol,
-        viewModelFactory: SubtensorResultViewModelFactoryProtocol,
+        interactor: SubtensorOperationResultInteractorInputProtocol,
+        wireframe: SubtensorOperationResultWireframeProtocol,
+        viewModelFactory: SubtensorOperationResultViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.request = request
@@ -79,13 +79,13 @@ private extension SubtensorOperationResultPresenter {
         provideViewModel()
     }
 
-    func handleSuccess(_ outcome: SubtensorStakingOperationOutcome) {
+    func handleSuccess(_ outcome: SubtensorOperationOutcome) {
         changeState(.done(outcome: outcome, time: Date()))
 
         interactor.fetchBlockTimestamp(at: outcome.blockHash)
     }
 
-    func handleFailure(_ failure: SubtensorStakingSubmissionFailure) {
+    func handleFailure(_ failure: SubtensorSubmissionFailure) {
         if failure.isSigningCancelled {
             clearCountdown()
             retry()
@@ -106,7 +106,7 @@ private extension SubtensorOperationResultPresenter {
 
             interactor.fetchBlockTimestamp(at: blockHash)
 
-            if (failure.error as? SubtensorStakingSubmissionError) == .rootStakeLocked {
+            if (failure.error as? SubtensorSubmissionError) == .rootStakeLocked {
                 interactor.fetchRootHoldRemainingBlocks(for: request.operation.rootHotkeys)
             }
         case .unconfirmed:
@@ -149,7 +149,7 @@ private extension SubtensorOperationResultPresenter {
     }
 }
 
-extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
+extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterProtocol {
     func setup() {
         progressStartedAt = Date()
         startCountdown()
@@ -214,8 +214,8 @@ extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
     }
 }
 
-extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProtocol {
-    func didReceiveSubmission(result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>) {
+extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorOutputProtocol {
+    func didReceiveSubmission(result: Result<SubtensorOperationOutcome, SubtensorSubmissionFailure>) {
         guard state.acceptsSubmissionResult else {
             return
         }
@@ -290,7 +290,7 @@ extension SubtensorOperationResultPresenter: Localizable {
     }
 }
 
-private extension SubtensorStakingSubmissionFailure.Stage {
+private extension SubtensorSubmissionFailure.Stage {
     var blockHash: BlockHash? {
         if case let .dispatched(blockHash, _) = self {
             return blockHash

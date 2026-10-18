@@ -7,13 +7,13 @@ final class SubtensorSubnetDetailsPresenter {
 
     let input: SubtensorSubnetDetailsInput
     let host: SubtensorSubnetDetailsHost
-    let interactor: SubnetDetailsInteractorInputProtocol
+    let interactor: SubtensorSubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
-    let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
+    let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
-    private var positions: Multistaking.SubtensorStakingState?
+    private var positions: Multistaking.SubtensorState?
     private var isPositionsSyncFailed = false
     private var isParametersRequested = false
     private var isPresetRequested = false
@@ -23,9 +23,9 @@ final class SubtensorSubnetDetailsPresenter {
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         selectionDelegate: SubtensorSubnetSelectDelegate,
-        interactor: SubnetDetailsInteractorInputProtocol,
+        interactor: SubtensorSubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
-        viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
+        viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -184,7 +184,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 }
 
-extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
+extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutputProtocol {
     func didReceive(isFavorite: Bool) {
         state.isFavorite = isFavorite
         provideViewModel()
@@ -257,7 +257,7 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positions = state
         requestParametersIfNeeded()
         requestPresetIfReady()

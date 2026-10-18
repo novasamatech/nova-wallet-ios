@@ -1,26 +1,26 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorResultViewProtocol: ControllerBackedProtocol {
+protocol SubtensorOperationResultViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorOperationResultViewModel)
     func didUpdateCountdown(remainedTime: UInt)
 }
 
-protocol SubtensorResultPresenterProtocol: AnyObject {
+protocol SubtensorOperationResultPresenterProtocol: AnyObject {
     func setup()
     func activate(action: SubtensorResultAction)
     func goBack()
     func showInfo(for row: SubtensorResultInfoRow)
 }
 
-protocol SubtensorResultInteractorInputProtocol: AnyObject {
+protocol SubtensorOperationResultInteractorInputProtocol: AnyObject {
     func setup()
     func fetchBlockTimestamp(at blockHash: BlockHash)
     func fetchRootHoldRemainingBlocks(for hotkeys: [AccountId])
 }
 
-protocol SubtensorResultInteractorOutputProtocol: AnyObject {
-    func didReceiveSubmission(result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>)
+protocol SubtensorOperationResultInteractorOutputProtocol: AnyObject {
+    func didReceiveSubmission(result: Result<SubtensorOperationOutcome, SubtensorSubmissionFailure>)
     func didReachConfirmationCap()
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash)
     func didReceiveRootHoldRemainingBlocks(_ blocks: UInt64)
@@ -28,7 +28,7 @@ protocol SubtensorResultInteractorOutputProtocol: AnyObject {
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos)
 }
 
-protocol SubtensorResultWireframeProtocol: SubtensorInfoSheetPresentable,
+protocol SubtensorOperationResultWireframeProtocol: SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable,
     SubtensorYourBittensorPresentable {
     func closeForRetry(from view: ControllerBackedProtocol?, completion: @escaping () -> Void)
@@ -37,7 +37,7 @@ protocol SubtensorResultWireframeProtocol: SubtensorInfoSheetPresentable,
     func presentSigningFailure(_ error: Error, from view: ControllerBackedProtocol?)
 }
 
-protocol SubtensorResultChainFactoryProtocol {
+protocol SubtensorOperationResultChainOperationFactoryProtocol {
     func createBlockTimestampWrapper(at blockHash: BlockHash) -> CompoundOperationWrapper<Date>
     func createRootHoldRemainingBlocksWrapper(
         coldkey: AccountId,

@@ -7,7 +7,7 @@ final class SubtensorExternalBalanceServiceFactory {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
-    let processServices: SubtensorStakingProcessServices
+    let processServices: SubtensorProcessServices
 
     init(
         storageFacade: StorageFacadeProtocol,
@@ -15,7 +15,7 @@ final class SubtensorExternalBalanceServiceFactory {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        processServices: SubtensorStakingProcessServices
+        processServices: SubtensorProcessServices
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry

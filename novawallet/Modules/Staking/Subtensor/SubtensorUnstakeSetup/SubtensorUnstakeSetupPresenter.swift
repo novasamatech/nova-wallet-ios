@@ -4,8 +4,8 @@ import Foundation_iOS
 
 final class SubtensorUnstakeSetupPresenter {
     weak var view: SubtensorUnstakeSetupViewProtocol?
-    let wireframe: SubtensorStakingSetupWireframeProtocol
-    let interactor: SubtensorUnstakeInteractorInputProtocol
+    let wireframe: SubtensorStakeSetupWireframeProtocol
+    let interactor: SubtensorUnstakeSetupInteractorInputProtocol
     let logger: LoggerProtocol
 
     let netuid: UInt16
@@ -13,17 +13,17 @@ final class SubtensorUnstakeSetupPresenter {
     let selectedAccount: MetaChainAccountResponse
     let slippage: BigRational
     let viewModelFactory: SubtensorUnstakeSetupViewModelFactory
-    let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
+    let dataValidationFactory: SubtensorValidationFactoryProtocol
 
     var target: SubtensorStakeTarget?
-    var positionsState: Multistaking.SubtensorStakingState?
+    var positionsState: Multistaking.SubtensorState?
     var group: SubtensorPortfolioGroup?
     var isPositionsSyncFailed = false
     var inputResult: AmountInputResult?
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
-    var preflight: SubtensorStakingPreflight?
+    var preflight: SubtensorPreflight?
     var blockTime: BlockTime?
     var existentialDeposit: Balance?
     var currentBlock: BlockNumber?
@@ -46,13 +46,13 @@ final class SubtensorUnstakeSetupPresenter {
     private var feeShape: FeeShape?
 
     init(
-        interactor: SubtensorUnstakeInteractorInputProtocol,
-        wireframe: SubtensorStakingSetupWireframeProtocol,
+        interactor: SubtensorUnstakeSetupInteractorInputProtocol,
+        wireframe: SubtensorStakeSetupWireframeProtocol,
         netuid: UInt16,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
         slippage: BigRational,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        dataValidationFactory: SubtensorValidationFactoryProtocol,
         viewModelFactory: SubtensorUnstakeSetupViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -67,7 +67,7 @@ final class SubtensorUnstakeSetupPresenter {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
 
-        if netuid == SubtensorStakingPallet.rootNetuid {
+        if netuid == SubtensorPallet.rootNetuid {
             target = .root
         }
 
@@ -114,7 +114,7 @@ private extension SubtensorUnstakeSetupPresenter {
         guard !isRoot else {
             return SubtensorGroupUnstakeBasis.floorAlpha(
                 minTao: minStake,
-                price: SubtensorStakingPallet.alphaPriceScale,
+                price: SubtensorPallet.alphaPriceScale,
                 feeRate: 0
             )
         }
@@ -130,7 +130,7 @@ private extension SubtensorUnstakeSetupPresenter {
         )
     }
 
-    func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorStakingOperation? {
+    func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorOperation? {
         guard !isRoot else {
             return plan.rootOperation(amount: plan.amount)
         }
@@ -140,7 +140,7 @@ private extension SubtensorUnstakeSetupPresenter {
         }
 
         let quotedTaoOut = quoteFlow.freshQuote?.quote.sim.taoAmount ??
-            plan.amount * spotPrice / SubtensorStakingPallet.alphaPriceScale
+            plan.amount * spotPrice / SubtensorPallet.alphaPriceScale
 
         guard quotedTaoOut > 0 else {
             return nil
@@ -152,7 +152,7 @@ private extension SubtensorUnstakeSetupPresenter {
 
 extension SubtensorUnstakeSetupPresenter {
     var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
     var basis: SubtensorGroupUnstakeBasis? {
@@ -383,7 +383,7 @@ extension SubtensorUnstakeSetupPresenter {
 extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
-    var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var loadingView: LoadableViewProtocol? { view }
     var alphaDisplayInfo: AssetBalanceDisplayInfo { inputDisplayInfo }
 }

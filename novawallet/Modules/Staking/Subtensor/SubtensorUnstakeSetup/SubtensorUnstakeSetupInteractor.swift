@@ -2,10 +2,10 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorUnstakeInteractorOutputProtocol? {
+final class SubtensorUnstakeSetupInteractor: SubtensorBaseInteractor {
+    var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeInteractorOutputProtocol
+            basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
         }
 
         set {
@@ -13,9 +13,9 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
-    let subnetsService: SubtensorSubnetsServiceProtocol
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
-    let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
+    let validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
+    let groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
@@ -23,12 +23,12 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     override init(
         flowServices: SubtensorFlowServices,
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         logger: LoggerProtocol
     ) {
-        subnetsService = state.subnetsService
-        validatorFactory = state.earnServices.validatorPresetFactory
-        groupHotkeyFactory = state.earnServices.groupHotkeyFactory
+        subnetsOperationFactory = state.subnetsOperationFactory
+        validatorPresetOperationFactory = state.earnServices.validatorPresetOperationFactory
+        groupHotkeyOperationFactory = state.earnServices.groupHotkeyOperationFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
@@ -40,12 +40,12 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     }
 }
 
-extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
+extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputProtocol {
     func loadSubnetsInfo(for netuid: UInt16) {
         subnetsInfoCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
+            wrapper: subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetsInfoCallStore,
             runningCallbackIn: .main
@@ -63,7 +63,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         validatorCallStore.cancel()
 
         executeCancellable(
-            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            wrapper: validatorPresetOperationFactory.createLockedWrapper(for: hotkey, subnet: subnet),
             inOperationQueue: operationQueue,
             backingCallIn: validatorCallStore,
             runningCallbackIn: .main
@@ -82,7 +82,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         groupHotkeysCallStore.cancel()
 
         executeCancellable(
-            wrapper: groupHotkeyFactory.createInfoWrapper(
+            wrapper: groupHotkeyOperationFactory.createInfoWrapper(
                 coldkey: selectedAccount.accountId,
                 hotkeys: hotkeys,
                 netuid: netuid

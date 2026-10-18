@@ -3,14 +3,14 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubnetDetailsInteractorOutputProtocol?
+    weak var presenter: SubtensorSubnetDetailsInteractorOutputProtocol?
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let parametersFactory: SubnetParametersFactoryProtocol
-    let presetFactory: SubtensorValidatorPresetFactoryProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol
+    let presetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
@@ -28,8 +28,8 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
 
     init(
         subnet: SubtensorSubnetRef,
-        state: SubtensorStakingSharedStateProtocol,
-        parametersFactory: SubnetParametersFactoryProtocol,
+        state: SubtensorSharedStateProtocol,
+        parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -38,10 +38,10 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     ) {
         self.subnet = subnet
         chainAsset = state.stakingOption.chainAsset
-        priceHistoryService = state.earnServices.priceHistoryService
-        self.parametersFactory = parametersFactory
-        presetFactory = state.earnServices.validatorPresetFactory
-        yieldService = state.earnServices.yieldService
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        self.parametersOperationFactory = parametersOperationFactory
+        presetOperationFactory = state.earnServices.validatorPresetOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         earnSettings = state.earnServices.earnSettings
         positionsSyncService = state.positionsSyncService
@@ -86,12 +86,12 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 
     func loadYields() {
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
         let netuid = subnet.netuid
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
             label: "subnet yields",
             deliver: { [weak self] in
@@ -111,7 +111,7 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
+extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInputProtocol {
     func setup() {
         provideFavorite()
         subscribeTaoPrice(currency: selectedCurrency)
@@ -127,7 +127,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         parametersCallStore.cancel()
 
         load(
-            parametersFactory.createWrapper(for: subnet),
+            parametersOperationFactory.createWrapper(for: subnet),
             in: parametersCallStore,
             label: "parameters"
         ) { [weak self] in
@@ -140,7 +140,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     func loadHistory(for period: SubtensorPricePeriod) {
         historyCallStore.cancel()
 
-        let wrapper = priceHistoryService?.createHistoryWrapper(
+        let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
             currency: selectedCurrency
@@ -162,7 +162,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         presetCallStore.cancel()
 
         load(
-            presetFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            presetOperationFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in

@@ -10,6 +10,6 @@ struct SubtensorAlphaPrices: Equatable {
             return nil
         }
 
-        return alpha * price / SubtensorStakingPallet.alphaPriceScale
+        return alpha * price / SubtensorPallet.alphaPriceScale
     }
 }

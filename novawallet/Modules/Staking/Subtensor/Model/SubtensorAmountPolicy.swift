@@ -4,7 +4,7 @@ import Foundation
 struct SubtensorSellPlanInput {
     let requestedAlpha: Balance
     let positionAlpha: Balance
-    let availability: SubtensorStakingPallet.StakeAvailability
+    let availability: SubtensorPallet.StakeAvailability
     let minimumTaoOut: Balance
     let sellLimitPrice: Balance
     let isOwnHotkey: Bool
@@ -50,7 +50,7 @@ enum SubtensorAmountPolicy {
 
     static func maxSell(
         positionAlpha: Balance,
-        availability: SubtensorStakingPallet.StakeAvailability
+        availability: SubtensorPallet.StakeAvailability
     ) -> Balance {
         min(positionAlpha, availability.available)
     }
@@ -75,7 +75,7 @@ enum SubtensorAmountPolicy {
         }
 
         let remainder = input.positionAlpha - input.requestedAlpha
-        let remainderValue = remainder * input.sellLimitPrice / SubtensorStakingPallet.alphaPriceScale
+        let remainderValue = remainder * input.sellLimitPrice / SubtensorPallet.alphaPriceScale
 
         guard remainderValue < input.nominatorMinStake else {
             return .partial

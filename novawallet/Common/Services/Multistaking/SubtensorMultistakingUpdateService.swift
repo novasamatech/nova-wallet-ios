@@ -8,8 +8,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let stakingType: StakingType
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateSource: SubtensorStakeStateSource
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let cataloguePricing: SubtensorCataloguePricingTracker
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -31,7 +31,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         onFailure: { [weak self] in self?.completeImmediate($0) }
     )
 
-    private var lastState: Multistaking.SubtensorStakingState? {
+    private var lastState: Multistaking.SubtensorState? {
         stakeStateSubscription.lastState
     }
 
@@ -48,8 +48,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
+        maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol,
+        yieldOperationFactory: SubtensorYieldOperationFactoryProtocol,
         cataloguePricing: SubtensorCataloguePricingTracker
     ) {
         self.walletId = walletId
@@ -57,8 +57,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.stakeStateSource = stakeStateSource
-        self.maxApyProvider = maxApyProvider
-        self.yieldService = yieldService
+        self.maxApyOperationFactory = maxApyOperationFactory
+        self.yieldOperationFactory = yieldOperationFactory
         self.cataloguePricing = cataloguePricing
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
@@ -97,7 +97,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         stopSyncUp()
     }
 
-    private func handle(state: Multistaking.SubtensorStakingState) {
+    private func handle(state: Multistaking.SubtensorState) {
         seedSubnetYields()
         persistState(state)
 
@@ -116,7 +116,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         executeCancellable(
-            wrapper: maxApyProvider.createMaxApyWrapper(),
+            wrapper: maxApyOperationFactory.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: maxApyCallStore,
             runningCallbackIn: workingQueue,
@@ -132,7 +132,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
     }
 
-    private func completeSync(_ error: Error?, for state: Multistaking.SubtensorStakingState) {
+    private func completeSync(_ error: Error?, for state: Multistaking.SubtensorState) {
         let isAwaitingMaxApy = !state.hasActiveStaking && maxApyUpdate == .keep && maxApyCallStore.hasCall
         let isAwaitingSubnetYields = state.rootStakeInRao == nil &&
             !state.heldSubnetNetuids.isSubset(of: subnetYields.keys) && subnetYieldsCallStore.hasCall
@@ -171,7 +171,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private func seedRootYields() {
         guard
             rootYields == nil,
-            case let .fresh(yields) = yieldService.cachedAlphaYields(for: SubtensorStakingPallet.rootNetuid) else {
+            case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(
+                for: SubtensorPallet.rootNetuid
+            ) else {
             return
         }
 
@@ -184,7 +186,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         let hotkeys = Set(
-            lastState.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }.map(\.hotkey)
+            lastState.positions.filter { $0.netuid == SubtensorPallet.rootNetuid }.map(\.hotkey)
         )
 
         guard !hotkeys.isEmpty, hotkeys != requestedRootHotkeys else {
@@ -195,7 +197,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         rootYieldsCallStore.cancel()
 
         executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            wrapper: yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorPallet.rootNetuid),
             inOperationQueue: operationQueue,
             backingCallIn: rootYieldsCallStore,
             runningCallbackIn: workingQueue,
@@ -226,7 +228,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         for netuid in lastState.heldSubnetNetuids where subnetYields[netuid] == nil {
-            guard case let .fresh(yields) = yieldService.cachedAlphaYields(for: netuid) else {
+            guard case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(for: netuid) else {
                 continue
             }
 
@@ -248,7 +250,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         requestedSubnetNetuids = netuids
         subnetYieldsCallStore.cancel()
 
-        let yieldWrappers = netuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
+        let yieldWrappers = netuids.map { yieldOperationFactory.createAlphaYieldsWrapper(for: $0) }
 
         let mergeOperation = ClosureOperation<[UInt16: SubtensorAlphaYields]> {
             try yieldWrappers.reduce(into: [:]) { result, wrapper in
@@ -313,7 +315,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         )
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState) {
+    private func persistState(_ state: Multistaking.SubtensorState) {
         logger.debug("Persisting state: \(state)")
 
         let stakingOption = Multistaking.OptionWithWallet(
@@ -329,11 +331,11 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             stake: valuation.stake,
             maxApy: maxApyUpdate,
             rootRate: SubtensorStakeRateCalculator.rootRate(
-                of: state.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },
+                of: state.positions.filter { $0.netuid == SubtensorPallet.rootNetuid },
                 in: rootYields
             ),
             subnetRate: SubtensorStakeRateCalculator.subnetRate(
-                of: state.positions.filter { $0.netuid != SubtensorStakingPallet.rootNetuid },
+                of: state.positions.filter { $0.netuid != SubtensorPallet.rootNetuid },
                 in: subnetYields,
                 prices: cataloguePricing.alphaPrices
             ),

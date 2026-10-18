@@ -42,7 +42,7 @@ private extension SubtensorValidatorChainOperationFactory {
 
         init(query: SubtensorValidatorChainQuery) {
             pairs = query.pairs.distinct()
-            subnetNetuids = pairs.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }.distinct()
+            subnetNetuids = pairs.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid }.distinct()
             hotkeys = (pairs.map(\.hotkey) + query.takeHotkeys).distinct()
         }
     }
@@ -90,7 +90,7 @@ private extension SubtensorValidatorChainOperationFactory {
     }
 
     func createSnapshotReads(plan: SnapshotPlan, context: Context) -> SnapshotReads {
-        typealias Pallet = SubtensorStakingPallet
+        typealias Pallet = SubtensorPallet
 
         let subnets = plan.subnetNetuids
 

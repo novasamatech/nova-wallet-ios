@@ -4,10 +4,10 @@ import BigInt
 enum SubtensorRootClaimRule {
     static func minimumClaim(fromThresholdBits bits: Balance?) -> Balance {
         guard let bits else {
-            return SubtensorStakingPallet.defaultRootClaimableThreshold
+            return SubtensorPallet.defaultRootClaimableThreshold
         }
 
-        let fractionalBits = SubtensorStakingPallet.fixedPointFractionalBits
+        let fractionalBits = SubtensorPallet.fixedPointFractionalBits
         let fractionalUnit = Balance(1) << fractionalBits
 
         return (bits + fractionalUnit - 1) >> fractionalBits

@@ -17,7 +17,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func selectChart(_ selection: SubtensorPriceChartSelection?)
 }
 
-protocol SubnetDetailsInteractorInputProtocol: AnyObject {
+protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func loadParameters()
     func loadHistory(for period: SubtensorPricePeriod)
@@ -25,7 +25,7 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
     func presetValidator(existingHotkey: AccountId?)
 }
 
-protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
+protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(isFavorite: Bool)
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
@@ -36,7 +36,7 @@ protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
     func didReceiveTaoPrice(_ price: PriceData?)
     func didChangeCurrency()
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
+    func didReceivePositions(_ state: Multistaking.SubtensorState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didBecomeActive()

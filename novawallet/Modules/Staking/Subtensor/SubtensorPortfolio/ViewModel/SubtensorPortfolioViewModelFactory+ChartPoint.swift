@@ -6,7 +6,7 @@ struct SubtensorPortfolioChartSelection {
     let points: [SubtensorPortfolioValuePoint]
 }
 
-protocol SubnetPortfolioChartFactoryProtocol {
+protocol SubtensorPortfolioChartFactoryProtocol {
     func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection?
 
     func createHeader(
@@ -16,7 +16,7 @@ protocol SubnetPortfolioChartFactoryProtocol {
     ) -> SubtensorPortfolioHeaderViewModel
 }
 
-extension SubtensorPortfolioViewModelFactory: SubnetPortfolioChartFactoryProtocol {
+extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioChartFactoryProtocol {
     func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection? {
         guard let portfolio = state.portfolio, !state.isValuationPending, !state.groups.isEmpty else {
             return nil

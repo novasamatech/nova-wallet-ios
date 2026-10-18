@@ -74,7 +74,7 @@ private extension SubtensorQuoteViewModelFactory {
         locale: Locale
     ) -> BalanceViewModelProtocol {
         let spotPrice = quote.quote.spotPrice
-        let scale = SubtensorStakingPallet.alphaPriceScale
+        let scale = SubtensorPallet.alphaPriceScale
 
         return BalanceViewModel(
             amount: formatAmount(quote.expectedOut, displayInfo: alphaInfo, locale: locale).approximatelyEqual(),

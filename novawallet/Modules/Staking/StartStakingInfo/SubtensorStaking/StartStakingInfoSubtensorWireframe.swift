@@ -2,13 +2,13 @@ import UIKit
 
 final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
 
     let browseState = SubtensorSubnetBrowseState()
 
     weak var subnetSelectDelegate: SubtensorSubnetSelectDelegate?
 
-    init(state: SubtensorStakingSharedStateProtocol) {
+    init(state: SubtensorSharedStateProtocol) {
         self.state = state
     }
 
@@ -32,7 +32,7 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     }
 
     func showRootDetails(from view: ControllerBackedProtocol?) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createRootDetailsView(
+        guard let setupView = SubtensorStakeSetupViewFactory.createRootDetailsView(
             for: state, browseState: browseState
         ) else {
             return
@@ -49,7 +49,7 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?
     ) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createSubnetView(
+        guard let setupView = SubtensorStakeSetupViewFactory.createSubnetView(
             for: state,
             target: target,
             validator: validator,

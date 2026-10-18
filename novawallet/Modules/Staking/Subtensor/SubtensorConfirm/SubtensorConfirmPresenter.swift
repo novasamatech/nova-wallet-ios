@@ -4,21 +4,21 @@ import Foundation_iOS
 final class SubtensorConfirmPresenter {
     weak var view: SubtensorConfirmViewProtocol?
     let wireframe: SubtensorConfirmWireframeProtocol
-    let interactor: SubtensorStakingBaseInteractorInputProtocol
+    let interactor: SubtensorBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorConfirmModel
     let signing: SubtensorOperationGate.Verdict
     let viewModelFactory: SubtensorConfirmViewModelFactory
-    let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
+    let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
 
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
-    var positionsState: Multistaking.SubtensorStakingState?
+    var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
-    var preflight: SubtensorStakingPreflight?
+    var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
     var currentBlock: BlockNumber?
     var holds: [AccountId: SubtensorRootHold]?
@@ -34,12 +34,12 @@ final class SubtensorConfirmPresenter {
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorStakingBaseInteractorInputProtocol,
+        interactor: SubtensorBaseInteractorInputProtocol,
         wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorConfirmModel,
         viewModelFactory: SubtensorConfirmViewModelFactory,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        dataValidationFactory: SubtensorValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -155,7 +155,7 @@ extension SubtensorConfirmPresenter {
         interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
     }
 
-    func createOperation(limitPrice: Balance?, quote: SubtensorTradeQuote?) -> SubtensorStakingOperation? {
+    func createOperation(limitPrice: Balance?, quote: SubtensorTradeQuote?) -> SubtensorOperation? {
         switch model.mode {
         case let .stake(amount):
             return createStakeOperation(amount: amount, limitPrice: limitPrice, quote: quote)
@@ -234,7 +234,7 @@ extension SubtensorConfirmPresenter {
         return true
     }
 
-    func createVerifiedOperation() -> (operation: SubtensorStakingOperation, quote: SubtensorTradeQuote?)? {
+    func createVerifiedOperation() -> (operation: SubtensorOperation, quote: SubtensorTradeQuote?)? {
         guard isExitGroupUnchanged() else {
             presentGroupChanged()
             return nil

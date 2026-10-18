@@ -34,7 +34,7 @@ enum SubtensorLimitPriceCalculator {
         // spot, so a limit equal to spot can never pass — bump to the tightest usable limit
         let limit = max(flooredLimit, spot + 1)
 
-        try SubtensorStakingPallet.ensureU64Amount(limit)
+        try SubtensorPallet.ensureU64Amount(limit)
 
         return limit
     }
@@ -58,7 +58,7 @@ enum SubtensorLimitPriceCalculator {
             throw SubtensorLimitPriceError.zeroLimit
         }
 
-        try SubtensorStakingPallet.ensureU64Amount(limit)
+        try SubtensorPallet.ensureU64Amount(limit)
 
         return limit
     }
