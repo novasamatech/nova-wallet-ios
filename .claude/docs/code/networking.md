@@ -134,10 +134,9 @@ module should call `EvmTransactionService`, not the RPC layer.
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
 has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
 provider. There is no request coalescing, negative availability TTL or client TTL.
-Endpoint admissions carry an immutable facade invalidation revision. The store advances its
-revision floor monotonically and reconciles the latest revision before completion and peek.
-Delayed or duplicate notifications preserve current-revision state; old admissions/completions
-remain fenced. Same-origin readiness does not invalidate the store. Chain data is never cached client-side.
+Config is
+fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
+observes config or context changes. Chain data is never cached client-side.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business

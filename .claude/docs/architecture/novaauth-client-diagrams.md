@@ -15,7 +15,7 @@ flowchart TB
     AF --> AA["AnalyticsAuthAdapter"]
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
-    CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
+    CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
@@ -33,12 +33,11 @@ flowchart TB
 - The facade rejects unsupported App Attest, missing app identity, and real-client creation under `-UNITTEST`.
 - Auth stores the bearer in the app's default Keychain access group; it requires no App Group container, shared access group or Info.plist namespace. Other host features still use the App Group container.
 - Settings writes use the injected manager and verify cached read-back. The production manager calls synchronize internally, but neither operation proves durability or detects every refused disk write.
-- `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. Older configuration revisions cannot replace a newer accepted snapshot.
+- `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. The accepted endpoint is memoised for the process.
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
-- The facade compares a package invalidation ID around activation. Cold origin replacement/repair can invalidate observers before an endpoint was ever published; a failed replacement still notifies if its memory fence changed.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -131,15 +130,16 @@ flowchart TB
   A -- "Invalid key" --> X["retired; current flight fails"]
   A -- "Interrupted, failed or stale attestation" --> G["key dropped; UUID kept"]
   G --> U
-  P -- "Confirmed absence or other code-bearing 4xx" --> X
-  P -- "401 attestation_failed / 403 app_not_allowed / binding_not_allowed" --> F["key dropped; UUID kept; refusal delay saved"]
+  P -- "Confirmed absence or 409" --> X
+  P -- "Any other code-bearing 4xx verdict" --> F["key dropped; UUID kept; refusal delay saved"]
   F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
   X -- "Invalid key at assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
   X -- "Later independent demand; short backoff" --> K
   K --> U
   P -- "Inconclusive failure / unknown within 120 s" --> P
-  R -- "401 invalid_proof / 403 binding_not_allowed" --> R
+  R -- "401 invalid_proof" --> R
+  R -- "403 binding_not_allowed: refusal delay saved, key kept" --> R
 ```
 
 Retirement fails the current caller operation, except that a key found invalid at assertion time is
@@ -156,10 +156,11 @@ There is no unknown-response counter. An intermediate token challenge preserves 
 original window until successful bearer installation. A registered binding receiving conclusive
 `401 unknown_client` at either token challenge or issuance retires and fails this flight.
 
-Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
+A token-time `403 binding_not_allowed` additionally saves the refusal delay: background demands
+wait for it while user-driven demands retry at once. Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
 registered UUID/key/counter. Later operations obtain a fresh challenge; no proof is reused and no
 key rotates to bypass policy. Status and code are considered together: `503 invalid_proof` is
-availability failure. Stored retired states wait for later demand replacement.
+availability failure. Stored retired states wait for later demand replacement and keep the refusal counter; legacy `policyRefused` keeps the client UUID and attests a fresh key.
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
@@ -272,7 +273,7 @@ deadline. Persistence precedes delivery. Conditional fingerprint deletion cannot
 record; the sole owner under its gate may remove an untagged legacy record only after reload still
 matches. Corrupt token reads do not delete data. The default access group separates signed app variants, and the owner caches the loaded record under its gate.
 
-Both HTTP/native watchdogs remain. Called native leases release only on actual callback, even after
+The session's request/resource timeouts and the native watchdog remain. Called native leases release only on actual callback, even after
 local timeout. The flight's irreversible commitment stays sticky independently of its current step.
 Failure-only logs are asynchronous: fixed step/category, numeric status, allowlisted code and
 sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state are never logged.
