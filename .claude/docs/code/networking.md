@@ -158,8 +158,9 @@ Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed aut
 the operation. A later independently created operation can retry after short auth backoff; proof
 or policy denial preserves an existing binding rather than rotating its key. A refused registration
 keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
-(the default), which re-register at once, from `.background` ones (analytics), which wait
+(Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
 for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
+
 Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
 no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
 without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
@@ -168,7 +169,6 @@ The dashboard max APY is one burst: `GET /recommendations` joined with the alpha
 recommended netuid and the root d30, with no spacing, retries or memo. A netuid whose yields fail
 is skipped; the burst fails with the first error only when no rate is left. No result is kept
 between requests, so nothing can mask authentication recovery in the same context.
-
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
 Root yields come from `GET /root/validators` (per-hotkey `stakeYield.d30.apy`, served by the
