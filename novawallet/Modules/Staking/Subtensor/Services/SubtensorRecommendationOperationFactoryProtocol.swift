@@ -6,7 +6,7 @@ struct SubtensorValidatorListVerification {
     let recommended: Result<Set<AccountId>, Error>
 }
 
-protocol SubtensorRecommendationServiceProtocol: AnyObject {
+protocol SubtensorRecommendationOperationFactoryProtocol: AnyObject {
     func createRecommendedValidatorsWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorRecommendedValidators>

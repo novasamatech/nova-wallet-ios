@@ -3,9 +3,9 @@ import SubstrateSdk
 import UIKit
 
 final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorUnstakeInteractorOutputProtocol? {
+    var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeInteractorOutputProtocol
+            basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
         }
 
         set {
@@ -13,7 +13,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
 
@@ -26,7 +26,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         state: SubtensorStakingSharedStateProtocol,
         logger: LoggerProtocol
     ) {
-        subnetsService = state.subnetsService
+        subnetsOperationFactory = state.subnetsOperationFactory
         validatorFactory = state.earnServices.validatorPresetFactory
         groupHotkeyFactory = state.earnServices.groupHotkeyFactory
 
@@ -40,12 +40,12 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     }
 }
 
-extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
+extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputProtocol {
     func loadSubnetsInfo(for netuid: UInt16) {
         subnetsInfoCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
+            wrapper: subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetsInfoCallStore,
             runningCallbackIn: .main

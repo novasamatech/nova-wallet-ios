@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorRecommendationService {
+final class SubtensorRecommendationOperationFactory {
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -26,7 +26,7 @@ extension SubtensorRankedSubnets {
     }
 }
 
-private extension SubtensorRecommendationService {
+private extension SubtensorRecommendationOperationFactory {
     struct Candidates {
         let recommended: SubtensorRecommendedValidators
         let gates: SubtensorClientGates
@@ -112,7 +112,7 @@ private extension SubtensorRecommendationService {
     }
 }
 
-extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol {
+extension SubtensorRecommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol {
     func createRecommendedValidatorsWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorRecommendedValidators> {

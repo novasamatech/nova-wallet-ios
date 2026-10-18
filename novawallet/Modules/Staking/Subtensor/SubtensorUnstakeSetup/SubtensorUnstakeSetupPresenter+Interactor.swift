@@ -37,7 +37,7 @@ private extension SubtensorUnstakeSetupPresenter {
     }
 }
 
-extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtocol {
+extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo) {
         guard !isRoot else {
             return

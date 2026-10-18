@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryProtocol {
+protocol SubtensorPortfolioViewModelFactoryProtocol: SubtensorPortfolioChartFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel
 }
 
@@ -277,7 +277,7 @@ private extension SubtensorPortfolioViewModelFactory {
     }
 }
 
-extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryProtocol {
+extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel {
         let groups = state.groups
 

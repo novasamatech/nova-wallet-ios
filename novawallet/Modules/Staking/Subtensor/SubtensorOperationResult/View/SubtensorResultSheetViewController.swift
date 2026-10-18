@@ -4,11 +4,11 @@ import UIKit_iOS
 final class SubtensorResultSheetViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorResultSheetViewLayout
 
-    let presenter: SubtensorResultPresenterProtocol
+    let presenter: SubtensorOperationResultPresenterProtocol
 
     private var actions: [SubtensorResultAction] = []
 
-    init(presenter: SubtensorResultPresenterProtocol) {
+    init(presenter: SubtensorOperationResultPresenterProtocol) {
         self.presenter = presenter
 
         super.init(nibName: nil, bundle: nil)
@@ -58,7 +58,7 @@ private extension SubtensorResultSheetViewController {
     }
 }
 
-extension SubtensorResultSheetViewController: SubtensorResultViewProtocol {
+extension SubtensorResultSheetViewController: SubtensorOperationResultViewProtocol {
     func didReceive(viewModel: SubtensorOperationResultViewModel) {
         guard case let .sheet(sheetViewModel) = viewModel else {
             return

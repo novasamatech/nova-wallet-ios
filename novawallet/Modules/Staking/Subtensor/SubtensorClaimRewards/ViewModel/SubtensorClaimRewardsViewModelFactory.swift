@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SubtensorClaimViewModelFactoryProtocol {
+protocol SubtensorClaimRewardsViewModelFactoryProtocol {
     func createViewModel(
         for input: SubtensorClaimRewardsViewModelInput,
         locale: Locale
@@ -90,7 +90,7 @@ private extension SubtensorClaimRewardsViewModelFactory {
     }
 }
 
-extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimViewModelFactoryProtocol {
+extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol {
     func createViewModel(
         for input: SubtensorClaimRewardsViewModelInput,
         locale: Locale

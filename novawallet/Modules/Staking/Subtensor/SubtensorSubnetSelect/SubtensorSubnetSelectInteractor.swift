@@ -2,13 +2,13 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
-    weak var presenter: SubnetSelectInteractorOutputProtocol?
+    weak var presenter: SubtensorSubnetSelectInteractorOutputProtocol?
 
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -19,11 +19,11 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
     private let apyStore = CancellableCallStore()
 
     init(state: SubtensorStakingSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
-        catalogueService = state.earnServices.catalogueService
-        subnetsService = state.subnetsService
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
+        subnetsOperationFactory = state.subnetsOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
-        priceHistoryService = state.earnServices.priceHistoryService
-        maxApyProvider = state.earnServices.maxApyProvider
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        maxApyOperationFactory = state.earnServices.maxApyOperationFactory
         earnSettings = state.earnServices.earnSettings
         self.operationQueue = operationQueue
         self.logger = logger
@@ -36,8 +36,8 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
 
 private extension SubtensorSubnetSelectInteractor {
     func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListItem]> {
-        let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let subnetsInfoWrapper = subnetsService.createSubnetsInfoWrapper()
+        let catalogueWrapper = catalogueOperationFactory.createCatalogueWrapper()
+        let subnetsInfoWrapper = subnetsOperationFactory.createSubnetsInfoWrapper()
 
         let entriesOperation = ClosureOperation<[SubtensorSubnetListItem]> {
             let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
@@ -90,7 +90,7 @@ private extension SubtensorSubnetSelectInteractor {
     }
 }
 
-extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
+extension SubtensorSubnetSelectInteractor: SubtensorSubnetSelectInteractorInputProtocol {
     func setup() {
         provideFavourites()
         provideEntries()
@@ -113,13 +113,13 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {
         weeklyStore.cancel()
 
-        guard let priceHistoryService else {
+        guard let priceHistoryOperationFactory else {
             presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
             return
         }
 
         executeCancellable(
-            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            wrapper: priceHistoryOperationFactory.createWeeklyChangesWrapper(for: subnets),
             inOperationQueue: operationQueue,
             backingCallIn: weeklyStore,
             runningCallbackIn: .main
@@ -141,7 +141,7 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func loadApy() {
         apyStore.cancel()
 
-        load(maxApyProvider.createMaxApyWrapper(), in: apyStore, label: "subnet apy") { [weak self] in
+        load(maxApyOperationFactory.createMaxApyWrapper(), in: apyStore, label: "subnet apy") { [weak self] in
             self?.presenter?.didReceive(apy: $0)
         }
     }

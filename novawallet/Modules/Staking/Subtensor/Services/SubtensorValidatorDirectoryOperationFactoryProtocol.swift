@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorValidatorDirectoryServiceProtocol: AnyObject {
+protocol SubtensorValidatorDirectoryOperationFactoryProtocol: AnyObject {
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory>

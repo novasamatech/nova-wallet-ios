@@ -65,7 +65,7 @@ protocol SubtensorValidatorSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(state: SubtensorValidatorListState)
 }
 
-protocol ValidatorSelectPresenterProtocol: AnyObject {
+protocol SubtensorValidatorSelectPresenterProtocol: AnyObject {
     func setup()
     func search(_ query: String)
     func showSortOptions()
@@ -75,12 +75,12 @@ protocol ValidatorSelectPresenterProtocol: AnyObject {
     func retry()
 }
 
-protocol ValidatorSelectInteractorInputProtocol: AnyObject {
+protocol SubtensorValidatorSelectInteractorInputProtocol: AnyObject {
     func setup()
     func retry()
 }
 
-protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
+protocol SubtensorValidatorSelectInteractorOutputProtocol: AnyObject {
     func didReceive(snapshot: SubtensorValidatorSelectSnapshot)
     func didReceive(directory: SubtensorValidatorDirectory)
     func didFailDirectory(_ error: Error)
@@ -90,7 +90,7 @@ protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
     func didFailVerification(_ error: Error)
 }
 
-protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
+protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
     func showFilters(
         from view: SubtensorValidatorSelectViewProtocol?,
         applied: SubtensorValidatorFilters,

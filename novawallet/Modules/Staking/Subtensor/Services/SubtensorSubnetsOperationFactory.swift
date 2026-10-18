@@ -8,13 +8,13 @@ struct SubtensorSubnetsInfo: Equatable {
     let subtokenEnabled: Set<UInt16>
 }
 
-protocol SubtensorSubnetsServiceProtocol: AnyObject {
+protocol SubtensorSubnetsOperationFactoryProtocol: AnyObject {
     func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo>
 
     func createSubnetInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorSubnetsInfo>
 }
 
-final class SubtensorSubnetsService {
+final class SubtensorSubnetsOperationFactory {
     let operationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -24,7 +24,7 @@ final class SubtensorSubnetsService {
     }
 }
 
-extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
+extension SubtensorSubnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol {
     func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
         let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper(at: nil)
         let pricesWrapper = operationFactory.createAlphaPricesWrapper()

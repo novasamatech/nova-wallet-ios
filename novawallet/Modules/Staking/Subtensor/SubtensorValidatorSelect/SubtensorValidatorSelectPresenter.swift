@@ -6,8 +6,8 @@ final class SubtensorValidatorSelectPresenter {
     weak var delegate: SubtensorValidatorSelectDelegate?
 
     let target: SubtensorStakeTarget
-    let interactor: ValidatorSelectInteractorInputProtocol
-    let wireframe: ValidatorSelectWireframeProtocol
+    let interactor: SubtensorValidatorSelectInteractorInputProtocol
+    let wireframe: SubtensorValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
 
     private var directory: SubtensorValidatorDirectory?
@@ -26,8 +26,8 @@ final class SubtensorValidatorSelectPresenter {
     init(
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
-        interactor: ValidatorSelectInteractorInputProtocol,
-        wireframe: ValidatorSelectWireframeProtocol,
+        interactor: SubtensorValidatorSelectInteractorInputProtocol,
+        wireframe: SubtensorValidatorSelectWireframeProtocol,
         listFactory: SubtensorValidatorListFactory,
         delegate: SubtensorValidatorSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
@@ -120,7 +120,7 @@ private extension SubtensorValidatorSelectPresenter {
     }
 }
 
-extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
+extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterProtocol {
     func setup() {
         provideState()
         interactor.setup()
@@ -190,7 +190,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     }
 }
 
-extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProtocol {
+extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorOutputProtocol {
     func didReceive(snapshot: SubtensorValidatorSelectSnapshot) {
         seed(from: snapshot)
         provideState()

@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorValidatorDirectoryService {
+extension SubtensorValidatorDirectoryOperationFactory {
     static func makeListing(
         from response: BittensorApiResult<BittensorApi.ValidatorCollection>,
         subnet: SubtensorSubnetRef,

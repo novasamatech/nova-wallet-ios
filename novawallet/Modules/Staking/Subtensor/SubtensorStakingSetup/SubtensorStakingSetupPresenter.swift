@@ -5,7 +5,7 @@ import Foundation_iOS
 final class SubtensorStakingSetupPresenter {
     weak var view: SubtensorStakingSetupViewProtocol?
     let wireframe: SubtensorStakingSetupWireframeProtocol
-    let interactor: SubtensorSetupInteractorInputProtocol
+    let interactor: SubtensorStakingSetupInteractorInputProtocol
     let logger: LoggerProtocol
 
     let chainAsset: ChainAsset
@@ -49,7 +49,7 @@ final class SubtensorStakingSetupPresenter {
     var isConfirmationShown = false
 
     init(
-        interactor: SubtensorSetupInteractorInputProtocol,
+        interactor: SubtensorStakingSetupInteractorInputProtocol,
         wireframe: SubtensorStakingSetupWireframeProtocol,
         mode: SubtensorStakingSetupMode,
         chainAsset: ChainAsset,

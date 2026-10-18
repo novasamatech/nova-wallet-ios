@@ -11,7 +11,7 @@ protocol SubtensorValidatorFiltersViewProtocol: ControllerBackedProtocol {
     func didReceive(_ viewModel: SubtensorValidatorFiltersViewModel)
 }
 
-protocol ValidatorFiltersPresenterProtocol: AnyObject {
+protocol SubtensorValidatorFiltersPresenterProtocol: AnyObject {
     func setup()
     func selectSort(_ sort: SubtensorValidatorSort)
     func setHidesUnusualApy(_ value: Bool)
@@ -19,6 +19,6 @@ protocol ValidatorFiltersPresenterProtocol: AnyObject {
     func apply()
 }
 
-protocol ValidatorFiltersWireframeProtocol {
+protocol SubtensorValidatorFiltersWireframeProtocol {
     func complete(from view: SubtensorValidatorFiltersViewProtocol?)
 }

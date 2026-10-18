@@ -1,16 +1,16 @@
 import Foundation
 
-final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtocol {
+final class SubtensorValidatorFiltersPresenter: SubtensorValidatorFiltersPresenterProtocol {
     weak var view: SubtensorValidatorFiltersViewProtocol?
     private let applied: SubtensorValidatorFilters
     private var draft: SubtensorValidatorFilters
-    private let wireframe: ValidatorFiltersWireframeProtocol
+    private let wireframe: SubtensorValidatorFiltersWireframeProtocol
     private let onApply: (SubtensorValidatorFilters) -> Void
     private var hasApplied = false
 
     init(
         applied: SubtensorValidatorFilters,
-        wireframe: ValidatorFiltersWireframeProtocol,
+        wireframe: SubtensorValidatorFiltersWireframeProtocol,
         onApply: @escaping (SubtensorValidatorFilters) -> Void
     ) {
         self.applied = applied

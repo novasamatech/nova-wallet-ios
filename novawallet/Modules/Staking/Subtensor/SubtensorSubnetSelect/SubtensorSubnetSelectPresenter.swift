@@ -6,7 +6,7 @@ final class SubtensorSubnetSelectPresenter {
     weak var delegate: SubtensorSubnetSelectDelegate?
 
     let wireframe: SubtensorSubnetSelectWireframeProtocol
-    let interactor: SubnetSelectInteractorInputProtocol
+    let interactor: SubtensorSubnetSelectInteractorInputProtocol
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
 
     private var entries: [SubtensorSubnetListItem]?
@@ -26,7 +26,7 @@ final class SubtensorSubnetSelectPresenter {
     private var isWeeklyPending = false
 
     init(
-        interactor: SubnetSelectInteractorInputProtocol,
+        interactor: SubtensorSubnetSelectInteractorInputProtocol,
         wireframe: SubtensorSubnetSelectWireframeProtocol,
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
         delegate: SubtensorSubnetSelectDelegate,
@@ -172,7 +172,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 }
 
-extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
+extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectInteractorOutputProtocol {
     func didReceive(entries: [SubtensorSubnetListItem]) {
         self.entries = entries
         entriesError = nil

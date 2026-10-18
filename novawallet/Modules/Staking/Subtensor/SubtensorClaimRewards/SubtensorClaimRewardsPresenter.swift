@@ -10,7 +10,7 @@ final class SubtensorClaimRewardsPresenter {
     let model: SubtensorClaimRewardsModel
     let signing: SubtensorOperationGate.Verdict
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
-    let viewModelFactory: SubtensorClaimViewModelFactoryProtocol
+    let viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
     let logger: LoggerProtocol
 
@@ -35,7 +35,7 @@ final class SubtensorClaimRewardsPresenter {
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,
-        viewModelFactory: SubtensorClaimViewModelFactoryProtocol,
+        viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol

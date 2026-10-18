@@ -23,7 +23,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+protocol SubtensorStakingSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder, selectedRef: SubtensorSubnetRef?)
     func cancelQuickPickSnapshot()
     func loadBlockTime()
@@ -35,7 +35,7 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func saveSlippage(_ tolerance: BigRational)
 }
 
-protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+protocol SubtensorStakingSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveQuickPickSnapshot(_ result: Result<SubtensorQuickPickSnapshot, Error>)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
     func didFailValidator(_ error: Error, on subnet: SubtensorSubnetRef)

@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol {
+extension SubtensorStakingSetupPresenter: SubtensorStakingSetupInteractorOutputProtocol {
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef) {
         guard subnet == subnetRef else {
             return
