@@ -40,11 +40,12 @@ protocol NovaAuthTokenStoreProtocol: AnyObject {
 
 enum NovaAuthHTTPKind { case bootstrap, businessRead, businessPost }
 protocol NovaAuthHTTPProtocol: AnyObject {
-    func createResponseWrapper(
+    func createResponseWrapper<T>(
         for request: URLRequest,
         kind: NovaAuthHTTPKind,
-        beforeSend: @escaping () throws -> Void
-    ) -> CompoundOperationWrapper<NovaAuthResponse>
+        beforeSend: @escaping () throws -> Void,
+        decode: @escaping (NovaAuthResponse) throws -> T
+    ) -> CompoundOperationWrapper<T>
 }
 
 enum NovaAuthAppAttestError: Error { case serverUnavailable, invalidKey, unsupported, failure, timedOut }

@@ -20,14 +20,14 @@ flowchart TB
     BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
-    CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
-    HOST["App identity + Keychain access group / host namespace<br/>SettingsManager set/read-back + three queues"] --> F
+    CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
+    HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
     F --> OWNER["ONE NovaAuth owner<br/>installation + issuance coordination"]
     OWNER --> APPLE["DeviceCheck adapter"]
     OWNER --> STATE["Settings identity store"]
-    OWNER --> TOKEN["Shared Keychain token store"]
+    OWNER --> TOKEN["Keychain token store + gated record cache"]
     OWNER --> HTTP["HTTP transport<br/>bootstrap / reads / POSTs"]
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
@@ -35,15 +35,14 @@ flowchart TB
 ```
 
 - Root starts analytics before wallet setup. There is no `ServiceCoordinator → NovaAuth.setup` path; authentication is driven by consumer requests.
-- The facade rejects unsupported App Attest, missing app identity/shared-store configuration, and real-client creation under `-UNITTEST`.
-- Auth requires the shared Keychain access group and stable host namespace, but no longer resolves or requires an App Group filesystem container. Other host features still use that container.
+- The facade rejects unsupported App Attest, missing app identity, and real-client creation under `-UNITTEST`.
+- Auth stores the bearer in the app's default Keychain access group; it requires no App Group container, shared access group or Info.plist namespace. Other host features still use the App Group container.
 - Settings writes use the injected manager and verify cached read-back. The production manager calls synchronize internally, but neither operation proves durability or detects every refused disk write.
-- `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. Older configuration revisions cannot replace a newer accepted snapshot.
+- `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. The accepted endpoint is memoised for the process.
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
-- The facade compares a package invalidation ID around activation. Cold origin replacement/repair can invalidate observers before an endpoint was ever published; a failed replacement still notifies if its memory fence changed.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [host Keychain configuration](../../../novawallet/Configs/SharedContainerGroup.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -94,9 +93,9 @@ The caller never gets a newly issued bearer before the Keychain write succeeds. 
 
 Apple attestation/assertion wrappers have a bounded timeout of up to 100 seconds. Once a native call begins, timeout/cancellation does not release its per-key lease: only Apple's actual callback does. A different key can proceed independently. Issuance checks `isBusy(keyID:)` before creating a token challenge, avoiding network traffic while the key is leased. The registration HTTP request allows 100 seconds; the other HTTP requests allow 20 seconds.
 
-Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 40`, choosing a minimum 20-second margin on the 60-second challenge. Exactly 40 seconds passes; 40.001 fails this check, retires `registrationAbandoned`, and fails the current operation; a later independent demand may replace. After Apple's result, same boot and `0 <= age < 60` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
+Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 40`, choosing a minimum 20-second margin on the 60-second challenge. Exactly 40 seconds passes; at 40.001 a deferred attempt keeps its key and takes a fresh challenge in the same flight, while a fresh attempt falls back to unregistered with the same key and fails the current operation. After Apple's result, same boot and `0 <= age < 60` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
 
-The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 40-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion retires an age-expired current attempt as `registrationAbandoned` once; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
+The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 40-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion drops the key of an age-expired current attempt once, keeping the client UUID; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
 
 Sources: [registration service](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [issuance and persistent installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [bootstrap endpoints](../../../Packages/NovaAuth/Sources/NovaAuth/HTTP/NovaAuthBootstrapOperationFactory.swift) · [response validation](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthWire.swift) · [Apple adapter](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift) · [early and post-Apple age checks](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [bearer installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [native execution guard](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [unused lease release and native invocation](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift)
 
@@ -131,20 +130,30 @@ flowchart TB
   U["unregistered"] --> A["appleInFlight"]
   A -- "serverUnavailable: exact saved attempt" --> D["appleDeferred"]
   D -- "Same boot; age at most 40 s" --> A
+  D -- "Budget expired: same key, fresh challenge" --> U
   A -- "Valid attestation; persist before send" --> P["registrationPending"]
   P -- "Register 204 or successful bearer installation" --> R["registered"]
-  A -- "Interrupted, expired or unrecoverable" --> X["retired; current flight fails"]
-  P -- "Conclusive refusal or confirmed absence" --> X
+  A -- "Invalid key" --> X["retired; current flight fails"]
+  A -- "Interrupted, failed or stale attestation" --> G["key dropped; UUID kept"]
+  G --> U
+  P -- "Confirmed absence or 409" --> X
+  P -- "Any other code-bearing 4xx verdict" --> F["key dropped; UUID kept; refusal delay saved"]
+  F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
-  X -- "Later independent demand; short backoff" --> K["At most one fresh UUID/key in this flight"]
+  X -- "Invalid key at assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
+  X -- "Later independent demand; short backoff" --> K
   K --> U
   P -- "Inconclusive failure / unknown within 120 s" --> P
-  R -- "401 invalid_proof / 403 binding_not_allowed" --> R
+  R -- "401 invalid_proof" --> R
+  R -- "403 binding_not_allowed: refusal delay saved, key kept" --> R
 ```
 
-Retirement fails the current caller operation; no recursive identity replacement or proof resend
-occurs. A later independently created demand may replace after short backoff. Concurrency joins one
-issuance flight. There is no lifetime replacement quota or human/background privilege.
+Retirement fails the current caller operation, except that a key found invalid at assertion time is
+replaced by one fresh UUID/key within the same flight; no proof is resent and a flight never generates a
+second key. Otherwise a later independently created demand may replace after short backoff. Concurrency joins one
+issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
+demands re-register at once after a refusal while background demands wait for the persisted
+1 h / 6 h / 24 h delay, which resets on an app version or context change.
 
 Pending probes preserve UUID/key/start and reserve persisted backoff before sending. A same-boot
 token-challenge/issuance `401 unknown_client` before 120 seconds keeps pending state and fails. Outside that window or after
@@ -153,11 +162,11 @@ There is no unknown-response counter. An intermediate token challenge preserves 
 original window until successful bearer installation. A registered binding receiving conclusive
 `401 unknown_client` at either token challenge or issuance retires and fails this flight.
 
-Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
+A token-time `403 binding_not_allowed` additionally saves the refusal delay: background demands
+wait for it while user-driven demands retry at once. Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
 registered UUID/key/counter. Later operations obtain a fresh challenge; no proof is reused and no
 key rotates to bypass policy. Status and code are considered together: `503 invalid_proof` is
-availability failure. Legacy `policyRefused` with a key normalizes to registered/same-binding probing;
-other unusable retired states wait for later demand replacement.
+availability failure. Stored retired states wait for later demand replacement and keep the refusal counter; legacy `policyRefused` keeps the client UUID and attests a fresh key.
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
@@ -252,26 +261,27 @@ flowchart TB
   F --> P["Stage installation write + owed token deletion"]
   P --> O{"Storage repair succeeds?"}
   O -- "No" --> B["Block admission; keep new fence and repair obligations"]
-  B -- "Later activation" --> P
+  B -- "Next demand or activation" --> P
   O -- "Yes" --> D["Eligible context; later demand may authenticate"]
 ```
 
 Settings keeps the current installation storage key/version, context, UUID/key/registration, exact
 saved attestation attempt, pending start/cooldown and token-removal debt. Removed optional legacy
 fields are ignored even when malformed; surviving security fields remain validated. The next
-existing write encodes the reduced schema. Legacy policyRefused with a key resumes the same binding.
+existing write encodes the reduced schema. A saved refusal delay survives relaunch and resets on an app
+version or context change.
 
 State adoption happens before I/O. A failed write never rolls back the active memory fence; staged
-write and token deletion retry during activation and block admission until repaired. Reset/corrupt
+write and token deletion retry during activation or the next demand and block admission until repaired. Reset/corrupt
 repair cannot adopt an old bearer. Settings read-back observes a manager cache and cannot prove
 disk durability; no transaction/commit API is implied.
 
 Keychain contains one atomic version-2 bearer with origin/client/generation and boot-bound continuous
 deadline. Persistence precedes delivery. Conditional fingerprint deletion cannot erase a newer
 record; the sole owner under its gate may remove an untagged legacy record only after reload still
-matches. Corrupt token reads do not delete data. Host namespace separates signed app variants.
+matches. Corrupt token reads do not delete data. The default access group separates signed app variants, and the owner caches the loaded record under its gate.
 
-Both HTTP/native watchdogs remain. Called native leases release only on actual callback, even after
+The session's request/resource timeouts, the 110-second HTTP operation watchdog and the native watchdog remain. Called native leases release only on actual callback, even after
 local timeout. The flight's irreversible commitment stays sticky independently of its current step.
 Failure-only logs are asynchronous: fixed step/category, numeric status, allowlisted code and
 sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state are never logged.
@@ -291,15 +301,15 @@ sequenceDiagram
   participant N as Shared<br/>NovaAuth
   participant H as HTTP cache /<br/>backend
   UI->>F: Optional synchronous peek
-  F->>C: Read seed with latest<br/>invalidation revision
+  F->>C: Read seed
   C-->>UI: Expired seed only, via factory
   UI->>F: Create ordinary protected request
   F->>C: Create job: admit + fetch
   C->>T: Admit first
   T->>N: Resolve context,<br/>demand credential
   N-->>T: Admission succeeds
-  T-->>C: Auth scope + shared endpoint<br/>with immutable invalidation revision
-  C->>C: Reconcile invalidation floor<br/>then check negatives / join flight
+  T-->>C: Auth scope (origin + generation)<br/>+ shared endpoint
+  C->>C: Activate scope, then<br/>check negatives / join flight
   opt No negative result and no existing flight
     C->>T: Fetch with<br/>admitted endpoint
     T->>N: createResponseWrapper(request)
@@ -308,7 +318,7 @@ sequenceDiagram
     H-->>N: Response, possibly native<br/>cache / revalidation
     N-->>T: Response or<br/>typed auth error
     T-->>C: HTTP grading + factory<br/>decode / wire validation
-    C->>C: Reconcile invalidation floor,<br/>auth scope and dataset generation
+    C->>C: Check auth scope<br/>and dataset generation
   end
   C-->>UI: Result/error via factory and domain service
   Note over T,UI: bindingConflict / invalidRequest: generic, no retry<br/>attestationRejected: device-bound, no retry
@@ -318,7 +328,7 @@ sequenceDiagram
 - Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
 - Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
-- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Auth origin or generation changes clear every stored body, including the cost-basis pages, through that revision; nothing else observes the context.
+- Admissions carry the auth scope (origin + generation). The decoded cache keeps seeds per scope and clears all of them, including the cost-basis pages, when a different scope is admitted; the endpoint is memoised once per process, so nothing observes config or context changes.
 - Cost basis/P&L reads **`GET /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
 - Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
 

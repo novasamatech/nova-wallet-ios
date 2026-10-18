@@ -139,11 +139,10 @@ bodies are never kept, and own trades drop the account's `operations/search` pag
 before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
 before the request. There is no request coalescing, negative availability TTL or client TTL.
 Older recommendation generations return `generationStale`, preserving a newer seed without refetch.
-Endpoint admissions carry an immutable facade invalidation revision. The store advances its
-revision floor monotonically and reconciles the latest revision before completion and peek.
-Delayed or duplicate notifications preserve current-revision state; old admissions/completions
-remain fenced. Same-origin readiness does not invalidate the store. Auth origin/generation changes
-clear every seed, including the cost-basis pages. Chain data is never cached client-side. Host
+Endpoint admissions carry the auth scope (origin + generation); the store keeps seeds per scope
+and drops them all, including the cost-basis pages, when a different scope is admitted. Config is
+fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
+observes config or context changes. Chain data is never cached client-side. Host
 activation authorizes later demand-driven bootstrap; catalogue requests carry no authentication
 intent.
 
@@ -153,7 +152,10 @@ business send checks shared-origin protection before network access. Only busine
 transport failures pass to domain retry handling. Success does not clear an active shared deadline.
 Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
 the operation. A later independently created operation can retry after short auth backoff; proof
-or policy denial preserves an existing binding rather than rotating its key.
+or policy denial preserves an existing binding rather than rotating its key. A refused registration
+keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
+(Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
+for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
 
 Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
 no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also

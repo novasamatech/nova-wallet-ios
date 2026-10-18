@@ -11,7 +11,11 @@ extension ApplicationConfig {
         }
 
         do {
-            return try NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
+            return try NovaAuthAppIdentity(
+                appID: prefix + "." + bundleId,
+                environment: novaAuthEnvironment,
+                version: version
+            )
         } catch {
             Logger.shared.error("NovaAuth app identity rejected: \(error)")
             return nil
@@ -24,23 +28,5 @@ extension ApplicationConfig {
         #else
                 .production
         #endif
-    }
-
-    var novaAuthSharedStore: NovaAuthSharedStoreConfiguration? {
-        let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String
-
-        guard let hostAppNamespace else {
-            return nil
-        }
-
-        do {
-            return try NovaAuthSharedStoreConfiguration(
-                accessGroup: SharedContainerGroup.name,
-                hostAppNamespace: hostAppNamespace
-            )
-        } catch {
-            Logger.shared.error("NovaAuth shared store configuration rejected: \(error)")
-            return nil
-        }
     }
 }

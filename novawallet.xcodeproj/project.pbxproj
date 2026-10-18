@@ -7090,7 +7090,6 @@
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
 		19CCA2DE5C153D1AFD408673 /* BittensorAuthorizedTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */; };
-		240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */; };
 		3AD5A119F1CA93343355A926 /* BittensorAuthorizedResponseGrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */; };
 		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 		0026A42BEFBCAABBBE09E5AC /* SubtensorWhereToStakeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554ECB02B545084824E51973 /* SubtensorWhereToStakeWireframe.swift */; };
@@ -13959,7 +13958,6 @@
 		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacade.swift; sourceTree = "<group>"; };
 		C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.staging.xcconfig"; sourceTree = "<group>"; };
 		D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionStaging.entitlements; sourceTree = "<group>"; };
-		E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacadeTests.swift; sourceTree = "<group>"; };
 		0629AB3512DC6D1B26C0C844 /* SubtensorWhereToStakeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeCardView.swift; sourceTree = "<group>"; };
 		0CD54483337FDDA27F98A80D /* SubtensorWhereToStakeProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeProtocols.swift; sourceTree = "<group>"; };
 		32FED442D3DF550CD8E187BA /* SubtensorWhereToStakeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeViewController.swift; sourceTree = "<group>"; };
@@ -14199,14 +14197,6 @@
 				BB579374C0C1476B8E5F2EBB /* SubtensorValidatorSelectCell.swift */,
 			);
 			path = SubtensorValidatorSelect;
-			sourceTree = "<group>";
-		};
-		307D6F6257E44BEC9ACF9B23 /* Auth */ = {
-			isa = PBXGroup;
-			children = (
-				E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */,
-			);
-			path = Auth;
 			sourceTree = "<group>";
 		};
 		035DCA5B9B0C4DE2B5DC8F0A /* Transport */ = {
@@ -21094,7 +21084,6 @@
 		3F2839BD3CD74DFC806B7019 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				307D6F6257E44BEC9ACF9B23 /* Auth */,
 				90D893CF46FE4A2D8A5BC95D /* Bittensor */,
 				6AC696AB8F7449D7BA5A8EF0 /* JSONRPC */,
 			);
@@ -39965,7 +39954,6 @@
 				3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceProviderTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
 				DB5DF5A18CE14F12AA059E4D /* ExtrinsicStatusTests.swift in Sources */,
-				240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

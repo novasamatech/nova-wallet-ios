@@ -2,6 +2,7 @@ import Foundation
 import Operation_iOS
 
 public enum NovaAuthMethod: String { case get = "GET", head = "HEAD", post = "POST" }
+public enum NovaAuthDemandIntent { case userDriven, background }
 
 public struct NovaAuthRequest {
     public let context: NovaAuthContext
@@ -10,6 +11,7 @@ public struct NovaAuthRequest {
     public let queryItems: [URLQueryItem]
     public let body: Data?
     public let contentType: String?
+    public let intent: NovaAuthDemandIntent
 
     public init(
         context: NovaAuthContext,
@@ -17,7 +19,8 @@ public struct NovaAuthRequest {
         path: String,
         queryItems: [URLQueryItem],
         body: Data?,
-        contentType: String?
+        contentType: String?,
+        intent: NovaAuthDemandIntent = .userDriven
     ) throws {
         try NovaAuthRoute.validate(method: method, path: path, body: body, contentType: contentType)
         self.context = context
@@ -26,6 +29,7 @@ public struct NovaAuthRequest {
         self.queryItems = queryItems
         self.body = body
         self.contentType = contentType
+        self.intent = intent
         _ = try makeURL()
     }
 
@@ -49,6 +53,9 @@ public struct NovaAuthResponse {
         self.response = response
         self.body = body
     }
+
+    public var requestID: String? { NovaAuthWire.requestID(response) }
+    public var serverError: NovaAuthServerError { NovaAuthWire.serverError(self) }
 }
 
 public protocol NovaAuthClientProtocol: AnyObject {

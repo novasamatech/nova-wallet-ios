@@ -25,25 +25,21 @@ struct NovaAuthSecurity: NovaAuthSecurityProtocol {
 }
 
 final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
-    private let accessGroup: String
-    private let hostAppNamespace: String
+    private static let service = "io.novawallet.novaauth.profile3"
     private let security: NovaAuthSecurityProtocol
     private let mutationLock = NSLock()
 
-    convenience init(configuration: NovaAuthSharedStoreConfiguration) {
-        self.init(
-            configuration: configuration,
-            security: NovaAuthSecurity()
-        )
-    }
-
     init(
-        configuration: NovaAuthSharedStoreConfiguration,
-        security: NovaAuthSecurityProtocol
+        security: NovaAuthSecurityProtocol = NovaAuthSecurity(),
+        legacyNamespace: String? = Bundle.main.bundleIdentifier
     ) {
-        accessGroup = configuration.accessGroup
-        hostAppNamespace = configuration.hostAppNamespace
         self.security = security
+        guard let legacyNamespace else { return }
+        _ = security.delete([
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Self.service + "." + legacyNamespace,
+            kSecAttrAccount as String: "current"
+        ])
     }
 
     func load() throws -> NovaAuthTokenRecord? { try loadRecord() }
@@ -51,7 +47,7 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
     func replace(_ record: NovaAuthTokenRecord) throws {
         try mutationLock.novaAuthLocked {
             let data = try encoded(record)
-            let query = try scopedQuery()
+            let query = scopedQuery()
             let attributes: [String: Any] = [
                 kSecValueData as String: data,
                 kSecAttrGeneric as String: Data(SHA256.hash(data: data)),
@@ -66,7 +62,7 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
     }
 
     @discardableResult func remove(ifMatching record: NovaAuthTokenRecord) throws -> Bool {
-        var query = try scopedQuery()
+        var query = scopedQuery()
         query[kSecAttrGeneric as String] = Data(SHA256.hash(data: try encoded(record)))
         let status = security.delete(query)
         if status == errSecItemNotFound { return false }
@@ -78,12 +74,10 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
 }
 
 private extension NovaAuthKeychainTokenStore {
-    func scopedQuery() throws -> [String: Any] {
-        guard !accessGroup.isEmpty, accessGroup.utf8.count <= 255,
-              accessGroup.utf8.allSatisfy({ (33 ... 126).contains($0) }) else { throw NovaAuthError.storageUnavailable }
-        return [kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: "io.novawallet.novaauth.profile3.\(hostAppNamespace)",
-                kSecAttrAccount as String: "current", kSecAttrAccessGroup as String: accessGroup]
+    func scopedQuery() -> [String: Any] {
+        [kSecClass as String: kSecClassGenericPassword,
+         kSecAttrService as String: Self.service,
+         kSecAttrAccount as String: "current"]
     }
 
     func encoded(_ record: NovaAuthTokenRecord) throws -> Data {
@@ -96,7 +90,7 @@ private extension NovaAuthKeychainTokenStore {
     }
 
     func loadRecord() throws -> NovaAuthTokenRecord? {
-        var query = try scopedQuery()
+        var query = scopedQuery()
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
         let (status, data) = security.copy(query)
@@ -113,7 +107,7 @@ private extension NovaAuthKeychainTokenStore {
     }
 
     func deleteAll() throws {
-        let status = security.delete(try scopedQuery())
+        let status = security.delete(scopedQuery())
         guard status == errSecSuccess || status == errSecItemNotFound else { throw NovaAuthError.storageUnavailable }
     }
 }

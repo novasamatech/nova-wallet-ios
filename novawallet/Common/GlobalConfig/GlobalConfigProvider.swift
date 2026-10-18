@@ -1,28 +1,21 @@
 import Foundation
 import Operation_iOS
 
-struct GlobalConfigSnapshot {
-    let config: GlobalConfig
-    let revision: UInt64
-}
-
 protocol GlobalConfigProviding {
+    /// Answers from a process-lifetime cache once any fetch has succeeded, so a value that
+    /// changes remotely mid-process is only seen on the next launch.
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig>
-    func createConfigSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot>
-    func addSnapshotObserver(_ observer: AnyObject, closure: @escaping (GlobalConfigSnapshot) -> Void)
+
+    /// Always refetches and refreshes the cache. Required by anything that must observe a
+    /// remote change within the life of the process, such as the analytics kill switch.
+    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig>
 }
 
 final class GlobalConfigProvider: BaseFetchOperationFactory {
-    private struct Observer {
-        weak var owner: AnyObject?
-        let closure: (GlobalConfigSnapshot) -> Void
-    }
-
     let configUrl: URL
-    private let mutex = NSLock()
-    private var snapshot: GlobalConfigSnapshot?
-    private var revision: UInt64 = 0
-    private var observers: [Observer] = []
+
+    @Atomic(defaultValue: nil)
+    private var config: GlobalConfig?
 
     init(configUrl: URL) {
         self.configUrl = configUrl
@@ -30,58 +23,28 @@ final class GlobalConfigProvider: BaseFetchOperationFactory {
 }
 
 extension GlobalConfigProvider: GlobalConfigProviding {
-    func addSnapshotObserver(_ observer: AnyObject, closure: @escaping (GlobalConfigSnapshot) -> Void) {
-        mutex.lock()
-        observers = observers.filter { $0.owner != nil }
-        observers.append(Observer(owner: observer, closure: closure))
-        let current = snapshot
-        mutex.unlock()
-        if let current { closure(current) }
-    }
-
-    func createConfigSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot> {
-        mutex.lock()
-        let current = snapshot
-        mutex.unlock()
-        return current.map { .createWithResult($0) } ?? createFreshSnapshotWrapper()
-    }
-
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
-        mapConfig(createConfigSnapshotWrapper())
-    }
-}
-
-private extension GlobalConfigProvider {
-    func mapConfig(
-        _ wrapper: CompoundOperationWrapper<GlobalConfigSnapshot>
-    ) -> CompoundOperationWrapper<GlobalConfig> {
-        let operation = ClosureOperation { try wrapper.targetOperation.extractNoCancellableResultData().config }
-        operation.addDependency(wrapper.targetOperation)
-        return wrapper.insertingTail(operation: operation)
-    }
-
-    func createFreshSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot> {
-        mutex.lock()
-        revision += 1
-        let requestedRevision = revision
-        mutex.unlock()
-
-        let fetch: BaseOperation<GlobalConfig> = createFetchOperation(from: configUrl, shouldUseCache: false)
-        let publish = ClosureOperation<GlobalConfigSnapshot> {
-            let config = try fetch.extractNoCancellableResultData()
-            self.mutex.lock()
-            if let current = self.snapshot, current.revision > requestedRevision {
-                self.mutex.unlock()
-                return current
-            }
-            let accepted = GlobalConfigSnapshot(config: config, revision: requestedRevision)
-            self.snapshot = accepted
-            let callbacks = self.observers.filter { $0.owner != nil }.map(\.closure)
-            self.mutex.unlock()
-            callbacks.forEach { $0(accepted) }
-            return accepted
+        if let config {
+            return CompoundOperationWrapper.createWithResult(config)
         }
-        publish.addDependency(fetch)
-        return CompoundOperationWrapper(targetOperation: publish, dependencies: [fetch])
+
+        return createFreshConfigWrapper()
+    }
+
+    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
+        let fetchOperation: BaseOperation<GlobalConfig> = createFetchOperation(
+            from: configUrl,
+            shouldUseCache: false
+        )
+
+        let mapOperation = ClosureOperation<GlobalConfig> {
+            let config = try fetchOperation.extractNoCancellableResultData()
+            self.config = config
+            return config
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
     }
 }

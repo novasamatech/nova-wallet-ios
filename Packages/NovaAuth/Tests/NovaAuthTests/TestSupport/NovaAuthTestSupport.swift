@@ -9,27 +9,33 @@ final class AuthHarness {
     let server = FakeAuthServer()
     let tokens = TestTokenStore()
     let settings = InMemorySettingsManager()
+    let random = TestRandom()
     let ownerQueue = OperationQueue()
     let origin: NovaAuthOrigin
-    private let appIdentity: NovaAuthAppIdentity
+    private var appIdentity: NovaAuthAppIdentity
 
     init() throws {
         origin = try NovaAuthOrigin("https://auth.example.com")
-        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development)
+        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development, version: "1")
         ownerQueue.maxConcurrentOperationCount = 1
     }
 
-    func makeAuth() -> NovaAuth {
+    func makeAuth(http: NovaAuthHTTPProtocol? = nil) -> NovaAuth {
         NovaAuth(dependencies: NovaAuthDependencies(
             appAttest: apple, identityStore: NovaAuthSettingsIdentityStore(settingsManager: settings),
-            tokenStore: tokens, clock: clock, random: TestRandom(),
-            http: server,
+            tokenStore: tokens, clock: clock, random: random,
+            http: http ?? server,
             ownerQueue: ownerQueue, bootstrapQueue: OperationQueue(), requestQueue: OperationQueue(),
             appIdentity: appIdentity, logger: nil
         ))
     }
 
-    func relaunch() throws -> NovaAuth {
+    func relaunch(version: String? = nil) throws -> NovaAuth {
+        if let version {
+            appIdentity = try NovaAuthAppIdentity(
+                appID: appIdentity.appID, environment: appIdentity.environment, version: version
+            )
+        }
         let auth = makeAuth()
         _ = try auth.activate(origin: origin)
         return auth
@@ -42,7 +48,8 @@ final class AuthHarness {
             path: analytics ? "/v1/analytics/events" : "/v1/bittensor/subnets",
             queryItems: [],
             body: analytics ? Data("{}".utf8) : nil,
-            contentType: analytics ? "application/json" : nil
+            contentType: analytics ? "application/json" : nil,
+            intent: analytics ? .background : .userDriven
         )
     }
 }
@@ -78,19 +85,30 @@ extension XCTestCase {
 
 final class TestClock: NovaAuthClockProtocol {
     private let lock = NSLock()
+    private var boot = "boot"
     private var seconds: TimeInterval = 100
     func now() throws -> NovaAuthTime {
-        lock.novaAuthLocked { NovaAuthTime(bootID: "boot", continuousSeconds: seconds) }
+        lock.novaAuthLocked { NovaAuthTime(bootID: boot, continuousSeconds: seconds) }
     }
 
     func advance(_ delta: TimeInterval) {
         lock.novaAuthLocked { seconds += delta }
     }
+
+    func reboot() {
+        lock.novaAuthLocked {
+            boot += "+"
+            seconds = 100
+        }
+    }
 }
 
-struct TestRandom: NovaAuthRandomProtocol {
+final class TestRandom: NovaAuthRandomProtocol {
+    private(set) var clientIDs = 0
+
     func makeClientID() -> String {
-        "11111111-1111-4111-8111-111111111111"
+        clientIDs += 1
+        return "11111111-1111-4111-8111-" + String(format: "%012d", clientIDs)
     }
 
     func unitInterval() -> Double {
@@ -101,7 +119,7 @@ struct TestRandom: NovaAuthRandomProtocol {
 final class TestApple: NovaAuthAppAttestProtocol {
     let isSupported = true
     var attestationError: Error?
-    var assertionError: Error?
+    var lostKeyIDs: Set<String> = []
     private(set) var keys = 0
     private(set) var attestations = 0
 
@@ -121,8 +139,8 @@ final class TestApple: NovaAuthAppAttestProtocol {
         return CompoundOperationWrapper(targetOperation: ClosureOperation { try beforeAttest(); return Data([1]) })
     }
 
-    func createAssertionWrapper(keyID _: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
-        if let assertionError { return .createWithError(assertionError) }
+    func createAssertionWrapper(keyID: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
+        if lostKeyIDs.contains(keyID) { return .createWithError(NovaAuthAppAttestError.invalidKey) }
         return .createWithResult(Data([2]))
     }
 }
@@ -179,8 +197,12 @@ final class FakeAuthServer: NovaAuthHTTPProtocol {
         requests.filter { $0.url?.path.hasSuffix(suffix) == true }.count
     }
 
-    func createResponseWrapper(for request: URLRequest, kind _: NovaAuthHTTPKind, beforeSend: @escaping () throws -> Void)
-        -> CompoundOperationWrapper<NovaAuthResponse> {
+    func createResponseWrapper<T>(
+        for request: URLRequest,
+        kind _: NovaAuthHTTPKind,
+        beforeSend: @escaping () throws -> Void,
+        decode: @escaping (NovaAuthResponse) throws -> T
+    ) -> CompoundOperationWrapper<T> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
             try beforeSend()
             lock.novaAuthLocked { sent.append(request) }
@@ -189,7 +211,7 @@ final class FakeAuthServer: NovaAuthHTTPProtocol {
             let response = try XCTUnwrap(HTTPURLResponse(
                 url: url, statusCode: reply.status, httpVersion: nil, headerFields: reply.headers
             ))
-            return NovaAuthResponse(response: response, body: reply.body)
+            return try decode(NovaAuthResponse(response: response, body: reply.body))
         })
     }
 
