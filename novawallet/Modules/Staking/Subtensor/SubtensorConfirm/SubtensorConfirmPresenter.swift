@@ -173,7 +173,7 @@ extension SubtensorConfirmPresenter {
         }
 
         return SubtensorQuoteValidatingContext(
-            latestQuote: quoteState.latest ?? quoteState.acknowledged,
+            latestQuote: quoteState.displayed,
             acknowledgedLimit: quoteState.acknowledged?.limitPrice,
             tradesUnavailable: tradesUnavailable,
             alphaDisplayInfo: chainAsset.assetDisplayInfo.subtensorAlpha(
@@ -238,14 +238,14 @@ extension SubtensorConfirmPresenter {
             return createOperation(limitPrice: nil, quotedTaoOut: nil).map { ($0, nil) }
         }
 
-        guard let latest = state.latest, let limitPrice = state.signingLimit, !state.isPriceMoved else {
+        guard let displayed = state.displayed, let limitPrice = state.signingLimit, !state.isPriceMoved else {
             return nil
         }
 
         return createOperation(
             limitPrice: limitPrice,
-            quotedTaoOut: latest.quote.sim.taoAmount
-        ).map { ($0, latest) }
+            quotedTaoOut: displayed.quote.sim.taoAmount
+        ).map { ($0, displayed) }
     }
 
     func handOffAtTap() {
