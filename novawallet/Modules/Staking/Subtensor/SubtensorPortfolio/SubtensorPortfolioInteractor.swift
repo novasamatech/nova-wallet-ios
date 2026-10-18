@@ -14,7 +14,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let bittensorApiFactory: BittensorApiOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -39,7 +38,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
-        bittensorApiFactory: BittensorApiOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -54,7 +52,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
-        self.bittensorApiFactory = bittensorApiFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -92,7 +89,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
     func loadHistories(for period: SubtensorPricePeriod) {
         guard
-            let priceId = chainAsset.asset.priceId,
+            let priceHistoryService,
             let accountSubject = try? account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat) else {
             presenter?.didFailHistories(for: period)
             return
@@ -101,11 +98,10 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         historiesStore.cancel()
 
         executeCancellable(
-            wrapper: createHistoriesWrapper(
-                for: period,
-                historyPeriod: period.portfolioHistoryPeriod,
+            wrapper: priceHistoryService.createPortfolioHistoryWrapper(
                 accountSubject: accountSubject,
-                taoPriceId: priceId
+                period: period,
+                currency: selectedCurrency
             ),
             inOperationQueue: operationQueue,
             backingCallIn: historiesStore,
@@ -166,42 +162,6 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 }
 
 private extension SubtensorPortfolioInteractor {
-    func createHistoriesWrapper(
-        for period: SubtensorPricePeriod,
-        historyPeriod: BittensorApi.PortfolioHistoryPeriod,
-        accountSubject: AccountAddress,
-        taoPriceId: AssetModel.PriceId
-    ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories> {
-        let currency = selectedCurrency
-        let coingeckoFactory = state.flowState.coingeckoOperationFactory
-
-        let historyWrapper = bittensorApiFactory.createPortfolioHistoryWrapper(
-            accountSubject: accountSubject,
-            period: historyPeriod
-        )
-
-        let taoOperation = currency.id == Currency.usd.id ? nil : coingeckoFactory.fetchPriceHistory(
-            for: taoPriceId,
-            currency: currency,
-            period: period.sourceCoingeckoPeriod
-        )
-
-        let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
-            SubtensorPortfolioPriceHistories(
-                period: period,
-                portfolio: try historyWrapper.targetOperation.extractNoCancellableResultData().value,
-                taoFiat: try taoOperation?.extractNoCancellableResultData()
-            )
-        }
-
-        historiesOperation.addDependency(historyWrapper.targetOperation)
-        taoOperation.map { historiesOperation.addDependency($0) }
-
-        let dependencies = historyWrapper.allOperations + (taoOperation.map { [$0] } ?? [])
-
-        return CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
-    }
-
     func subscribePositions() {
         state.positionsSyncService?.add(
             observer: self,

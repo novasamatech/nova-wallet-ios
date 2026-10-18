@@ -79,7 +79,6 @@ private extension SubtensorPortfolioViewFactory {
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
-            bittensorApiFactory: SubtensorStakingProcessServices.shared.bittensorApiOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,

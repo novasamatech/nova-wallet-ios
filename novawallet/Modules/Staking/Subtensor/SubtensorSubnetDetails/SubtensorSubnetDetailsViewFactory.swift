@@ -21,7 +21,7 @@ enum SubtensorSubnetDetailsViewFactory {
         let viewModelFactory = SubtensorSubnetDetailsViewModelFactory(
             subnet: input.subnet,
             chainAsset: state.stakingOption.chainAsset,
-            currency: currencyManager.selectedCurrency,
+            currencyManager: currencyManager,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 

@@ -34,6 +34,7 @@ protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didFailPreset()
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
     func didReceiveTaoPrice(_ price: PriceData?)
+    func didChangeCurrency()
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)

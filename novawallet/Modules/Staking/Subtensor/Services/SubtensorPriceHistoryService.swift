@@ -6,6 +6,7 @@ final class SubtensorPriceHistoryService {
     static let marketStalenessLimit = TimeInterval(24).secondsFromHours
 
     let marketsService: SubtensorSubnetMarketsServiceProtocol
+    let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
     let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
@@ -18,6 +19,7 @@ final class SubtensorPriceHistoryService {
 
     init(
         marketsService: SubtensorSubnetMarketsServiceProtocol,
+        apiOperationFactory: BittensorApiOperationFactoryProtocol,
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
@@ -29,6 +31,7 @@ final class SubtensorPriceHistoryService {
         logger: LoggerProtocol = Logger.shared
     ) {
         self.marketsService = marketsService
+        self.apiOperationFactory = apiOperationFactory
         self.coingeckoOperationFactory = coingeckoOperationFactory
         self.blockNumberOperationFactory = blockNumberOperationFactory
         self.blockTimeOperationFactory = blockTimeOperationFactory

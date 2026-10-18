@@ -256,6 +256,17 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         provideViewModel()
     }
 
+    func didChangeCurrency() {
+        state.taoPrice = nil
+        state.chartSelection = nil
+
+        if state.history != .notListed {
+            loadHistory()
+        }
+
+        provideViewModel()
+    }
+
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         positions = state
         requestParametersIfNeeded()
