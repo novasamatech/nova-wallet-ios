@@ -199,7 +199,7 @@ private extension SettingsTests {
     func makeConsent(settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
         AnalyticsConsentManager(
             settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+            availabilityProvider: AnalyticsAvailabilityProvider(isAuthSupported: true)
         )
     }
 
@@ -208,7 +208,7 @@ private extension SettingsTests {
 
         return AnalyticsConsentManager(
             settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .unavailable)
+            availabilityProvider: AnalyticsAvailabilityProvider(isAuthSupported: false)
         )
     }
 

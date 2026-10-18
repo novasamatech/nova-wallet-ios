@@ -1477,7 +1477,7 @@
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF8F68F2E673E73007E41C4 /* Cuckoo */; };
 		0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 0CAA10022E7A0002007E41C4 /* SDKLogger */; };
-		FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAppAttest */; };
+		FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
 		FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000C2 /* NovaAnalytics */; };
 		0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA10072E7A0007007E41C4 /* LoggerSDKConformanceTests.swift */; };
 		0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */; };
@@ -4685,6 +4685,7 @@
 		849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 849013B624A80986008F705E /* LaunchScreen.storyboard */; };
 		849013DB24A927E2008F705E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D624A927E2008F705E /* ApplicationConfigs.swift */; };
+		F64C5FF96250F9A59875D7D6 /* ApplicationConfig+NovaAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */; };
 		849013DD24A927E2008F705E /* KeystoreExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D824A927E2008F705E /* KeystoreExtensions.swift */; };
 		849013DE24A927E2008F705E /* LocalizationManager+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D924A927E2008F705E /* LocalizationManager+Shared.swift */; };
 		849013DF24A927E2008F705E /* SettingsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013DA24A927E2008F705E /* SettingsExtension.swift */; };
@@ -6701,6 +6702,7 @@
 		FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
+		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 		000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */; };
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
 		000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */; };
@@ -6742,7 +6744,6 @@
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
-		0000000021CDF4E8A8B04343 /* AnalyticsInfraURLAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -11128,6 +11129,7 @@
 		849013C424A80986008F705E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		849013D424A927E2008F705E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		849013D624A927E2008F705E /* ApplicationConfigs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationConfigs.swift; sourceTree = "<group>"; };
+		3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ApplicationConfig+NovaAuth.swift"; sourceTree = "<group>"; };
 		849013D824A927E2008F705E /* KeystoreExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeystoreExtensions.swift; sourceTree = "<group>"; };
 		849013D924A927E2008F705E /* LocalizationManager+Shared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LocalizationManager+Shared.swift"; sourceTree = "<group>"; };
 		849013DA24A927E2008F705E /* SettingsExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsExtension.swift; sourceTree = "<group>"; };
@@ -13183,6 +13185,7 @@
 		FF755EE09598254BB5E59CC2 /* ReferendumVoteSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupViewFactory.swift; sourceTree = "<group>"; };
 		FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsInteractor.swift; sourceTree = "<group>"; };
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
+		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacade.swift; sourceTree = "<group>"; };
 		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
@@ -13223,7 +13226,6 @@
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
-		000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsInfraURLAdapter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -13272,7 +13274,7 @@
 				0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */,
 				2D1673512EE9BCC0004ADA7F /* SubstrateSdk in Frameworks */,
 				0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */,
-				FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */,
+				FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */,
 				FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */,
 				2DB5869A2EB8753800950F7D /* Lottie in Frameworks */,
 				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
@@ -19809,6 +19811,14 @@
 			path = MythosStkUnstakeConfirm;
 			sourceTree = "<group>";
 		};
+		3DB3C0C3D87A4A24AC1B6244 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
 		39A771F6D252031C00568966 /* ParaStkYieldBoostSetup */ = {
 			isa = PBXGroup;
 			children = (
@@ -24621,6 +24631,7 @@
 			isa = PBXGroup;
 			children = (
 				849013D624A927E2008F705E /* ApplicationConfigs.swift */,
+				3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -25360,6 +25371,7 @@
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				3DB3C0C3D87A4A24AC1B6244 /* Auth */,
 				2DD83BC12E420C1C00E83B4C /* IPAddressProvider */,
 				84E8BA1029FFB38600FD9F40 /* Ethereum */,
 				84953F642934B2C90033F47D /* Etherscan */,
@@ -30921,7 +30933,6 @@
 				A281AC1766B928972DD7B559 /* FeatureNavigationTracker.swift */,
 				93205EB2FA7D81BBF4C023E3 /* Error+AnalyticsFailureReason.swift */,
 				573304BB5E90CCC2045A572F /* ChainModel+Analytics.swift */,
-				000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -31082,9 +31093,9 @@
 			);
 			mainGroup = 8490139F24A80984008F705E;
 			packageReferences = (
-				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "Packages/NovaAppAttest" */,
-				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */,
-				FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "Packages/NovaAnalytics" */,
+				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "NovaAuth" */,
+				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */,
+				FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */,
 				0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */,
 				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
 				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
@@ -32534,6 +32545,7 @@
 				84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */,
 				0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
+				F64C5FF96250F9A59875D7D6 /* ApplicationConfig+NovaAuth.swift in Sources */,
 				2DDC720F2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift in Sources */,
 				84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */,
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,
@@ -37727,7 +37739,7 @@
 				5AAED49B9EE1A6E39813FCD3 /* FeatureNavigationTracker.swift in Sources */,
 				CEED6E5159E7F239637B15A1 /* Error+AnalyticsFailureReason.swift in Sources */,
 				908AB79BBFBC19B1DEDC708D /* ChainModel+Analytics.swift in Sources */,
-				0000000021CDF4E8A8B04343 /* AnalyticsInfraURLAdapter.swift in Sources */,
+				F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38857,15 +38869,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "Packages/NovaAppAttest" */ = {
+		FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "NovaAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/NovaAppAttest;
+			relativePath = Packages/NovaAuth;
 		};
-		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */ = {
+		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaOperationSupport;
 		};
-		FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "Packages/NovaAnalytics" */ = {
+		FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaAnalytics;
 		};
@@ -39374,9 +39386,9 @@
 			package = 2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
-		FEEDAB0000000000000000A2 /* NovaAppAttest */ = {
+		FEEDAB0000000000000000A2 /* NovaAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = NovaAppAttest;
+			productName = NovaAuth;
 		};
 		FEEDAB0000000000000000C2 /* NovaAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
