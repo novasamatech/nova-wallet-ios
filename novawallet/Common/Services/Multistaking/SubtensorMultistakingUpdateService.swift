@@ -16,6 +16,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
     private var rootYields: SubtensorAlphaYields?
+    private var requestedRootHotkeys: Set<AccountId>?
     private var subnetYields: [UInt16: SubtensorAlphaYields] = [:]
     private var requestedSubnetNetuids: Set<UInt16>?
     private var isSyncCompletionDeferred = false
@@ -79,6 +80,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         isSyncCompletionDeferred = false
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
+        requestedRootHotkeys = nil
         subnetYieldsCallStore.cancel()
         requestedSubnetNetuids = nil
         cataloguePricing.cancel()
@@ -177,9 +179,20 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performRootYieldsFetch() {
-        guard !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
+        guard let lastState else {
             return
         }
+
+        let hotkeys = Set(
+            lastState.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }.map(\.hotkey)
+        )
+
+        guard !hotkeys.isEmpty, hotkeys != requestedRootHotkeys else {
+            return
+        }
+
+        requestedRootHotkeys = hotkeys
+        rootYieldsCallStore.cancel()
 
         executeCancellable(
             wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
@@ -350,6 +363,7 @@ extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProt
             return
         }
 
+        requestedRootHotkeys = nil
         requestedSubnetNetuids = nil
 
         performMaxApyFetch()
