@@ -16,25 +16,15 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 }
 
 final class SubtensorStakingPositionsSyncService: BaseSyncService {
-    let accountId: AccountId
-    let chainAssetId: ChainAssetId
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
-    let eventCenter: EventCenterProtocol
+    let stakeStateSource: SubtensorStakeStateSource
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
-        accountId: accountId,
-        stakeStateFetchFactory: stakeStateFetchFactory,
-        connection: connection,
-        runtimeService: runtimeService,
-        chainAssetId: chainAssetId,
+        source: stakeStateSource,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
-        logger: logger,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.publish(state: $0) },
         onFailure: { [weak self] in self?.markFailed($0) }
@@ -44,22 +34,12 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     private var failureObservable: Observable<Bool> = .init(state: false)
 
     init(
-        accountId: AccountId,
-        chainAssetId: ChainAssetId,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        eventCenter: EventCenterProtocol,
+        stakeStateSource: SubtensorStakeStateSource,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
-        self.accountId = accountId
-        self.chainAssetId = chainAssetId
-        self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.eventCenter = eventCenter
+        self.stakeStateSource = stakeStateSource
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
 
@@ -67,8 +47,6 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
-
         stakeStateSubscription.subscribe()
     }
 
@@ -77,8 +55,6 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     }
 
     override func deactivate() {
-        eventCenter.remove(observer: stakeStateSubscription)
-
         stakeStateSubscription.unsubscribe()
     }
 }
@@ -89,7 +65,7 @@ private extension SubtensorStakingPositionsSyncService {
 
         stateObservable.state = state
 
-        completeImmediate(state.rootRedeemableError)
+        completeImmediate(nil)
     }
 
     func markFailed(_ error: Error) {
