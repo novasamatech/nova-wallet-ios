@@ -13,7 +13,14 @@ enum NovaAuthStoredValidation {
         guard let identity = state.identity else { return }
         try NovaAuthValidation.clientID(identity.clientID)
         if let keyID = identity.keyID { try NovaAuthValidation.keyID(keyID) }
+        if let refusal = identity.refusal { try validateRefusal(refusal) }
         try registration(identity)
+    }
+
+    private static func validateRefusal(_ refusal: NovaAuthRefusal) throws {
+        try time(refusal.deadline)
+        guard (1 ... NovaAuthRefusal.delays.count).contains(refusal.failures),
+              (1 ... 64).contains(refusal.appVersion.utf8.count) else { throw NovaAuthError.storageUnavailable }
     }
 
     private static func registration(_ identity: NovaAuthInstallationIdentity) throws {

@@ -11,7 +11,11 @@ extension ApplicationConfig {
         }
 
         do {
-            return try NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
+            return try NovaAuthAppIdentity(
+                appID: prefix + "." + bundleId,
+                environment: novaAuthEnvironment,
+                version: version
+            )
         } catch {
             Logger.shared.error("NovaAuth app identity rejected: \(error)")
             return nil

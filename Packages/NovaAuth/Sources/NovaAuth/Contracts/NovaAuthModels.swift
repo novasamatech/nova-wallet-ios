@@ -41,6 +41,7 @@ struct NovaAuthInstallationIdentity: Codable, Equatable {
     let clientID: String
     let keyID: String?
     let registration: NovaAuthRegistrationState
+    var refusal: NovaAuthRefusal?
 }
 
 struct NovaAuthRegistrationAttempt: Codable, Equatable {

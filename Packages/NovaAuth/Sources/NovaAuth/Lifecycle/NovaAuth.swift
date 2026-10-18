@@ -69,7 +69,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         in context: NovaAuthContext
     ) -> CompoundOperationWrapper<Void> {
         let operation = NovaAuthWaiterOperation<Void> { [self] cancellation, completion in
-            demand(context: context, cancellation: cancellation) { result in
+            demand(context: context, intent: .userDriven, cancellation: cancellation) { result in
                 completion(result.map { _ in () })
             }
         }
@@ -113,7 +113,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
         try setIdentity(NovaAuthInstallationIdentity(
             clientID: identity.clientID,
             keyID: identity.keyID,
-            registration: registration
+            registration: registration,
+            refusal: registration == .registered ? nil : identity.refusal
         ), context: flight.context)
     }
 
@@ -193,15 +194,6 @@ private extension NovaAuth {
         guard state == nil else { return }
         do {
             state = try dependencies.identityStore.load()
-            if let current = state, let identity = current.identity,
-               case .retired(.policyRefused) = identity.registration, identity.keyID != nil {
-                state = NovaAuthInstallationState(
-                    version: current.version, context: current.context,
-                    identity: NovaAuthInstallationIdentity(
-                        clientID: identity.clientID, keyID: identity.keyID, registration: .registered
-                    ), tokenRemovalOwed: current.tokenRemovalOwed
-                )
-            }
         } catch let error as NovaAuthIdentityStoreError {
             throw error
         } catch {
