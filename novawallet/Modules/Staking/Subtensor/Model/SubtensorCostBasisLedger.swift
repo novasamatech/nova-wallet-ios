@@ -46,7 +46,7 @@ struct SubtensorCostBasisLedger {
 
     func costBasis(for netuid: UInt16) throws -> SubtensorCostBasis {
         guard isHistoryComplete else {
-            return .noPurchases
+            return .incompleteHistory
         }
 
         guard !unclassifiedNetuids.contains(netuid) else {
