@@ -104,7 +104,7 @@ private extension SubtensorPositionPresenter {
         }
 
         guard let subnet = state.catalogue?.subnet(for: state.netuid)?.ref else {
-            state.history = state.prices == nil ? .failed : .notListed
+            state.history = state.catalogue == nil ? .failed : .notListed
             state.hasResolvedHistory = true
             return
         }
@@ -238,7 +238,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func retryHistory() {
         historyRequest = nil
 
-        if state.prices == nil {
+        if state.catalogue == nil {
             state.history = .loading
             interactor.loadPrices()
         } else {
