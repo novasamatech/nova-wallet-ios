@@ -97,9 +97,9 @@ extension StackTitleMultiValueCell {
 
 extension StackTitleMultiValueCell {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let size = CGSize(width: 68, height: 8)
+        let size = CGSize(width: 120, height: 12)
         let offset = CGPoint(
-            x: spaceSize.width - size.width,
+            x: spaceSize.width - contentInsets.right - size.width,
             y: spaceSize.height / 2.0 - size.height / 2.0
         )
 
