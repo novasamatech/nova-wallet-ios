@@ -3,7 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
-    /// `BaseSyncService` only logs and reschedules a failed sync, so failures get their own observable
     func add(
         observer: AnyObject,
         onState: @escaping (Multistaking.SubtensorState?) -> Void,
