@@ -102,7 +102,7 @@ private extension SubtensorStakingOperation {
                 )
             ]
         case let .rootUnstakeGroup(exits, partials):
-            return try Self.createGroupClosures(exits: exits, partials: partials, netuid: rootNetuid, limitPrice: nil)
+            return try Self.createGroupCalls(exits: exits, partials: partials, netuid: rootNetuid, limitPrice: nil)
         case let .subnetBuy(hotkey, netuid, grossTao, limitPrice):
             return try [
                 Self.addingClosure(
@@ -128,7 +128,7 @@ private extension SubtensorStakingOperation {
                 )
             ]
         case let .subnetSellGroup(exits, partials, netuid, limitPrice, _):
-            return try Self.createGroupClosures(exits: exits, partials: partials, netuid: netuid, limitPrice: limitPrice)
+            return try Self.createGroupCalls(exits: exits, partials: partials, netuid: netuid, limitPrice: limitPrice)
         case let .rootClaim(hotkey):
             return [
                 Self.addingClosure(SubtensorStakingPallet.ClaimRootWithHotkeyCall(hotkey: hotkey).runtimeCall())
@@ -136,7 +136,7 @@ private extension SubtensorStakingOperation {
         }
     }
 
-    static func createGroupClosures(
+    static func createGroupCalls(
         exits: [AccountId],
         partials: [SubtensorUnstakeSlice],
         netuid: UInt16,
