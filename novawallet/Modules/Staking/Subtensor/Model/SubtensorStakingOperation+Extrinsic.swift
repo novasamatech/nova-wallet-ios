@@ -6,15 +6,15 @@ extension SubtensorStakingOperation {
         switch self {
         case .rootStake, .rootUnstake, .rootClaim:
             return
-        case let .rootUnstakeAll(hotkeys):
-            try Self.ensureHotkeyGroup(hotkeys)
+        case let .rootUnstakeGroup(exits, partials):
+            try Self.ensureHotkeyGroup(exits: exits, partials: partials)
         case let .subnetBuy(_, netuid, _, limitPrice):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
         case let .subnetSell(_, netuid, _, limitPrice, quotedTaoOut):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
-        case let .subnetSellAll(hotkeys, netuid, limitPrice, quotedTaoOut):
-            try Self.ensureHotkeyGroup(hotkeys)
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, quotedTaoOut):
+            try Self.ensureHotkeyGroup(exits: exits, partials: partials)
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
         }
@@ -53,7 +53,9 @@ extension SubtensorStakingOperation {
 }
 
 private extension SubtensorStakingOperation {
-    static func ensureHotkeyGroup(_ hotkeys: [AccountId]) throws {
+    static func ensureHotkeyGroup(exits: [AccountId], partials: [SubtensorUnstakeSlice]) throws {
+        let hotkeys = exits + partials.map(\.hotkey)
+
         guard !hotkeys.isEmpty, Set(hotkeys).count == hotkeys.count else {
             throw SubtensorStakingOperationError.invalidHotkeyGroup
         }
@@ -99,8 +101,8 @@ private extension SubtensorStakingOperation {
                         .runtimeCall()
                 )
             ]
-        case let .rootUnstakeAll(hotkeys):
-            return try Self.createFullExitClosures(hotkeys: hotkeys, netuid: rootNetuid, limitPrice: nil)
+        case let .rootUnstakeGroup(exits, partials):
+            return try Self.createGroupCalls(exits: exits, partials: partials, netuid: rootNetuid, limitPrice: nil)
         case let .subnetBuy(hotkey, netuid, grossTao, limitPrice):
             return try [
                 Self.addingClosure(
@@ -125,8 +127,8 @@ private extension SubtensorStakingOperation {
                     ).runtimeCall()
                 )
             ]
-        case let .subnetSellAll(hotkeys, netuid, limitPrice, _):
-            return try Self.createFullExitClosures(hotkeys: hotkeys, netuid: netuid, limitPrice: limitPrice)
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, _):
+            return try Self.createGroupCalls(exits: exits, partials: partials, netuid: netuid, limitPrice: limitPrice)
         case let .rootClaim(hotkey):
             return [
                 Self.addingClosure(SubtensorStakingPallet.ClaimRootWithHotkeyCall(hotkey: hotkey).runtimeCall())
@@ -134,16 +136,41 @@ private extension SubtensorStakingOperation {
         }
     }
 
-    static func createFullExitClosures(
-        hotkeys: [AccountId],
+    static func createGroupCalls(
+        exits: [AccountId],
+        partials: [SubtensorUnstakeSlice],
         netuid: UInt16,
         limitPrice: Balance?
     ) throws -> [ExtrinsicBuilderClosure] {
-        try hotkeys.map { hotkey in
+        let exitClosures = try exits.map { hotkey in
             try addingClosure(
                 SubtensorStakingPallet.RemoveStakeFullLimitCall(hotkey: hotkey, netuid: netuid, limitPrice: limitPrice)
                     .runtimeCall()
             )
         }
+
+        let partialClosures: [ExtrinsicBuilderClosure] = try partials.map { partial in
+            if let limitPrice {
+                try addingClosure(
+                    SubtensorStakingPallet.RemoveStakeLimitCall(
+                        hotkey: partial.hotkey,
+                        netuid: netuid,
+                        amountUnstaked: partial.alpha,
+                        limitPrice: limitPrice,
+                        allowPartial: false
+                    ).runtimeCall()
+                )
+            } else {
+                try addingClosure(
+                    SubtensorStakingPallet.RemoveStakeCall(
+                        hotkey: partial.hotkey,
+                        netuid: netuid,
+                        amountUnstaked: partial.alpha
+                    ).runtimeCall()
+                )
+            }
+        }
+
+        return exitClosures + partialClosures
     }
 }

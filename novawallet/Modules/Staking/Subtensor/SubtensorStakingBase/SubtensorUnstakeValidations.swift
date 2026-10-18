@@ -3,10 +3,13 @@ import Foundation
 struct SubtensorUnstakeValidatingDep {
     let netuid: UInt16
     let accountId: AccountId
+    let hotkey: AccountId?
     let amount: Balance?
     let positionAlpha: Balance?
+    let positions: [AccountId: Balance]
+    let plan: SubtensorUnstakePlan?
+    let groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
     let availability: SubtensorStakingPallet.StakeAvailability?
-    let exitHotkeys: [AccountId]?
     let balance: AssetBalance?
     let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: Balance?
@@ -18,11 +21,12 @@ struct SubtensorUnstakeValidatingDep {
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
     let onPositionsRefresh: () -> Void
+    var onGroupHotkeysRefresh: (() -> Void)?
     var onUnstakeAll: (() -> Void)?
     var quoteContext: SubtensorQuoteValidatingContext?
 
     var isBatched: Bool {
-        netuid != SubtensorStakingPallet.rootNetuid || (exitHotkeys?.count ?? 0) > 1
+        netuid != SubtensorStakingPallet.rootNetuid || (plan?.isBatched ?? false)
     }
 }
 
@@ -46,29 +50,48 @@ extension SubtensorUnstakeValidatingDep {
         )
     }
 
-    var sellPlanInput: SubtensorSellPlanInput? {
-        guard
-            let amount,
-            let positionAlpha,
-            let preflight,
-            let bases = sellPlanBases else {
-            return nil
+    var feePayingPosition: Balance? {
+        plan?.single.flatMap { positions[$0.hotkey] } ?? positionAlpha
+    }
+
+    var sellPlanInputs: [SubtensorSellPlanInput]? {
+        guard let plan, !plan.partials.isEmpty else {
+            return createSellPlanInput(
+                requestedAlpha: amount,
+                positionAlpha: positionAlpha,
+                hotkey: hotkey
+            ).map { [$0] }
         }
 
-        return SubtensorSellPlanInput(
-            requestedAlpha: amount,
-            positionAlpha: positionAlpha,
-            availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
-            minimumTaoOut: bases.minimumTaoOut,
-            sellLimitPrice: bases.sellLimitPrice,
-            isOwnHotkey: preflight.hotkeyOwner == accountId,
-            minStake: preflight.minStake,
-            nominatorMinStake: preflight.effectiveNominatorMinStake
-        )
+        let inputs = plan.partials.compactMap { slice in
+            createSellPlanInput(
+                requestedAlpha: slice.alpha,
+                positionAlpha: positions[slice.hotkey],
+                hotkey: slice.hotkey
+            )
+        }
+
+        return inputs.count == plan.partials.count ? inputs : nil
+    }
+
+    var drawsBeyondPreflightHotkey: Bool {
+        guard let plan else {
+            return false
+        }
+
+        return plan.hotkeys != hotkey.map { [$0] }
+    }
+
+    var groupHotkeysCoverPlan: Bool {
+        guard let groupHotkeys else {
+            return false
+        }
+
+        return (plan?.hotkeys ?? []).allSatisfy { groupHotkeys[$0] != nil }
     }
 
     var groupExitHolds: [SubtensorRootHold]? {
-        guard !isSubnet, let exitHotkeys, exitHotkeys.count > 1 else {
+        guard !isSubnet, let plan, drawsBeyondPreflightHotkey else {
             return nil
         }
 
@@ -77,30 +100,61 @@ extension SubtensorUnstakeValidatingDep {
             lastStakeBlock: currentBlock.map { UInt64($0) } ?? 0
         )
 
-        return exitHotkeys.map { holds?[$0] ?? unknownHold }
+        return plan.hotkeys.map { holds?[$0] ?? unknownHold }
     }
 }
 
 private extension SubtensorUnstakeValidatingDep {
-    var sellPlanBases: (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
-        guard isSubnet else {
-            return amount.map { amount in
-                let minimumTaoOut = SubtensorAmountPolicy.rootUnstakeAmount(
-                    requested: amount,
-                    transferable: balance?.transferable,
-                    networkFee: fee?.amountForCurrentAccount,
-                    existentialDeposit: existentialDeposit
-                )
+    func createSellPlanInput(
+        requestedAlpha: Balance?,
+        positionAlpha: Balance?,
+        hotkey sliceHotkey: AccountId?
+    ) -> SubtensorSellPlanInput? {
+        guard
+            let requestedAlpha,
+            let positionAlpha,
+            let preflight,
+            let bases = sellPlanBases(for: requestedAlpha) else {
+            return nil
+        }
 
-                return (minimumTaoOut, SubtensorStakingPallet.alphaPriceScale)
-            }
+        return SubtensorSellPlanInput(
+            requestedAlpha: requestedAlpha,
+            positionAlpha: positionAlpha,
+            availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
+            minimumTaoOut: bases.minimumTaoOut,
+            sellLimitPrice: bases.sellLimitPrice,
+            isOwnHotkey: owner(of: sliceHotkey, preflight: preflight) == accountId,
+            minStake: preflight.minStake,
+            nominatorMinStake: preflight.effectiveNominatorMinStake
+        )
+    }
+
+    func owner(of sliceHotkey: AccountId?, preflight: SubtensorStakingPreflight) -> AccountId? {
+        guard let sliceHotkey else {
+            return nil
+        }
+
+        return groupHotkeys?[sliceHotkey]?.owner ?? (sliceHotkey == hotkey ? preflight.hotkeyOwner : nil)
+    }
+
+    func sellPlanBases(for requestedAlpha: Balance) -> (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
+        guard isSubnet else {
+            let minimumTaoOut = SubtensorAmountPolicy.rootUnstakeAmount(
+                requested: requestedAlpha,
+                transferable: balance?.transferable,
+                networkFee: fee?.amountForCurrentAccount,
+                existentialDeposit: existentialDeposit
+            )
+
+            return (minimumTaoOut, SubtensorStakingPallet.alphaPriceScale)
         }
 
         guard
             let latestQuote = quoteContext?.latestQuote,
             let signingLimit = quoteContext?.signingLimit,
             let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
-                alpha: latestQuote.amountIn,
+                alpha: requestedAlpha,
                 feeRate: latestQuote.quote.feeRate,
                 limitPrice: signingLimit
             ) else {
@@ -123,14 +177,7 @@ extension SubtensorStakingValidationFactoryProtocol {
             validations.append(feePayerValidation)
         }
 
-        validations.append(
-            sellPlanAllows(
-                dep.sellPlanInput,
-                assetDisplayInfo: dep.assetDisplayInfo,
-                onUnstakeAll: dep.onUnstakeAll,
-                locale: locale
-            )
-        )
+        validations.append(contentsOf: createSellPlanValidations(for: dep, locale: locale))
 
         if !dep.isSubnet {
             validations.append(contentsOf: createRootHoldValidations(for: dep, locale: locale))
@@ -172,11 +219,33 @@ private extension SubtensorStakingValidationFactoryProtocol {
             )
         ]
 
+        if let onGroupHotkeysRefresh = dep.onGroupHotkeysRefresh {
+            validations.append(
+                groupHotkeysLoaded(dep.groupHotkeysCoverPlan, locale: locale, onRetry: onGroupHotkeysRefresh)
+            )
+        }
+
         if dep.isSubnet {
             validations.append(contentsOf: createQuoteValidations(for: dep.quoteContext, locale: locale))
         }
 
         return validations
+    }
+
+    func createSellPlanValidations(
+        for dep: SubtensorUnstakeValidatingDep,
+        locale: Locale
+    ) -> [DataValidating] {
+        let inputs: [SubtensorSellPlanInput?] = dep.sellPlanInputs ?? [nil]
+
+        return inputs.map { input in
+            sellPlanAllows(
+                input,
+                assetDisplayInfo: dep.assetDisplayInfo,
+                onUnstakeAll: dep.onUnstakeAll,
+                locale: locale
+            )
+        }
     }
 
     func createFeePayerValidation(
@@ -198,7 +267,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
         }
 
         return canPayFeeInPlank(
-            balance: dep.positionAlpha,
+            balance: dep.feePayingPosition,
             fee: dep.fee,
             asset: assetDisplayInfo,
             locale: locale

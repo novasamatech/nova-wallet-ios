@@ -34,7 +34,9 @@ final class SubtensorUnstakeSetupPresenter {
     var validatorRequest: AccountId?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
+    var groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
     var quoteFlow = SubtensorQuoteFlowModel()
+    var latestQuote: SubtensorTradeQuote?
     var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
@@ -73,20 +75,77 @@ final class SubtensorUnstakeSetupPresenter {
 }
 
 private extension SubtensorUnstakeSetupPresenter {
-    enum FeeShape: Equatable {
-        case partial(AccountId)
-        case exitAll([AccountId])
+    struct FeeShape: Equatable {
+        let exits: [AccountId]
+        let partials: [AccountId]
+
+        init(plan: SubtensorUnstakePlan) {
+            exits = plan.exits.map(\.hotkey)
+            partials = plan.partials.map(\.hotkey)
+        }
     }
 
-    func shape(of operation: SubtensorStakingOperation) -> FeeShape? {
-        switch operation {
-        case let .rootUnstake(hotkey, _), let .subnetSell(hotkey, _, _, _, _):
-            return .partial(hotkey)
-        case let .rootUnstakeAll(hotkeys), let .subnetSellAll(hotkeys, _, _, _):
-            return .exitAll(hotkeys)
-        case .rootStake, .rootClaim, .subnetBuy:
+    var heldHotkeys: Set<AccountId> {
+        guard isRoot, let group, let holds, let currentBlock else {
+            return []
+        }
+
+        let head = UInt64(currentBlock)
+
+        return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
+    }
+
+    var excludedHotkeys: Set<AccountId> {
+        let held = heldHotkeys
+
+        guard let group, held.count < group.positions.count else {
+            return []
+        }
+
+        return held
+    }
+
+    func floorAlpha() -> Balance {
+        guard let minStake = preflight?.minStake else {
+            return 0
+        }
+
+        guard !isRoot else {
+            return SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: minStake,
+                price: SubtensorStakingPallet.alphaPriceScale,
+                feeRate: 0
+            )
+        }
+
+        guard let limitPrice = currentLimitPrice() else {
+            return 0
+        }
+
+        return SubtensorGroupUnstakeBasis.floorAlpha(
+            minTao: minStake,
+            price: limitPrice,
+            feeRate: latestQuote?.quote.feeRate ?? 0
+        )
+    }
+
+    func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorStakingOperation? {
+        guard !isRoot else {
+            return plan.rootOperation(amount: plan.amount)
+        }
+
+        guard let limitPrice = currentLimitPrice(), let spotPrice = currentSpotPrice() else {
             return nil
         }
+
+        let quotedTaoOut = quoteFlow.freshQuote?.quote.sim.taoAmount ??
+            plan.amount * spotPrice / SubtensorStakingPallet.alphaPriceScale
+
+        guard quotedTaoOut > 0 else {
+            return nil
+        }
+
+        return plan.subnetOperation(netuid: netuid, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut)
     }
 }
 
@@ -97,26 +156,22 @@ extension SubtensorUnstakeSetupPresenter {
 
     var basis: SubtensorGroupUnstakeBasis? {
         if let group {
-            return SubtensorGroupUnstakeBasis.make(from: group)
+            return SubtensorGroupUnstakeBasis.make(
+                from: group,
+                excluding: excludedHotkeys,
+                groupHotkeys: groupHotkeys ?? [:]
+            )
         }
 
         guard positionsState != nil else {
             return nil
         }
 
-        return SubtensorGroupUnstakeBasis(total: 0, primaryAlpha: 0, available: 0, hotkeys: [])
+        return SubtensorGroupUnstakeBasis(total: 0, available: 0, positions: [])
     }
 
     var maxAmount: Balance? {
-        guard let basis else {
-            return nil
-        }
-
-        guard isRoot, basis.canExitAll, remainingHoldBlocks(for: basis.hotkeys) != nil else {
-            return basis.max
-        }
-
-        return basis.partialCap
+        basis?.max(floor: floorAlpha())
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
@@ -127,7 +182,7 @@ extension SubtensorUnstakeSetupPresenter {
         target?.subnetRef
     }
 
-    func inputAmount() -> Balance? {
+    func requestedAmount() -> Balance? {
         switch inputResult {
         case let .rate(rate):
             guard let maxAmount else {
@@ -146,90 +201,67 @@ extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func exitHotkeys(for amount: Balance?) -> [AccountId]? {
-        guard
-            let amount,
-            let hotkeys = basis?.exitHotkeys(for: amount),
-            remainingHoldBlocks(for: hotkeys) == nil else {
+    func inputAmount() -> Balance? {
+        guard let requested = requestedAmount() else {
             return nil
         }
 
-        return hotkeys
+        return plan(for: requested)?.amount ?? requested
     }
 
-    func remainingHoldBlocks(for hotkeys: [AccountId]) -> UInt64? {
-        guard isRoot, let holds, let currentBlock else {
-            return nil
-        }
-
-        let remaining = hotkeys.compactMap { holds[$0]?.remainingBlocks(at: UInt64(currentBlock)) }.max() ?? 0
-
-        return remaining > 0 ? remaining : nil
+    func plan(for amount: Balance) -> SubtensorUnstakePlan? {
+        basis?.plan(for: amount, floor: floorAlpha())
     }
 
-    func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
+    func feePlan() -> SubtensorUnstakePlan? {
         guard let primary = group?.primaryHotkey else {
             return nil
         }
 
-        return remainingHoldBlocks(for: exitHotkeys(for: amount) ?? [primary])
+        let amount = inputAmountOrPlaceholder()
+
+        return plan(for: amount) ?? SubtensorUnstakePlan(
+            exits: [],
+            partials: [SubtensorUnstakeSlice(hotkey: primary, alpha: amount)]
+        )
+    }
+
+    func loadGroupHotkeys() {
+        guard let group else {
+            return
+        }
+
+        interactor.loadGroupHotkeys(group.positions.map(\.hotkey), netuid: netuid)
+    }
+
+    func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
+        let held = heldHotkeys
+
+        guard !held.isEmpty, let group, let maxAmount, let holds, let currentBlock else {
+            return nil
+        }
+
+        guard held.count == group.positions.count || (amount ?? 0) > maxAmount else {
+            return nil
+        }
+
+        return held.compactMap { holds[$0]?.remainingBlocks(at: UInt64(currentBlock)) }.max()
     }
 
     func currentSpotPrice() -> Balance? {
-        quoteFlow.freshQuote?.quote.spotPrice ?? target?.listedPrice
+        latestQuote?.quote.spotPrice ?? target?.listedPrice
     }
 
     func currentLimitPrice() -> Balance? {
         target?.unstakeLimitPrice(spot: currentSpotPrice(), tolerance: slippage)
     }
 
-    func feeOperation() -> SubtensorStakingOperation? {
-        guard let primary = group?.primaryHotkey else {
-            return nil
-        }
-
-        let amount = inputAmountOrPlaceholder()
-        let exitHotkeys = exitHotkeys(for: amount)
-
-        guard !isRoot else {
-            return exitHotkeys.map { .rootUnstakeAll(hotkeys: $0) } ?? .rootUnstake(hotkey: primary, amount: amount)
-        }
-
-        guard let limitPrice = currentLimitPrice(), let spotPrice = currentSpotPrice() else {
-            return nil
-        }
-
-        let quotedTaoOut = quoteFlow.freshQuote?.quote.sim.taoAmount ??
-            amount * spotPrice / SubtensorStakingPallet.alphaPriceScale
-
-        guard quotedTaoOut > 0 else {
-            return nil
-        }
-
-        if let exitHotkeys {
-            return .subnetSellAll(
-                hotkeys: exitHotkeys,
-                netuid: netuid,
-                limitPrice: limitPrice,
-                quotedTaoOut: quotedTaoOut
-            )
-        }
-
-        return .subnetSell(
-            hotkey: primary,
-            netuid: netuid,
-            alpha: amount,
-            limitPrice: limitPrice,
-            quotedTaoOut: quotedTaoOut
-        )
-    }
-
     func refreshFee() {
-        guard let operation = feeOperation() else {
+        guard let plan = feePlan(), let operation = feeOperation(for: plan) else {
             return
         }
 
-        let newShape = shape(of: operation)
+        let newShape = FeeShape(plan: plan)
 
         if newShape != feeShape {
             feeShape = newShape
@@ -269,6 +301,35 @@ extension SubtensorUnstakeSetupPresenter {
     func applyInputChange() {
         refreshFee()
         updateQuote()
+        provideViewModel()
+    }
+
+    func applyPlanChange(from previousPlan: SubtensorUnstakePlan?) {
+        let plan = feePlan()
+
+        guard plan != previousPlan else {
+            return
+        }
+
+        if case .rate = inputResult, plan?.amount != previousPlan?.amount {
+            provideAmountInputViewModel()
+        }
+
+        refreshFee()
+        updateQuote()
+    }
+
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
+        let previousPlan = feePlan()
+
+        latestQuote = quote
+
+        if quoteFlow.applyQuote(quote) {
+            tradesUnavailable = false
+            isQuoteFailed = false
+        }
+
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 

@@ -9,10 +9,16 @@ struct SubtensorNovaFee: Equatable {
 enum SubtensorStakingOperation: Equatable {
     case rootStake(hotkey: AccountId, amount: Balance)
     case rootUnstake(hotkey: AccountId, amount: Balance)
-    case rootUnstakeAll(hotkeys: [AccountId])
+    case rootUnstakeGroup(exits: [AccountId], partials: [SubtensorUnstakeSlice])
     case subnetBuy(hotkey: AccountId, netuid: UInt16, grossTao: Balance, limitPrice: Balance)
     case subnetSell(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance, quotedTaoOut: Balance)
-    case subnetSellAll(hotkeys: [AccountId], netuid: UInt16, limitPrice: Balance, quotedTaoOut: Balance)
+    case subnetSellGroup(
+        exits: [AccountId],
+        partials: [SubtensorUnstakeSlice],
+        netuid: UInt16,
+        limitPrice: Balance,
+        quotedTaoOut: Balance
+    )
     case rootClaim(hotkey: AccountId)
 }
 
