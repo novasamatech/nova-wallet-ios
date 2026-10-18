@@ -15,6 +15,14 @@ final class SubtensorCataloguePricingTracker {
     private var requestedNetuids: Set<UInt16> = []
     private let callStore = CancellableCallStore()
 
+    var alphaPrices: SubtensorAlphaPrices? {
+        guard case let .success(alphaPrices) = prices else {
+            return nil
+        }
+
+        return alphaPrices
+    }
+
     init(
         alphaPriceProvider: SubtensorAlphaPriceProviderProtocol,
         operationQueue: OperationQueue,

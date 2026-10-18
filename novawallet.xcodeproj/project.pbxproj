@@ -3179,7 +3179,7 @@
 		5786E683E29D17521A5BEEB6 /* BannersProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC9ADA9846C199380AF58D6 /* BannersProtocols.swift */; };
 		578AB8AF00C7596CB4C1826A /* MultisigOperationConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064DAF1CCE3AB24880E37705 /* MultisigOperationConfirmInteractor.swift */; };
 		57DBEC7DE8694CE3B77E8D71 /* SubtensorRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E40D70A3E749BBB1D606A9 /* SubtensorRate.swift */; };
-		7D25479D3AB4A5EBD0E3B5F0 /* SubtensorRootRateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5571D769D90210A11EEDEF8 /* SubtensorRootRateCalculator.swift */; };
+		7D25479D3AB4A5EBD0E3B5F0 /* SubtensorStakeRateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5571D769D90210A11EEDEF8 /* SubtensorStakeRateCalculator.swift */; };
 		57DE9DDE57F86846EDDA0126 /* MythosStakingRedeemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB954E2C5DE26DCEA1A0308C /* MythosStakingRedeemPresenter.swift */; };
 		57E20F0723C4748D576C4882 /* StakingUnbondSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82E373FFFBF708D7CF0973E /* StakingUnbondSetupViewFactory.swift */; };
 		58647872EA51556AC0791A3E /* ExportInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F83F91EC9B29C21D087D869 /* ExportInteractor.swift */; };
@@ -7411,7 +7411,7 @@
 		0486E553D2D1FE5DCA179EB0 /* AssetExchangeCommissionConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionConstants.swift; sourceTree = "<group>"; };
 		0492106F3E5C20019137E9AA /* AddDelegationViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDelegationViewController.swift; sourceTree = "<group>"; };
 		04E40D70A3E749BBB1D606A9 /* SubtensorRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRate.swift; sourceTree = "<group>"; };
-		B5571D769D90210A11EEDEF8 /* SubtensorRootRateCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootRateCalculator.swift; sourceTree = "<group>"; };
+		B5571D769D90210A11EEDEF8 /* SubtensorStakeRateCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeRateCalculator.swift; sourceTree = "<group>"; };
 		04EF69DFE142600FF2708A13 /* ControllerAccountConfirmationViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationViewController.swift; sourceTree = "<group>"; };
 		051CE89F0ABBE5EF58FC3566 /* NetworksListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListPresenter.swift; sourceTree = "<group>"; };
 		051D4C5F49FD0A4FAF5BFCC4 /* StakingRewardFiltersViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersViewController.swift; sourceTree = "<group>"; };
@@ -20917,7 +20917,7 @@
 				B7F3345507A64A2FB545F05C /* SubtensorBackendStamp.swift */,
 				DBE9FE3AB00C44A48915A7F1 /* SubtensorBackendStamp+Aggregation.swift */,
 				04E40D70A3E749BBB1D606A9 /* SubtensorRate.swift */,
-				B5571D769D90210A11EEDEF8 /* SubtensorRootRateCalculator.swift */,
+				B5571D769D90210A11EEDEF8 /* SubtensorStakeRateCalculator.swift */,
 				26D6F43C28A7469E904B5497 /* SubtensorValidatorChain.swift */,
 				896439C94AAC468DAE4A64E7 /* SubtensorValidatorDirectory.swift */,
 				41FD7AD05579407EB8235500 /* SubtensorRecommendations.swift */,
@@ -39532,7 +39532,7 @@
 				4E6B4F32FDF847D8BC479040 /* SubtensorBackendStamp.swift in Sources */,
 				57447FF789B845119064A98D /* SubtensorBackendStamp+Aggregation.swift in Sources */,
 				57DBEC7DE8694CE3B77E8D71 /* SubtensorRate.swift in Sources */,
-				7D25479D3AB4A5EBD0E3B5F0 /* SubtensorRootRateCalculator.swift in Sources */,
+				7D25479D3AB4A5EBD0E3B5F0 /* SubtensorStakeRateCalculator.swift in Sources */,
 				675DE37BFC8F46BAA37B3389 /* SubtensorValidatorChain.swift in Sources */,
 				898ACE9B06704F8DAA7C28AE /* SubtensorValidatorDirectory.swift in Sources */,
 				872C31A230DE453B978A43FD /* SubtensorRecommendations.swift in Sources */,
