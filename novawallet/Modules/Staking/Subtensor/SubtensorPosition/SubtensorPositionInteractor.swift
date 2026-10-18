@@ -305,19 +305,10 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             currency: selectedCurrency
         ) ?? .createWithResult(nil)
 
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: historyStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(history):
-                self?.presenter?.didReceive(history: history, for: period)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position price history unavailable: \(error)")
-                self?.presenter?.didFailHistory(for: period)
-            }
+        load(wrapper, in: historyStore, label: "position price history") { [weak self] in
+            self?.presenter?.didReceive(history: $0, for: period)
+        } fail: { [weak self] in
+            self?.presenter?.didFailHistory(for: period)
         }
     }
 }

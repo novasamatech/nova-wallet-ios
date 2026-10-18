@@ -97,23 +97,16 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
         historiesStore.cancel()
 
-        executeCancellable(
-            wrapper: priceHistoryService.createPortfolioHistoryWrapper(
-                accountSubject: accountSubject,
-                period: period,
-                currency: selectedCurrency
-            ),
-            inOperationQueue: operationQueue,
-            backingCallIn: historiesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(histories):
-                self?.presenter?.didReceive(histories: histories)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio chart unavailable: \(error)")
-                self?.presenter?.didFailHistories(for: period)
-            }
+        let wrapper = priceHistoryService.createPortfolioHistoryWrapper(
+            accountSubject: accountSubject,
+            period: period,
+            currency: selectedCurrency
+        )
+
+        load(wrapper, in: historiesStore, label: "portfolio chart") { [weak self] in
+            self?.presenter?.didReceive(histories: $0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailHistories(for: period)
         }
     }
 
