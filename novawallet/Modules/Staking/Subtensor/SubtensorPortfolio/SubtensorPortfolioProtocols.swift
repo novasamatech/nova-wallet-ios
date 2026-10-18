@@ -40,7 +40,7 @@ protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorEarnInfoPresentable {
+protocol SubtensorPortfolioWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorEarnInfoPresentable {
     func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup)
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?)
     func close(from view: SubtensorPortfolioViewProtocol?)
