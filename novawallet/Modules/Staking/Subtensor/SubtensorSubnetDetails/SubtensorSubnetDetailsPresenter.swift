@@ -207,6 +207,10 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
             return
         }
 
+        if case .available = state.history {
+            return
+        }
+
         state.history = .failed
         provideViewModel()
     }
