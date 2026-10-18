@@ -91,7 +91,14 @@ extension SubtensorConfirmPresenter {
     func confirmUnstake(_ unstakeModel: SubtensorUnstakeModel) {
         let group = liveGroup()
         let plan = unstakeModel.plan
-        let liveAmount = group.flatMap { plan.rebuilt(from: $0)?.amount }
+        let rebuilt = group.flatMap { plan.rebuilt(from: $0) }
+
+        guard group == nil || rebuilt != nil else {
+            presentGroupChanged()
+            return
+        }
+
+        let liveAmount = rebuilt?.amount
 
         let positionAlpha: Balance? = if let partial = plan.partial {
             group?.positions.first { $0.hotkey == partial.hotkey }?.stakeAlpha
