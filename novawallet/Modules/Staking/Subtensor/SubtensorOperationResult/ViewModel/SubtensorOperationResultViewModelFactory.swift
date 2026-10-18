@@ -9,7 +9,7 @@ struct SubtensorResultViewContext {
     let remainedTime: TimeInterval
 }
 
-protocol SubtensorResultViewModelFactoryProtocol {
+protocol SubtensorOperationResultViewModelFactoryProtocol {
     func createViewModel(
         for state: SubtensorOperationResultState,
         context: SubtensorResultViewContext,
@@ -189,7 +189,7 @@ extension SubtensorOperationResultViewModelFactory {
     }
 }
 
-extension SubtensorOperationResultViewModelFactory: SubtensorResultViewModelFactoryProtocol {
+extension SubtensorOperationResultViewModelFactory: SubtensorOperationResultViewModelFactoryProtocol {
     func createViewModel(
         for state: SubtensorOperationResultState,
         context: SubtensorResultViewContext,

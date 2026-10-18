@@ -3,11 +3,11 @@ import Foundation_iOS
 
 final class SubtensorValidatorFiltersViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorValidatorFiltersViewLayout
-    let presenter: ValidatorFiltersPresenterProtocol
+    let presenter: SubtensorValidatorFiltersPresenterProtocol
     private let sorts: [SubtensorValidatorSort] = [.apy, .totalStaked, .name]
     private var model: SubtensorValidatorFiltersViewModel?
 
-    init(presenter: ValidatorFiltersPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: SubtensorValidatorFiltersPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager

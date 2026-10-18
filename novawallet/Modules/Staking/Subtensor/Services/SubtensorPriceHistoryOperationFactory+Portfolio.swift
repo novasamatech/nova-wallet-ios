@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-extension SubtensorPriceHistoryService {
+extension SubtensorPriceHistoryOperationFactory {
     func createPortfolioHistoryWrapper(
         accountSubject: AccountAddress,
         period: SubtensorPricePeriod,

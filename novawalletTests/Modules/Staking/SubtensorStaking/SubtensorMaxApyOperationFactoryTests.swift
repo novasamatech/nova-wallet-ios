@@ -3,7 +3,7 @@ import Cuckoo
 import Operation_iOS
 import XCTest
 
-final class SubtensorMaxApyProviderTests: XCTestCase {
+final class SubtensorMaxApyOperationFactoryTests: XCTestCase {
     private let asOf = Date(timeIntervalSince1970: 1_790_000_000)
     private let rootHotkey = Data(repeating: 0x11, count: 32)
     private let chutesLowerPair = Data(repeating: 0x22, count: 32)
@@ -19,7 +19,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             3: [templarPair: "31.2"]
         ]
 
-        let apy = try run(createProvider(yields: yields).createMaxApyWrapper())
+        let apy = try run(createOperationFactory(yields: yields).createMaxApyWrapper())
 
         XCTAssertEqual(apy, [0: rate("0.07"), 64: rate("0.312"), 3: rate("0.312")])
         XCTAssertEqual(apy.values.max(), rate("0.312"))
@@ -32,15 +32,15 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             3: [templarPair: "31.2"]
         ]
 
-        let apy = try run(createProvider(yields: yields, stale: [3], failing: [120]).createMaxApyWrapper())
+        let apy = try run(createOperationFactory(yields: yields, stale: [3], failing: [120]).createMaxApyWrapper())
 
         XCTAssertEqual(apy, [0: rate("0.07")])
     }
 
     func testDerivationFailsOnlyWhenEveryYieldPageFails() throws {
-        let provider = try createProvider(yields: [:], failing: [0, 3, 64, 120])
+        let operationFactory = try createOperationFactory(yields: [:], failing: [0, 3, 64, 120])
 
-        XCTAssertThrowsError(try run(provider.createMaxApyWrapper()))
+        XCTAssertThrowsError(try run(operationFactory.createMaxApyWrapper()))
     }
 
     private func rate(_ value: String) -> Decimal {
@@ -77,14 +77,14 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         return apiFactory
     }
 
-    private func createYieldService(
+    private func createYieldOperationFactory(
         yields: [UInt16: [AccountId: String]],
         stale: Set<UInt16>,
         failing: Set<UInt16>
-    ) -> MockSubtensorYieldServiceProtocol {
-        let yieldService = MockSubtensorYieldServiceProtocol()
+    ) -> MockSubtensorYieldOperationFactoryProtocol {
+        let yieldOperationFactory = MockSubtensorYieldOperationFactoryProtocol()
 
-        stub(yieldService) { stub in
+        stub(yieldOperationFactory) { stub in
             when(stub.createAlphaYieldsWrapper(for: any())).then { netuid in
                 guard !failing.contains(netuid) else {
                     return CompoundOperationWrapper.createWithError(
@@ -106,17 +106,17 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             }
         }
 
-        return yieldService
+        return yieldOperationFactory
     }
 
-    private func createProvider(
+    private func createOperationFactory(
         yields: [UInt16: [AccountId: String]],
         stale: Set<UInt16> = [],
         failing: Set<UInt16> = []
-    ) throws -> SubtensorMaxApyProvider {
-        SubtensorMaxApyProvider(
+    ) throws -> SubtensorMaxApyOperationFactory {
+        SubtensorMaxApyOperationFactory(
             apiOperationFactory: try createApiFactory(),
-            yieldService: createYieldService(yields: yields, stale: stale, failing: failing),
+            yieldOperationFactory: createYieldOperationFactory(yields: yields, stale: stale, failing: failing),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )

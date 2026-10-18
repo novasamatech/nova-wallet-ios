@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorDirectoryService {
+final class SubtensorValidatorDirectoryOperationFactory {
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -20,7 +20,7 @@ final class SubtensorValidatorDirectoryService {
     }
 }
 
-private extension SubtensorValidatorDirectoryService {
+private extension SubtensorValidatorDirectoryOperationFactory {
     func createListedItemWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef,
@@ -74,7 +74,7 @@ private extension SubtensorValidatorDirectoryService {
     }
 }
 
-extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol {
+extension SubtensorValidatorDirectoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol {
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {

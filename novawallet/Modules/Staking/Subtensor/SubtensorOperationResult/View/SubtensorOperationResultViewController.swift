@@ -4,12 +4,12 @@ import Foundation_iOS
 final class SubtensorOperationResultViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorOperationResultViewLayout
 
-    let presenter: SubtensorResultPresenterProtocol
+    let presenter: SubtensorOperationResultPresenterProtocol
 
     private var currentAction: SubtensorResultAction?
     private var currentStatus: SubtensorResultStatus?
 
-    init(presenter: SubtensorResultPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: SubtensorOperationResultPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
 
         super.init(nibName: nil, bundle: nil)
@@ -103,7 +103,7 @@ private extension SubtensorOperationResultViewController {
     }
 }
 
-extension SubtensorOperationResultViewController: SubtensorResultViewProtocol {
+extension SubtensorOperationResultViewController: SubtensorOperationResultViewProtocol {
     func didReceive(viewModel: SubtensorOperationResultViewModel) {
         guard case let .page(pageViewModel) = viewModel else {
             return

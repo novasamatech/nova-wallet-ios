@@ -1,11 +1,11 @@
 import Foundation
 import Operation_iOS
 
-enum SubtensorYieldServiceError: Error {
+enum SubtensorYieldOperationFactoryError: Error {
     case missingYieldPage
 }
 
-final class SubtensorYieldService {
+final class SubtensorYieldOperationFactory {
     static let alphaYieldPageLimit = 3
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
@@ -23,7 +23,7 @@ final class SubtensorYieldService {
     }
 }
 
-extension SubtensorYieldService {
+extension SubtensorYieldOperationFactory {
     static func makeAlphaYields(
         netuid: UInt16,
         pages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>],
@@ -37,7 +37,7 @@ extension SubtensorYieldService {
         }
 
         guard let aggregateStamp = SubtensorBackendStamp.aggregate(pageStamps) else {
-            throw SubtensorYieldServiceError.missingYieldPage
+            throw SubtensorYieldOperationFactoryError.missingYieldPage
         }
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
@@ -79,7 +79,7 @@ extension SubtensorYieldService {
             metadata: result.value.meta.components.stakeYieldWindows,
             isFromExpiredCache: result.isFromExpiredCache
         ) else {
-            throw SubtensorYieldServiceError.missingYieldPage
+            throw SubtensorYieldOperationFactoryError.missingYieldPage
         }
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
@@ -126,7 +126,7 @@ extension SubtensorYieldService {
     }
 }
 
-extension SubtensorYieldService: SubtensorYieldServiceProtocol {
+extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol {
     func createAlphaYieldsWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorAlphaYields> {
         let logger = logger
 

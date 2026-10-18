@@ -47,7 +47,7 @@ private extension SubtensorModalStack {
     }
 
     static func presentsResult(_ presenter: UIViewController?) -> Bool {
-        presentedController(by: presenter) is SubtensorResultViewProtocol
+        presentedController(by: presenter) is SubtensorOperationResultViewProtocol
     }
 
     static func holdsAuthorization(from controller: UIViewController) -> Bool {

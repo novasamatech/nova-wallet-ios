@@ -6,7 +6,7 @@ final class SubtensorPositionPresenter {
 
     let interactor: SubtensorPositionInteractorInputProtocol
     let wireframe: SubtensorPositionWireframeProtocol
-    let viewModelFactory: SubnetPositionViewModelFactoryProtocol
+    let viewModelFactory: SubtensorPositionViewModelFactoryProtocol
     let wallet: MetaAccountModel?
     let account: MetaChainAccountResponse?
     let chainAsset: ChainAsset
@@ -26,7 +26,7 @@ final class SubtensorPositionPresenter {
         chainAsset: ChainAsset,
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
-        viewModelFactory: SubnetPositionViewModelFactoryProtocol,
+        viewModelFactory: SubtensorPositionViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         state = SubtensorPositionState(netuid: group.netuid, group: group)
@@ -229,7 +229,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 }
 
-extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
+extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol {
     func didReceive(group: SubtensorPortfolioGroup?) {
         guard let group else {
             guard !isClosed else {

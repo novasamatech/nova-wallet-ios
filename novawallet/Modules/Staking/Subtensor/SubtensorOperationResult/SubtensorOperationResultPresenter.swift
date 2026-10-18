@@ -2,12 +2,12 @@ import Foundation
 import Foundation_iOS
 
 final class SubtensorOperationResultPresenter {
-    weak var view: SubtensorResultViewProtocol?
+    weak var view: SubtensorOperationResultViewProtocol?
     weak var delegate: SubtensorOperationResultDelegate?
 
-    let wireframe: SubtensorResultWireframeProtocol
-    let interactor: SubtensorResultInteractorInputProtocol
-    let viewModelFactory: SubtensorResultViewModelFactoryProtocol
+    let wireframe: SubtensorOperationResultWireframeProtocol
+    let interactor: SubtensorOperationResultInteractorInputProtocol
+    let viewModelFactory: SubtensorOperationResultViewModelFactoryProtocol
     let request: SubtensorOperationResultRequest
     let stakingOption: Multistaking.ChainAssetOption
 
@@ -20,9 +20,9 @@ final class SubtensorOperationResultPresenter {
     init(
         request: SubtensorOperationResultRequest,
         stakingOption: Multistaking.ChainAssetOption,
-        interactor: SubtensorResultInteractorInputProtocol,
-        wireframe: SubtensorResultWireframeProtocol,
-        viewModelFactory: SubtensorResultViewModelFactoryProtocol,
+        interactor: SubtensorOperationResultInteractorInputProtocol,
+        wireframe: SubtensorOperationResultWireframeProtocol,
+        viewModelFactory: SubtensorOperationResultViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.request = request
@@ -149,7 +149,7 @@ private extension SubtensorOperationResultPresenter {
     }
 }
 
-extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
+extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterProtocol {
     func setup() {
         progressStartedAt = Date()
         startCountdown()
@@ -214,7 +214,7 @@ extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
     }
 }
 
-extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProtocol {
+extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorOutputProtocol {
     func didReceiveSubmission(result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>) {
         guard state.acceptsSubmissionResult else {
             return

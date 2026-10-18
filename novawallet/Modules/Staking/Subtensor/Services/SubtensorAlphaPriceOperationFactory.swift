@@ -1,30 +1,30 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorAlphaPriceProvider {
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+final class SubtensorAlphaPriceOperationFactory {
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let chainOperationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.catalogueService = catalogueService
+        self.catalogueOperationFactory = catalogueOperationFactory
         self.chainOperationFactory = chainOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
-private extension SubtensorAlphaPriceProvider {
+private extension SubtensorAlphaPriceOperationFactory {
     static func createFillWrapper(
         for netuids: Set<UInt16>,
         catalogueResult: Result<SubtensorSubnetCatalogue, Error>,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         logger: LoggerProtocol
     ) -> CompoundOperationWrapper<SubtensorAlphaPrices> {
@@ -40,7 +40,7 @@ private extension SubtensorAlphaPriceProvider {
             logger.warning("Subnet catalogue unavailable, pricing \(missing.sorted()) from the chain: \(error)")
         }
 
-        let namedCatalogue = catalogue ?? catalogueService.cachedCatalogue().value
+        let namedCatalogue = catalogue ?? catalogueOperationFactory.cachedCatalogue().value
         let chainWrapper = chainOperationFactory.createAlphaPricesWrapper()
 
         let mergeOperation = ClosureOperation<SubtensorAlphaPrices> {
@@ -71,10 +71,10 @@ private extension SubtensorAlphaPriceProvider {
     }
 }
 
-extension SubtensorAlphaPriceProvider: SubtensorAlphaPriceProviderProtocol {
+extension SubtensorAlphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol {
     func createPricesWrapper(for netuids: Set<UInt16>) -> CompoundOperationWrapper<SubtensorAlphaPrices> {
-        let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let catalogueService = catalogueService
+        let catalogueWrapper = catalogueOperationFactory.createCatalogueWrapper()
+        let catalogueOperationFactory = catalogueOperationFactory
         let chainOperationFactory = chainOperationFactory
         let logger = logger
 
@@ -91,7 +91,7 @@ extension SubtensorAlphaPriceProvider: SubtensorAlphaPriceProviderProtocol {
                 return Self.createFillWrapper(
                     for: netuids,
                     catalogueResult: catalogueResult,
-                    catalogueService: catalogueService,
+                    catalogueOperationFactory: catalogueOperationFactory,
                     chainOperationFactory: chainOperationFactory,
                     logger: logger
                 )
@@ -103,7 +103,7 @@ extension SubtensorAlphaPriceProvider: SubtensorAlphaPriceProviderProtocol {
     }
 
     func cachedPrices() -> SubtensorAlphaPrices? {
-        guard case let .fresh(catalogue) = catalogueService.cachedCatalogue() else {
+        guard case let .fresh(catalogue) = catalogueOperationFactory.cachedCatalogue() else {
             return nil
         }
 

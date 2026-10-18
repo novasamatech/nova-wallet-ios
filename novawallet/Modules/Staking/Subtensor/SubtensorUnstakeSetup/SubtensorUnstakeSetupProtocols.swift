@@ -18,13 +18,13 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+protocol SubtensorUnstakeSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadSubnetsInfo(for netuid: UInt16)
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadGroupHotkeys(_ hotkeys: [AccountId], netuid: UInt16)
 }
 
-protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+protocol SubtensorUnstakeSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)

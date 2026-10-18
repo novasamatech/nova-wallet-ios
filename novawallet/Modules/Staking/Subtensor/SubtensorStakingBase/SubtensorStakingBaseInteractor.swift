@@ -11,7 +11,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let operationService: SubtensorStakingOperationServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
@@ -47,7 +47,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         preflightFactory = flowServices.preflightFactory
         tradeQuoteFactory = flowServices.tradeQuoteFactory
         operationService = flowServices.operationService
-        catalogueService = state.earnServices.catalogueService
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         costBasisService = state.earnServices.costBasisService
         rootHoldFactory = state.earnServices.rootHoldFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
@@ -246,11 +246,11 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
     func loadCatalogue() {
         catalogueCallStore.cancel()
 
-        let catalogueService = catalogueService
+        let catalogueOperationFactory = catalogueOperationFactory
 
         load(
-            catalogueService.createCatalogueWrapper(),
-            cached: { catalogueService.cachedCatalogue().value },
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
             in: catalogueCallStore,
             label: "catalogue",
             deliver: { [weak self] in

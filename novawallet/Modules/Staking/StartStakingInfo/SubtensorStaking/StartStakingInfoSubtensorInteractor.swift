@@ -13,7 +13,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     }
 
     let state: SubtensorStakingSharedStateProtocol
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
@@ -23,7 +23,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
     init(
         state: SubtensorStakingSharedStateProtocol,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
+        maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -36,7 +36,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         logger: LoggerProtocol
     ) {
         self.state = state
-        self.maxApyProvider = maxApyProvider
+        self.maxApyOperationFactory = maxApyOperationFactory
         self.eventCenter = eventCenter
         self.logger = logger
 
@@ -77,7 +77,7 @@ private extension StartStakingInfoSubtensorInteractor {
         headlineCallStore.cancel()
 
         executeCancellable(
-            wrapper: maxApyProvider.createMaxApyWrapper(),
+            wrapper: maxApyOperationFactory.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: headlineCallStore,
             runningCallbackIn: .main

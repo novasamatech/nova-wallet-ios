@@ -26,7 +26,7 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod)
 }
 
-protocol SubnetPositionInteractorOutputProtocol: AnyObject {
+protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(group: SubtensorPortfolioGroup?)
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didReceive(price: PriceData?)

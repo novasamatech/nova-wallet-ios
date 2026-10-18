@@ -432,11 +432,11 @@ final class MultistakingSyncService {
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger,
-            maxApyProvider: subtensorProcessServices.createMaxApyProvider(
+            maxApyOperationFactory: subtensorProcessServices.createMaxApyOperationFactory(
                 operationQueue: operationQueue,
                 logger: logger
             ),
-            yieldService: subtensorProcessServices.createYieldService(
+            yieldOperationFactory: subtensorProcessServices.createYieldOperationFactory(
                 operationQueue: operationQueue,
                 logger: logger
             ),

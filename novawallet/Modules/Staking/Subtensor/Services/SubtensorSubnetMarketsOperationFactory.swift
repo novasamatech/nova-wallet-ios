@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetMarketsService {
+final class SubtensorSubnetMarketsOperationFactory {
     static let category = "bittensor-subnets"
 
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
@@ -11,7 +11,7 @@ final class SubtensorSubnetMarketsService {
     }
 }
 
-extension SubtensorSubnetMarketsService: SubtensorSubnetMarketsServiceProtocol {
+extension SubtensorSubnetMarketsOperationFactory: SubtensorSubnetMarketsOperationFactoryProtocol {
     func createMarketsWrapper() -> CompoundOperationWrapper<SubtensorSubnetMarkets> {
         let fetchOperation = coingeckoOperationFactory.fetchMarkets(category: Self.category, currency: .usd)
 
