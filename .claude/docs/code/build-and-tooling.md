@@ -78,13 +78,9 @@ Four configurations, each with an xcconfig in `novawallet/Configs/`:
 | `Staging`     | `F_RELEASE`                                      | Nova Early Access  | `io.novafoundation.novawallet.staging` |
 | `Release`     | `F_RELEASE`                                      | Nova               | `io.novafoundation.novawallet`       |
 
-Each app xcconfig explicitly sets `NOVA_AUTH_HOST_APP_NAMESPACE` to the host app's bundle id
-from this table. The app Info.plist exposes it as `NovaAuthHostAppNamespace`; missing,
-unresolved or invalid values disable auth composition. Debug/Dev share the development App
-Group; Staging/Release share the production App Group, but their different host namespaces
-isolate their current bearer records. Keep this namespace stable for an installed host.
-NovaAuth retains that group's Keychain access group; its store configuration no longer takes
-`containerURL` or requires resolving the App Group filesystem container. Existing App Group
+NovaAuth needs no build setting or Info.plist key: the bearer lives in each app's default
+Keychain access group, so Debug/Dev/Staging/Release records are isolated by bundle id, and the
+store deletes the record an earlier build kept under the App Group. Existing App Group
 entitlements remain for other host features. The NovaAuth privacy manifest no longer declares
 FileTimestamp/C617.1.
 
