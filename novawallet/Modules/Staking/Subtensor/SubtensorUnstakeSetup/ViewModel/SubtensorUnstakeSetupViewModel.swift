@@ -64,6 +64,7 @@ struct SubtensorUnstakeSetupViewModelInput {
     }
 
     var canProceed: Bool {
-        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemainingBlocks == nil
+        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemainingBlocks == nil &&
+            (isRoot || quote?.amountIn == amount)
     }
 }
