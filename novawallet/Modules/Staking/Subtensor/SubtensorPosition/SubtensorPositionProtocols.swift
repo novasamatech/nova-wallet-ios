@@ -35,6 +35,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
+    func didFailValidator(for hotkey: AccountId)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)

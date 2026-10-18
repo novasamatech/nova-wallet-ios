@@ -76,17 +76,6 @@ private extension SubtensorSubnetDetailsInteractor {
         )
     }
 
-    func loadParameters() {
-        parametersCallStore.cancel()
-        load(
-            parametersFactory.createWrapper(for: subnet),
-            in: parametersCallStore,
-            label: "parameters"
-        ) { [weak self] in
-            self?.presenter?.didReceiveParameters($0)
-        }
-    }
-
     func loadYields() {
         load(
             yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
@@ -117,9 +106,22 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         subscribeTaoPrice(currency: currencyManager.selectedCurrency)
         subscribePositions()
 
-        loadParameters()
         loadYields()
         loadSubnetLogos()
+    }
+
+    func loadParameters() {
+        parametersCallStore.cancel()
+
+        load(
+            parametersFactory.createWrapper(for: subnet),
+            in: parametersCallStore,
+            label: "parameters"
+        ) { [weak self] in
+            self?.presenter?.didReceiveParameters($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailParameters()
+        }
     }
 
     func loadHistory(for period: SubtensorPricePeriod) {
@@ -155,7 +157,9 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in
-            self?.presenter?.didReceivePreset($0 ?? nil)
+            self?.presenter?.didReceivePreset($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPreset()
         }
     }
 }

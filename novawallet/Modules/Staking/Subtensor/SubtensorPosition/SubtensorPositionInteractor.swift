@@ -206,7 +206,9 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             in: validatorStore,
             label: "position validator"
         ) { [weak self] in
-            self?.presenter?.didReceive(validator: $0 ?? nil, for: hotkey)
+            self?.presenter?.didReceive(validator: $0, for: hotkey)
+        } fail: { [weak self] in
+            self?.presenter?.didFailValidator(for: hotkey)
         }
     }
 

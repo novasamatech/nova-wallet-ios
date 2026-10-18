@@ -225,6 +225,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
     func retrySync() {
         interactor.refreshPositions()
+        loadValidatorIfNeeded()
     }
 
     func retryHistory() {
@@ -311,6 +312,20 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.validatorHotkey = hotkey
         state.validator = validator
         provideViewModel()
+    }
+
+    func didFailValidator(for hotkey: AccountId) {
+        guard hotkey == validatorRequest?.hotkey else {
+            return
+        }
+
+        validatorRequest = nil
+
+        guard state.validatorHotkey != hotkey else {
+            return
+        }
+
+        didReceive(validator: nil, for: hotkey)
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
