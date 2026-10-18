@@ -7,6 +7,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
     let gate = NSLock()
     var state: NovaAuthInstallationState?
     var storageFailed = false
+    var tokenCache: NovaAuthTokenRecord?
+    var tokenCached = false
 
     private var pendingStateWrite: NovaAuthInstallationState?
     private var invalidationID = UUID()
@@ -21,7 +23,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         self.init(dependencies: NovaAuthDependencies(
             appAttest: NovaAuthDeviceCheckService(),
             identityStore: NovaAuthSettingsIdentityStore(settingsManager: configuration.settingsManager),
-            tokenStore: NovaAuthKeychainTokenStore(configuration: configuration.sharedStore),
+            tokenStore: NovaAuthKeychainTokenStore(),
             clock: clock, random: NovaAuthSystemRandom(),
             http: http,
             ownerQueue: configuration.ownerQueue, bootstrapQueue: configuration.bootstrapQueue,
@@ -209,7 +211,7 @@ private extension NovaAuth {
                 self.pendingStateWrite = nil
             }
             if var replacement = state, replacement.tokenRemovalOwed == true {
-                try dependencies.tokenStore.removeAll()
+                try removeAllTokens()
                 replacement.tokenRemovalOwed = nil
                 try persist(replacement)
             }
@@ -222,9 +224,7 @@ private extension NovaAuth {
 
     func repairCorruptState(origin: NovaAuthOrigin) throws {
         invalidationID = UUID()
-        let record: NovaAuthTokenRecord?
-        do { record = try dependencies.tokenStore.load() } catch { throw NovaAuthError.storageUnavailable }
-        let previous = record.flatMap { record -> UInt64? in
+        let previous = try loadToken().flatMap { record -> UInt64? in
             guard (try? NovaAuthStoredValidation.token(record)) != nil else { return nil }
             return record.context.generation
         } ?? 0

@@ -54,13 +54,4 @@ extension NovaAuth: NovaAuthCredentialAuthority {
             try removeRejectedOrInvalidToken(record)
         }
     }
-
-    func removeRejectedOrInvalidToken(_ record: NovaAuthTokenRecord) throws {
-        do {
-            let removed = try dependencies.tokenStore.remove(ifMatching: record)
-            if !removed, try dependencies.tokenStore.load() == record {
-                try dependencies.tokenStore.removeAll()
-            }
-        } catch { throw NovaAuthError.storageUnavailable }
-    }
 }
