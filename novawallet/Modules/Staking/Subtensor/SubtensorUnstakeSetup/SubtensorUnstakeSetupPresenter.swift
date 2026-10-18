@@ -145,7 +145,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        return plan.subnetOperation(netuid: netuid, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut)
+        return plan.subnetOperation(netuid: netuid, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut, novaFee: nil)
     }
 }
 

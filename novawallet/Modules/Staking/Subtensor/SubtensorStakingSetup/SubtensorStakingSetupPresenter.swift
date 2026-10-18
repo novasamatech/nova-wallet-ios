@@ -231,7 +231,13 @@ extension SubtensorStakingSetupPresenter {
                 return nil
             }
 
-            return .subnetBuy(hotkey: hotkey, netuid: target.netuid, grossTao: amount, limitPrice: limitPrice)
+            return .subnetBuy(
+                hotkey: hotkey,
+                netuid: target.netuid,
+                grossTao: amount,
+                limitPrice: limitPrice,
+                novaFee: nil
+            )
         }
     }
 

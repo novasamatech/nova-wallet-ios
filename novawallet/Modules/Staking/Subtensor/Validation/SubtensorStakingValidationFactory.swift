@@ -96,11 +96,10 @@ final class SubtensorStakingValidationFactory {
     }
 
     private func displayedMinimumStake(requiredStake: Balance, includesNovaFee: Bool) -> Balance {
-        guard includesNovaFee, let grossStake = try? SubtensorNovaFeeCalculator.grossUp(net: requiredStake) else {
-            return requiredStake
-        }
+        let rate = SubtensorNovaFeeRateStore.shared.rate
+        let grossStake = includesNovaFee ? try? SubtensorNovaFeeCalculator.grossUp(net: requiredStake, rate: rate) : nil
 
-        return grossStake
+        return grossStake ?? requiredStake
     }
 
     private func formatRate(

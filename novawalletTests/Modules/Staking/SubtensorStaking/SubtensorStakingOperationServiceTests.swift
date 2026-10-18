@@ -145,6 +145,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
+            configProvider: MockSubtensorConfigProviding(),
             feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary)
         )
 
@@ -172,7 +173,8 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             netuid: 64,
             alpha: 56_200_000_000,
             limitPrice: 73_431_000,
-            quotedTaoOut: 4_145_000_000
+            quotedTaoOut: 4_145_000_000,
+            novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: Data(repeating: 0xBB, count: 32))
         )
         let wrapper = context.service.createSubmitWrapper(for: operation) {}
         let completed = expectation(description: "submission completed")
