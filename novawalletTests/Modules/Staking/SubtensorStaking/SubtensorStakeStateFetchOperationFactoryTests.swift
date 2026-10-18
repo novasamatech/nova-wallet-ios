@@ -103,7 +103,10 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
     private func fetchState(
         using apiFactory: SubtensorApiOperationFactoryProtocol
     ) throws -> Multistaking.SubtensorState {
-        let factory = SubtensorStakeStateFetchOperationFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
+        let factory = SubtensorStakeStateFetchOperationFactory(
+            operationFactory: apiFactory,
+            operationQueue: OperationQueue()
+        )
         let wrapper = factory.createStateWrapper(for: coldkey)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)

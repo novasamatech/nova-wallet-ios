@@ -15,8 +15,10 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         let recommendationOperationFactory = createRecommendationOperationFactory()
 
         let preset = try run(
-            createFactory(existingTake: Decimal(string: "0.09"), recommendationOperationFactory: recommendationOperationFactory)
-                .createPresetWrapper(for: rootRef, existingHotkey: existingHotkey)
+            createFactory(
+                existingTake: Decimal(string: "0.09"),
+                recommendationOperationFactory: recommendationOperationFactory
+            ).createPresetWrapper(for: rootRef, existingHotkey: existingHotkey)
         )
 
         XCTAssertEqual(preset?.hotkey, existingHotkey)
@@ -28,7 +30,9 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         let factory = createFactory(
             existingTake: nil,
             recommendationOperationFactory: createRecommendationOperationFactory(),
-            yieldOperationFactory: createYieldOperationFactory(rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"])
+            yieldOperationFactory: createYieldOperationFactory(
+                rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"]
+            )
         )
 
         let preset = try withExtendedLifetime(factory) {
@@ -196,7 +200,9 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         return apiFactory
     }
 
-    private func createYieldOperationFactory(rates: [AccountId: String]? = nil) -> MockSubtensorYieldOperationFactoryProtocol {
+    private func createYieldOperationFactory(
+        rates: [AccountId: String]? = nil
+    ) -> MockSubtensorYieldOperationFactoryProtocol {
         let yieldOperationFactory = MockSubtensorYieldOperationFactoryProtocol()
         let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
@@ -228,7 +234,8 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         directoryOperationFactory: MockSubtensorValidatorDirectoryOperationFactoryProtocol? = nil
     ) -> SubtensorValidatorPresetOperationFactory {
         SubtensorValidatorPresetOperationFactory(
-            directoryOperationFactory: directoryOperationFactory ?? createDirectoryOperationFactory(existingTake: existingTake),
+            directoryOperationFactory: directoryOperationFactory
+                ?? createDirectoryOperationFactory(existingTake: existingTake),
             recommendationOperationFactory: recommendationOperationFactory,
             yieldOperationFactory: yieldOperationFactory ?? createYieldOperationFactory(),
             operationQueue: OperationQueue(),
