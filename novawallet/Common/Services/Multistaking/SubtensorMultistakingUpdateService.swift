@@ -11,7 +11,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
-    let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let maxApyProvider: SubtensorMaxApyProviderProtocol
     let rootYieldService: SubtensorYieldServiceProtocol
     let cataloguePricing: SubtensorCataloguePricingTracker
@@ -28,7 +27,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         stakeStateFetchFactory: stakeStateFetchFactory,
         connection: connection,
         runtimeService: runtimeService,
-        hotkeysCache: (cacheRepository, chainAsset.chain.chainId),
         chainAssetId: chainAsset.chainAssetId,
         mutex: mutex,
         operationQueue: operationQueue,
@@ -53,7 +51,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -70,7 +67,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
         self.maxApyProvider = maxApyProvider

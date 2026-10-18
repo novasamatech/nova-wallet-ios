@@ -420,7 +420,6 @@ final class MultistakingSyncService {
             stakingType: stakingType,
             dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
             stakeStateFetchFactory: stakeStateFetchFactory,
-            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,

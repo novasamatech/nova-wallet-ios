@@ -3,13 +3,10 @@ import SubstrateSdk
 import Operation_iOS
 
 final class SubtensorStakeStateSubscription {
-    typealias HotkeysCache = (repository: AnyDataProviderRepository<ChainStorageItem>, chainId: ChainModel.Id)
-
     let accountId: AccountId
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
-    let hotkeysCache: HotkeysCache?
     let chainAssetId: ChainAssetId?
     let mutex: NSLock
     let operationQueue: OperationQueue
@@ -36,7 +33,6 @@ final class SubtensorStakeStateSubscription {
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        hotkeysCache: HotkeysCache? = nil,
         chainAssetId: ChainAssetId? = nil,
         mutex: NSLock,
         operationQueue: OperationQueue,
@@ -50,7 +46,6 @@ final class SubtensorStakeStateSubscription {
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.connection = connection
         self.runtimeService = runtimeService
-        self.hotkeysCache = hotkeysCache
         self.chainAssetId = chainAssetId
         self.mutex = mutex
         self.operationQueue = operationQueue
@@ -68,38 +63,24 @@ final class SubtensorStakeStateSubscription {
     func subscribe() {
         unsubscribe()
 
-        do {
-            let accountId = accountId
+        let accountId = accountId
 
-            let localKey = try hotkeysCache.map {
-                try LocalStorageKeyFactory().createFromStoragePath(
-                    SubtensorStakingPallet.stakingHotkeysPath,
-                    accountId: accountId,
-                    chainId: $0.chainId
-                )
-            } ?? .empty
+        let request = MapSubscriptionRequest(
+            storagePath: SubtensorStakingPallet.stakingHotkeysPath,
+            localKey: ""
+        ) {
+            BytesCodable(wrappedValue: accountId)
+        }
 
-            let request = MapSubscriptionRequest(
-                storagePath: SubtensorStakingPallet.stakingHotkeysPath,
-                localKey: localKey
-            ) {
-                BytesCodable(wrappedValue: accountId)
-            }
-
-            hotkeysSubscription = CallbackStorageSubscription(
-                request: request,
-                connection: connection,
-                runtimeService: runtimeService,
-                repository: hotkeysCache?.repository,
-                operationQueue: operationQueue,
-                callbackQueue: workingQueue
-            ) { [weak self] result in
-                self?.handleChange(result)
-            }
-        } catch {
-            logger.error("Subscription error: \(error)")
-
-            onFailure(error)
+        hotkeysSubscription = CallbackStorageSubscription(
+            request: request,
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: nil,
+            operationQueue: operationQueue,
+            callbackQueue: workingQueue
+        ) { [weak self] result in
+            self?.handleChange(result)
         }
     }
 
