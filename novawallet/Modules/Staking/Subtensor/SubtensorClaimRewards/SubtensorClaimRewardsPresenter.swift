@@ -148,6 +148,13 @@ private extension SubtensorClaimRewardsPresenter {
         ).contains(hotkey)
 
         var validations: [DataValidating] = [
+            dataValidationFactory.positionsAreFresh(
+                syncFailed: isPositionsSyncFailed || positionsState?.isRootRedeemableStale == true,
+                locale: locale,
+                onRetry: { [weak self] in
+                    self?.interactor.refreshPositions()
+                }
+            ),
             dataValidationFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFee()
             }),
