@@ -303,6 +303,10 @@ extension StakingDashboardInteractor: EventVisitorProtocol {
         resetDashboardItemsSubscription()
         resetBalanceSubscription()
     }
+
+    func processSubtensorMaxApyFetched(event _: SubtensorMaxApyFetched) {
+        syncService?.refreshMaxApy()
+    }
 }
 
 extension StakingDashboardInteractor: SelectedCurrencyDepending {
