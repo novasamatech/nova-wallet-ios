@@ -55,7 +55,9 @@ wallet:
 
 When adding a new staking mechanism you must add: a shared state, an update service registered in
 `MultistakingSyncServiceFactory`, a CoreData mapper (`StakingDashboard*Mapper`), and dashboard view
-model support.
+model support. `CDStakingDashboardItem` columns stay generic: card data only one staking type needs
+goes into its single optional `typeDetails` attribute as an encoded `Codable` value (TAO stores
+`Multistaking.DashboardItemSubtensorDetails` there), never into new type-specific columns.
 
 ## Rewards & APY
 
