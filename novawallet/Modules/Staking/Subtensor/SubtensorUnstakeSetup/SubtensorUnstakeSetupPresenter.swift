@@ -35,6 +35,7 @@ final class SubtensorUnstakeSetupPresenter {
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
     var quoteFlow = SubtensorQuoteFlowModel()
+    var latestQuote: SubtensorTradeQuote?
     var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
@@ -108,13 +109,24 @@ private extension SubtensorUnstakeSetupPresenter {
             return 0
         }
 
-        let price = isRoot
-            ? SubtensorStakingPallet.alphaPriceScale
-            : target?.unstakeLimitPrice(spot: target?.listedPrice, tolerance: slippage)
+        guard !isRoot else {
+            return SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: minStake,
+                price: SubtensorStakingPallet.alphaPriceScale,
+                feeRate: 0
+            )
+        }
 
-        return price.map { SubtensorGroupUnstakeBasis.floorAlpha(minTao: minStake, price: $0) } ?? 0
+        guard let limitPrice = currentLimitPrice() else {
+            return 0
+        }
+
+        return SubtensorGroupUnstakeBasis.floorAlpha(
+            minTao: minStake,
+            price: limitPrice,
+            feeRate: latestQuote?.quote.feeRate ?? 0
+        )
     }
-
 
     func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorStakingOperation? {
         guard !isRoot else {
@@ -224,7 +236,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func currentSpotPrice() -> Balance? {
-        quoteFlow.freshQuote?.quote.spotPrice ?? target?.listedPrice
+        latestQuote?.quote.spotPrice ?? target?.listedPrice
     }
 
     func currentLimitPrice() -> Balance? {
@@ -292,6 +304,20 @@ extension SubtensorUnstakeSetupPresenter {
 
         refreshFee()
         updateQuote()
+    }
+
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
+        let previousPlan = feePlan()
+
+        latestQuote = quote
+
+        if quoteFlow.applyQuote(quote) {
+            tradesUnavailable = false
+            isQuoteFailed = false
+        }
+
+        applyPlanChange(from: previousPlan)
+        provideViewModel()
     }
 
     func provideAmountInputViewModel() {
