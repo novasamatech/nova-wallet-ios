@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorRootHoldFactoryProtocol {
+protocol SubtensorRootHoldOperationFactoryProtocol {
     func createHoldsWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId]
@@ -17,7 +17,7 @@ extension SubtensorRootHold {
     }
 }
 
-final class SubtensorRootHoldFactory {
+final class SubtensorRootHoldOperationFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let operationQueue: OperationQueue
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
@@ -38,7 +38,7 @@ final class SubtensorRootHoldFactory {
     }
 }
 
-private extension SubtensorRootHoldFactory {
+private extension SubtensorRootHoldOperationFactory {
     typealias UInt64Value = StringScaleMapper<UInt64>
 
     func createHoldsWrapper(
@@ -83,7 +83,7 @@ private extension SubtensorRootHoldFactory {
     }
 }
 
-extension SubtensorRootHoldFactory: SubtensorRootHoldFactoryProtocol {
+extension SubtensorRootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol {
     func createHoldsWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId]

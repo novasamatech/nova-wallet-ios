@@ -37,7 +37,7 @@ protocol SubtensorOperationResultWireframeProtocol: SubtensorInfoSheetPresentabl
     func presentSigningFailure(_ error: Error, from view: ControllerBackedProtocol?)
 }
 
-protocol SubtensorResultChainFactoryProtocol {
+protocol SubtensorOperationResultChainOperationFactoryProtocol {
     func createBlockTimestampWrapper(at blockHash: BlockHash) -> CompoundOperationWrapper<Date>
     func createRootHoldRemainingBlocksWrapper(
         coldkey: AccountId,

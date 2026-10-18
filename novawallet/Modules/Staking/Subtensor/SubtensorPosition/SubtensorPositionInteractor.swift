@@ -12,7 +12,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -57,7 +57,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
         directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
-        rootHoldFactory = state.earnServices.rootHoldFactory
+        rootHoldOperationFactory = state.earnServices.rootHoldOperationFactory
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -281,7 +281,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         }
 
         executeCancellable(
-            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
+            wrapper: rootHoldOperationFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             backingCallIn: holdsStore,
             runningCallbackIn: .main

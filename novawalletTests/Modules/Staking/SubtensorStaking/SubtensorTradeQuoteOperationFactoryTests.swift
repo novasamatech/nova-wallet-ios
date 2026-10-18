@@ -4,7 +4,7 @@ import Cuckoo
 import Operation_iOS
 import XCTest
 
-final class SubtensorTradeQuoteFactoryTests: XCTestCase {
+final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     private let bestBlockHash = "0x1a7d81b7dbe1505dbe063cbecebfc64d0b5a0c39e9bb7a755be17dd9c8fbcd62"
     private let beneficiary = Data(repeating: 0xBB, count: 32)
     private let netuid: UInt16 = 64
@@ -188,7 +188,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     }
 
     func testBuyQuoteWithoutBeneficiaryFailsClosed() {
-        let factory = SubtensorTradeQuoteFactory(
+        let factory = SubtensorTradeQuoteOperationFactory(
             operationFactory: MockSubtensorApiOperationFactoryProtocol(),
             configProvider: MockSubtensorConfigProviding(),
             operationQueue: OperationQueue(),
@@ -202,7 +202,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         }
     }
 
-    private func createFactory(apiFactory: MockSubtensorApiOperationFactoryProtocol) -> SubtensorTradeQuoteFactory {
+    private func createFactory(apiFactory: MockSubtensorApiOperationFactoryProtocol) -> SubtensorTradeQuoteOperationFactory {
         let configProvider = MockSubtensorConfigProviding()
 
         stub(configProvider) { stub in
@@ -210,7 +210,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
                 .thenReturn(CompoundOperationWrapper.createWithResult(SubtensorNovaFeeConstants.fallbackRate))
         }
 
-        return SubtensorTradeQuoteFactory(
+        return SubtensorTradeQuoteOperationFactory(
             operationFactory: apiFactory,
             configProvider: configProvider,
             operationQueue: OperationQueue(),

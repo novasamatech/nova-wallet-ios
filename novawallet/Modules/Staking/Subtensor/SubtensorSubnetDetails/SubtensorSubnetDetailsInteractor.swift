@@ -9,7 +9,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     let chainAsset: ChainAsset
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol
-    let presetFactory: SubtensorValidatorPresetFactoryProtocol
+    let presetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
@@ -40,7 +40,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
         chainAsset = state.stakingOption.chainAsset
         priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
         self.parametersOperationFactory = parametersOperationFactory
-        presetFactory = state.earnServices.validatorPresetFactory
+        presetOperationFactory = state.earnServices.validatorPresetOperationFactory
         yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         earnSettings = state.earnServices.earnSettings
@@ -162,7 +162,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
         presetCallStore.cancel()
 
         load(
-            presetFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            presetOperationFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in

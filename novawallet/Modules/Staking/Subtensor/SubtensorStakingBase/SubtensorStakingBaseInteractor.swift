@@ -8,12 +8,12 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let chainAsset: ChainAsset
     let selectedAccount: ChainAccountResponse
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
-    let preflightFactory: SubtensorPreflightFactoryProtocol
-    let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
+    let preflightOperationFactory: SubtensorPreflightOperationFactoryProtocol
+    let tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactoryProtocol
     let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -44,12 +44,12 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         chainAsset = state.stakingOption.chainAsset
         selectedAccount = flowServices.account.chainAccount
         positionsSyncService = flowServices.positionsSyncService
-        preflightFactory = flowServices.preflightFactory
-        tradeQuoteFactory = flowServices.tradeQuoteFactory
+        preflightOperationFactory = flowServices.preflightOperationFactory
+        tradeQuoteOperationFactory = flowServices.tradeQuoteOperationFactory
         submissionOperationFactory = flowServices.submissionOperationFactory
         catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         costBasisService = state.earnServices.costBasisService
-        rootHoldFactory = state.earnServices.rootHoldFactory
+        rootHoldOperationFactory = state.earnServices.rootHoldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
@@ -162,7 +162,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16) {
         preflightCallStore.cancel()
 
-        let wrapper = preflightFactory.createPreflightWrapper(
+        let wrapper = preflightOperationFactory.createPreflightWrapper(
             for: selectedAccount.accountId,
             hotkey: hotkey,
             netuid: netuid
@@ -191,7 +191,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
             quoteCallStore.cancel()
 
-            let wrapper = tradeQuoteFactory.createTradeQuoteWrapper(for: request)
+            let wrapper = tradeQuoteOperationFactory.createTradeQuoteWrapper(for: request)
 
             executeCancellable(
                 wrapper: wrapper,
@@ -216,7 +216,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         validatingQuoteCallStore.cancel()
 
         executeCancellable(
-            wrapper: tradeQuoteFactory.createTradeQuoteWrapper(for: request),
+            wrapper: tradeQuoteOperationFactory.createTradeQuoteWrapper(for: request),
             inOperationQueue: operationQueue,
             backingCallIn: validatingQuoteCallStore,
             runningCallbackIn: .main,
@@ -289,7 +289,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         rootHoldsHotkeys = hotkeys
 
         executeCancellable(
-            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
+            wrapper: rootHoldOperationFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             backingCallIn: holdsCallStore,
             runningCallbackIn: .main

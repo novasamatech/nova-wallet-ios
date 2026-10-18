@@ -2,11 +2,11 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-final class SubtensorResultChainFactory {
+final class SubtensorOperationResultChainOperationFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
     let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
 
@@ -14,20 +14,20 @@ final class SubtensorResultChainFactory {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        rootHoldFactory: SubtensorRootHoldFactoryProtocol,
+        rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol,
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol
     ) {
         self.chain = chain
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.rootHoldFactory = rootHoldFactory
+        self.rootHoldOperationFactory = rootHoldOperationFactory
         self.blockNumberOperationFactory = blockNumberOperationFactory
         self.storageRequestFactory = storageRequestFactory
     }
 }
 
-extension SubtensorResultChainFactory: SubtensorResultChainFactoryProtocol {
+extension SubtensorOperationResultChainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol {
     func createBlockTimestampWrapper(at blockHash: BlockHash) -> CompoundOperationWrapper<Date> {
         let blockHashData: Data
 
@@ -71,7 +71,7 @@ extension SubtensorResultChainFactory: SubtensorResultChainFactoryProtocol {
         coldkey: AccountId,
         hotkeys: [AccountId]
     ) -> CompoundOperationWrapper<UInt64> {
-        let holdsWrapper = rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys)
+        let holdsWrapper = rootHoldOperationFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys)
         let blockNumberWrapper = blockNumberOperationFactory.createWrapper(for: chain.chainId)
 
         let mapOperation = ClosureOperation<UInt64> {

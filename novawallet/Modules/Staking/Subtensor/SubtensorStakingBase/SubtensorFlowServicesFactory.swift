@@ -6,8 +6,8 @@ struct SubtensorFlowServices {
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
-    let preflightFactory: SubtensorPreflightFactoryProtocol
-    let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
+    let preflightOperationFactory: SubtensorPreflightOperationFactoryProtocol
+    let tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
@@ -68,8 +68,8 @@ enum SubtensorFlowServicesFactory {
             positionsSyncService: positionsSyncService,
             runtimeProvider: runtimeProvider,
             submissionOperationFactory: submissionOperationFactory,
-            preflightFactory: createPreflightFactory(for: state, operationQueue: operationQueue),
-            tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
+            preflightOperationFactory: createPreflightOperationFactory(for: state, operationQueue: operationQueue),
+            tradeQuoteOperationFactory: state.earnServices.tradeQuoteOperationFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockNumberSubscription: observesBlocks ? createBlockSubscription(
@@ -164,13 +164,13 @@ private extension SubtensorFlowServicesFactory {
         )
     }
 
-    static func createPreflightFactory(
+    static func createPreflightOperationFactory(
         for state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue
-    ) -> SubtensorPreflightFactoryProtocol {
+    ) -> SubtensorPreflightOperationFactoryProtocol {
         let chain = state.stakingOption.chainAsset.chain
 
-        return SubtensorPreflightFactory(
+        return SubtensorPreflightOperationFactory(
             runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
                 chainId: chain.chainId,
                 chainRegistry: state.chainRegistry

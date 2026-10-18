@@ -59,7 +59,7 @@ extension SubtensorStakeStateSourceFactory: SubtensorStakeStateSourceFactoryProt
         let source = SubtensorStakeStateSource(
             accountId: accountId,
             chainAssetId: chainAsset.chainAssetId,
-            stakeStateFetchFactory: SubtensorStakeStateFetchFactory(
+            stakeStateFetchOperationFactory: SubtensorStakeStateFetchOperationFactory(
                 operationFactory: apiOperationFactory,
                 operationQueue: operationQueue
             ),

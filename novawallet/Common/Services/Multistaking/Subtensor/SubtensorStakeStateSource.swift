@@ -11,7 +11,7 @@ protocol SubtensorStakeStateHandler: AnyObject {
 final class SubtensorStakeStateSource {
     let accountId: AccountId
     let chainAssetId: ChainAssetId
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let stakeStateFetchOperationFactory: SubtensorStakeStateFetchOperationFactoryProtocol
     let runtimeConnectionStore: RuntimeConnectionStoring
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
@@ -34,7 +34,7 @@ final class SubtensorStakeStateSource {
     init(
         accountId: AccountId,
         chainAssetId: ChainAssetId,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
+        stakeStateFetchOperationFactory: SubtensorStakeStateFetchOperationFactoryProtocol,
         runtimeConnectionStore: RuntimeConnectionStoring,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
@@ -43,7 +43,7 @@ final class SubtensorStakeStateSource {
     ) {
         self.accountId = accountId
         self.chainAssetId = chainAssetId
-        self.stakeStateFetchFactory = stakeStateFetchFactory
+        self.stakeStateFetchOperationFactory = stakeStateFetchOperationFactory
         self.runtimeConnectionStore = runtimeConnectionStore
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -181,7 +181,7 @@ private extension SubtensorStakeStateSource {
         fetchTriggerBlockHash = blockHash
 
         executeCancellable(
-            wrapper: stakeStateFetchFactory.createStateWrapper(for: accountId),
+            wrapper: stakeStateFetchOperationFactory.createStateWrapper(for: accountId),
             inOperationQueue: operationQueue,
             backingCallIn: fetchCallStore,
             runningCallbackIn: workingQueue,

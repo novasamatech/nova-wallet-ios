@@ -13,7 +13,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
-    let presetFactory: SubtensorValidatorPresetFactoryProtocol
+    let presetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
@@ -33,7 +33,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         logger: LoggerProtocol
     ) {
-        presetFactory = state.earnServices.validatorPresetFactory
+        presetOperationFactory = state.earnServices.validatorPresetOperationFactory
         yieldOperationFactory = state.earnServices.yieldOperationFactory
         recommendationOperationFactory = state.earnServices.recommendationOperationFactory
         maxApyOperationFactory = state.earnServices.maxApyOperationFactory
@@ -164,13 +164,13 @@ extension SubtensorStakingSetupInteractor: SubtensorStakingSetupInteractorInputP
     }
 
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
-        let wrapper = presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey)
+        let wrapper = presetOperationFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey)
 
         provideValidator(using: wrapper, subnet: subnet)
     }
 
     func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
-        let wrapper = presetFactory.createLockedWrapper(for: hotkey, subnet: subnet)
+        let wrapper = presetOperationFactory.createLockedWrapper(for: hotkey, subnet: subnet)
 
         provideValidator(using: wrapper, subnet: subnet)
     }

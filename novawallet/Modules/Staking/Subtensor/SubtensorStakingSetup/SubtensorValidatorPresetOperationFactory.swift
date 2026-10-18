@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorValidatorPresetFactoryProtocol {
+protocol SubtensorValidatorPresetOperationFactoryProtocol {
     func createPresetWrapper(
         for subnet: SubtensorSubnetRef,
         existingHotkey: AccountId?
@@ -18,7 +18,7 @@ protocol SubtensorValidatorPresetFactoryProtocol {
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
 }
 
-final class SubtensorValidatorPresetFactory {
+final class SubtensorValidatorPresetOperationFactory {
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
@@ -40,7 +40,7 @@ final class SubtensorValidatorPresetFactory {
     }
 }
 
-private extension SubtensorValidatorPresetFactory {
+private extension SubtensorValidatorPresetOperationFactory {
     static func highestYield(
         among validators: [SubtensorRecommendedValidator],
         yields: SubtensorAlphaYields?
@@ -183,7 +183,7 @@ private extension SubtensorValidatorPresetFactory {
     }
 }
 
-extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtocol {
+extension SubtensorValidatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol {
     func createPresetWrapper(
         for subnet: SubtensorSubnetRef,
         existingHotkey: AccountId?

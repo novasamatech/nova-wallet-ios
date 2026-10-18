@@ -52,11 +52,11 @@ private extension SubtensorOperationResultViewFactory {
     ) -> SubtensorOperationResultInteractor {
         let operationQueue = services.operationQueue
 
-        let chainFactory = SubtensorResultChainFactory(
+        let chainOperationFactory = SubtensorOperationResultChainOperationFactory(
             chain: state.stakingOption.chainAsset.chain,
             connection: connection,
             runtimeProvider: services.runtimeProvider,
-            rootHoldFactory: state.earnServices.rootHoldFactory,
+            rootHoldOperationFactory: state.earnServices.rootHoldOperationFactory,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: state.chainRegistry,
                 operationQueue: operationQueue
@@ -72,7 +72,7 @@ private extension SubtensorOperationResultViewFactory {
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
             submissionOperationFactory: services.submissionOperationFactory,
-            chainFactory: chainFactory,
+            chainOperationFactory: chainOperationFactory,
             catalogueOperationFactory: state.earnServices.catalogueOperationFactory,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
             osMediator: OperatingSystemMediator(),

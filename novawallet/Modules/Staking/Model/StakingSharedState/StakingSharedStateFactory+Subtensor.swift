@@ -105,20 +105,20 @@ extension StakingSharedStateFactory {
             priceHistoryOperationFactory: createSubtensorPriceHistoryOperationFactory(
                 for: stakingOption, runtimeConnectionStore: runtimeConnectionStore, flowState: flowState
             ),
-            tradeQuoteFactory: SubtensorTradeQuoteFactory(
+            tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactory(
                 operationFactory: apiOperationFactory,
                 configProvider: processServices.subnetLogosProvider,
                 operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
-            rootHoldFactory: SubtensorRootHoldFactory(
+            rootHoldOperationFactory: SubtensorRootHoldOperationFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
-            groupHotkeyFactory: SubtensorGroupHotkeyFactory(
+            groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
             ),
-            validatorPresetFactory: SubtensorValidatorPresetFactory(
+            validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactory(
                 directoryOperationFactory: validatorDirectoryOperationFactory,
                 recommendationOperationFactory: recommendationOperationFactory,
                 yieldOperationFactory: yieldOperationFactory,

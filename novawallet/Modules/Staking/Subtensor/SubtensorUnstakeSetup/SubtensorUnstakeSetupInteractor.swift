@@ -14,8 +14,8 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     }
 
     let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
-    let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
+    let validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
+    let groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
@@ -27,8 +27,8 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         logger: LoggerProtocol
     ) {
         subnetsOperationFactory = state.subnetsOperationFactory
-        validatorFactory = state.earnServices.validatorPresetFactory
-        groupHotkeyFactory = state.earnServices.groupHotkeyFactory
+        validatorPresetOperationFactory = state.earnServices.validatorPresetOperationFactory
+        groupHotkeyOperationFactory = state.earnServices.groupHotkeyOperationFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
@@ -63,7 +63,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputP
         validatorCallStore.cancel()
 
         executeCancellable(
-            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            wrapper: validatorPresetOperationFactory.createLockedWrapper(for: hotkey, subnet: subnet),
             inOperationQueue: operationQueue,
             backingCallIn: validatorCallStore,
             runningCallbackIn: .main
@@ -82,7 +82,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputP
         groupHotkeysCallStore.cancel()
 
         executeCancellable(
-            wrapper: groupHotkeyFactory.createInfoWrapper(
+            wrapper: groupHotkeyOperationFactory.createInfoWrapper(
                 coldkey: selectedAccount.accountId,
                 hotkeys: hotkeys,
                 netuid: netuid

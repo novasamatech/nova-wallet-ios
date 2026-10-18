@@ -12,10 +12,10 @@ struct SubtensorEarnServices {
     let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let validatorDirectoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
-    let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
-    let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
-    let validatorPresetFactory: SubtensorValidatorPresetFactoryProtocol
+    let tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactoryProtocol
+    let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
+    let groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol
+    let validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
 }
 

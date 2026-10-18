@@ -1,13 +1,13 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorStakeStateFetchFactoryProtocol {
+protocol SubtensorStakeStateFetchOperationFactoryProtocol {
     func createStateWrapper(
         for coldkey: AccountId
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState>
 }
 
-final class SubtensorStakeStateFetchFactory {
+final class SubtensorStakeStateFetchOperationFactory {
     let operationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -138,7 +138,7 @@ final class SubtensorStakeStateFetchFactory {
     }
 }
 
-extension SubtensorStakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol {
+extension SubtensorStakeStateFetchOperationFactory: SubtensorStakeStateFetchOperationFactoryProtocol {
     func createStateWrapper(
         for coldkey: AccountId
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {

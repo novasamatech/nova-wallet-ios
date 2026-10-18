@@ -3,7 +3,7 @@ import Cuckoo
 import Operation_iOS
 import XCTest
 
-final class SubtensorValidatorPresetFactoryTests: XCTestCase {
+final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
     private let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
     private let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
     private let existingHotkey = Data(repeating: 0x22, count: 32)
@@ -226,8 +226,8 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol,
         yieldOperationFactory: MockSubtensorYieldOperationFactoryProtocol? = nil,
         directoryOperationFactory: MockSubtensorValidatorDirectoryOperationFactoryProtocol? = nil
-    ) -> SubtensorValidatorPresetFactory {
-        SubtensorValidatorPresetFactory(
+    ) -> SubtensorValidatorPresetOperationFactory {
+        SubtensorValidatorPresetOperationFactory(
             directoryOperationFactory: directoryOperationFactory ?? createDirectoryOperationFactory(existingTake: existingTake),
             recommendationOperationFactory: recommendationOperationFactory,
             yieldOperationFactory: yieldOperationFactory ?? createYieldOperationFactory(),

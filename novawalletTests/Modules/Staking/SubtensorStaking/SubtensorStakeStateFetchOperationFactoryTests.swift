@@ -4,7 +4,7 @@ import BigInt
 import Operation_iOS
 import Cuckoo
 
-final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
+final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
     let coldkey = Data(repeating: 1, count: 32)
     let hotkey = Data(repeating: 2, count: 32)
     let bestBlockHash = "0x1122334455667788112233445566778811223344556677881122334455667788"
@@ -103,7 +103,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
     private func fetchState(
         using apiFactory: SubtensorApiOperationFactoryProtocol
     ) throws -> Multistaking.SubtensorStakingState {
-        let factory = SubtensorStakeStateFetchFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
+        let factory = SubtensorStakeStateFetchOperationFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
         let wrapper = factory.createStateWrapper(for: coldkey)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)

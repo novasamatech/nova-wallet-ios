@@ -23,7 +23,7 @@ extension SubtensorStakingPreflight {
     }
 }
 
-protocol SubtensorPreflightFactoryProtocol {
+protocol SubtensorPreflightOperationFactoryProtocol {
     func createPreflightWrapper(
         for coldkey: AccountId,
         hotkey: AccountId,
@@ -31,7 +31,7 @@ protocol SubtensorPreflightFactoryProtocol {
     ) -> CompoundOperationWrapper<SubtensorStakingPreflight>
 }
 
-final class SubtensorPreflightFactory {
+final class SubtensorPreflightOperationFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -51,7 +51,7 @@ final class SubtensorPreflightFactory {
     }
 }
 
-private extension SubtensorPreflightFactory {
+private extension SubtensorPreflightOperationFactory {
     struct StorageReads {
         let owner: CompoundOperationWrapper<[StorageResponse<BytesCodable>]>
         let networksAdded: CompoundOperationWrapper<[StorageResponse<Bool>]>
@@ -198,7 +198,7 @@ private extension SubtensorPreflightFactory {
     }
 }
 
-extension SubtensorPreflightFactory: SubtensorPreflightFactoryProtocol {
+extension SubtensorPreflightOperationFactory: SubtensorPreflightOperationFactoryProtocol {
     func createPreflightWrapper(
         for coldkey: AccountId,
         hotkey: AccountId,

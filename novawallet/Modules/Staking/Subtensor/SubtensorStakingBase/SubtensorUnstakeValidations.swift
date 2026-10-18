@@ -153,7 +153,7 @@ private extension SubtensorUnstakeValidatingDep {
         guard
             let latestQuote = quoteContext?.latestQuote,
             let signingLimit = quoteContext?.signingLimit,
-            let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+            let minimumTaoOut = try? SubtensorTradeQuoteOperationFactory.sellSwapMinimumOut(
                 alpha: requestedAlpha,
                 feeRate: latestQuote.quote.feeRate,
                 limitPrice: signingLimit

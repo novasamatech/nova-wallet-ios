@@ -2,7 +2,7 @@ import BigInt
 import Foundation
 import Operation_iOS
 
-final class SubtensorTradeQuoteFactory {
+final class SubtensorTradeQuoteOperationFactory {
     let operationFactory: SubtensorApiOperationFactoryProtocol
     let configProvider: SubtensorConfigProviding
     let operationQueue: OperationQueue
@@ -21,7 +21,7 @@ final class SubtensorTradeQuoteFactory {
     }
 }
 
-extension SubtensorTradeQuoteFactory {
+extension SubtensorTradeQuoteOperationFactory {
     static func sellSwapMinimumOut(alpha: Balance, feeRate: UInt16, limitPrice: Balance) throws -> Balance {
         try SubtensorNovaFeeCalculator.minimumTaoOut(
             alpha: netOfPoolFee(alpha, feeRate: feeRate),
@@ -30,7 +30,7 @@ extension SubtensorTradeQuoteFactory {
     }
 }
 
-private extension SubtensorTradeQuoteFactory {
+private extension SubtensorTradeQuoteOperationFactory {
     static func ensureSubnet(_ netuid: UInt16) throws {
         guard netuid != SubtensorStakingPallet.rootNetuid else {
             throw SubtensorStakingOperationError.limitOnRootOrder
@@ -165,7 +165,7 @@ private extension SubtensorTradeQuoteFactory {
     }
 }
 
-private extension SubtensorTradeQuoteFactory {
+private extension SubtensorTradeQuoteOperationFactory {
     func createBuyQuoteWrapper(
         netuid: UInt16,
         grossTao: Balance,
@@ -256,7 +256,7 @@ private extension SubtensorTradeQuoteFactory {
     }
 }
 
-extension SubtensorTradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol {
+extension SubtensorTradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactoryProtocol {
     func createTradeQuoteWrapper(
         for request: SubtensorTradeQuoteRequest
     ) -> CompoundOperationWrapper<SubtensorTradeQuote> {

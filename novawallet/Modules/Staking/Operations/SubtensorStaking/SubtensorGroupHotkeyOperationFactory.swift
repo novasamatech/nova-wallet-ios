@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorGroupHotkeyFactoryProtocol {
+protocol SubtensorGroupHotkeyOperationFactoryProtocol {
     func createInfoWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId],
@@ -10,7 +10,7 @@ protocol SubtensorGroupHotkeyFactoryProtocol {
     ) -> CompoundOperationWrapper<[AccountId: SubtensorGroupHotkeyInfo]>
 }
 
-final class SubtensorGroupHotkeyFactory {
+final class SubtensorGroupHotkeyOperationFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let operationQueue: OperationQueue
 
@@ -45,7 +45,7 @@ private struct SubtensorCollateralKey: NMapKeyStorageKeyProtocol {
     }
 }
 
-extension SubtensorGroupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol {
+extension SubtensorGroupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol {
     func createInfoWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId],

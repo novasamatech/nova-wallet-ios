@@ -119,9 +119,9 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
 
     private func createService() throws -> (
         SubtensorStakingPositionsSyncService,
-        MockSubtensorStakeStateFetchFactoryProtocol
+        MockSubtensorStakeStateFetchOperationFactoryProtocol
     ) {
-        let fetchFactory = MockSubtensorStakeStateFetchFactoryProtocol()
+        let fetchFactory = MockSubtensorStakeStateFetchOperationFactoryProtocol()
         let codingFactory = try RuntimeCodingServiceStub.createBittensorCodingFactory()
         let runtimeProvider = MockRuntimeProviderProtocol()
 
@@ -132,7 +132,7 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
         let source = SubtensorStakeStateSource(
             accountId: coldkey,
             chainAssetId: ChainAssetId(chainId: "subtensor", assetId: 0),
-            stakeStateFetchFactory: fetchFactory,
+            stakeStateFetchOperationFactory: fetchFactory,
             runtimeConnectionStore: StaticRuntimeConnectionStore(
                 connection: TestJSONRPCEngine(),
                 runtimeProvider: runtimeProvider
@@ -154,7 +154,7 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
     }
 
     private func stubFetch(
-        _ fetchFactory: MockSubtensorStakeStateFetchFactoryProtocol,
+        _ fetchFactory: MockSubtensorStakeStateFetchOperationFactoryProtocol,
         result: Result<Multistaking.SubtensorStakingState, Error>
     ) {
         stub(fetchFactory) { stub in

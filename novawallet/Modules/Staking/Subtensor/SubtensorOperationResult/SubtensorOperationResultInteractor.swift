@@ -9,7 +9,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     let coldkey: AccountId
     let loadsSubnetData: Bool
     let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
-    let chainFactory: SubtensorResultChainFactoryProtocol
+    let chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let osMediator: OperatingSystemMediating
@@ -26,7 +26,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         coldkey: AccountId,
         loadsSubnetData: Bool,
         submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol,
-        chainFactory: SubtensorResultChainFactoryProtocol,
+        chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol,
         catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         osMediator: OperatingSystemMediating,
@@ -38,7 +38,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
         self.submissionOperationFactory = submissionOperationFactory
-        self.chainFactory = chainFactory
+        self.chainOperationFactory = chainOperationFactory
         self.catalogueOperationFactory = catalogueOperationFactory
         self.subnetLogosProvider = subnetLogosProvider
         self.osMediator = osMediator
@@ -136,7 +136,7 @@ extension SubtensorOperationResultInteractor: SubtensorOperationResultInteractor
 
     func fetchBlockTimestamp(at blockHash: BlockHash) {
         execute(
-            wrapper: chainFactory.createBlockTimestampWrapper(at: blockHash),
+            wrapper: chainOperationFactory.createBlockTimestampWrapper(at: blockHash),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -151,7 +151,7 @@ extension SubtensorOperationResultInteractor: SubtensorOperationResultInteractor
 
     func fetchRootHoldRemainingBlocks(for hotkeys: [AccountId]) {
         execute(
-            wrapper: chainFactory.createRootHoldRemainingBlocksWrapper(coldkey: coldkey, hotkeys: hotkeys),
+            wrapper: chainOperationFactory.createRootHoldRemainingBlocksWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in

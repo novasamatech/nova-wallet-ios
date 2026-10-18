@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorTradeQuoteFactoryProtocol: AnyObject {
+protocol SubtensorTradeQuoteOperationFactoryProtocol: AnyObject {
     func createTradeQuoteWrapper(
         for request: SubtensorTradeQuoteRequest
     ) -> CompoundOperationWrapper<SubtensorTradeQuote>
