@@ -15,9 +15,8 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     let state: SubtensorSharedStateProtocol
     let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol
 
-    private let headlineCallStore = CancellableCallStore()
+    private let maxApyCallStore = CancellableCallStore()
     private var boundWalletId: MetaAccountModel.Id?
     private var hasReportedAccountChange = false
 
@@ -32,13 +31,11 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         announcementsRepository: AnnouncementsRepositoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.state = state
         self.maxApyOperationFactory = maxApyOperationFactory
         self.eventCenter = eventCenter
-        self.logger = logger
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -57,7 +54,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     deinit {
         state.throttle()
 
-        headlineCallStore.cancel()
+        maxApyCallStore.cancel()
     }
 
     override func setup() {
@@ -68,27 +65,37 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         boundWalletId = selectedWalletSettings.value?.metaId
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        provideHeadline()
+        provideMaxApy()
+    }
+}
+
+extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
+    func retryMaxApy() {
+        provideMaxApy()
     }
 }
 
 private extension StartStakingInfoSubtensorInteractor {
-    func provideHeadline() {
-        headlineCallStore.cancel()
+    func provideMaxApy() {
+        maxApyCallStore.cancel()
 
         executeCancellable(
             wrapper: maxApyOperationFactory.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: headlineCallStore,
+            backingCallIn: maxApyCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(maxApy):
+            case let .success(rates):
                 self?.eventCenter.notify(with: SubtensorMaxApyFetched())
-                self?.presenter?.didReceive(headlineRate: maxApy.values.max())
+
+                if let maxApy = rates.values.max() {
+                    self?.presenter?.didReceive(maxApy: maxApy)
+                } else {
+                    self?.presenter?.didReceive(error: .maxApy(nil))
+                }
             case let .failure(error):
-                self?.logger.warning("Max APY fetch error: \(error)")
-                self?.presenter?.didReceive(headlineRate: nil)
+                self?.presenter?.didReceive(error: .maxApy(error))
             }
         }
     }

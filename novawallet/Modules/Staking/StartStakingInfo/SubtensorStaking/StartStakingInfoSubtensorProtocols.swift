@@ -1,16 +1,12 @@
 import Foundation
 
-protocol StartStakingInfoSubtensorViewProtocol: StartStakingInfoViewProtocol {
-    func didReceive(subtensorViewModel: StartStakingInfoSubtensorViewModel)
-}
-
-protocol StartStakingInfoSubtensorPresenterProtocol: StartStakingInfoPresenterProtocol {
-    func seeAllOptions()
-    func refreshContent()
+protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
+    func retryMaxApy()
 }
 
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
-    func didReceive(headlineRate: Decimal?)
+    func didReceive(maxApy: Decimal)
+    func didReceive(error: SubtensorStartStakingInfoError)
     func didReceiveAccountChange()
 }
 
@@ -27,4 +23,8 @@ protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframePr
     )
 
     func close(from view: ControllerBackedProtocol?)
+}
+
+enum SubtensorStartStakingInfoError: Error {
+    case maxApy(Error?)
 }
