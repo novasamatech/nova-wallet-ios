@@ -7,6 +7,7 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     var take: Decimal?
     var reportedStake: BigRational?
     let status: SubtensorValidatorChainStatus?
+    var isChainDetailUnavailable = false
 }
 
 struct SubtensorValidatorDirectory: Equatable {

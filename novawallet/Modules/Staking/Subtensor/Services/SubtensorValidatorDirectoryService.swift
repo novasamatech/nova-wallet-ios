@@ -162,7 +162,10 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     } catch {
                         logger.warning("Subtensor validator chain detail unavailable, keeping the listing: \(error)")
 
-                        return listed
+                        var item = listed
+                        item.isChainDetailUnavailable = true
+
+                        return item
                     }
                 }
 
