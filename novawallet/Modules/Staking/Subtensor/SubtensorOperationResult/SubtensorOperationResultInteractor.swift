@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorOperationResultInteractor {
+final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     weak var presenter: SubtensorResultInteractorOutputProtocol?
 
     let operation: SubtensorStakingOperation
@@ -17,6 +17,7 @@ final class SubtensorOperationResultInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private let catalogueStore = CancellableCallStore()
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
@@ -47,6 +48,7 @@ final class SubtensorOperationResultInteractor {
     }
 
     deinit {
+        catalogueStore.cancel()
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
     }
@@ -104,17 +106,15 @@ private extension SubtensorOperationResultInteractor {
 
         let catalogueService = catalogueService
 
-        execute(
-            operation: ClosureOperation { catalogueService.cachedCatalogue().value },
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            if case let .success(catalogue?) = result {
-                self?.presenter?.didReceiveCatalogue(catalogue)
+        load(
+            catalogueService.createCatalogueWrapper(),
+            cached: { catalogueService.cachedCatalogue().value },
+            in: catalogueStore,
+            label: "catalogue for the result",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveCatalogue($0)
             }
-
-            self?.provideCatalogue()
-        }
+        )
 
         execute(
             wrapper: subnetLogosProvider.createLogosWrapper(),
@@ -123,22 +123,6 @@ private extension SubtensorOperationResultInteractor {
         ) { [weak self] result in
             if case let .success(logos) = result {
                 self?.presenter?.didReceiveSubnetLogos(logos)
-            }
-        }
-    }
-
-    func provideCatalogue() {
-        execute(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
-                self?.presenter?.didReceiveCatalogue(nil)
             }
         }
     }
