@@ -9,7 +9,6 @@ final class SubtensorPositionPresenter {
     let viewModelFactory: SubnetPositionViewModelFactoryProtocol
     let account: MetaChainAccountResponse?
     let chainAsset: ChainAsset
-    let pendingRootClaims: SubtensorPendingRootClaimsProtocol
 
     private var state: SubtensorPositionState
     private var target: SubtensorStakeTarget?
@@ -23,7 +22,6 @@ final class SubtensorPositionPresenter {
         group: SubtensorPortfolioGroup,
         account: MetaChainAccountResponse?,
         chainAsset: ChainAsset,
-        pendingRootClaims: SubtensorPendingRootClaimsProtocol,
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
         viewModelFactory: SubnetPositionViewModelFactoryProtocol,
@@ -32,7 +30,6 @@ final class SubtensorPositionPresenter {
         state = SubtensorPositionState(netuid: group.netuid, group: group)
         self.account = account
         self.chainAsset = chainAsset
-        self.pendingRootClaims = pendingRootClaims
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -62,14 +59,6 @@ private extension SubtensorPositionPresenter {
     }
 
     func provideViewModel() {
-        state.pendingClaimHotkeys = account.map { account in
-            pendingRootClaims.pendingHotkeys(
-                for: account.chainAccount.accountId,
-                at: Date(),
-                claimable: state.claimable
-            )
-        } ?? []
-
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
 
@@ -196,7 +185,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
     func selectAction(_ action: SubtensorPositionAction) {
         if action == .claim {
-            provideViewModel()
+            interactor.refreshPendingClaims()
         }
 
         guard let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
@@ -349,6 +338,15 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
         state.isClaimableFailed = isFailed
+        provideViewModel()
+    }
+
+    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
+        guard pendingClaimHotkeys != state.pendingClaimHotkeys else {
+            return
+        }
+
+        state.pendingClaimHotkeys = pendingClaimHotkeys
         provideViewModel()
     }
 

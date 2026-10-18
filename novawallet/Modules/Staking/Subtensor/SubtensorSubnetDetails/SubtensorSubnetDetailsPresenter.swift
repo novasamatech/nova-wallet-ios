@@ -10,7 +10,6 @@ final class SubtensorSubnetDetailsPresenter {
     let interactor: SubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
-    let earnSettings: SubtensorEarnSettingsProtocol
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
@@ -27,7 +26,6 @@ final class SubtensorSubnetDetailsPresenter {
         interactor: SubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
-        earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -36,7 +34,6 @@ final class SubtensorSubnetDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.earnSettings = earnSettings
 
         state = SubtensorSubnetDetailsState(
             validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
@@ -51,17 +48,12 @@ private extension SubtensorSubnetDetailsPresenter {
         input.subnet.ref
     }
 
-    var isFavorite: Bool {
-        earnSettings.favouriteSubnets.contains(subnetRef)
-    }
-
     func provideTitle() {
         view?.didReceive(title: viewModelFactory.createTitle(subnetLogos: subnetLogos, locale: selectedLocale))
     }
 
     func provideViewModel() {
         state.now = Date()
-        state.isFavorite = isFavorite
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
@@ -161,9 +153,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func toggleFavorite() {
-        earnSettings.favouriteSubnets.formSymmetricDifference([subnetRef])
-
-        provideViewModel()
+        interactor.toggleFavorite()
     }
 
     func selectValidator() {
@@ -200,6 +190,11 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 }
 
 extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
+    func didReceive(isFavorite: Bool) {
+        state.isFavorite = isFavorite
+        provideViewModel()
+    }
+
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
         guard period == state.period else {
             return

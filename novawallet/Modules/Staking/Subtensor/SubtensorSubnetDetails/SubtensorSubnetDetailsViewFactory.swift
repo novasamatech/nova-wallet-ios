@@ -32,7 +32,6 @@ enum SubtensorSubnetDetailsViewFactory {
             interactor: interactor,
             wireframe: SubtensorSubnetDetailsWireframe(state: state),
             viewModelFactory: viewModelFactory,
-            earnSettings: state.earnServices.earnSettings,
             localizationManager: LocalizationManager.shared
         )
 

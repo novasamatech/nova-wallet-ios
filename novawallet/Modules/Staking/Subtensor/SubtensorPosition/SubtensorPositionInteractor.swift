@@ -23,6 +23,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     private var failedHoldsHotkeys: [AccountId]?
     private var isBlockFeedDown = false
     private var lastGroup: SubtensorPortfolioGroup?
+    private var claimable: [SubtensorRootClaimPreview]?
     private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -102,6 +103,9 @@ private extension SubtensorPositionInteractor {
                 lastGroup = group
 
                 if isRoot {
+                    claimable = newState.rootClaimPreviews
+                    providePendingClaims()
+
                     presenter?.didReceive(
                         claimable: newState.rootClaimPreviews,
                         isFailed: newState.isRootRedeemableStale
@@ -122,6 +126,7 @@ private extension SubtensorPositionInteractor {
                     self?.isBlockFeedDown = false
 
                     if let blockNumber {
+                        self?.providePendingClaims()
                         self?.presenter?.didReceive(blockNumber: blockNumber)
                         self?.retryFailedRootHolds()
                     }
@@ -156,6 +161,20 @@ private extension SubtensorPositionInteractor {
         ) { [weak self] in
             self?.presenter?.didReceive(yields: $0)
         }
+    }
+
+    func providePendingClaims() {
+        guard isRoot, let coldkey = state.selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        let hotkeys = state.flowState.pendingRootClaims.pendingHotkeys(
+            for: coldkey,
+            at: Date(),
+            claimable: claimable
+        )
+
+        presenter?.didReceive(pendingClaimHotkeys: hotkeys)
     }
 
     func retryFailedRootHolds() {
@@ -194,6 +213,10 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         loadYields()
 
         applicationHandler.delegate = self
+    }
+
+    func refreshPendingClaims() {
+        providePendingClaims()
     }
 
     func refreshPositions() {
@@ -302,6 +325,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
+        providePendingClaims()
 
         if !isRoot {
             loadPrices()

@@ -12,6 +12,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -42,6 +43,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
         presetFactory = state.earnServices.validatorPresetFactory
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
+        earnSettings = state.earnServices.earnSettings
         positionsSyncService = state.positionsSyncService
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -79,6 +81,10 @@ private extension SubtensorSubnetDetailsInteractor {
         )
     }
 
+    func provideFavorite() {
+        presenter?.didReceive(isFavorite: earnSettings.favouriteSubnets.contains(subnet))
+    }
+
     func loadYields() {
         load(
             yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
@@ -106,6 +112,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func setup() {
+        provideFavorite()
         subscribeTaoPrice(currency: selectedCurrency)
         subscribePositions()
 
@@ -152,6 +159,11 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
                 self?.presenter?.didFailHistory(for: period)
             }
         }
+    }
+
+    func toggleFavorite() {
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnet])
+        provideFavorite()
     }
 
     func presetValidator(existingHotkey: AccountId?) {

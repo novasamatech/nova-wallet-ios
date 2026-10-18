@@ -22,10 +22,12 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func loadParameters()
     func loadHistory(for period: SubtensorPricePeriod)
+    func toggleFavorite()
     func presetValidator(existingHotkey: AccountId?)
 }
 
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
+    func didReceive(isFavorite: Bool)
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters)
