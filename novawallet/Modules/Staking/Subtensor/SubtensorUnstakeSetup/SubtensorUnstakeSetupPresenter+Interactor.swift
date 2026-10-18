@@ -5,7 +5,7 @@ private extension SubtensorUnstakeSetupPresenter {
         state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
-    func applyBasisChange(from previousAmount: Balance?) {
+    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
         if group?.primaryHotkey != preflightRequest {
             preflight = nil
             refreshPreflight()
@@ -17,7 +17,7 @@ private extension SubtensorUnstakeSetupPresenter {
             interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
 
-        if case .rate = inputResult, inputAmount() != previousAmount {
+        if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
         }
 
@@ -51,13 +51,13 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
             return
         }
 
-        let previousAmount = inputAmount()
+        let previousPlan = feePlan()
 
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
         loadValidatorIfNeeded()
 
-        if case .rate = inputResult, inputAmount() != previousAmount {
+        if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
         }
 
@@ -96,11 +96,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
-        let previousAmount = inputAmount()
+        let previousPlan = feePlan()
 
         self.holds = holds
 
-        applyAmountChange(from: previousAmount)
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 
@@ -128,13 +128,13 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         let previousBasis = basis
-        let previousAmount = inputAmount()
+        let previousPlan = feePlan()
 
         positionsState = state
         group = findGroup(in: state)
 
         if basis != previousBasis {
-            applyBasisChange(from: previousAmount)
+            applyBasisChange(from: previousPlan)
         }
 
         provideViewModel()
@@ -145,12 +145,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        let previousAmount = inputAmount()
+        let previousPlan = feePlan()
 
         currentBlock = blockNumber
 
         if isRoot {
-            applyAmountChange(from: previousAmount)
+            applyPlanChange(from: previousPlan)
         } else {
             forceQuoteRefresh()
         }
@@ -159,12 +159,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
-        let previousAmount = inputAmount()
+        let previousPlan = feePlan()
 
         self.preflight = preflight
         blockTime = preflight.blockTime
 
-        applyAmountChange(from: previousAmount)
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 

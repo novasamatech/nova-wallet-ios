@@ -115,18 +115,6 @@ private extension SubtensorUnstakeSetupPresenter {
         return price.map { SubtensorGroupUnstakeBasis.floorAlpha(minTao: minStake, price: $0) } ?? 0
     }
 
-    func feePlan() -> SubtensorUnstakePlan? {
-        guard let primary = group?.primaryHotkey else {
-            return nil
-        }
-
-        let amount = inputAmountOrPlaceholder()
-
-        return plan(for: amount) ?? SubtensorUnstakePlan(
-            exits: [],
-            partial: SubtensorUnstakeSlice(hotkey: primary, alpha: amount)
-        )
-    }
 
     func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorStakingOperation? {
         guard !isRoot else {
@@ -208,6 +196,19 @@ extension SubtensorUnstakeSetupPresenter {
         basis?.plan(for: amount, floor: floorAlpha())
     }
 
+    func feePlan() -> SubtensorUnstakePlan? {
+        guard let primary = group?.primaryHotkey else {
+            return nil
+        }
+
+        let amount = inputAmountOrPlaceholder()
+
+        return plan(for: amount) ?? SubtensorUnstakePlan(
+            exits: [],
+            partial: SubtensorUnstakeSlice(hotkey: primary, alpha: amount)
+        )
+    }
+
     func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
         let held = heldHotkeys
 
@@ -278,12 +279,14 @@ extension SubtensorUnstakeSetupPresenter {
         provideViewModel()
     }
 
-    func applyAmountChange(from previousAmount: Balance?) {
-        guard inputAmount() != previousAmount else {
+    func applyPlanChange(from previousPlan: SubtensorUnstakePlan?) {
+        let plan = feePlan()
+
+        guard plan != previousPlan else {
             return
         }
 
-        if case .rate = inputResult {
+        if case .rate = inputResult, plan?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
         }
 
