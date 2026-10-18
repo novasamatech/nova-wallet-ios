@@ -36,7 +36,7 @@ struct SubtensorConfirmQuoteState {
     }
 
     var signingLimit: Balance? {
-        guard let verified, let acknowledged else {
+        guard let verified, verified == latest, let acknowledged else {
             return nil
         }
 
