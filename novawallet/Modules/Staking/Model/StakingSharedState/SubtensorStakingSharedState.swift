@@ -14,6 +14,7 @@ struct SubtensorEarnServices {
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
     let validatorPresetFactory: SubtensorValidatorPresetFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
 }

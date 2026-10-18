@@ -28,7 +28,7 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
         let validity = try performValidation(
             of: .subnetSellGroup(
                 exits: hotkeys,
-                partial: nil,
+                partials: [],
                 netuid: netuid,
                 limitPrice: limitPrice,
                 quotedTaoOut: amount

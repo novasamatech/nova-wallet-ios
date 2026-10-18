@@ -42,7 +42,7 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
     func testSubnetSellAllEncodesFullExitsInHotkeyOrderAndOneFeeTransfer() throws {
         let operation = SubtensorStakingOperation.subnetSellGroup(
             exits: [hotkey, groupHotkey],
-            partial: nil,
+            partials: [],
             netuid: 64,
             limitPrice: 73_431_000,
             quotedTaoOut: 4_145_000_000
@@ -60,7 +60,7 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
     func testSubnetSellGroupEncodesFullExitsThenThePartialRemoveAndOneFeeTransfer() throws {
         let operation = SubtensorStakingOperation.subnetSellGroup(
             exits: [groupHotkey],
-            partial: SubtensorUnstakeSlice(hotkey: hotkey, alpha: 56_200_000_000),
+            partials: [SubtensorUnstakeSlice(hotkey: hotkey, alpha: 56_200_000_000)],
             netuid: 64,
             limitPrice: 73_431_000,
             quotedTaoOut: 4_145_000_000

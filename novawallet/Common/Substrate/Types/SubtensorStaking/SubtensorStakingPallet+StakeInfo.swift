@@ -38,3 +38,9 @@ extension SubtensorStakingPallet {
         }
     }
 }
+
+extension SubtensorStakingPallet {
+    struct MinerCollateralState: Decodable, Equatable {
+        @StringCodable var locked: Balance
+    }
+}

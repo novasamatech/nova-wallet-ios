@@ -6,15 +6,15 @@ extension SubtensorStakingOperation {
         switch self {
         case .rootStake, .rootUnstake, .rootClaim:
             return
-        case let .rootUnstakeGroup(exits, partial):
-            try Self.ensureHotkeyGroup(exits: exits, partial: partial)
+        case let .rootUnstakeGroup(exits, partials):
+            try Self.ensureHotkeyGroup(exits: exits, partials: partials)
         case let .subnetBuy(_, netuid, _, limitPrice):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
         case let .subnetSell(_, netuid, _, limitPrice, quotedTaoOut):
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
-        case let .subnetSellGroup(exits, partial, netuid, limitPrice, quotedTaoOut):
-            try Self.ensureHotkeyGroup(exits: exits, partial: partial)
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, quotedTaoOut):
+            try Self.ensureHotkeyGroup(exits: exits, partials: partials)
             try Self.ensureSubnetLimit(netuid: netuid, limitPrice: limitPrice)
             try Self.ensureQuotedTaoOut(quotedTaoOut)
         }
@@ -53,10 +53,10 @@ extension SubtensorStakingOperation {
 }
 
 private extension SubtensorStakingOperation {
-    static func ensureHotkeyGroup(exits: [AccountId], partial: SubtensorUnstakeSlice?) throws {
-        let hotkeys = exits + (partial.map { [$0.hotkey] } ?? [])
+    static func ensureHotkeyGroup(exits: [AccountId], partials: [SubtensorUnstakeSlice]) throws {
+        let hotkeys = exits + partials.map(\.hotkey)
 
-        guard !exits.isEmpty, Set(hotkeys).count == hotkeys.count else {
+        guard !hotkeys.isEmpty, Set(hotkeys).count == hotkeys.count else {
             throw SubtensorStakingOperationError.invalidHotkeyGroup
         }
     }
@@ -101,8 +101,8 @@ private extension SubtensorStakingOperation {
                         .runtimeCall()
                 )
             ]
-        case let .rootUnstakeGroup(exits, partial):
-            return try Self.createGroupClosures(exits: exits, partial: partial, netuid: rootNetuid, limitPrice: nil)
+        case let .rootUnstakeGroup(exits, partials):
+            return try Self.createGroupClosures(exits: exits, partials: partials, netuid: rootNetuid, limitPrice: nil)
         case let .subnetBuy(hotkey, netuid, grossTao, limitPrice):
             return try [
                 Self.addingClosure(
@@ -127,8 +127,8 @@ private extension SubtensorStakingOperation {
                     ).runtimeCall()
                 )
             ]
-        case let .subnetSellGroup(exits, partial, netuid, limitPrice, _):
-            return try Self.createGroupClosures(exits: exits, partial: partial, netuid: netuid, limitPrice: limitPrice)
+        case let .subnetSellGroup(exits, partials, netuid, limitPrice, _):
+            return try Self.createGroupClosures(exits: exits, partials: partials, netuid: netuid, limitPrice: limitPrice)
         case let .rootClaim(hotkey):
             return [
                 Self.addingClosure(SubtensorStakingPallet.ClaimRootWithHotkeyCall(hotkey: hotkey).runtimeCall())
@@ -138,7 +138,7 @@ private extension SubtensorStakingOperation {
 
     static func createGroupClosures(
         exits: [AccountId],
-        partial: SubtensorUnstakeSlice?,
+        partials: [SubtensorUnstakeSlice],
         netuid: UInt16,
         limitPrice: Balance?
     ) throws -> [ExtrinsicBuilderClosure] {
@@ -149,30 +149,28 @@ private extension SubtensorStakingOperation {
             )
         }
 
-        guard let partial else {
-            return exitClosures
+        let partialClosures: [ExtrinsicBuilderClosure] = try partials.map { partial in
+            if let limitPrice {
+                try addingClosure(
+                    SubtensorStakingPallet.RemoveStakeLimitCall(
+                        hotkey: partial.hotkey,
+                        netuid: netuid,
+                        amountUnstaked: partial.alpha,
+                        limitPrice: limitPrice,
+                        allowPartial: false
+                    ).runtimeCall()
+                )
+            } else {
+                try addingClosure(
+                    SubtensorStakingPallet.RemoveStakeCall(
+                        hotkey: partial.hotkey,
+                        netuid: netuid,
+                        amountUnstaked: partial.alpha
+                    ).runtimeCall()
+                )
+            }
         }
 
-        let partialClosure: ExtrinsicBuilderClosure = if let limitPrice {
-            try addingClosure(
-                SubtensorStakingPallet.RemoveStakeLimitCall(
-                    hotkey: partial.hotkey,
-                    netuid: netuid,
-                    amountUnstaked: partial.alpha,
-                    limitPrice: limitPrice,
-                    allowPartial: false
-                ).runtimeCall()
-            )
-        } else {
-            try addingClosure(
-                SubtensorStakingPallet.RemoveStakeCall(
-                    hotkey: partial.hotkey,
-                    netuid: netuid,
-                    amountUnstaked: partial.alpha
-                ).runtimeCall()
-            )
-        }
-
-        return exitClosures + [partialClosure]
+        return exitClosures + partialClosures
     }
 }

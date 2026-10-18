@@ -12,7 +12,7 @@ enum SubtensorConfirmTapRule {
         guard
             let group = SubtensorPortfolioBuilder.build(state: state).group(netuid: unstakeModel.netuid),
             !group.positions.contains(where: { $0.stakeAlpha == 0 }),
-            Set(group.positions.map(\.hotkey)) == Set(unstakeModel.groupHotkeys) else {
+            Set(group.positions.map(\.hotkey)) == Set(unstakeModel.groupHotkeys.keys) else {
             return nil
         }
 

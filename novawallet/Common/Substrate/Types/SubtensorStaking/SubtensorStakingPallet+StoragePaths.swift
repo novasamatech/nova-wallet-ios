@@ -42,6 +42,10 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "LastColdkeyHotkeyStakeBlock")
     }
 
+    static var minerCollateralPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "MinerCollateral")
+    }
+
     static var feeRatePath: StorageCodingPath {
         StorageCodingPath(moduleName: swapPalletName, itemName: "FeeRate")
     }
