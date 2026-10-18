@@ -74,7 +74,8 @@ other wait ends with a boot discontinuity.
 | Pending token-challenge/issuance `401 unknown_client` before 120 seconds on the same boot | Keep pending state and its persisted probe backoff; fail this operation. |
 | Confirmed absence outside that window or after boot discontinuity | Retire and fail; the next independent demand may replace. Transport/503 alone never prove absence. |
 | Successful pending token challenge | Prove the same key; preserve the original pending window until a bearer is installed. |
-| Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
+| Ordinary token `401 invalid_proof` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
+| Token challenge/issuance `403 binding_not_allowed` or `403 app_not_allowed` | Keep registered UUID/key/counter, save the refusal delay and fail. A user-driven demand obtains a fresh challenge on the same binding at once; a background demand waits for the delay. |
 | Any code-bearing registration 4xx except 409 and 429 (`401 attestation_failed`, `403 app_not_allowed`, `400 invalid_request`, `401 invalid_challenge`, …) | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |

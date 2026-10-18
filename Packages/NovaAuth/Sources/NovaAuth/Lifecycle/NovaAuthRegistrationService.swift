@@ -42,7 +42,14 @@ extension NovaAuth {
     func handleBindingFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
         guard case let NovaAuthError.bootstrap(server) = error else { return }
         guard let identity = state?.identity else { return }
-        guard server.statusCode == 401, server.code == "unknown_client" else { return }
+        switch (server.statusCode, server.code) {
+        case (403, "app_not_allowed"?), (403, "binding_not_allowed"?):
+            return try refuseBinding(flight: flight)
+        case (401, "unknown_client"?):
+            break
+        default:
+            return
+        }
         if case let .registrationPending(pending) = identity.registration {
             let now = try dependencies.clock.now()
             let start = pending.startedAt

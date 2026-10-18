@@ -144,7 +144,8 @@ flowchart TB
   X -- "Later independent demand; short backoff" --> K
   K --> U
   P -- "Inconclusive failure / unknown within 120 s" --> P
-  R -- "401 invalid_proof / 403 binding_not_allowed" --> R
+  R -- "401 invalid_proof" --> R
+  R -- "403 binding_not_allowed: refusal delay saved, key kept" --> R
 ```
 
 Retirement fails the current caller operation, except that a key found invalid at assertion time is
@@ -161,7 +162,8 @@ There is no unknown-response counter. An intermediate token challenge preserves 
 original window until successful bearer installation. A registered binding receiving conclusive
 `401 unknown_client` at either token challenge or issuance retires and fails this flight.
 
-Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
+A token-time `403 binding_not_allowed` additionally saves the refusal delay: background demands
+wait for it while user-driven demands retry at once. Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
 registered UUID/key/counter. Later operations obtain a fresh challenge; no proof is reused and no
 key rotates to bypass policy. Status and code are considered together: `503 invalid_proof` is
 availability failure. Stored retired states wait for later demand replacement and keep the refusal counter; legacy `policyRefused` keeps the client UUID and attests a fresh key.
