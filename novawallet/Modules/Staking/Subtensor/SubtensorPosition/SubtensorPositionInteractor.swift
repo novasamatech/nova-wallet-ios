@@ -302,7 +302,8 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: selectedCurrency
+            currency: selectedCurrency,
+            registrationDate: nil
         ) ?? .createWithResult(nil)
 
         load(wrapper, in: historyStore, label: "position price history") { [weak self] in
