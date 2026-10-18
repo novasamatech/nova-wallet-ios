@@ -20,7 +20,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
     private var rootYields: SubtensorAlphaYields?
-    private var isMaxApyResolved = false
+    private var isSyncCompletionDeferred = false
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
         accountId: accountId,
@@ -80,17 +80,18 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     override func performSyncUp() {
-        isMaxApyResolved = false
-
         seedRootYields()
         cataloguePricing.seed()
 
         eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
 
         stakeStateSubscription.subscribe()
+
+        performMaxApyFetch()
     }
 
     override func stopSyncUp() {
+        isSyncCompletionDeferred = false
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
         cataloguePricing.cancel()
@@ -105,20 +106,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         stopSyncUp()
     }
 
-    func refreshCataloguePricing() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard isActive else {
-            return
-        }
-
-        performCataloguePricingRefresh()
-    }
-
     private func handle(state: Multistaking.SubtensorStakingState) {
         persistState(state)
         performMaxApyFetch()
@@ -127,7 +114,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performMaxApyFetch() {
-        guard !isMaxApyResolved, !maxApyCallStore.hasCall else {
+        guard !maxApyCallStore.hasCall else {
             return
         }
 
@@ -140,11 +127,34 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         ) { [weak self] result in
             switch result {
             case let .success(maxApy):
-                self?.isMaxApyResolved = true
                 self?.updateMaxApy(.replace(maxApy.values.max()))
             case let .failure(error):
                 self?.logger.warning("Max APY fetch error: \(error)")
+                self?.completeDeferredSync()
             }
+        }
+    }
+
+    private func completeSync(_ error: Error?, for state: Multistaking.SubtensorStakingState) {
+        isSyncCompletionDeferred = error == nil && !state.hasActiveStaking && maxApyUpdate == .keep &&
+            maxApyCallStore.hasCall
+
+        guard !isSyncCompletionDeferred else {
+            return
+        }
+
+        completeImmediate(error)
+    }
+
+    private func completeDeferredSync() {
+        guard isSyncCompletionDeferred else {
+            return
+        }
+
+        isSyncCompletionDeferred = false
+
+        if !stakeStateSubscription.isFetching {
+            completeImmediate(nil)
         }
     }
 
@@ -247,7 +257,25 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         )
 
         stakeStateSubscription.save(saveWrapper, for: state) { [weak self] in
-            self?.completeImmediate($0)
+            self?.completeSync($0, for: state)
         }
+    }
+}
+
+extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProtocol {
+    func refreshOffchain() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        performMaxApyFetch()
+        performRootYieldsFetch()
+        performCataloguePricingRefresh()
     }
 }

@@ -178,8 +178,9 @@ retains batches silently for its normal later flushes, checking consent before e
 
 The cost basis keeps no ledger of its own: its seed is peeked from the store's `operations/search`
 pages, an own trade drops those pages and blocks the seed for 300 s, and the next open refetches.
-Max APY keeps no result between bursts and relies on the store's max-age. The dashboard runs one
-burst per `performSyncUp()` and, if it fails, again after later state fetches until one succeeds. Local calculations do not require a separate auth request. The package exposes a
+Max APY keeps no result of its own and relies on the store's max-age: the dashboard asks again on every
+`performSyncUp()`, stake-state change and `refreshOffchain()`. For an account without TAO stake the
+updater keeps its sync flag on until the first answer, so the "Earn up to" row loads instead of blanking. Local calculations do not require a separate auth request. The package exposes a
 context invalidation ID so the facade also detects a cold origin replacement/repair before
 publishing its first endpoint.
 Failed adoption notifies when its memory fence changed.
