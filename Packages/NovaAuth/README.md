@@ -9,6 +9,7 @@ usable bearer before a store miss is fetched, while `createResponseWrapper` chec
 network access. One origin/API-major bearer authorizes ordinary protected paths:
 GET and HEAD reads and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
+Bittensor sends GET reads, including its operations search, under `/v1/bittensor/...`.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
@@ -37,10 +38,14 @@ reset the shared identity. Requests carry a demand intent that only gates re-reg
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
-must-revalidate`; POSTs and bootstrap use `no-store`.
+must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. The app's
+`BittensorApiResponseCache` reuses a fresh decoded body above admission for its `max-age`, so
+NovaAuth sees only misses, and a reused body neither confirms nor extends the credential deadline.
 Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
+Past `max-age` the app store keeps a decoded body only as an explicitly stale display seed; it
+never returns a seed as a protected fetch result.
 The host maps `infraUrl` to one endpoint per process and memoises it. The Bittensor store keys
 every seed by that endpoint's origin and generation and drops them all when a different scope is
 admitted, so a later context can never serve an older seed.
@@ -135,7 +140,7 @@ requests, state, tokens, UUID/key, proof or body. Successful transitions are not
 Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown and the
 refusal delay are persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
 
-Source walkthrough: [eight client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
+Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
 [retirement](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
 [shared origin protection](Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift),
 [settings storage](Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift), and

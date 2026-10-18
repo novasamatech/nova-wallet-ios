@@ -5,7 +5,6 @@ struct SubtensorQuickPickSnapshot {
     let info: SubtensorSubnetsInfo
 }
 
-/// A visit owns its draw, including across retries while the selected subnet is not yet ready to trade.
 final class SubtensorQuickPickVisit {
     enum SelectionError: Error, Equatable {
         case noCandidates
