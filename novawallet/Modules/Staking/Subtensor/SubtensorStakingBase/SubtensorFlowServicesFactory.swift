@@ -82,6 +82,25 @@ enum SubtensorFlowServicesFactory {
             operationQueue: operationQueue
         )
     }
+
+    static func createBlockSubscription(
+        for state: SubtensorStakingSharedStateProtocol
+    ) -> BlockNumberRemoteSubscriptionProtocol? {
+        let chain = state.stakingOption.chainAsset.chain
+
+        guard
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        return createBlockSubscription(
+            for: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
 }
 
 private extension SubtensorFlowServicesFactory {

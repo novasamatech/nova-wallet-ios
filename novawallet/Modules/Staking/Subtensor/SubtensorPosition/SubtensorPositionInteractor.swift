@@ -12,12 +12,12 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     var priceProvider: StreamableProvider<PriceData>?
-    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
     private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
@@ -35,13 +35,10 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         state.stakingOption.chainAsset
     }
 
-    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
-        state.generalLocalSubscriptionFactory
-    }
-
     init(
         state: SubtensorStakingSharedStateProtocol,
         netuid: UInt16,
+        blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -55,6 +52,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         priceHistoryService = state.earnServices.priceHistoryService
         validatorFactory = state.earnServices.validatorPresetFactory
         rootHoldFactory = state.earnServices.rootHoldFactory
+        self.blockNumberSubscription = blockNumberSubscription
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -66,6 +64,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
             $0.cancel()
         }
 
+        blockNumberSubscription?.unsubscribe()
         state.positionsSyncService?.remove(observer: self)
     }
 }
@@ -99,6 +98,24 @@ private extension SubtensorPositionInteractor {
                 self?.presenter?.didReceiveSyncFailure(isFailed)
             }
         )
+    }
+
+    func subscribeBlockNumber() {
+        do {
+            try blockNumberSubscription?.start { [weak self] result in
+                switch result {
+                case let .success(blockNumber):
+                    if let blockNumber {
+                        self?.presenter?.didReceive(blockNumber: blockNumber)
+                        self?.retryFailedRootHolds()
+                    }
+                case let .failure(error):
+                    self?.logger.warning("Subtensor position block number unavailable: \(error)")
+                }
+            }
+        } catch {
+            logger.warning("Subtensor position block number unavailable: \(error)")
+        }
     }
 
     func loadSubnetLogos() {
@@ -157,7 +174,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         loadYields()
 
         if isRoot {
-            blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
+            subscribeBlockNumber()
         } else {
             loadPrices()
             loadSubnetLogos()
@@ -244,20 +261,6 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
                 self?.logger.warning("Subtensor position price history unavailable: \(error)")
                 self?.presenter?.didFailHistory(for: period)
             }
-        }
-    }
-}
-
-extension SubtensorPositionInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber {
-                presenter?.didReceive(blockNumber: blockNumber)
-                retryFailedRootHolds()
-            }
-        case let .failure(error):
-            logger.warning("Subtensor position block number unavailable: \(error)")
         }
     }
 }

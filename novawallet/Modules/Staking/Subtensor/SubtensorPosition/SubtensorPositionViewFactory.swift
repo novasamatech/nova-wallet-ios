@@ -8,9 +8,12 @@ enum SubtensorPositionViewFactory {
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
+        let isRoot = group.netuid == SubtensorStakingPallet.rootNetuid
+
         let interactor = SubtensorPositionInteractor(
             state: state,
             netuid: group.netuid,
+            blockNumberSubscription: isRoot ? SubtensorFlowServicesFactory.createBlockSubscription(for: state) : nil,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -35,7 +38,7 @@ enum SubtensorPositionViewFactory {
 
         let view = SubtensorPositionViewController(
             presenter: presenter,
-            isRoot: group.netuid == SubtensorStakingPallet.rootNetuid,
+            isRoot: isRoot,
             seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
             chartLongPressHapticPlayer: singleTapHapticPlayer,
             periodControlHapticPlayer: singleTapHapticPlayer,
