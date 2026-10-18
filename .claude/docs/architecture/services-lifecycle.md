@@ -187,6 +187,8 @@ business errors are returned to their domain. Legacy optional quotas/long-delay 
 The memory context fence advances before persistence; a failed save cannot roll it back.
 Staged writes and owed token deletion retry on activation and block admission until repaired.
 
-Auth composition retains the Keychain access group and host namespace but no longer needs an
-App Group filesystem container. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish
+Auth composition needs neither an App Group container nor a shared Keychain access group: the
+bearer sits in the app's default Keychain group. A refused registration keeps the client ID and
+drops only the key; background demands wait out a persisted refusal delay while user-driven
+demands re-register at once. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish
 durable persistence or detect every refused disk write. There is no extra commit API.
