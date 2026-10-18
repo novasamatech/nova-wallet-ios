@@ -21,11 +21,6 @@ struct SubtensorValidatorInfoViewModel {
     let staking: Staking?
 }
 
-struct SubtensorValidatorInfoSnapshot {
-    let annualRate: HTTPCachePeek<Decimal?>
-    let alphaPrice: HTTPCachePeek<Balance?>
-}
-
 protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(viewModel: SubtensorValidatorInfoViewModel)
 }
@@ -38,7 +33,6 @@ protocol SubtensorValidatorInfoPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorValInfoInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorValidatorInfoSnapshot
     func setup()
     func loadDetail()
 }

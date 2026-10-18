@@ -2,24 +2,6 @@ import Foundation
 import Foundation_iOS
 
 extension SubtensorConfirmPresenter {
-    func seedSubnetData() {
-        guard !model.target.isRoot else {
-            return
-        }
-
-        if let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: model.target.netuid) != nil {
-            self.catalogue = catalogue
-        }
-
-        guard
-            tracksCostBasis,
-            let costBasis = interactor.cachedCostBasis(netuid: model.target.netuid).value else {
-            return
-        }
-
-        self.costBasis = .resolved(costBasis)
-    }
-
     func loadCostBasisIfNeeded() {
         guard tracksCostBasis else {
             return
@@ -123,10 +105,6 @@ extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtoco
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || self.catalogue?.subnet(for: model.target.netuid) == nil else {
-            return
-        }
-
         self.catalogue = catalogue
 
         provideTileIcons()

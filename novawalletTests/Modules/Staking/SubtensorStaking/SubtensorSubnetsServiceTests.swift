@@ -22,7 +22,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             apiFactory: createApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
         )
 
-        let info = try fetchInfo(using: service)
+        let info = try fetchInfo(service.createSubnetsInfoWrapper())
 
         XCTAssertEqual(info.subnets, subnets)
         XCTAssertEqual(info.prices, [0: 1_000_000_000, 1: 7_683_255, 5: 12_672_077])
@@ -42,7 +42,22 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             }
         }
 
-        XCTAssertThrowsError(try fetchInfo(using: createService(apiFactory: apiFactory)))
+        XCTAssertThrowsError(try fetchInfo(createService(apiFactory: apiFactory).createSubnetsInfoWrapper()))
+    }
+
+    func testFetchSubnetWithoutDynamicInfoYieldsEmptyInfo() throws {
+        let apiFactory = createApiFactory(subnets: [], prices: [], subtokenEnabled: [5])
+
+        stub(apiFactory) { stub in
+            when(stub.createDynamicInfoWrapper(for: any())).then { _ in CompoundOperationWrapper.createWithResult(nil) }
+            when(stub.createAlphaPriceWrapper(for: any(), blockHash: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(12_672_077)
+            }
+        }
+
+        let info = try fetchInfo(createService(apiFactory: apiFactory).createSubnetInfoWrapper(for: 5))
+
+        XCTAssertEqual(info, SubtensorSubnetsInfo(subnets: [], prices: [:], subtokenEnabled: []))
     }
 
     private func generateDynamicInfo(netuid: UInt16) -> SubtensorStakingPallet.DynamicInfo {
@@ -77,9 +92,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         SubtensorSubnetsService(operationFactory: apiFactory, operationQueue: OperationQueue())
     }
 
-    private func fetchInfo(using service: SubtensorSubnetsService) throws -> SubtensorSubnetsInfo {
-        let wrapper = service.createSubnetsInfoWrapper()
-
+    private func fetchInfo(_ wrapper: CompoundOperationWrapper<SubtensorSubnetsInfo>) throws -> SubtensorSubnetsInfo {
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()

@@ -1,28 +1,7 @@
 import Foundation
 
-private extension SubtensorUnstakeSetupPresenter {
-    func seedCatalogue() {
-        guard !isRoot, let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: netuid) != nil else {
-            return
-        }
-
-        self.catalogue = catalogue
-    }
-
-    func seedCostBasis() {
-        guard !isRoot, let costBasis = interactor.cachedCostBasis(netuid: netuid).value else {
-            return
-        }
-
-        self.costBasis = .resolved(costBasis)
-    }
-}
-
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
-        seedCatalogue()
-        seedCostBasis()
-
         provideAmountInputViewModel()
         provideAssetViewModel()
         provideViewModel()
@@ -34,7 +13,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             return
         }
 
-        interactor.loadSubnetsInfo()
+        interactor.loadSubnetsInfo(for: netuid)
 
         interactor.loadCatalogue()
         interactor.loadSubnetLogos()

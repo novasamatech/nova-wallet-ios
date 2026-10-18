@@ -73,6 +73,8 @@ private extension SubtensorSubnetNaming {
 }
 
 extension AssetBalanceDisplayInfo {
+    private static let subtensorFormatterFactory = AssetBalanceFormatterFactory()
+
     func subtensorAlpha(symbol: String) -> AssetBalanceDisplayInfo {
         AssetBalanceDisplayInfo(
             displayPrecision: displayPrecision,
@@ -90,6 +92,21 @@ extension AssetBalanceDisplayInfo {
         }
 
         return subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+    }
+
+    func subtensorAlphaAmount(
+        _ amount: Balance,
+        netuid: UInt16,
+        catalogue: SubtensorSubnetCatalogue?,
+        locale: Locale
+    ) -> String {
+        let alphaInfo = subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+
+        let text = Self.subtensorFormatterFactory.createTokenFormatter(for: alphaInfo)
+            .value(for: locale)
+            .stringFromDecimal(amount.decimal(assetInfo: self)) ?? .subtensorUnknown(for: locale)
+
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 }
 

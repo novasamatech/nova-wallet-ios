@@ -11,7 +11,6 @@ final class SubtensorPositionViewModelFactory {
     let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
@@ -51,15 +50,12 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func formatAlpha(_ amount: Balance, state: SubtensorPositionState, locale: Locale) -> String {
-        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
-            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue)
+        chainAsset.assetDisplayInfo.subtensorAlphaAmount(
+            amount,
+            netuid: state.netuid,
+            catalogue: state.catalogue,
+            locale: locale
         )
-
-        let text = formatterFactory.createTokenFormatter(for: alphaInfo)
-            .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
-
-        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatDuration(blocks: UInt64, blockTime: BlockTime, locale: Locale) -> String {

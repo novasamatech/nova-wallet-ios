@@ -16,8 +16,6 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
-    func cachedPrices() -> SubtensorAlphaPrices?
-    func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func refreshPendingClaims()
     func refreshPositions()

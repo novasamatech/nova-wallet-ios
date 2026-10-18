@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorOperationResultInteractor {
+final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     weak var presenter: SubtensorResultInteractorOutputProtocol?
 
     let operation: SubtensorStakingOperation
@@ -17,6 +17,7 @@ final class SubtensorOperationResultInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private let catalogueStore = CancellableCallStore()
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
@@ -47,6 +48,7 @@ final class SubtensorOperationResultInteractor {
     }
 
     deinit {
+        catalogueStore.cancel()
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
     }
@@ -102,19 +104,17 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        execute(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
-                self?.presenter?.didReceiveCatalogue(nil)
+        let catalogueService = catalogueService
+
+        load(
+            catalogueService.createCatalogueWrapper(),
+            cached: { catalogueService.cachedCatalogue().value },
+            in: catalogueStore,
+            label: "catalogue for the result",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveCatalogue($0)
             }
-        }
+        )
 
         execute(
             wrapper: subnetLogosProvider.createLogosWrapper(),
@@ -129,10 +129,6 @@ private extension SubtensorOperationResultInteractor {
 }
 
 extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
-    }
-
     func setup() {
         provideSubnetData()
         submit()
