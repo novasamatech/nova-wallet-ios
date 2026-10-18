@@ -261,7 +261,7 @@ flowchart TB
   F --> P["Stage installation write + owed token deletion"]
   P --> O{"Storage repair succeeds?"}
   O -- "No" --> B["Block admission; keep new fence and repair obligations"]
-  B -- "Later activation" --> P
+  B -- "Next demand or activation" --> P
   O -- "Yes" --> D["Eligible context; later demand may authenticate"]
 ```
 
@@ -272,7 +272,7 @@ existing write encodes the reduced schema. A saved refusal delay survives relaun
 version or context change.
 
 State adoption happens before I/O. A failed write never rolls back the active memory fence; staged
-write and token deletion retry during activation and block admission until repaired. Reset/corrupt
+write and token deletion retry during activation or the next demand and block admission until repaired. Reset/corrupt
 repair cannot adopt an old bearer. Settings read-back observes a manager cache and cannot prove
 disk durability; no transaction/commit API is implied.
 

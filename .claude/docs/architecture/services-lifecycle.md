@@ -192,7 +192,8 @@ Only 429 and explicit 503 attestation_unavailable apply shared auth-origin prote
 business errors are returned to their domain. Legacy optional quotas/long-delay fields are ignored.
 
 The memory context fence advances before persistence; a failed save cannot roll it back.
-Staged writes and owed token deletion retry on activation and block admission until repaired.
+Staged writes and owed token deletion retry on activation and on the next demand, and block
+admission until repaired.
 
 Auth composition needs neither an App Group container nor a shared Keychain access group: the
 bearer sits in the app's default Keychain group. A refused registration keeps the client ID and

@@ -117,7 +117,8 @@ Removed optional legacy policy fields are ignored, even if malformed; the next e
 encodes only context, identity/registration, refusal delay and token-removal debt. Pending start/cooldown and
 saved attestation inputs remain exact. Corrupt/reset repair replaces the context and cannot
 adopt an old bearer. The active memory fence advances before I/O and survives a failed save;
-staged writes and owed bearer deletion retry at host activation, blocking admission until repaired.
+staged writes and owed bearer deletion retry at host activation and on the next demand, blocking
+admission until repaired.
 Settings set/read-back checks the manager cache and cannot prove disk durability.
 
 Keychain contains one atomic version-2 bearer record with origin, client, generation and
