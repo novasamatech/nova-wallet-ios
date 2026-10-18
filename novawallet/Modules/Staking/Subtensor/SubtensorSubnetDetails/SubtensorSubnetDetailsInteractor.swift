@@ -86,13 +86,18 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 
     func loadYields() {
+        let yieldService = yieldService
+        let netuid = subnet.netuid
+
         load(
-            yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            yieldService.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
-            label: "subnet yields"
-        ) { [weak self] in
-            self?.presenter?.didReceiveYields($0)
-        }
+            label: "subnet yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveYields($0)
+            }
+        )
     }
 
     func loadSubnetLogos() {
@@ -107,10 +112,6 @@ private extension SubtensorSubnetDetailsInteractor {
 }
 
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
-    func cachedYields() -> SubtensorAlphaYields? {
-        yieldService.cachedAlphaYields(for: subnet.netuid).value
-    }
-
     func setup() {
         provideFavorite()
         subscribeTaoPrice(currency: selectedCurrency)

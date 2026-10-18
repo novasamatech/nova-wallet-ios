@@ -133,14 +133,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePositionsSubscription()
     }
 
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        catalogueService.cachedCatalogue()
-    }
-
-    func cachedCostBasis(netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
-        costBasisService.cachedCostBasis(for: selectedAccount.accountId, netuid: netuid)
-    }
-
     func estimateFee(for operation: SubtensorStakingOperation) {
         feeDebouncer.debounce { [weak self] in
             guard let self else {
@@ -254,9 +246,17 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
     func loadCatalogue() {
         catalogueCallStore.cancel()
 
-        load(catalogueService.createCatalogueWrapper(), in: catalogueCallStore, label: "catalogue") { [weak self] in
-            self?.basePresenter?.didReceiveCatalogue($0)
-        }
+        let catalogueService = catalogueService
+
+        load(
+            catalogueService.createCatalogueWrapper(),
+            cached: { catalogueService.cachedCatalogue().value },
+            in: catalogueCallStore,
+            label: "catalogue",
+            deliver: { [weak self] in
+                self?.basePresenter?.didReceiveCatalogue($0)
+            }
+        )
     }
 
     func loadSubnetLogos() {
@@ -270,13 +270,18 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
     func loadCostBasis(for netuid: UInt16) {
         costBasisCallStore.cancel()
 
+        let costBasisService = costBasisService
+        let accountId = selectedAccount.accountId
+
         load(
-            costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            costBasisService.createCostBasisWrapper(for: accountId, netuid: netuid),
+            cached: { costBasisService.cachedCostBasis(for: accountId, netuid: netuid).value },
             in: costBasisCallStore,
-            label: "cost basis on netuid \(netuid)"
-        ) { [weak self] in
-            self?.basePresenter?.didReceiveCostBasis($0)
-        }
+            label: "cost basis on netuid \(netuid)",
+            deliver: { [weak self] in
+                self?.basePresenter?.didReceiveCostBasis($0)
+            }
+        )
     }
 
     func loadRootHolds(for hotkeys: [AccountId]) {

@@ -8,3 +8,9 @@ protocol SubtensorYieldServiceProtocol: AnyObject {
 
     func createNetworkRootRateWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?>
 }
+
+extension SubtensorYieldServiceProtocol {
+    func cachedFreshAlphaYields(for netuid: UInt16) -> SubtensorAlphaYields? {
+        cachedAlphaYields(for: netuid).value.flatMap { $0.stamp.freshness == .fresh ? $0 : nil }
+    }
+}

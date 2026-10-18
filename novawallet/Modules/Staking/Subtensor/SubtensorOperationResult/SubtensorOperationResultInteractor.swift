@@ -102,6 +102,32 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
+        let catalogueService = catalogueService
+
+        execute(
+            operation: ClosureOperation { catalogueService.cachedCatalogue().value },
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            if case let .success(catalogue?) = result {
+                self?.presenter?.didReceiveCatalogue(catalogue)
+            }
+
+            self?.provideCatalogue()
+        }
+
+        execute(
+            wrapper: subnetLogosProvider.createLogosWrapper(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            if case let .success(logos) = result {
+                self?.presenter?.didReceiveSubnetLogos(logos)
+            }
+        }
+    }
+
+    func provideCatalogue() {
         execute(
             wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
@@ -115,24 +141,10 @@ private extension SubtensorOperationResultInteractor {
                 self?.presenter?.didReceiveCatalogue(nil)
             }
         }
-
-        execute(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            if case let .success(logos) = result {
-                self?.presenter?.didReceiveSubnetLogos(logos)
-            }
-        }
     }
 }
 
 extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
-    }
-
     func setup() {
         provideSubnetData()
         submit()

@@ -27,8 +27,6 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder)
     func cancelQuickPickSnapshot()
     func loadBlockTime()
-    func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
-    func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
     func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadSubnet(netuid: UInt16)

@@ -78,10 +78,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
     }
 
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
-        guard rankingView != nil || !hasExpiredRankingSeed else {
-            return
-        }
-
         self.rankingView = rankingView
 
         provideViewModel()

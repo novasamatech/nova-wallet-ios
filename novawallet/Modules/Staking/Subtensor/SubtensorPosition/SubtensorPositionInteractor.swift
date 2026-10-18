@@ -154,13 +154,18 @@ private extension SubtensorPositionInteractor {
     }
 
     func loadYields() {
+        let yieldService = yieldService
+        let netuid = netuid
+
         load(
             yieldService.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
             in: rateStore,
-            label: "position yields"
-        ) { [weak self] in
-            self?.presenter?.didReceive(yields: $0)
-        }
+            label: "position yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(yields: $0)
+            }
+        )
     }
 
     func providePendingClaims() {
@@ -187,18 +192,6 @@ private extension SubtensorPositionInteractor {
 }
 
 extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol {
-    func cachedPrices() -> SubtensorAlphaPrices? {
-        guard !isRoot, let prices = alphaPriceProvider.cachedPrices(), prices.taoPerAlpha[netuid] != nil else {
-            return nil
-        }
-
-        return prices
-    }
-
-    func cachedYields() -> SubtensorAlphaYields? {
-        yieldService.cachedAlphaYields(for: netuid).value
-    }
-
     func setup() {
         if isRoot {
             subscribeBlockNumber()
@@ -230,15 +223,22 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     func loadPrices() {
         pricesStore.cancel()
 
+        let alphaPriceProvider = alphaPriceProvider
+        let netuid = netuid
+
         load(
             alphaPriceProvider.createPricesWrapper(for: [netuid]),
+            cached: { alphaPriceProvider.cachedPrices().flatMap { $0.taoPerAlpha[netuid] != nil ? $0 : nil } },
             in: pricesStore,
-            label: "position alpha prices"
-        ) { [weak self] in
-            self?.presenter?.didReceive(prices: $0)
-        } fail: { [weak self] in
-            self?.presenter?.didFailPrices()
-        }
+            label: "position alpha prices",
+            deliver: { [weak self] prices in
+                if let prices {
+                    self?.presenter?.didReceive(prices: prices)
+                } else {
+                    self?.presenter?.didFailPrices()
+                }
+            }
+        )
     }
 
     func loadSubnetsInfo() {

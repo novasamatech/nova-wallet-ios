@@ -113,11 +113,6 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
-        if let yields = interactor.cachedYields(), yields.netuid == subnetRef.netuid {
-            state.yields = yields
-            state.isRateResolved = yields.stamp.freshness == .fresh
-        }
-
         provideTitle()
         provideViewModel()
 

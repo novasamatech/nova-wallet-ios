@@ -18,7 +18,6 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {
-    func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func loadParameters()
     func loadHistory(for period: SubtensorPricePeriod)
