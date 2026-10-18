@@ -11,7 +11,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
+    let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
@@ -55,7 +55,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
-        validatorFactory = state.earnServices.validatorPresetFactory
+        directoryService = state.earnServices.validatorDirectoryService
         rootHoldFactory = state.earnServices.rootHoldFactory
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
@@ -231,7 +231,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         validatorStore.cancel()
 
         load(
-            validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            directoryService.createListedDetailWrapper(for: hotkey, subnet: subnet),
             in: validatorStore,
             label: "position validator"
         ) { [weak self] in
