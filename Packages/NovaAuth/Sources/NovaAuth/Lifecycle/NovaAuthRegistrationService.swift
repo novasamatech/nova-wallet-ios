@@ -57,7 +57,7 @@ extension NovaAuth {
         flight.generatedKey = true
         guard let identity = state?.identity else { throw NovaAuthError.keyUnavailable }
         let clientID: String
-        if case .retired = identity.registration {
+        if case let .retired(reason) = identity.registration, reason != .policyRefused {
             clientID = dependencies.random.makeClientID()
             try NovaAuthValidation.clientID(clientID)
         } else { clientID = identity.clientID }

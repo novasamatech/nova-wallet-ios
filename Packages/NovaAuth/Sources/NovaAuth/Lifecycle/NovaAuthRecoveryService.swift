@@ -5,7 +5,7 @@ extension NovaAuth {
         try validate(context: flight.context)
         guard let identity = state?.identity else { throw NovaAuthError.keyUnavailable }
         try setIdentity(NovaAuthInstallationIdentity(
-            clientID: identity.clientID, keyID: identity.keyID, registration: .retired(reason)
+            clientID: identity.clientID, keyID: identity.keyID, registration: .retired(reason), refusal: identity.refusal
         ), context: flight.context)
     }
 

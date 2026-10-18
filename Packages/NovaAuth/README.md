@@ -81,7 +81,7 @@ other wait ends with a boot discontinuity.
 | Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
 | Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
 | Platform invalid key at attestation, registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
-| Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
+| Stored `retired` state | Loaded as is; the next demand replaces UUID/key and keeps the refusal counter. Legacy `policyRefused` keeps the client UUID and attests a fresh key under the refusal rules. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
 `appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
