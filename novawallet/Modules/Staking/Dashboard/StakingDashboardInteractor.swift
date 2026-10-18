@@ -224,6 +224,10 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         syncService?.refreshOffchain()
         provideAnnouncements()
     }
+
+    func becomeActive() {
+        syncService?.refreshMaxApy()
+    }
 }
 
 extension StakingDashboardInteractor: ChainsStoreDelegate {
