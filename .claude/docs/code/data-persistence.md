@@ -110,6 +110,33 @@ Adding a setting = a `SettingsKey` case + a typed accessor. Screens observe sett
 `CrowdloanChainSettings`) is the pattern for a single persisted value that also needs async setup
 and change notification.
 
+### NovaAuth state
+
+NovaAuth stores installation/context, registration state, three recovery ladders, background
+recreation count and owed bearer deletion in its app settings record; no bearer goes into
+preferences. Non-user replacement reserves a budget slot before key generation and keeps the
+retired reason until the new client UUID/key are saved together. The count survives reboot;
+deadlines are boot-scoped. Successful bearer installation clears recovery only after the
+Keychain write. Legacy recovery cooldown keeps its deadline but starts at recreation tier zero.
+
+State writes use SettingsManager set/read-back. The production manager
+internally calls `UserDefaults.synchronize()`. Matching cached read-back does not acknowledge
+durable persistence: refused disk writes may remain undetected, and no extra commit callback
+changes that. Detected validation/read-back failures close admission and retain the intended
+state for repair; `storageFailed` marks entry to this state. Reservations precede key generation,
+but survival across relaunch depends on ordinary settings persistence, not a fail-closed disk
+write guarantee. Bearer and recovery writes remain separate, with conservative old recovery
+restrictions if interruption occurs after the bearer write but before recovery clearing.
+
+The app's default Keychain access group holds one fingerprint-tagged `current` record, cached
+by the owner under its gate; store creation deletes the record an earlier build kept under the
+App Group. The settings record also keeps the refusal delay (deadline, tier, app version)
+beside the installation identity. Conditional removal
+matches the fingerprint atomically. Only the main writer under its gate may remove an untagged
+legacy record after conditional removal returns false and reload still equals that record.
+Corrupt reads remain nondestructive.
+See [NovaAuth recovery and storage](../../../Packages/NovaAuth/README.md) for the detailed policy.
+
 ## Caches & Files
 
 - `InMemoryCache` (`Common/Helpers/InMemoryCache/`) for process-lifetime caches.

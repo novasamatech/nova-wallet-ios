@@ -143,3 +143,8 @@ Queues are injected through the ViewFactory so tests can substitute a synchronou
    into a silent `nil`.
 5. **Don't block.** Never `waitUntilFinished: true` on the main thread.
 6. **One queue per concern.** Reuse `OperationManagerFacade`'s queues; injected, not hardcoded.
+
+NovaAuth uses `novaAuthOwnerQueue` for short serial state changes, `novaAuthBootstrapQueue`
+for independently runnable issuance children, and `novaAuthRequestQueue` for parallel business
+requests. Feature queues waiting for admission cannot starve bootstrap. Do not serialize whole
+business exchanges or cancel another consumer's issuance when an analytics waiter is withdrawn.

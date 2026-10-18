@@ -20,7 +20,7 @@ AppDelegate.didFinishLaunching
 `SelectedWalletSettings`, `EventCenter`, and the chain registry closure are all resolved there.
 Anything that must run before the first screen belongs in `RootInteractor`, not in `AppDelegate`.
 
-The app skips all of this when launched with the `-UNITTEST` argument (`AppDelegate.isUnitTesting`).
+The app skips all of this when launched with the `-UNITTEST` argument (`EnviromentVariables.isUnitTesting`).
 
 ## Service Protocols
 
@@ -111,6 +111,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `WalletServiceFacade.*`                       | Shared remote subscription services          |
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
+| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
@@ -160,3 +161,39 @@ from an individual screen's Interactor without a matching `throttle()`.
 5. **Feature flags gate behaviour at the factory level.** Use `#if F_RELEASE` / `#if F_DEV` where the
    service is *created* (as `DelegatedAccountSyncService`'s wallet filter does), not with early
    returns inside the service's methods.
+
+## Shared backend authentication
+
+`NovaAuthFacade.shared` owns the one `NovaAuth` client. `AnalyticsAuthAdapter` receives this
+owner. Global config snapshots have monotonically
+increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
+fences prior work.
+Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
+authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
+activation itself creates no key and sends no auth request. This explicitly replaces the
+profile-3 protocol's user-driven re-creation wording. Requests carry no intent.
+Failed auth completes the caller operation; Analytics
+retains batches silently for its normal later flushes, checking consent before each send/replay.
+
+The package exposes a
+context invalidation ID so the facade also detects a cold origin replacement/repair before
+publishing its first endpoint.
+Failed adoption notifies when its memory fence changed.
+First activation with no prior installation does not itself invalidate a context.
+
+Each issuance flight attempts at most one new key generation. An unusable identity is retired
+and that flight fails; a later independent demand may replace it after short auth backoff.
+Ordinary proof/policy refusal preserves an existing binding. Pending unknown-client probes keep
+the same UUID/key within the same-boot 120-second uncertainty window and persist send backoff.
+Only 429 and explicit 503 attestation_unavailable apply shared auth-origin protection; ordinary
+business errors are returned to their domain. Legacy optional quotas/long-delay fields are ignored.
+
+The memory context fence advances before persistence; a failed save cannot roll it back.
+Staged writes and owed token deletion retry on activation and on the next demand, and block
+admission until repaired.
+
+Auth composition needs neither an App Group container nor a shared Keychain access group: the
+bearer sits in the app's default Keychain group. A refused registration keeps the client ID and
+drops only the key; background demands wait out a persisted refusal delay while user-driven
+demands re-register at once. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish
+durable persistence or detect every refused disk write. There is no extra commit API.

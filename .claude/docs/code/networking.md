@@ -128,3 +128,35 @@ module should call `EvmTransactionService`, not the RPC layer.
 - architecture/chain-registry.md — connections, runtime providers, sync modes
 - code/concurrency.md — wrapping and executing these operations
 - architecture/transactions.md — the extrinsic-specific network path
+
+## Nova backend bearer authentication
+
+`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
+has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
+provider. Config is
+fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
+observes config or context changes. Host
+activation authorizes later demand-driven bootstrap.
+
+Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
+business send checks shared-origin protection before network access. Only business
+429 and explicit 503 `attestation_unavailable` constrain that origin; ordinary business 5xx and
+transport failures pass to domain retry handling. Success does not clear an active shared deadline.
+Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
+the operation. A later independently created operation can retry after short auth backoff; proof
+or policy denial preserves an existing binding rather than rotating its key. A refused registration
+keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
+(the default), which re-register at once, from `.background` ones (analytics), which wait
+for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
+
+One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
+business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
+
+Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
+expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
+HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
+POST transport/5xx failures never replay. Native GET/HEAD caching follows server-owned public,
+max-age and must-revalidate headers, without extending credential lifetime. No refresh token
+exists; renewal obtains a fresh token challenge and App Attest assertion. See
+[NovaAuth](../../../Packages/NovaAuth/README.md) and the
+[client diagrams](../architecture/novaauth-client-diagrams.md).
