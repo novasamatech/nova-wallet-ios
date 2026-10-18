@@ -1,6 +1,6 @@
 import Foundation
 
-struct SubtensorStakeValidatingDep {
+struct SubtensorStakeValidatingDependencies {
     let amount: Balance?
     let balance: AssetBalance?
     let fee: ExtrinsicFeeProtocol?
@@ -32,7 +32,7 @@ struct SubtensorStakeValidatingDep {
 
 extension SubtensorValidationFactoryProtocol {
     func validateStake(
-        for dep: SubtensorStakeValidatingDep,
+        for dep: SubtensorStakeValidatingDependencies,
         locale: Locale,
         onSuccess: @escaping () -> Void
     ) {
@@ -105,7 +105,7 @@ extension SubtensorValidationFactoryProtocol {
 
 private extension SubtensorValidationFactoryProtocol {
     func createStakeBalanceValidations(
-        for dep: SubtensorStakeValidatingDep,
+        for dep: SubtensorStakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         [
@@ -142,7 +142,7 @@ private extension SubtensorValidationFactoryProtocol {
     }
 
     func createStakePreflightValidations(
-        for dep: SubtensorStakeValidatingDep,
+        for dep: SubtensorStakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         [

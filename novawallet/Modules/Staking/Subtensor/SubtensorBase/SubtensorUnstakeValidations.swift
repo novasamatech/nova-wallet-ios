@@ -1,6 +1,6 @@
 import Foundation
 
-struct SubtensorUnstakeValidatingDep {
+struct SubtensorUnstakeValidatingDependencies {
     let netuid: UInt16
     let accountId: AccountId
     let hotkey: AccountId?
@@ -30,7 +30,7 @@ struct SubtensorUnstakeValidatingDep {
     }
 }
 
-extension SubtensorUnstakeValidatingDep {
+extension SubtensorUnstakeValidatingDependencies {
     var isSubnet: Bool {
         netuid != SubtensorPallet.rootNetuid
     }
@@ -104,7 +104,7 @@ extension SubtensorUnstakeValidatingDep {
     }
 }
 
-private extension SubtensorUnstakeValidatingDep {
+private extension SubtensorUnstakeValidatingDependencies {
     func createSellPlanInput(
         requestedAlpha: Balance?,
         positionAlpha: Balance?,
@@ -167,7 +167,7 @@ private extension SubtensorUnstakeValidatingDep {
 
 extension SubtensorValidationFactoryProtocol {
     func validateUnstake(
-        for dep: SubtensorUnstakeValidatingDep,
+        for dep: SubtensorUnstakeValidatingDependencies,
         locale: Locale,
         onSuccess: @escaping () -> Void
     ) {
@@ -196,7 +196,7 @@ extension SubtensorValidationFactoryProtocol {
 
 private extension SubtensorValidationFactoryProtocol {
     func createUnstakeInputValidations(
-        for dep: SubtensorUnstakeValidatingDep,
+        for dep: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         var validations: [DataValidating] = [
@@ -233,7 +233,7 @@ private extension SubtensorValidationFactoryProtocol {
     }
 
     func createSellPlanValidations(
-        for dep: SubtensorUnstakeValidatingDep,
+        for dep: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         let inputs: [SubtensorSellPlanInput?] = dep.sellPlanInputs ?? [nil]
@@ -249,7 +249,7 @@ private extension SubtensorValidationFactoryProtocol {
     }
 
     func createFeePayerValidation(
-        for dep: SubtensorUnstakeValidatingDep,
+        for dep: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> DataValidating? {
         if dep.isBatched {
@@ -275,7 +275,7 @@ private extension SubtensorValidationFactoryProtocol {
     }
 
     func createRootHoldValidations(
-        for dep: SubtensorUnstakeValidatingDep,
+        for dep: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         guard let preflight = dep.preflight else {

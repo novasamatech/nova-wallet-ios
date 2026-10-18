@@ -102,7 +102,7 @@ extension SubtensorConfirmPresenter {
         let liveAmount = rebuilt?.amount
         let positions = Dictionary((group?.positions ?? []).map { ($0.hotkey, $0.stakeAlpha) }) { first, _ in first }
 
-        var dependencies = SubtensorUnstakeValidatingDep(
+        var dependencies = SubtensorUnstakeValidatingDependencies(
             netuid: unstakeModel.netuid,
             accountId: model.account.chainAccount.accountId,
             hotkey: model.validator.hotkey,

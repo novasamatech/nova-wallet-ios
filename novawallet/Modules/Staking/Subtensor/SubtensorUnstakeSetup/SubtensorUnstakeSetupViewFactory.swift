@@ -47,7 +47,7 @@ enum SubtensorUnstakeSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = SubtensorUnstakeSetupVC(
+        let view = SubtensorUnstakeSetupViewController(
             presenter: presenter,
             isRoot: netuid == SubtensorPallet.rootNetuid,
             localizationManager: localizationManager

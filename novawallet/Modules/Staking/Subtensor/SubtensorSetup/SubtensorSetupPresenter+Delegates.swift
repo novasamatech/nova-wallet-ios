@@ -43,8 +43,8 @@ extension SubtensorSetupPresenter: RampFlowManaging, RampDelegate {
 }
 
 extension SubtensorSetupPresenter {
-    func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDep {
-        SubtensorStakeValidatingDep(
+    func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDependencies {
+        SubtensorStakeValidatingDependencies(
             amount: inputAmount(),
             balance: balance,
             fee: fee,
@@ -61,7 +61,7 @@ extension SubtensorSetupPresenter {
         )
     }
 
-    func createConfirmModel(for dependencies: SubtensorStakeValidatingDep) -> SubtensorConfirmModel? {
+    func createConfirmModel(for dependencies: SubtensorStakeValidatingDependencies) -> SubtensorConfirmModel? {
         guard
             let target,
             let validator = validatorState.validator,

@@ -6289,7 +6289,7 @@
 		9A6D2E052E60000100000002 /* SubtensorSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E052E60000100000001 /* SubtensorSetupViewLayout.swift */; };
 		9A6D2E062E60000100000002 /* SubtensorConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E062E60000100000001 /* SubtensorConfirmViewController.swift */; };
 		9A6D2E072E60000100000002 /* SubtensorConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E072E60000100000001 /* SubtensorConfirmViewLayout.swift */; };
-		9A6D2E082E60000100000002 /* SubtensorUnstakeSetupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E082E60000100000001 /* SubtensorUnstakeSetupVC.swift */; };
+		9A6D2E082E60000100000002 /* SubtensorUnstakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E082E60000100000001 /* SubtensorUnstakeSetupViewController.swift */; };
 		9A6D2E092E60000100000002 /* SubtensorUnstakeSetupLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E092E60000100000001 /* SubtensorUnstakeSetupLayout.swift */; };
 		9A6D2E0B2E60000100000002 /* SubtensorSubnetSelectProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E0B2E60000100000001 /* SubtensorSubnetSelectProtocols.swift */; };
 		9A6D2E0C2E60000100000002 /* SubtensorSubnetSelectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6D2E0C2E60000100000001 /* SubtensorSubnetSelectInteractor.swift */; };
@@ -13142,7 +13142,7 @@
 		9A6D2E052E60000100000001 /* SubtensorSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSetupViewLayout.swift; sourceTree = "<group>"; };
 		9A6D2E062E60000100000001 /* SubtensorConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmViewController.swift; sourceTree = "<group>"; };
 		9A6D2E072E60000100000001 /* SubtensorConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmViewLayout.swift; sourceTree = "<group>"; };
-		9A6D2E082E60000100000001 /* SubtensorUnstakeSetupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupVC.swift; sourceTree = "<group>"; };
+		9A6D2E082E60000100000001 /* SubtensorUnstakeSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupViewController.swift; sourceTree = "<group>"; };
 		9A6D2E092E60000100000001 /* SubtensorUnstakeSetupLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupLayout.swift; sourceTree = "<group>"; };
 		9A6D2E0B2E60000100000001 /* SubtensorSubnetSelectProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetSelectProtocols.swift; sourceTree = "<group>"; };
 		9A6D2E0C2E60000100000001 /* SubtensorSubnetSelectInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetSelectInteractor.swift; sourceTree = "<group>"; };
@@ -30292,7 +30292,7 @@
 		9A6D2EA32E60000100000001 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				9A6D2E082E60000100000001 /* SubtensorUnstakeSetupVC.swift */,
+				9A6D2E082E60000100000001 /* SubtensorUnstakeSetupViewController.swift */,
 				9A6D2E092E60000100000001 /* SubtensorUnstakeSetupLayout.swift */,
 			);
 			path = View;
@@ -37359,7 +37359,7 @@
 				9A6D2E052E60000100000002 /* SubtensorSetupViewLayout.swift in Sources */,
 				9A6D2E062E60000100000002 /* SubtensorConfirmViewController.swift in Sources */,
 				9A6D2E072E60000100000002 /* SubtensorConfirmViewLayout.swift in Sources */,
-				9A6D2E082E60000100000002 /* SubtensorUnstakeSetupVC.swift in Sources */,
+				9A6D2E082E60000100000002 /* SubtensorUnstakeSetupViewController.swift in Sources */,
 				9A6D2E092E60000100000002 /* SubtensorUnstakeSetupLayout.swift in Sources */,
 				0028C535D2DFB8B32B70025F /* SubtensorSubnetDetailsInteractor.swift in Sources */,
 				374D3311F02DB917D102DF96 /* SubtensorSubnetDetailsPresenter.swift in Sources */,

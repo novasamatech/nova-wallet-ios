@@ -34,7 +34,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func confirmStake(amount: Balance) {
-        var dependencies = SubtensorStakeValidatingDep(
+        var dependencies = SubtensorStakeValidatingDependencies(
             amount: amount,
             balance: balance,
             fee: fee,

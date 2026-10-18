@@ -1,7 +1,7 @@
 import Foundation_iOS
 import UIKit
 
-final class SubtensorUnstakeSetupVC: UIViewController, ViewHolder, ImportantViewProtocol {
+final class SubtensorUnstakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = SubtensorUnstakeSetupLayout
 
     let presenter: SubtensorUnstakeSetupPresenterProtocol
@@ -46,7 +46,7 @@ final class SubtensorUnstakeSetupVC: UIViewController, ViewHolder, ImportantView
     }
 }
 
-private extension SubtensorUnstakeSetupVC {
+private extension SubtensorUnstakeSetupViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
@@ -210,7 +210,7 @@ private extension SubtensorUnstakeSetupVC {
     }
 }
 
-extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
+extension SubtensorUnstakeSetupViewController: SubtensorUnstakeSetupViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
     }
@@ -241,7 +241,7 @@ extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
     }
 }
 
-extension SubtensorUnstakeSetupVC: AmountInputAccessoryViewDelegate {
+extension SubtensorUnstakeSetupViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         rootView.amountInputView.textField.resignFirstResponder()
 
@@ -253,7 +253,7 @@ extension SubtensorUnstakeSetupVC: AmountInputAccessoryViewDelegate {
     }
 }
 
-extension SubtensorUnstakeSetupVC: Localizable {
+extension SubtensorUnstakeSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -261,7 +261,7 @@ extension SubtensorUnstakeSetupVC: Localizable {
     }
 }
 
-private extension SubtensorUnstakeSetupVC {
+private extension SubtensorUnstakeSetupViewController {
     enum Constants {
         static let noteLineHeight: CGFloat = 18
         static let alertLineHeight: CGFloat = 16
