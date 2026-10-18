@@ -28,30 +28,17 @@ enum SubtensorApyFormatter {
 }
 
 extension NumberFormatter {
-    static var subtensorPercent: LocalizableResource<NumberFormatter> { spaced(.percent) }
+    static var subtensorPercent: LocalizableResource<NumberFormatter> { NumberFormatter.percent.localizableResource() }
 
-    static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> { spaced(.signedPercentSingle) }
-
-    static var subtensorPercentSingle: LocalizableResource<NumberFormatter> { spaced(.percentSingle) }
-
-    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> { spaced(.percentSingleHalfEven) }
-
-    private static func spaced(
-        _ makeFormatter: @escaping @autoclosure () -> NumberFormatter
-    ) -> LocalizableResource<NumberFormatter> {
-        LocalizableResource { locale in
-            let formatter = makeFormatter()
-            formatter.locale = locale
-            formatter.spacePercentSymbol()
-            return formatter
-        }
+    static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> {
+        NumberFormatter.signedPercentSingle.localizableResource()
     }
 
-    func spacePercentSymbol() {
-        let symbol = percentSymbol ?? "%"
-        positivePrefix = positivePrefix.replacingOccurrences(of: symbol, with: "")
-        negativePrefix = negativePrefix.replacingOccurrences(of: symbol, with: "")
-        positiveSuffix = " " + symbol
-        negativeSuffix = " " + symbol
+    static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
+        NumberFormatter.percentSingle.localizableResource()
+    }
+
+    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> {
+        NumberFormatter.percentSingleHalfEven.localizableResource()
     }
 }

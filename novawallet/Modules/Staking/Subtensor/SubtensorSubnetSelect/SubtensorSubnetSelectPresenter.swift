@@ -8,7 +8,6 @@ final class SubtensorSubnetSelectPresenter {
     let wireframe: SubtensorSubnetSelectWireframeProtocol
     let interactor: SubnetSelectInteractorInputProtocol
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
-    let earnSettings: SubtensorEarnSettingsProtocol
 
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
@@ -16,7 +15,7 @@ final class SubtensorSubnetSelectPresenter {
     private var apy: [UInt16: Decimal]?
     private var isApyPending = false
     private var subnetLogos: SubtensorSubnetLogos?
-    private var favourites: Set<SubtensorSubnetRef>
+    private var favourites: Set<SubtensorSubnetRef> = []
     private var query = ""
     let browseState: SubtensorSubnetBrowseState
     private var sort: SubtensorSubnetSort { browseState.sort }
@@ -33,7 +32,6 @@ final class SubtensorSubnetSelectPresenter {
         wireframe: SubtensorSubnetSelectWireframeProtocol,
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
         delegate: SubtensorSubnetSelectDelegate,
-        earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol,
         browseState: SubtensorSubnetBrowseState
     ) {
@@ -42,8 +40,6 @@ final class SubtensorSubnetSelectPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.delegate = delegate
-        self.earnSettings = earnSettings
-        favourites = earnSettings.favouriteSubnets
 
         self.localizationManager = localizationManager
     }
@@ -152,14 +148,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func becomeActive() {
-        let storedFavourites = earnSettings.favouriteSubnets
-
-        guard storedFavourites != favourites else {
-            return
-        }
-
-        favourites = storedFavourites
-        provideList()
+        interactor.refreshFavourites()
     }
 
     func search(query: String) {
@@ -177,9 +166,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
-        favourites.formSymmetricDifference([subnetRef])
-        earnSettings.favouriteSubnets = favourites
-        provideList()
+        interactor.toggleFavorite(subnetRef)
     }
 
     func selectRoot() {
@@ -245,6 +232,16 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         provideList()
         provideFilters()
         requestWeeklyPricesIfNeeded()
+    }
+
+    func didReceive(favourites: Set<SubtensorSubnetRef>) {
+        guard favourites != self.favourites else {
+            return
+        }
+
+        self.favourites = favourites
+
+        provideList()
     }
 
     func didReceive(subnetLogos: SubtensorSubnetLogos?) {
