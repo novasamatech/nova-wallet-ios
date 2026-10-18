@@ -19,7 +19,7 @@ flowchart TB
     BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
     AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
-    CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
+    CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
@@ -300,15 +300,15 @@ sequenceDiagram
   participant N as Shared<br/>NovaAuth
   participant H as HTTP cache /<br/>backend
   UI->>F: Optional synchronous peek
-  F->>C: Read seed with latest<br/>invalidation revision
+  F->>C: Read seed
   C-->>UI: Expired seed only, via factory
   UI->>F: Create ordinary protected request
   F->>C: Create job: admit + fetch
   C->>T: Admit first
   T->>N: Resolve context,<br/>demand credential
   N-->>T: Admission succeeds
-  T-->>C: Auth scope + shared endpoint<br/>with immutable invalidation revision
-  C->>C: Reconcile invalidation floor<br/>then check negatives / join flight
+  T-->>C: Auth scope (origin + generation)<br/>+ shared endpoint
+  C->>C: Activate scope, then<br/>check negatives / join flight
   opt No negative result and no existing flight
     C->>T: Fetch with<br/>admitted endpoint
     T->>N: createResponseWrapper(request)
@@ -317,7 +317,7 @@ sequenceDiagram
     H-->>N: Response, possibly native<br/>cache / revalidation
     N-->>T: Response or<br/>typed auth error
     T-->>C: HTTP grading + factory<br/>decode / wire validation
-    C->>C: Reconcile invalidation floor,<br/>auth scope and dataset generation
+    C->>C: Check auth scope<br/>and dataset generation
   end
   C-->>UI: Result/error via factory and domain service
   Note over T,UI: bindingConflict / invalidRequest: generic, no retry<br/>attestationRejected: device-bound, no retry
@@ -326,7 +326,7 @@ sequenceDiagram
 - Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
 - Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
-- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Auth origin or generation changes clear every stored body, including the cost-basis pages, through that revision; nothing else observes the context.
+- Admissions carry the auth scope (origin + generation). The decoded cache keeps seeds per scope and clears all of them, including the cost-basis pages, when a different scope is admitted; the endpoint is memoised once per process, so nothing observes config or context changes.
 - Cost basis/P&L reads **`GET /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
 - Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
 | Response/error | Bittensor type | Device-bound | User retry |
