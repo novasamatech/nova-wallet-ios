@@ -18,8 +18,15 @@ final class SubtensorPriceChartDataTests: XCTestCase {
         XCTAssertEqual(data.selection(at: start), .noData(date: Date(timeIntervalSince1970: start)))
     }
 
-    private func makeData() -> SubtensorPriceChartData? {
-        let points = [6 * 86400, 3 * 86400, 1800].enumerated().map { index, age in
+    func testFirstSampleWithinToleranceDrawsNoZeroFloor() throws {
+        let data = try XCTUnwrap(makeData(ages: [7 * 86400 - 1800, 3 * 86400, 1800]))
+
+        XCTAssertGreaterThan(data.yRange.lowerBound, 0)
+        XCTAssertEqual(data.selection(at: data.xRange.lowerBound), .point(sourceIndex: 0))
+    }
+
+    private func makeData(ages: [Int] = [6 * 86400, 3 * 86400, 1800]) -> SubtensorPriceChartData? {
+        let points = ages.enumerated().map { index, age in
             SubtensorPriceChartViewModel.Point(
                 sourceIndex: index,
                 date: end.addingTimeInterval(-TimeInterval(age)),
