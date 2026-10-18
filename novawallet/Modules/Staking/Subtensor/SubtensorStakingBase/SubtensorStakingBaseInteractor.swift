@@ -123,21 +123,6 @@ private extension SubtensorStakingBaseInteractor {
             }
         )
     }
-
-    func provideExistentialDeposit() {
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeProvider,
-            operationQueue: operationQueue
-        ) { [weak self] (result: Result<Balance, Error>) in
-            switch result {
-            case let .success(deposit):
-                self?.basePresenter?.didReceiveExistentialDeposit(deposit)
-            case let .failure(error):
-                self?.logger.error("Existential deposit fetch failed: \(error)")
-            }
-        }
-    }
 }
 
 extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputProtocol {
@@ -146,8 +131,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePriceSubscription()
         makeBlockNumberSubscription()
         makePositionsSubscription()
-
-        provideExistentialDeposit()
     }
 
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
@@ -251,6 +234,21 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
     func refreshPositions() {
         positionsSyncService.refresh()
+    }
+
+    func loadExistentialDeposit() {
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeProvider,
+            operationQueue: operationQueue
+        ) { [weak self] (result: Result<Balance, Error>) in
+            switch result {
+            case let .success(deposit):
+                self?.basePresenter?.didReceiveExistentialDeposit(deposit)
+            case let .failure(error):
+                self?.basePresenter?.didReceiveBaseError(.existentialDepositFailed(error))
+            }
+        }
     }
 
     func loadCatalogue() {

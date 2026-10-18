@@ -273,6 +273,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         refreshPreflight()
         refreshFee()

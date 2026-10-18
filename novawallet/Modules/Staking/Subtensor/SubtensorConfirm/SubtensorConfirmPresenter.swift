@@ -303,6 +303,7 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         refreshPreflight()
         refreshHolds()

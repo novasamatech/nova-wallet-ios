@@ -25,6 +25,10 @@ extension SubtensorBaseRetrying {
             retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
                 self?.retryInteractor.retryRootHolds()
             }
+        case .existentialDepositFailed:
+            retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.retryInteractor.loadExistentialDeposit()
+            }
         case .quoteFailed:
             break
         }

@@ -31,6 +31,7 @@ protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
         completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
     )
     func refreshPositions()
+    func loadExistentialDeposit()
     func loadCatalogue()
     func loadSubnetLogos()
     func loadCostBasis(for netuid: UInt16)
@@ -60,6 +61,7 @@ enum SubtensorStakingBaseError: Error {
     case preflightFailed(Error)
     case quoteFailed(Error)
     case rootHoldsFailed(Error)
+    case existentialDepositFailed(Error)
 }
 
 extension SubtensorStakingBaseError {
@@ -67,7 +69,7 @@ extension SubtensorStakingBaseError {
         switch self {
         case let .feeFailed(error), let .quoteFailed(error):
             (error as? SubtensorStakingOperationError) == .novaFeeUnavailable
-        case .preflightFailed, .rootHoldsFailed:
+        case .preflightFailed, .rootHoldsFailed, .existentialDepositFailed:
             false
         }
     }

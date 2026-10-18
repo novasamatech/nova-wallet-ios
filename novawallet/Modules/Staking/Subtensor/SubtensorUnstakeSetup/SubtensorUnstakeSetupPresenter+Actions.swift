@@ -28,6 +28,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         guard !isRoot else {
             return
