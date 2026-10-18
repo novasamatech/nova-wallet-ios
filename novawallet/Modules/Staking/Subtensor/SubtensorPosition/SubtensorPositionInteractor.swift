@@ -119,24 +119,27 @@ private extension SubtensorPositionInteractor {
             try blockNumberSubscription?.start { [weak self] result in
                 switch result {
                 case let .success(blockNumber):
+                    self?.isBlockFeedDown = false
+
                     if let blockNumber {
                         self?.presenter?.didReceive(blockNumber: blockNumber)
                         self?.retryFailedRootHolds()
                     }
                 case let .failure(error):
                     self?.logger.warning("Subtensor position block number unavailable: \(error)")
-                    self?.dropBlockFeed()
+                    self?.isBlockFeedDown = true
                 }
             }
         } catch {
             logger.warning("Subtensor position block number unavailable: \(error)")
-            dropBlockFeed()
+            isBlockFeedDown = true
         }
     }
 
-    func dropBlockFeed() {
+    func rearmBlockFeed() {
+        isBlockFeedDown = false
         blockNumberSubscription?.unsubscribe()
-        isBlockFeedDown = true
+        subscribeBlockNumber()
     }
 
     func loadSubnetLogos() {
@@ -303,8 +306,7 @@ extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
         if !isRoot {
             loadPrices()
         } else if isBlockFeedDown {
-            isBlockFeedDown = false
-            subscribeBlockNumber()
+            rearmBlockFeed()
         }
 
         presenter?.didBecomeActive()
