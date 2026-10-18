@@ -274,7 +274,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 self?.updateSubnetYields(yields)
             case let .failure(error):
                 self?.logger.warning("Subnet yields fetch error: \(error)")
-                self?.requestedSubnetNetuids = nil
                 self?.completeDeferredSync()
             }
         }
