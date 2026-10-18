@@ -253,7 +253,7 @@ flowchart TB
   F --> P["Stage installation write + owed token deletion"]
   P --> O{"Storage repair succeeds?"}
   O -- "No" --> B["Block admission; keep new fence and repair obligations"]
-  B -- "Later activation" --> P
+  B -- "Next demand or activation" --> P
   O -- "Yes" --> D["Eligible context; later demand may authenticate"]
 ```
 
@@ -264,7 +264,7 @@ existing write encodes the reduced schema. A saved refusal delay survives relaun
 version or context change.
 
 State adoption happens before I/O. A failed write never rolls back the active memory fence; staged
-write and token deletion retry during activation and block admission until repaired. Reset/corrupt
+write and token deletion retry during activation or the next demand and block admission until repaired. Reset/corrupt
 repair cannot adopt an old bearer. Settings read-back observes a manager cache and cannot prove
 disk durability; no transaction/commit API is implied.
 
@@ -273,7 +273,7 @@ deadline. Persistence precedes delivery. Conditional fingerprint deletion cannot
 record; the sole owner under its gate may remove an untagged legacy record only after reload still
 matches. Corrupt token reads do not delete data. The default access group separates signed app variants, and the owner caches the loaded record under its gate.
 
-The session's request/resource timeouts and the native watchdog remain. Called native leases release only on actual callback, even after
+The session's request/resource timeouts, the 110-second HTTP operation watchdog and the native watchdog remain. Called native leases release only on actual callback, even after
 local timeout. The flight's irreversible commitment stays sticky independently of its current step.
 Failure-only logs are asynchronous: fixed step/category, numeric status, allowlisted code and
 sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state are never logged.
