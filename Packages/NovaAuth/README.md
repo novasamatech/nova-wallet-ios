@@ -58,7 +58,8 @@ A failed authentication attempt fails the caller's operation. NovaAuth schedules
 owns no interaction or presentation policy. Every independently created later operation has
 the same permission to try again after the short protocol cooldown. Concurrent demands join
 one issuance flight, which attempts at most one new key generation. Retirement fails that
-flight; it never recursively creates another identity. Bearer replay preserves its original
+flight, except that a key found invalid at assertion time (for example after a backup restore)
+is replaced by one fresh UUID/key within the same flight. Bearer replay preserves its original
 client binding and cannot turn the same business operation into identity replacement.
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
@@ -81,7 +82,8 @@ other wait ends with a boot discontinuity.
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
 | Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
-| Platform invalid key, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
+| Platform invalid key at attestation, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving

@@ -141,14 +141,16 @@ flowchart TB
   P -- "401 attestation_failed / 403 app_not_allowed / binding_not_allowed" --> F["key dropped; UUID kept; refusal delay saved"]
   F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
-  X -- "Later independent demand; short backoff" --> K["At most one fresh UUID/key in this flight"]
+  X -- "Invalid key at assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
+  X -- "Later independent demand; short backoff" --> K
   K --> U
   P -- "Inconclusive failure / unknown within 120 s" --> P
   R -- "401 invalid_proof / 403 binding_not_allowed" --> R
 ```
 
-Retirement fails the current caller operation; no recursive identity replacement or proof resend
-occurs. A later independently created demand may replace after short backoff. Concurrency joins one
+Retirement fails the current caller operation, except that a key found invalid at assertion time is
+replaced by one fresh UUID/key within the same flight; no proof is resent and a flight never generates a
+second key. Otherwise a later independently created demand may replace after short backoff. Concurrency joins one
 issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
 demands re-register at once after a refusal while background demands wait for the persisted
 1 h / 6 h / 24 h delay, which resets on an app version or context change.

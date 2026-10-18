@@ -106,7 +106,7 @@ private extension NovaAuthDeviceCheckService {
         if let error = error as? DCError {
             switch error.code {
             case .serverUnavailable: return .failure(NovaAuthAppAttestError.serverUnavailable)
-            case .invalidKey, .invalidInput: return .failure(NovaAuthAppAttestError.invalidKey)
+            case .invalidKey: return .failure(NovaAuthAppAttestError.invalidKey)
             case .featureUnsupported: return .failure(NovaAuthAppAttestError.unsupported)
             default: return .failure(NovaAuthAppAttestError.failure)
             }

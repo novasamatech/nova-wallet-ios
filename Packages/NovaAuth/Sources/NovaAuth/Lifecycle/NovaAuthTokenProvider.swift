@@ -106,7 +106,7 @@ extension NovaAuth {
             flight.step = .assertion
             let assertionWrapper = dependencies.appAttest.createAssertionWrapper(keyID: keyID, clientDataHash: hash)
             run(assertionWrapper, flight: flight) { [self] result in
-                let assertion = try assertion(from: result, flight: flight)
+                guard let assertion = try assertion(from: result, flight: flight) else { return }
                 let request = NovaAuthTokenRequest(
                     origin: flight.context.origin,
                     clientID: identity.clientID,
@@ -209,10 +209,11 @@ private extension NovaAuth {
         if case .retired = identity.registration { throw NovaAuthError.keyUnavailable }
     }
 
-    func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data {
+    func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data? {
         do { return try result.get() } catch NovaAuthAppAttestError.invalidKey {
             try retire(.lostKey, flight: flight)
-            throw NovaAuthAppAttestError.invalidKey
+            try createKey(flight: flight)
+            return nil
         }
     }
 

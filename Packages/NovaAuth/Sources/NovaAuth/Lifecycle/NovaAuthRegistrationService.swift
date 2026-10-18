@@ -51,9 +51,7 @@ extension NovaAuth {
         }
         try retire(.registrationAbandoned, flight: flight)
     }
-}
 
-private extension NovaAuth {
     func createKey(flight: NovaAuthIssuanceFlight) throws {
         guard !flight.generatedKey else { throw NovaAuthError.keyUnavailable }
         flight.generatedKey = true
@@ -76,7 +74,9 @@ private extension NovaAuth {
             try challenge(flight: flight)
         }
     }
+}
 
+private extension NovaAuth {
     func challenge(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
         let start = try dependencies.clock.now()
