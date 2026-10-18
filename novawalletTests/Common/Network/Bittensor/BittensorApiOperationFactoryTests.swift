@@ -248,13 +248,11 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
         let context = try NovaAuthContext(origin: NovaAuthOrigin("https://bittensor.test"), generation: 0)
         let admission = BittensorApiAdmission(
-            scope: BittensorApiCacheScope(origin: "test", generation: 0, invalidationRevision: 0),
-            endpoint: NovaAuthEndpoint(context: context, client: MockNovaAuthClientProtocol(), invalidationRevision: 0)
+            scope: BittensorApiCacheScope(origin: "test", generation: 0),
+            endpoint: NovaAuthEndpoint(context: context, client: MockNovaAuthClientProtocol())
         )
 
         stub(transport) { stub in
-            when(stub.invalidationRevision.get).thenReturn(0)
-            when(stub.addInvalidationObserver(any(), closure: any())).thenReturn(0)
             when(stub.createAdmissionWrapper()).then { CompoundOperationWrapper.createWithResult(admission) }
             when(stub.createResponseWrapper(for: any(), admission: any())).then { _ in
                 beforeReply()

@@ -47,9 +47,9 @@ obtains a fresh challenge and App Attest assertion; the server issues no refresh
 
 Past `max-age` the app store keeps a decoded body only as an explicitly stale display seed; it
 never returns a seed as a protected fetch result.
-The host stamps each accepted endpoint with an invalidation revision. Bittensor carries it
-through admission and checks the latest revision before cache participation, completion and
-peek. Delayed invalidations cannot retire newer state; old work cannot restore retired seeds.
+The host maps `infraUrl` to one endpoint per process and memoises it. The Bittensor store keys
+every seed by that endpoint's origin and generation and drops them all when a different scope is
+admitted, so a later context can never serve an older seed.
 
 ## Recovery and admission
 
@@ -172,6 +172,6 @@ Alpha yields reject netuid 0 locally. New root staking APIs belong to their doma
 Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
 `swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
-bounded token replay, shared throttling and exchange release. App tests cover facade publication,
-Bittensor cache invalidation, domain recovery/presentation and Subtensor flows. Real App Attest,
+bounded token replay, shared throttling and exchange release. App tests cover Bittensor cache
+behaviour, domain recovery/presentation and Subtensor flows. Real App Attest,
 Keychain behavior, protected data and physical reboot behavior need device validation.

@@ -139,11 +139,10 @@ bodies are never kept, and own trades drop the account's `operations/search` pag
 before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
 before the request. There is no request coalescing, negative availability TTL or client TTL.
 Older recommendation generations return `generationStale`, preserving a newer seed without refetch.
-Endpoint admissions carry an immutable facade invalidation revision. The store advances its
-revision floor monotonically and reconciles the latest revision before completion and peek.
-Delayed or duplicate notifications preserve current-revision state; old admissions/completions
-remain fenced. Same-origin readiness does not invalidate the store. Auth origin/generation changes
-clear every seed, including the cost-basis pages. Chain data is never cached client-side. Host
+Endpoint admissions carry the auth scope (origin + generation); the store keeps seeds per scope
+and drops them all, including the cost-basis pages, when a different scope is admitted. Config is
+fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
+observes config or context changes. Chain data is never cached client-side. Host
 activation authorizes later demand-driven bootstrap; catalogue requests carry no authentication
 intent.
 

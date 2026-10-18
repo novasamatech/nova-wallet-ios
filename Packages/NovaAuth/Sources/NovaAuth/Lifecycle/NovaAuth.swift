@@ -11,7 +11,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
     var tokenCached = false
 
     private var pendingStateWrite: NovaAuthInstallationState?
-    private var invalidationID = UUID()
     var flight: NovaAuthIssuanceFlight?
     var issuanceCooldown = NovaAuthCooldown()
     var originCooldown = NovaAuthCooldown()
@@ -39,10 +38,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public var isSupported: Bool {
         dependencies.appAttest.isSupported
-    }
-
-    public var contextInvalidationID: UUID {
-        gate.novaAuthLocked { invalidationID }
     }
 
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {
@@ -223,7 +218,6 @@ private extension NovaAuth {
     }
 
     func repairCorruptState(origin: NovaAuthOrigin) throws {
-        invalidationID = UUID()
         let previous = try loadToken().flatMap { record -> UInt64? in
             guard (try? NovaAuthStoredValidation.token(record)) != nil else { return nil }
             return record.context.generation
@@ -248,7 +242,6 @@ private extension NovaAuth {
             tokenRemovalOwed: true
         )
         state = replacement
-        invalidationID = UUID()
         storageFailed = false
         if let flight {
             let callbacks = Array(flight.waiters.values)
