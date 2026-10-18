@@ -20,10 +20,8 @@ final class SubtensorSubnetSelectPresenter {
     let browseState: SubtensorSubnetBrowseState
     private var sort: SubtensorSubnetSort { browseState.sort }
     private var filters: SubtensorSubnetFilters { browseState.filters }
-    private var pendingFilters: SubtensorSubnetFilters?
     private var list: SubtensorSubnetList?
 
-    private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
     private var requestedWeeklySubnets: Set<SubtensorSubnetRef> = []
     private var isWeeklyPending = false
 
@@ -76,24 +74,6 @@ private extension SubtensorSubnetSelectPresenter {
         )
 
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
-    }
-
-    func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
-        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).count
-
-        return viewModelFactory.createFiltersViewModel(
-            filters: draft,
-            count: count,
-            locale: selectedLocale
-        )
-    }
-
-    func provideFilters() {
-        guard let pendingFilters, let filtersView else {
-            return
-        }
-
-        filtersView.didReceive(viewModel: createFiltersViewModel(for: pendingFilters))
     }
 
     func requestWeeklyPricesIfNeeded() {
@@ -176,43 +156,11 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     func showSort() {
         let viewModel = viewModelFactory.createSortSheetViewModel(selected: sort, locale: selectedLocale)
 
-        wireframe.showSortSheet(from: view, viewModel: viewModel) { [weak self] index in
-            let sorts = SubtensorSubnetSort.allCases
-
-            guard sorts.indices.contains(index) else {
-                return
-            }
-
-            self?.applySort(sorts[index])
-        }
+        wireframe.showSortSheet(from: view, viewModel: viewModel, delegate: self)
     }
 
     func showFilters() {
-        pendingFilters = filters
-
-        filtersView = wireframe.showFilters(
-            from: view,
-            viewModel: createFiltersViewModel(for: filters),
-            onChange: { [weak self] draft in
-                self?.draftFilters(draft)
-            },
-            onApply: { [weak self] draft in
-                self?.applyFilters(draft)
-            }
-        )
-    }
-
-    func draftFilters(_ filters: SubtensorSubnetFilters) {
-        pendingFilters = filters
-
-        provideFilters()
-    }
-
-    func applyFilters(_ filters: SubtensorSubnetFilters) {
-        browseState.filters = filters
-        pendingFilters = nil
-
-        provideList()
+        wireframe.showFilters(from: view, filters: filters, delegate: self)
     }
 
     func retry() {
@@ -230,7 +178,6 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         entriesError = nil
 
         provideList()
-        provideFilters()
         requestWeeklyPricesIfNeeded()
     }
 
@@ -279,6 +226,29 @@ extension SubtensorSubnetSelectPresenter: Localizable {
         }
 
         provideList()
-        provideFilters()
+    }
+}
+
+extension SubtensorSubnetSelectPresenter: SubtensorSortSheetDelegate {
+    func sortSheetDidSelectOption(at index: Int) {
+        let sorts = SubtensorSubnetSort.allCases
+
+        guard sorts.indices.contains(index) else {
+            return
+        }
+
+        applySort(sorts[index])
+    }
+}
+
+extension SubtensorSubnetSelectPresenter: SubtensorSubnetFiltersDelegate {
+    func countSubnets(matching filters: SubtensorSubnetFilters) -> Int? {
+        makeBuilder()?.build(query: query, sort: sort, filters: filters).count
+    }
+
+    func didReceiveSubnet(filters: SubtensorSubnetFilters) {
+        browseState.filters = filters
+
+        provideList()
     }
 }

@@ -39,6 +39,7 @@ enum SubtensorValidatorInfoViewFactory {
         let presenter = SubtensorValidatorInfoPresenter(
             target: target,
             hotkey: hotkey,
+            chain: chainAsset.chain,
             detail: detail,
             needsChainDetail: needsChainDetail,
             interactor: interactor,

@@ -35,6 +35,7 @@ final class SubtensorValidatorInfoViewController: UIViewController, ViewHolder {
 
 private extension SubtensorValidatorInfoViewController {
     func setupHandlers() {
+        rootView.accountView.addTarget(self, action: #selector(actionAccountOptions), for: .touchUpInside)
         rootView.stakeCell.addTarget(self, action: #selector(actionStakeInfo), for: .touchUpInside)
         rootView.takeCell.addTarget(self, action: #selector(actionTakeInfo), for: .touchUpInside)
     }
@@ -43,6 +44,10 @@ private extension SubtensorValidatorInfoViewController {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorInfoTitle()
 
         rootView.setupLocalization(for: selectedLocale)
+    }
+
+    @objc func actionAccountOptions() {
+        presenter.presentAccountOptions()
     }
 
     @objc func actionStakeInfo() {

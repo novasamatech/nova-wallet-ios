@@ -9,10 +9,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         view.stackView.spacing = 8
     }
 
-    let accountView: IdentityAccountInfoView = .create { view in
-        view.actionIcon = nil
-        view.isUserInteractionEnabled = false
-    }
+    let accountView = IdentityAccountInfoView()
 
     let stakingTitleLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
 

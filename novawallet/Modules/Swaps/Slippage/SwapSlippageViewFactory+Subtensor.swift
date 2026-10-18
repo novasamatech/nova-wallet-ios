@@ -18,10 +18,9 @@ extension SwapSlippageViewFactory {
             completionHandler: completionHandler
         )
 
-        let view = SwapSlippageViewController(
+        let view = SubtensorSlippageViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared,
-            presentation: .subtensorSheet
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view

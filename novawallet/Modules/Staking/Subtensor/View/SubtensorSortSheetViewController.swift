@@ -11,15 +11,20 @@ struct SubtensorSortSheetViewModel {
     let selectedIndex: Int?
 }
 
+protocol SubtensorSortSheetDelegate: AnyObject {
+    func sortSheetDidSelectOption(at index: Int)
+}
+
 final class SubtensorSortSheetViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorSortSheetViewLayout
 
-    private let viewModel: SubtensorSortSheetViewModel
-    private let onSelect: (Int) -> Void
+    weak var delegate: SubtensorSortSheetDelegate?
 
-    init(viewModel: SubtensorSortSheetViewModel, onSelect: @escaping (Int) -> Void) {
+    private let viewModel: SubtensorSortSheetViewModel
+
+    init(viewModel: SubtensorSortSheetViewModel, delegate: SubtensorSortSheetDelegate) {
         self.viewModel = viewModel
-        self.onSelect = onSelect
+        self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
 
@@ -58,12 +63,12 @@ private extension SubtensorSortSheetViewController {
             return
         }
 
-        let onSelect = onSelect
+        let delegate = delegate
 
         view.isUserInteractionEnabled = false
 
         dismiss(animated: true) {
-            onSelect(index)
+            delegate?.sortSheetDidSelectOption(at: index)
         }
     }
 }
