@@ -84,7 +84,8 @@ private extension BittensorAuthorizedTransport {
             path: "/v1/bittensor" + request.path,
             queryItems: request.queryItems,
             body: nil,
-            contentType: nil
+            contentType: nil,
+            intent: .userDriven
         )
     }
 }
