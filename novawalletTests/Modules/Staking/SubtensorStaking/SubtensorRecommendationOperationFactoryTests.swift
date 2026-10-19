@@ -29,8 +29,7 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory, times(1)).createChainSnapshotWrapper(for: captor.capture())
-        XCTAssertEqual(captor.value?.pairs, hotkeys.map { pair($0, 64) })
-        XCTAssertEqual(captor.value?.takeHotkeys, listed)
+        XCTAssertEqual(captor.value?.pairs, (hotkeys + listed).map { pair($0, 64) })
         XCTAssertEqual(try verification.recommended.get(), [subnetSecondKept, subnetKept])
         XCTAssertEqual(verification.takes[listedOnly], takeFraction(11796))
     }
@@ -53,7 +52,7 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory, times(1)).createChainSnapshotWrapper(for: captor.capture())
-        XCTAssertEqual(captor.value, SubtensorValidatorChainQuery(pairs: [], takeHotkeys: [listedOnly]))
+        XCTAssertEqual(captor.value, SubtensorValidatorChainQuery(pairs: [pair(listedOnly, 64)]))
         XCTAssertEqual(verification.takes[listedOnly], takeFraction(11796))
         XCTAssertThrowsError(try verification.recommended.get()) {
             guard case BittensorApiError.unavailable(code: nil, requestId: nil) = $0 else {

@@ -10,6 +10,7 @@ enum SubtensorValidatorSort: Equatable {
 struct SubtensorValidatorRowViewModel: Equatable {
     enum Trailing: Equatable {
         case rate(String)
+        case inactive(String)
         case none
     }
 
@@ -19,10 +20,11 @@ struct SubtensorValidatorRowViewModel: Equatable {
     let subtitle: String
     let trailing: Trailing
     let isSelected: Bool
+    let isSelectable: Bool
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.hotkey == rhs.hotkey && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle &&
-            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected
+            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected && lhs.isSelectable == rhs.isSelectable
     }
 }
 
@@ -101,7 +103,7 @@ protocol SubtensorValidatorSelectInteractorOutputProtocol: AnyObject {
     func didFailVerification(_ error: Error)
 }
 
-protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
+protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable, AlertPresentable {
     func showFilters(
         from view: SubtensorValidatorSelectViewProtocol?,
         applied: SubtensorValidatorFilters,

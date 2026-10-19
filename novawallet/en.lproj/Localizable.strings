@@ -2198,6 +2198,8 @@ Do you want to continue?";
 "staking.subtensor.ui.validator.fetch.device.detail" = "This device can’t load the validator list right now. Your stake is not affected.";
 "staking.subtensor.ui.validator.recommended.empty" = "No recommended validators for this subnet yet. Remove filters to see all validators.";
 "staking.subtensor.ui.validator.remove.filters" = "Remove all filters";
+"staking.subtensor.ui.validator.inactive.title" = "Validator is inactive";
+"staking.subtensor.ui.validator.inactive.message" = "This validator is inactive, so new stake earns nothing until it’s active again.";
 "staking.subtensor.ui.picker.no.history" = "no price history yet";
 "staking.subtensor.ui.picker.empty.query.format" = "No subnets for ‘%@’";
 "staking.subtensor.ui.picker.hide.thin.format" = "below %@ · price moves more";

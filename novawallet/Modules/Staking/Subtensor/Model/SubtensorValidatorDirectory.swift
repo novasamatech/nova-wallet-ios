@@ -6,8 +6,14 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     let name: String?
     var take: Decimal?
     var reportedStake: BigRational?
-    let status: SubtensorValidatorChainStatus?
+    var status: SubtensorValidatorChainStatus?
     var isChainDetailUnavailable = false
+}
+
+extension SubtensorValidatorDirectoryItem {
+    var isInactive: Bool {
+        status?.hasPermit == false || status?.isActive == false
+    }
 }
 
 struct SubtensorValidatorDirectory: Equatable {
@@ -18,9 +24,15 @@ struct SubtensorValidatorDirectory: Equatable {
 }
 
 extension SubtensorValidatorDirectory {
-    func withTakes(_ takes: [AccountId: Decimal]) -> SubtensorValidatorDirectory {
+    func withVerification(_ verification: SubtensorValidatorListVerification) -> SubtensorValidatorDirectory {
         var directory = self
-        directory.items.indices.forEach { directory.items[$0].take = takes[directory.items[$0].hotkey] }
+
+        directory.items.indices.forEach { index in
+            let hotkey = directory.items[index].hotkey
+            directory.items[index].take = verification.takes[hotkey]
+            directory.items[index].status = verification.statuses[hotkey]
+        }
+
         return directory
     }
 }

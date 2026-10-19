@@ -104,6 +104,17 @@ private extension SubtensorValidatorSelectPresenter {
         preselectedHotkey = selectableItem(for: preselectedHotkey)?.hotkey
     }
 
+    func presentInactiveValidator() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        wireframe.present(
+            message: strings.stakingSubtensorUiValidatorInactiveMessage(),
+            title: strings.stakingSubtensorUiValidatorInactiveTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
+    }
+
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
         if let directory = snapshot.directory.value, accepts(directory) {
             self.directory = directory
@@ -156,7 +167,12 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func select(hotkey: AccountId) {
-        guard selectableItem(for: hotkey) != nil else {
+        guard let item = selectableItem(for: hotkey) else {
+            return
+        }
+
+        guard !item.isInactive else {
+            presentInactiveValidator()
             return
         }
 
@@ -179,7 +195,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func confirm() {
-        guard let item = selectableItem(for: selectedHotkey) else {
+        guard let item = selectableItem(for: selectedHotkey), !item.isInactive else {
             return
         }
 
@@ -224,8 +240,12 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
     }
 
     func didReceive(verification: SubtensorValidatorListVerification) {
-        directory = directory?.withTakes(verification.takes)
+        directory = directory?.withVerification(verification)
         verificationError = nil
+
+        if selectableItem(for: selectedHotkey)?.isInactive == true {
+            selectedHotkey = nil
+        }
 
         switch verification.recommended {
         case let .success(hotkeys):
