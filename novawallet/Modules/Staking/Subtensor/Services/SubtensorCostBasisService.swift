@@ -93,6 +93,19 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
             }
         ).map { try Self.makeLedger(from: $0).costBasis(for: netuid) }
     }
+
+    func remainingSettleTime(for accountId: AccountId) -> TimeInterval? {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        let now = timeProvider()
+
+        guard let blockedUntil = seedBlockedUntil[accountId], blockedUntil > now else {
+            return nil
+        }
+
+        return blockedUntil - now
+    }
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {

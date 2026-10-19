@@ -221,6 +221,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             loadSubnetsInfo()
             loadCostBasis()
             eventCenter.add(observer: self, dispatchIn: .main)
+            resumeOwnTradeSettle()
         }
 
         subscribePositions()
@@ -363,6 +364,7 @@ extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
 
         if !isRoot {
             loadPrices()
+            resumeOwnTradeSettle()
         } else if isBlockFeedDown {
             rearmBlockFeed()
         }

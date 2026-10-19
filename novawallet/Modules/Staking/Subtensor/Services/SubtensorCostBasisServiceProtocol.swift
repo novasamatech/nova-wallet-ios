@@ -8,6 +8,8 @@ protocol SubtensorCostBasisServiceProtocol: AnyObject {
     ) -> CompoundOperationWrapper<SubtensorCostBasis>
 
     func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis>
+
+    func remainingSettleTime(for accountId: AccountId) -> TimeInterval?
 }
 
 extension SubtensorLoadDelivering {
