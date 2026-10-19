@@ -30,7 +30,6 @@ final class SubtensorStakeStateSource {
     private var fetchTriggerBlockHash: Data?
     private var isRefetchPending = false
     private var isSyncingRequested = false
-    private var isFetchSignalled = false
     private let fetchCallStore = CancellableCallStore()
 
     init(
@@ -169,7 +168,6 @@ private extension SubtensorStakeStateSource {
         fetchTriggerBlockHash = nil
         isRefetchPending = false
         isSyncingRequested = false
-        isFetchSignalled = false
 
         hotkeysSubscription = nil
         connection = nil
@@ -197,7 +195,7 @@ private extension SubtensorStakeStateSource {
 
     func fetch(triggeredAt blockHash: Data?) {
         fetchTriggerBlockHash = blockHash
-        isFetchSignalled = isSyncingRequested
+        let isSignalled = isSyncingRequested
         isSyncingRequested = false
 
         executeCancellable(
@@ -210,7 +208,7 @@ private extension SubtensorStakeStateSource {
             self?.handle(fetchResult: result)
         }
 
-        if isFetchSignalled {
+        if isSignalled {
             notifyHandlers { $0.handleStakeStateFetching() }
         }
     }
@@ -219,14 +217,11 @@ private extension SubtensorStakeStateSource {
         switch fetchResult {
         case let .success(fetchedState):
             let state = fetchedState.byKeepingRootRedeemable(of: lastState)
-            let isChanged = state != lastState
             lastState = state
 
             updateAlphaTriggerSubscription(for: state)
 
-            if isChanged || isFetchSignalled {
-                notifyHandlers { $0.handleStakeState(state) }
-            }
+            notifyHandlers { $0.handleStakeState(state) }
         case let .failure(error):
             logger.error("State fetch error: \(error)")
 

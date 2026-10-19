@@ -28,7 +28,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         workingQueue: workingQueue,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.handle(state: $0) },
-        onFailure: { [weak self] in self?.completeImmediate($0) }
+        onFailure: { [weak self] in self?.completeImmediate($0) },
+        onUnchangedState: { [weak self] _ in self?.performCataloguePricingRefresh() }
     )
 
     private var lastState: Multistaking.SubtensorState? {

@@ -18,7 +18,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         workingQueue: workingQueue,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.persistPricedState($0) },
-        onFailure: { [weak self] in self?.completeImmediate($0) }
+        onFailure: { [weak self] in self?.completeImmediate($0) },
+        onUnchangedState: { [weak self] in self?.repriceState($0) }
     )
 
     init(
@@ -63,12 +64,26 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
             return
         }
 
+        refreshPricing { _ in true }
+    }
+
+    private func repriceState(_ state: Multistaking.SubtensorState) {
+        guard state.subnetCount > 0 else {
+            return
+        }
+
+        refreshPricing { [weak self] didChange in
+            didChange || self?.stakeStateSubscription.lastState != state
+        }
+    }
+
+    private func refreshPricing(persistingWhen shouldPersist: @escaping (Bool) -> Bool) {
         cataloguePricing.refresh(
             latestState: { [weak self] in self?.stakeStateSubscription.lastState },
             runningCallbackIn: workingQueue,
             mutex: mutex,
-            onUpdate: { [weak self] _ in
-                guard let self, let lastState = stakeStateSubscription.lastState else {
+            onUpdate: { [weak self] didChange in
+                guard let self, shouldPersist(didChange), let lastState = stakeStateSubscription.lastState else {
                     return
                 }
 
