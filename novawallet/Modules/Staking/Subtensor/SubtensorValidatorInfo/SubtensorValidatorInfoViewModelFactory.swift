@@ -40,14 +40,6 @@ final class SubtensorValidatorInfoViewModelFactory {
         )
     }
 
-    static func isActive(_ item: SubtensorValidatorDirectoryItem, isRoot: Bool) -> Bool {
-        guard let status = item.status else {
-            return false
-        }
-
-        return isRoot || (status.hasPermit == true && status.isActive == true)
-    }
-
     static func taoStake(
         for item: SubtensorValidatorDirectoryItem,
         isRoot: Bool,
@@ -107,8 +99,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         locale: Locale
     ) -> SubtensorValidatorInfoViewModel.Staking {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let isRoot = input.target.isRoot
-        let isActive = Self.isActive(item, isRoot: isRoot)
+        let isActive = item.status != nil && !item.isInactive
         let unknown = strings.stakingSubtensorUiValueUnknown()
         let activeStatus = isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive()
 
@@ -128,7 +119,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return SubtensorValidatorInfoViewModel.Staking(
-            status: input.needsChainDetail ? unknown : activeStatus,
+            status: input.needsChainDetail || item.status == nil ? unknown : activeStatus,
             isActive: isActive,
             stake: createStakeViewModel(for: item, input: input, locale: locale),
             take: item.take.flatMap { takeFormatter.value(for: locale).stringFromDecimal($0) } ?? unknown,
