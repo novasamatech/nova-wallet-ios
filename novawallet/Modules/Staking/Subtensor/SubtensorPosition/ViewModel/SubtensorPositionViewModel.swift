@@ -154,7 +154,7 @@ struct SubtensorPositionSummaryViewModel {
     let amount: String?
     let fiat: SubtensorRowState<String>
     let isActive: Bool?
-    let row: SubtensorPositionRowViewModel
+    let rows: [SubtensorPositionRowViewModel]
 }
 
 struct SubtensorPositionActionViewModel: Equatable {
