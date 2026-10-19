@@ -9,3 +9,23 @@ protocol SubtensorCostBasisServiceProtocol: AnyObject {
 
     func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis>
 }
+
+extension SubtensorLoadDelivering {
+    func loadCostBasis(
+        using service: SubtensorCostBasisServiceProtocol,
+        accountId: AccountId,
+        netuid: UInt16,
+        in callStore: CancellableCallStore,
+        deliver: @escaping (SubtensorCostBasis?) -> Void
+    ) {
+        callStore.cancel()
+
+        load(
+            service.createCostBasisWrapper(for: accountId, netuid: netuid),
+            cached: { service.cachedCostBasis(for: accountId, netuid: netuid).value },
+            in: callStore,
+            label: "cost basis on netuid \(netuid)",
+            deliver: deliver
+        )
+    }
+}

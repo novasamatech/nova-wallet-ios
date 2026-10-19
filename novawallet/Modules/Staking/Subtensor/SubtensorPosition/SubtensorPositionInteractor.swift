@@ -13,6 +13,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
+    let costBasisService: SubtensorCostBasisServiceProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -31,6 +32,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     private let holdsStore = CancellableCallStore()
     private let historyStore = CancellableCallStore()
     private let subnetsInfoStore = CancellableCallStore()
+    private let costBasisStore = CancellableCallStore()
 
     private var isRoot: Bool {
         netuid == SubtensorPallet.rootNetuid
@@ -58,6 +60,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
         directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
         rootHoldOperationFactory = state.earnServices.rootHoldOperationFactory
+        costBasisService = state.earnServices.costBasisService
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -70,6 +73,8 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         [pricesStore, logosStore, validatorStore, rateStore, holdsStore, historyStore, subnetsInfoStore].forEach {
             $0.cancel()
         }
+
+        costBasisStore.cancel()
 
         blockNumberSubscription?.unsubscribe()
         state.positionsSyncService?.remove(observer: self)
@@ -99,6 +104,10 @@ private extension SubtensorPositionInteractor {
 
                 if !isRoot, group != lastGroup, !pricesStore.hasCall {
                     loadPrices()
+                }
+
+                if !isRoot, lastGroup != nil, group != lastGroup {
+                    loadCostBasis()
                 }
 
                 lastGroup = group
@@ -187,6 +196,21 @@ private extension SubtensorPositionInteractor {
         presenter?.didReceive(pendingClaimHotkeys: hotkeys)
     }
 
+    func loadCostBasis() {
+        guard let accountId = state.selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        loadCostBasis(
+            using: costBasisService,
+            accountId: accountId,
+            netuid: netuid,
+            in: costBasisStore
+        ) { [weak self] in
+            self?.presenter?.didReceive(costBasis: $0)
+        }
+    }
+
     func retryFailedRootHolds() {
         guard let hotkeys = failedHoldsHotkeys else {
             return
@@ -204,6 +228,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             loadPrices()
             loadSubnetLogos()
             loadSubnetsInfo()
+            loadCostBasis()
         }
 
         subscribePositions()
@@ -233,6 +258,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         if !isRoot {
             loadSubnetLogos()
             loadSubnetsInfo()
+            loadCostBasis()
         } else if isBlockFeedDown {
             rearmBlockFeed()
         }

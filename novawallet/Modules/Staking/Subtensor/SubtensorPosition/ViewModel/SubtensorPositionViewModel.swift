@@ -20,6 +20,7 @@ struct SubtensorPositionState {
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false
     var yields: SubtensorAlphaYields?
+    var costBasis = SubtensorCostBasisState.loading
     var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []
