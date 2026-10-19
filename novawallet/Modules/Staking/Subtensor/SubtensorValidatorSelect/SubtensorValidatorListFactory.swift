@@ -68,7 +68,7 @@ extension SubtensorValidatorListFactory {
                 ratesShown: ratesShown,
                 locale: locale
             ),
-            emptyText: createEmptyText(
+            empty: createEmpty(
                 hasListed: !listed.isEmpty,
                 hasMatching: !matching.isEmpty,
                 input: input,
@@ -262,22 +262,29 @@ private extension SubtensorValidatorListFactory {
             : strings.stakingSubtensorUiValidatorHeaderSortFormat(sortTitle)
     }
 
-    func createEmptyText(
+    func createEmpty(
         hasListed: Bool,
         hasMatching: Bool,
         input: SubtensorValidatorListInput,
         locale: Locale
-    ) -> String? {
+    ) -> SubtensorValidatorListViewModel.Empty? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         guard hasListed else {
-            return strings.stakingSubtensorUiValidatorNoData()
+            guard input.recommendedHotkeys != nil, !input.directory.items.isEmpty else {
+                return .text(strings.stakingSubtensorUiValidatorNoData())
+            }
+
+            return .filtered(SubtensorValidatorFilteredEmptyViewModel(
+                message: strings.stakingSubtensorUiValidatorRecommendedEmpty(),
+                actionTitle: strings.stakingSubtensorUiValidatorRemoveFilters()
+            ))
         }
 
         guard hasMatching else {
             let query = input.query.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            return strings.stakingSubtensorUiValidatorSearchEmptyFormat(query)
+            return .text(strings.stakingSubtensorUiValidatorSearchEmptyFormat(query))
         }
 
         return nil

@@ -18,6 +18,7 @@ final class SubtensorValidatorSelectPresenter {
     private var recommendedError: Error?
     private var verificationError: Error?
     private let filterSession: SubtensorValidatorFilterSession
+    private var filters: SubtensorValidatorFilters
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
@@ -41,15 +42,13 @@ final class SubtensorValidatorSelectPresenter {
         self.listFactory = listFactory
         self.delegate = delegate
         self.filterSession = filterSession
+        filters = filterSession.applied(isRoot: target.isRoot)
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorValidatorSelectPresenter {
-    var filters: SubtensorValidatorFilters { filterSession.applied(isRoot: target.isRoot) }
-
     func provideState() {
-        let filters = filters
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
         view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
@@ -151,6 +150,11 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
         wireframe.showFilters(from: view, applied: filters, delegate: self)
     }
 
+    func removeFilters() {
+        filters.hidesUnusualApy = false
+        provideState()
+    }
+
     func select(hotkey: AccountId) {
         guard selectableItem(for: hotkey) != nil else {
             return
@@ -248,6 +252,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorFiltersDelegate {
             keptHotkeys = []
         }
 
+        filters = newFilters
         filterSession.apply(newFilters, isRoot: target.isRoot)
         provideState()
     }

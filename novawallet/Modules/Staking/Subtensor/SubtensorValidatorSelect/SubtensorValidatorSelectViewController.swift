@@ -69,6 +69,12 @@ private extension SubtensorValidatorSelectViewController {
         rootView.actionButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
 
         rootView.errorView.learnMoreButton.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+
+        rootView.filteredEmptyView.actionButton.addTarget(
+            self,
+            action: #selector(actionRemoveFilters),
+            for: .touchUpInside
+        )
     }
 
     func setupNavigationItems() {
@@ -106,22 +112,21 @@ private extension SubtensorValidatorSelectViewController {
         switch state {
         case let .loading(viewModel):
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
-            rootView.emptyLabel.isHidden = true
+            rootView.bind(empty: nil)
             rootView.errorView.isHidden = true
             rootView.headerView.isHidden = false
             rootView.tableView.isHidden = false
         case let .loaded(viewModel):
             rootView.headerView.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: viewModel.canSelect)
-            rootView.emptyLabel.text = viewModel.emptyText
-            rootView.emptyLabel.isHidden = viewModel.emptyText == nil
+            rootView.bind(empty: viewModel.empty)
             rootView.errorView.isHidden = true
             rootView.headerView.isHidden = false
             rootView.tableView.isHidden = false
         case let .failed(viewModel):
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
             rootView.bindError(viewModel)
-            rootView.emptyLabel.isHidden = true
+            rootView.bind(empty: nil)
             rootView.errorView.isHidden = false
             rootView.headerView.isHidden = true
             rootView.tableView.isHidden = true
@@ -152,6 +157,10 @@ private extension SubtensorValidatorSelectViewController {
 
     @objc func actionSort() {
         presenter.showSortOptions()
+    }
+
+    @objc func actionRemoveFilters() {
+        presenter.removeFilters()
     }
 
     @objc func actionToggleSearch() {
