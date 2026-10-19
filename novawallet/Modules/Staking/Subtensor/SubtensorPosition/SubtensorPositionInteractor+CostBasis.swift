@@ -16,9 +16,36 @@ extension SubtensorPositionInteractor {
             self?.completeOwnTradeSettleIfDue()
         }
     }
+
+    func resumeOwnTradeSettle() {
+        guard let accountId = state.selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        if let remaining = costBasisService.remainingSettleTime(for: accountId) {
+            scheduleOwnTradeSettle(after: remaining)
+        } else if ownTradeScheduler?.isScheduled == true {
+            ownTradeScheduler?.cancel()
+            settleOwnTrade()
+        }
+    }
 }
 
 private extension SubtensorPositionInteractor {
+    func scheduleOwnTradeSettle(after delay: TimeInterval) {
+        let scheduler = ownTradeScheduler ?? Scheduler(with: self, callbackQueue: .main)
+        ownTradeScheduler = scheduler
+        isOwnTradeSettleDue = false
+
+        scheduler.notifyAfter(delay)
+        presenter?.didReceiveOwnTradeSettling(true)
+    }
+
+    func settleOwnTrade() {
+        isOwnTradeSettleDue = true
+        loadCostBasis()
+    }
+
     func completeOwnTradeSettleIfDue() {
         guard isOwnTradeSettleDue else {
             return
@@ -37,18 +64,14 @@ extension SubtensorPositionInteractor: EventVisitorProtocol {
             return
         }
 
-        let scheduler = ownTradeScheduler ?? Scheduler(with: self, callbackQueue: .main)
-        ownTradeScheduler = scheduler
-        isOwnTradeSettleDue = false
+        let remaining = costBasisService.remainingSettleTime(for: event.accountId)
 
-        scheduler.notifyAfter(SubtensorCostBasisService.ownTradeSettleTime)
-        presenter?.didReceiveOwnTradeSettling(true)
+        scheduleOwnTradeSettle(after: remaining ?? SubtensorCostBasisService.ownTradeSettleTime)
     }
 }
 
 extension SubtensorPositionInteractor: SchedulerDelegate {
     func didTrigger(scheduler _: SchedulerProtocol) {
-        isOwnTradeSettleDue = true
-        loadCostBasis()
+        settleOwnTrade()
     }
 }
