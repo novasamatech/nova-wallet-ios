@@ -154,7 +154,10 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func showSwapRateInfo() {
-        guard !mode.isRootLane, let netuid = mode.netuid else {
+        guard
+            !mode.isRootLane,
+            let netuid = mode.netuid,
+            let novaFeeRate = quoteFlow.freshQuote?.novaFeeRate ?? novaFeeRate else {
             return
         }
 
@@ -164,7 +167,7 @@ extension SubtensorStakeSetupPresenter {
             locale: selectedLocale
         )
 
-        wireframe.showSubtensorInfo(.swapRate(.buy, subnetName: subnetName), from: view)
+        wireframe.showSubtensorInfo(.swapRate(.buy, subnetName: subnetName, novaFeeRate: novaFeeRate), from: view)
     }
 
     func showAvgBuyPriceInfo() {

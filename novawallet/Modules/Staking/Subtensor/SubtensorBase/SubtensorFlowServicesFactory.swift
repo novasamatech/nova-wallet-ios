@@ -121,7 +121,13 @@ private extension SubtensorFlowServicesFactory {
     }
 
     static func createSigner(for account: MetaChainAccountResponse) -> SigningWrapperProtocol {
-        SigningWrapperFactory().createSigningWrapper(
+        let walletType = account.chainAccount.type
+
+        guard !FeatureSupportChecker.refusesSubtensorStakingSigning(for: walletType) else {
+            return NoSigningSupportWrapper(type: walletType == .proxied ? .proxy : .ledger)
+        }
+
+        return SigningWrapperFactory().createSigningWrapper(
             for: account.metaId,
             accountResponse: account.chainAccount
         )

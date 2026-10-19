@@ -199,7 +199,9 @@ private extension SubtensorConfirmViewModelFactory {
             remark: createRemark(
                 for: input.model.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
             ),
-            feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
+            feeDisclosure: input.latestQuote.map {
+                quoteViewModelFactory.novaFeeDisclosure(rate: $0.novaFeeRate, locale: locale)
+            }
         )
     }
 
@@ -255,9 +257,9 @@ extension SubtensorConfirmViewModelFactory {
             isPriceMoved: input.isPriceMoved,
             action: SubtensorSetupActionViewModel(
                 title: input.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),
-                isEnabled: input.signing == .allowed
+                isEnabled: !input.isWatchOnly
             ),
-            signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil
+            signingHint: input.isWatchOnly ? strings.accountManagementWatchOnlyHint() : nil
         )
     }
 

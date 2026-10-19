@@ -18,8 +18,8 @@ extension SubtensorPallet {
         StateCallPath(module: subnetInfoApiName, method: "get_dynamic_info")
     }
 
-    static var delegatesApi: StateCallPath {
-        StateCallPath(module: delegateInfoApiName, method: "get_delegates")
+    static var delegateApi: StateCallPath {
+        StateCallPath(module: delegateInfoApiName, method: "get_delegate")
     }
 
     static var alphaPriceAllApi: StateCallPath {

@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
+protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol, ObservableSyncServiceProtocol {
     func add(
         observer: AnyObject,
         onState: @escaping (Multistaking.SubtensorState?) -> Void,
@@ -14,7 +14,7 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
     func refresh()
 }
 
-final class SubtensorPositionsSyncService: BaseSyncService {
+final class SubtensorPositionsSyncService: ObservableSyncService {
     let stakeStateSource: SubtensorStakeStateSource
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue

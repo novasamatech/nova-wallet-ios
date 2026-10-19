@@ -89,6 +89,10 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         provideViewModel()
     }
 
+    func didReceiveNovaFeeRate(_ rate: BigRational?) {
+        novaFeeRate = rate
+    }
+
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
         self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
 

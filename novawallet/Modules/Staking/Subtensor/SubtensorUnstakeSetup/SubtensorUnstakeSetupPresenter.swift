@@ -41,6 +41,7 @@ final class SubtensorUnstakeSetupPresenter {
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
+    var novaFeeRate: BigRational?
     var isConfirmationShown = false
 
     private var feeShape: FeeShape?

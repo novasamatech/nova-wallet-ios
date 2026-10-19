@@ -70,6 +70,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         weeklyChangesStore.cancel()
         historiesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
+        state.positionsSyncService?.unsubscribeSyncState(self)
         state.throttle()
     }
 }
@@ -89,6 +90,16 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
     func refresh() {
         providePrices(for: requestedNetuids)
         state.positionsSyncService?.refresh()
+    }
+
+    func refreshAll() {
+        priceProvider?.refresh()
+        provideSubnetLogos()
+        refresh()
+
+        if state.positionsSyncService == nil {
+            presenter?.didReceivePositionsSyncing(false)
+        }
     }
 
     func loadHistories(for period: SubtensorPricePeriod) {
@@ -175,6 +186,10 @@ private extension SubtensorPortfolioInteractor {
                 self?.presenter?.didReceiveSyncFailure(isFailed)
             }
         )
+
+        state.positionsSyncService?.subscribeSyncState(self, queue: .main) { [weak self] _, isSyncing in
+            self?.presenter?.didReceivePositionsSyncing(isSyncing)
+        }
     }
 
     func providePrices(for netuids: Set<UInt16>) {

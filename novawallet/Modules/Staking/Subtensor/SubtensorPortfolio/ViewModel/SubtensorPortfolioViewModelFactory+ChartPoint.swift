@@ -4,6 +4,7 @@ import Foundation_iOS
 struct SubtensorPortfolioChartSelection {
     let header: SubtensorPortfolioHeaderViewModel
     let points: [SubtensorPortfolioValuePoint]
+    let isChangeAvailable: Bool
 }
 
 protocol SubtensorPortfolioChartFactoryProtocol {
@@ -45,8 +46,10 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioChartFactoryProt
 
         let change: SubtensorRowState<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
             header.change
-        } else {
+        } else if selection.isChangeAvailable {
             createPointChange(from: first, to: point, locale: locale).map { .value($0) } ?? .hidden
+        } else {
+            .hidden
         }
 
         let fiat = balanceViewModelFactory.priceFromFiatAmount(point.fiatValue, currencyId: price.currencyId)

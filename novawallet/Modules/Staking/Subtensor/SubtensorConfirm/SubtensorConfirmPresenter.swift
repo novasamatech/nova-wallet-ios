@@ -8,7 +8,7 @@ final class SubtensorConfirmPresenter {
 
     let chainAsset: ChainAsset
     let model: SubtensorConfirmModel
-    let signing: SubtensorOperationGate.Verdict
+    let isWatchOnly: Bool
     let viewModelFactory: SubtensorConfirmViewModelFactory
     let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
@@ -28,7 +28,6 @@ final class SubtensorConfirmPresenter {
     var subnetLogos: SubtensorSubnetLogos?
     var costBasis: SubtensorCostBasisState = .loading
     private(set) var isHandingOff = false
-    private var isSignerNotSupportedShown = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -47,7 +46,7 @@ final class SubtensorConfirmPresenter {
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.model = model
-        signing = SubtensorOperationGate.verdict(for: model.account.chainAccount.type)
+        isWatchOnly = model.account.chainAccount.type == .watchOnly
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
@@ -116,7 +115,7 @@ extension SubtensorConfirmPresenter {
             price: price,
             fee: fee,
             stakeChange: createStakeChange(),
-            signing: signing,
+            isWatchOnly: isWatchOnly,
             costBasis: tracksCostBasis ? costBasis : nil
         )
 
@@ -311,18 +310,8 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
         refreshFee()
     }
 
-    func didAppear() {
-        guard case let .signerNotSupported(type) = signing, !isSignerNotSupportedShown, let view else {
-            return
-        }
-
-        isSignerNotSupportedShown = true
-
-        wireframe.presentSignerNotSupportedView(from: view, type: type) {}
-    }
-
     func confirm() {
-        guard signing == .allowed, !isHandingOff else {
+        guard !isWatchOnly, !isHandingOff else {
             return
         }
 
@@ -364,7 +353,14 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     }
 
     func showSwapRateInfo() {
-        wireframe.showSubtensorInfo(.swapRate(model.direction, subnetName: subnetName), from: view)
+        guard let novaFeeRate = quoteState?.displayed?.novaFeeRate else {
+            return
+        }
+
+        wireframe.showSubtensorInfo(
+            .swapRate(model.direction, subnetName: subnetName, novaFeeRate: novaFeeRate),
+            from: view
+        )
     }
 
     func showSlippageInfo() {

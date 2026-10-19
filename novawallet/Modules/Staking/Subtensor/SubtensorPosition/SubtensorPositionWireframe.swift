@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
+final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol, SubtensorCallerPopping {
     let state: SubtensorSharedStateProtocol
 
     init(state: SubtensorSharedStateProtocol) {
@@ -41,15 +41,7 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
     }
 
     func popToPortfolio(from view: SubtensorPositionViewProtocol?) {
-        guard
-            let controller = view?.controller,
-            let navigationController = controller.navigationController,
-            let index = navigationController.viewControllers.firstIndex(of: controller),
-            index > 0 else {
-            return
-        }
-
-        navigationController.popToViewController(navigationController.viewControllers[index - 1], animated: true)
+        popToCaller(from: view)
     }
 }
 

@@ -7,6 +7,7 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     let presenter: SwapSlippagePresenterProtocol
 
     private var hasInputError: Bool = false
+    private var isApplyAvailable: Bool = false
     private var presets: [SlippagePercentViewModel] = []
     private var inputViewModel: AmountInputViewModelProtocol?
 
@@ -78,7 +79,7 @@ private extension SubtensorSlippageViewController {
         let hasPreset = rootView.presetsControl.selectedIndex != nil
         let inputValid = hasPreset || rootView.amountInput.inputViewModel?.isValid == true
 
-        let isEnabled = !hasInputError && inputValid
+        let isEnabled = isApplyAvailable && !hasInputError && inputValid
         rootView.actionButton.set(enabled: isEnabled, changeStyle: true)
     }
 
@@ -166,7 +167,8 @@ extension SubtensorSlippageViewController: SwapSlippageViewProtocol {
 
     func didReceiveResetState(available _: Bool) {}
 
-    func didReceiveButtonState(available _: Bool) {
+    func didReceiveButtonState(available: Bool) {
+        isApplyAvailable = available
         updateActionButton()
     }
 

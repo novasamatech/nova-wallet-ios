@@ -8,7 +8,7 @@ struct SubtensorClaimRewardsViewModelInput {
     let otherClaimableCount: Int
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?
-    let signing: SubtensorOperationGate.Verdict
+    let isWatchOnly: Bool
     let isNothingToClaim: Bool
 }
 

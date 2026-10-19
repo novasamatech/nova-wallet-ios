@@ -117,6 +117,8 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
         provideTileIcons()
     }
 
+    func didReceiveNovaFeeRate(_: BigRational?) {}
+
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
         self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
 

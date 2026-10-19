@@ -22,3 +22,7 @@ protocol SubtensorValidatorFiltersPresenterProtocol: AnyObject {
 protocol SubtensorValidatorFiltersWireframeProtocol {
     func complete(from view: SubtensorValidatorFiltersViewProtocol?)
 }
+
+protocol SubtensorValidatorFiltersDelegate: AnyObject {
+    func didReceiveValidator(filters: SubtensorValidatorFilters)
+}

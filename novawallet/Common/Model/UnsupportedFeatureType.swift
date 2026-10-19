@@ -6,12 +6,14 @@ enum SupportCheckingFeatureType {
     case ramp(type: RampActionType, chainAsset: ChainAsset, all: [RampAction])
     case card
     case gift(chains: [ChainModel])
+    case subtensorStaking(chain: ChainModel)
 }
 
 enum UnsupportedFeatureType {
     case sell
     case card
     case gift
+    case subtensorStaking
 }
 
 enum FeatureUnsupportedWalletType {

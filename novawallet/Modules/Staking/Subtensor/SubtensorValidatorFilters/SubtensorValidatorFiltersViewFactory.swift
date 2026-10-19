@@ -3,12 +3,12 @@ import Foundation_iOS
 enum SubtensorValidatorFiltersViewFactory {
     static func createView(
         applied: SubtensorValidatorFilters,
-        onApply: @escaping (SubtensorValidatorFilters) -> Void
+        delegate: SubtensorValidatorFiltersDelegate
     ) -> SubtensorValidatorFiltersViewProtocol {
         let presenter = SubtensorValidatorFiltersPresenter(
             applied: applied,
             wireframe: SubtensorValidatorFiltersWireframe(),
-            onApply: onApply
+            delegate: delegate
         )
         let view = SubtensorValidatorFiltersViewController(
             presenter: presenter, localizationManager: LocalizationManager.shared

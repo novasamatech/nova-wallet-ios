@@ -63,6 +63,11 @@ private extension SubtensorPositionViewController {
         rootView.syncNoticeView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(actionRetrySync))
         )
+        rootView.containerView.scrollView.refreshControl?.addTarget(
+            self,
+            action: #selector(actionRefresh),
+            for: .valueChanged
+        )
     }
 
     @objc func actionSell() {
@@ -89,6 +94,10 @@ private extension SubtensorPositionViewController {
     @objc func actionRetrySync() {
         presenter.retrySync()
     }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
+    }
 }
 
 extension SubtensorPositionViewController: SubtensorPositionViewProtocol {
@@ -99,6 +108,10 @@ extension SubtensorPositionViewController: SubtensorPositionViewProtocol {
 
     func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel) {
         rootView.priceWidget.bind(header: priceHeader)
+    }
+
+    func didCompleteRefreshing() {
+        rootView.containerView.scrollView.refreshControl?.endRefreshing()
     }
 }
 

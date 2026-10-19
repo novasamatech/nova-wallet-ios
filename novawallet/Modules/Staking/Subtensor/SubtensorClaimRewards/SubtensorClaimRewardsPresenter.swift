@@ -4,12 +4,11 @@ import Foundation_iOS
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
     let wireframe: SubtensorConfirmWireframeProtocol
-    let interactor: SubtensorBaseInteractorInputProtocol
+    let interactor: SubtensorClaimRewardsInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorClaimRewardsModel
-    let signing: SubtensorOperationGate.Verdict
-    let pendingRootClaims: SubtensorPendingRootClaimsProtocol
+    let isWatchOnly: Bool
     let viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol
     let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
@@ -22,6 +21,7 @@ final class SubtensorClaimRewardsPresenter {
     var claimable: [SubtensorRootClaimPreview]?
     var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
+    var pendingClaimHotkeys: Set<AccountId> = []
     private(set) var shownPreview: SubtensorRootClaimPreview
     private(set) var isNothingToClaim = false
     private(set) var isHandingOff = false
@@ -30,11 +30,10 @@ final class SubtensorClaimRewardsPresenter {
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorBaseInteractorInputProtocol,
+        interactor: SubtensorClaimRewardsInteractorInputProtocol,
         wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
-        pendingRootClaims: SubtensorPendingRootClaimsProtocol,
         viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol,
         dataValidationFactory: SubtensorValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -44,8 +43,7 @@ final class SubtensorClaimRewardsPresenter {
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.model = model
-        signing = SubtensorOperationGate.verdict(for: model.account.chainAccount.type)
-        self.pendingRootClaims = pendingRootClaims
+        isWatchOnly = model.account.chainAccount.type == .watchOnly
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
@@ -86,7 +84,7 @@ extension SubtensorClaimRewardsPresenter {
             } ?? 0,
             price: price,
             fee: fee,
-            signing: signing,
+            isWatchOnly: isWatchOnly,
             isNothingToClaim: isNothingToClaim
         )
 
@@ -140,12 +138,7 @@ private extension SubtensorClaimRewardsPresenter {
 
     func createValidations() -> [DataValidating] {
         let locale = selectedLocale
-
-        let isPending = pendingRootClaims.pendingHotkeys(
-            for: model.account.chainAccount.accountId,
-            at: Date(),
-            claimable: claimable
-        ).contains(hotkey)
+        let isPending = pendingClaimHotkeys.contains(hotkey)
 
         var validations: [DataValidating] = [
             dataValidationFactory.positionsAreFresh(
@@ -280,9 +273,11 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
     }
 
     func confirm() {
-        guard signing == .allowed, !isNothingToClaim, !isHandingOff else {
+        guard !isWatchOnly, !isNothingToClaim, !isHandingOff else {
             return
         }
+
+        interactor.refreshPendingClaims(for: claimable)
 
         DataValidationRunner(validators: createValidations()).runValidation { [weak self] in
             self?.verifyAtTap()

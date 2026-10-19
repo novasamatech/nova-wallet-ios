@@ -135,7 +135,7 @@ private extension SubtensorValidationFactoryProtocol {
                 stakedAmount: dependencies.stakedAmount,
                 minStake: dependencies.preflight?.minStake,
                 quotedSwapFee: dependencies.quoteContext?.latestQuote?.quote.poolFee,
-                includesNovaFee: dependencies.isSubnet,
+                novaFeeRate: dependencies.isSubnet ? dependencies.quoteContext?.latestQuote?.novaFeeRate : nil,
                 locale: locale
             )
         ]

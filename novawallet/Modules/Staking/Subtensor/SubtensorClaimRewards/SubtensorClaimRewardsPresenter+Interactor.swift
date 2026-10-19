@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol {
+extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -51,6 +51,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol 
 
     func didReceiveSubnetLogos(_: SubtensorSubnetLogos?) {}
 
+    func didReceiveNovaFeeRate(_: BigRational?) {}
+
     func didReceiveCostBasis(_: SubtensorCostBasis?) {}
 
     func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
@@ -63,6 +65,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol 
         logger.error("Error: \(error)")
 
         presentBaseRetry(for: error)
+    }
+
+    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
+        self.pendingClaimHotkeys = pendingClaimHotkeys
     }
 }
 

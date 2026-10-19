@@ -3,6 +3,7 @@ import Foundation
 protocol SubtensorPositionViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPositionViewModel)
     func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel)
+    func didCompleteRefreshing()
 }
 
 protocol SubtensorPositionPresenterProtocol: AnyObject {
@@ -12,6 +13,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
     func selectValidator()
     func retrySync()
     func retryHistory()
+    func refresh()
     func selectChart(_ selection: SubtensorPriceChartSelection?)
 }
 
@@ -19,6 +21,7 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func setup()
     func refreshPendingClaims()
     func refreshPositions()
+    func refreshAll()
     func loadPrices()
     func loadSubnetsInfo()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
@@ -29,6 +32,7 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
 protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(group: SubtensorPortfolioGroup?)
     func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didReceive(price: PriceData?)
     func didChangeCurrency()
     func didReceive(prices: SubtensorAlphaPrices)
@@ -47,7 +51,8 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorPositionWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorValidatorInfoPresentable {
+protocol SubtensorPositionWireframeProtocol: AnyObject, FeatureSupportChecking, MessageSheetPresentable,
+    SubtensorValidatorInfoPresentable {
     func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)

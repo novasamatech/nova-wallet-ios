@@ -82,6 +82,14 @@ private extension SubtensorPortfolioPresenter {
         state.histories = .loading
         interactor.loadHistories(for: state.period)
     }
+
+    func refetchLoadedHistories() {
+        guard historiesPeriod == state.period else {
+            return
+        }
+
+        interactor.loadHistories(for: state.period)
+    }
 }
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
@@ -114,7 +122,11 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func addPosition() {
-        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+        wireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
+            for: wallet,
+            sheetPresentingView: view
+        ) { [weak self] in
             self?.wireframe.showAddPosition(from: self?.view)
         }
     }
@@ -124,6 +136,18 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         isNetworkRootRateRequested = false
         interactor.refresh()
         requestRootRateIfNeeded()
+    }
+
+    func refresh() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
+        weeklyChangesRequest = nil
+
+        interactor.refreshAll()
+        requestRootRateIfNeeded()
+        refetchLoadedHistories()
+        requestPriceDataIfNeeded()
+        provideViewModel()
     }
 
     func selectChartPoint(at index: Int?) {
@@ -196,6 +220,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
             return
         }
 
+        historiesPeriod = nil
         state.histories = .failed
         provideViewModel()
     }
@@ -212,6 +237,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
     func didReceiveSyncFailure(_ isFailed: Bool) {
         state.isSyncFailed = isFailed
         provideViewModel()
+    }
+
+    func didReceivePositionsSyncing(_ isSyncing: Bool) {
+        if !isSyncing {
+            view?.didCompleteRefreshing()
+        }
     }
 
     func didChangeCurrency() {
@@ -233,11 +264,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
     }
 
     func didChangeStake() {
-        guard historiesPeriod == state.period else {
-            return
-        }
-
-        interactor.loadHistories(for: state.period)
+        refetchLoadedHistories()
     }
 }
 
