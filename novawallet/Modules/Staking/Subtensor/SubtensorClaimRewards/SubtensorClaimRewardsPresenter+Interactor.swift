@@ -51,6 +51,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
 
     func didReceiveSubnetLogos(_: SubtensorSubnetLogos?) {}
 
+    func didReceiveNovaFeeRate(_: BigRational?) {}
+
     func didReceiveCostBasis(_: SubtensorCostBasis?) {}
 
     func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}

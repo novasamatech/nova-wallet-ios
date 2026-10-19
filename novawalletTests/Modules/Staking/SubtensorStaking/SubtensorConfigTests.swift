@@ -2,20 +2,16 @@ import XCTest
 @testable import novawallet
 
 final class SubtensorConfigTests: XCTestCase {
-    func testStoreUsesTheConfiguredSwapFee() throws {
-        let store = SubtensorNovaFeeRateStore()
+    func testConfigUsesTheConfiguredSwapFee() throws {
+        let config = try decodeConfig(#"{"swapFee":0.005,"subnets":[]}"#)
 
-        store.apply(try decodeConfig(#"{"swapFee":0.005,"subnets":[]}"#))
-
-        XCTAssertEqual(store.rate.decimalValue, Decimal(string: "0.005"))
+        XCTAssertEqual(config.novaFeeRate?.decimalValue, Decimal(string: "0.005"))
     }
 
-    func testStoreFallsBackWhenSwapFeeIsOutOfRange() throws {
-        let store = SubtensorNovaFeeRateStore()
+    func testConfigDropsAnOutOfRangeSwapFee() throws {
+        let config = try decodeConfig(#"{"swapFee":1,"subnets":[]}"#)
 
-        store.apply(try decodeConfig(#"{"swapFee":1,"subnets":[]}"#))
-
-        XCTAssertEqual(store.rate, SubtensorNovaFeeConstants.fallbackRate)
+        XCTAssertNil(config.novaFeeRate)
     }
 
     private func decodeConfig(_ json: String) throws -> SubtensorConfig {

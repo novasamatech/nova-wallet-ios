@@ -364,7 +364,14 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     }
 
     func showSwapRateInfo() {
-        wireframe.showSubtensorInfo(.swapRate(model.direction, subnetName: subnetName), from: view)
+        guard let novaFeeRate = quoteState?.displayed?.novaFeeRate else {
+            return
+        }
+
+        wireframe.showSubtensorInfo(
+            .swapRate(model.direction, subnetName: subnetName, novaFeeRate: novaFeeRate),
+            from: view
+        )
     }
 
     func showSlippageInfo() {

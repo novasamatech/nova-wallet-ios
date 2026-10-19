@@ -199,7 +199,9 @@ private extension SubtensorConfirmViewModelFactory {
             remark: createRemark(
                 for: input.model.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
             ),
-            feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
+            feeDisclosure: input.latestQuote.map {
+                quoteViewModelFactory.novaFeeDisclosure(rate: $0.novaFeeRate, locale: locale)
+            }
         )
     }
 

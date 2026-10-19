@@ -17,6 +17,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 
         interactor.loadCatalogue()
         interactor.loadSubnetLogos()
+        interactor.loadNovaFeeRate()
         interactor.loadCostBasis(for: netuid)
     }
 
@@ -43,13 +44,13 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func showSwapRateInfo() {
-        guard !isRoot else {
+        guard !isRoot, let novaFeeRate = quoteFlow.freshQuote?.novaFeeRate ?? novaFeeRate else {
             return
         }
 
         let subnetName = SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: selectedLocale)
 
-        wireframe.showSubtensorInfo(.swapRate(.sell, subnetName: subnetName), from: view)
+        wireframe.showSubtensorInfo(.swapRate(.sell, subnetName: subnetName, novaFeeRate: novaFeeRate), from: view)
     }
 
     func showAvgBuyPriceInfo() {

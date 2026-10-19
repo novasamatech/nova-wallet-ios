@@ -186,6 +186,7 @@ struct SubtensorTradeQuote: Equatable {
     let quote: SubtensorQuote
     let amountIn: Balance
     let novaFee: SubtensorNovaFee?
+    let novaFeeRate: BigRational
     let expectedOut: Balance
     let swapMinimumOut: Balance
     let minimumOut: Balance

@@ -32,6 +32,7 @@ protocol SubtensorBaseInteractorInputProtocol: AnyObject {
     func loadExistentialDeposit()
     func loadCatalogue()
     func loadSubnetLogos()
+    func loadNovaFeeRate()
     func loadCostBasis(for netuid: UInt16)
     func loadRootHolds(for hotkeys: [AccountId])
     func retryRootHolds()
@@ -50,6 +51,7 @@ protocol SubtensorBaseInteractorOutputProtocol: AnyObject {
     func didReceiveBaseError(_ error: SubtensorBaseError)
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didReceiveNovaFeeRate(_ rate: BigRational?)
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }

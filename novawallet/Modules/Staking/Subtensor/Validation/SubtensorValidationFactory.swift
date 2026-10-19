@@ -92,9 +92,8 @@ final class SubtensorValidationFactory {
         return formatter.stringFromDecimal(impact.decimalOrZeroValue) ?? ""
     }
 
-    private func displayedMinimumStake(requiredStake: Balance, includesNovaFee: Bool) -> Balance {
-        let rate = SubtensorNovaFeeRateStore.shared.rate
-        let grossStake = includesNovaFee ? try? SubtensorNovaFeeCalculator.grossUp(net: requiredStake, rate: rate) : nil
+    private func displayedMinimumStake(requiredStake: Balance, novaFeeRate: BigRational?) -> Balance {
+        let grossStake = novaFeeRate.flatMap { try? SubtensorNovaFeeCalculator.grossUp(net: requiredStake, rate: $0) }
 
         return grossStake ?? requiredStake
     }
@@ -325,13 +324,13 @@ extension SubtensorValidationFactory: SubtensorValidationFactoryProtocol {
         stakedAmount: Balance?,
         minStake: Balance?,
         quotedSwapFee: Balance?,
-        includesNovaFee: Bool,
+        novaFeeRate: BigRational?,
         locale: Locale
     ) -> DataValidating {
         errorCondition(presenting: { factory, view in
             let displayedMinimum = factory.displayedMinimumStake(
                 requiredStake: (minStake ?? 0) + (quotedSwapFee ?? 0),
-                includesNovaFee: includesNovaFee
+                novaFeeRate: novaFeeRate
             )
 
             factory.presentable.presentStakeAmountTooLow(
