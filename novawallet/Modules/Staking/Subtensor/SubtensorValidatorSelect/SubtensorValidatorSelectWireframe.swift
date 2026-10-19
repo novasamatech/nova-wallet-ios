@@ -16,7 +16,12 @@ final class SubtensorValidatorSelectWireframe: SubtensorValidatorSelectWireframe
         view?.controller.navigationController?.pushViewController(filters.controller, animated: true)
     }
 
-    func complete(from view: SubtensorValidatorSelectViewProtocol?) {
+    func complete(from view: SubtensorValidatorSelectViewProtocol?, completion: @escaping () -> Void) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+
         view?.controller.navigationController?.popViewController(animated: true)
+
+        CATransaction.commit()
     }
 }

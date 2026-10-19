@@ -179,8 +179,15 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
             return
         }
 
-        delegate?.didSelectValidator(handedOut(item), for: target)
-        wireframe.complete(from: view)
+        let validator = handedOut(item)
+        let target = target
+        let delegate = delegate
+
+        delegate?.didSelectValidator(validator, for: target)
+
+        wireframe.complete(from: view) { [weak delegate] in
+            delegate?.didCompleteValidatorSelection(validator, for: target)
+        }
     }
 }
 
