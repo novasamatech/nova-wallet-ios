@@ -43,6 +43,21 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         XCTAssertEqual(preset?.name, "Rizzo")
     }
 
+    func testInactiveExistingStakeValidatorGivesWayToTheBestRecommendedOne() throws {
+        let factory = createFactory(
+            existingTake: nil,
+            recommendationOperationFactory: createRecommendationOperationFactory(),
+            yieldOperationFactory: createYieldOperationFactory(rates: [topYieldHotkey: "31.2"]),
+            directoryOperationFactory: createDirectoryOperationFactory(existingTake: nil, inactiveDetails: [existingHotkey])
+        )
+
+        let preset = try withExtendedLifetime(factory) {
+            try run(factory.createPresetWrapper(for: chutesRef, existingHotkey: existingHotkey))
+        }
+
+        XCTAssertEqual(preset?.hotkey, topYieldHotkey)
+    }
+
     func testOnlyTheNextBestYieldValidatorIsTriedWhenTheBestOneHasNoDetail() throws {
         let directoryOperationFactory = createDirectoryOperationFactory(
             existingTake: nil,
@@ -92,7 +107,8 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
         hotkey: AccountId,
         netuid: UInt16,
         name: String?,
-        take: Decimal?
+        take: Decimal?,
+        isActive: Bool
     ) -> SubtensorValidatorDirectoryItem {
         SubtensorValidatorDirectoryItem(
             hotkey: hotkey,
@@ -100,13 +116,14 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
             name: name,
             take: take,
             reportedStake: nil,
-            status: SubtensorValidatorChainStatus(hasPermit: true, isActive: true)
+            status: SubtensorValidatorChainStatus(hasPermit: true, isActive: isActive)
         )
     }
 
     private func createDirectoryOperationFactory(
         existingTake: Decimal?,
-        failingDetails: Set<AccountId> = []
+        failingDetails: Set<AccountId> = [],
+        inactiveDetails: Set<AccountId> = []
     ) -> MockSubtensorValidatorDirectoryOperationFactoryProtocol {
         let directoryOperationFactory = MockSubtensorValidatorDirectoryOperationFactoryProtocol()
 
@@ -123,7 +140,13 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
                 let take = hotkey == self.existingHotkey ? existingTake : Decimal(string: "0.09")
 
                 return CompoundOperationWrapper.createWithResult(
-                    self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: names[hotkey], take: take)
+                    self.generateItem(
+                        hotkey: hotkey,
+                        netuid: subnet.netuid,
+                        name: names[hotkey],
+                        take: take,
+                        isActive: !inactiveDetails.contains(hotkey)
+                    )
                 )
             }
         }

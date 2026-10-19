@@ -90,7 +90,8 @@ extension SubtensorStakeSetupPresenter {
             quickPickOrder: quickPickVisit?.order,
             selectionFailed: quickPickVisit?.error != nil,
             presetError: presetError,
-            rootEntryPresentation: rootEntryPresentation
+            rootEntryPresentation: rootEntryPresentation,
+            isLockedValidatorPending: isLockedValidatorPending
         )
     }
 

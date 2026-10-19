@@ -8,7 +8,6 @@ struct SubtensorHotkeySubnet: Hashable {
 
 struct SubtensorValidatorChainQuery: Equatable {
     let pairs: [SubtensorHotkeySubnet]
-    var takeHotkeys: [AccountId] = []
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
@@ -30,6 +29,8 @@ struct SubtensorValidatorChainSnapshot {
 }
 
 extension SubtensorValidatorChainStatus {
+    static let unregistered = SubtensorValidatorChainStatus(hasPermit: false, isActive: false)
+
     static func effectiveActivityCutoff(factorMilli: UInt64, tempo: UInt64) -> UInt64 {
         let (product, didOverflow) = factorMilli.multipliedReportingOverflow(by: tempo)
         let saturatedProduct = didOverflow ? UInt64.max : product
@@ -41,11 +42,13 @@ extension SubtensorValidatorChainStatus {
         snapshot: SubtensorValidatorChainSnapshot,
         pair: SubtensorHotkeySubnet
     ) -> SubtensorValidatorChainStatus? {
+        let isRoot = pair.netuid == SubtensorPallet.rootNetuid
+
         guard let uid = snapshot.uids[pair] else {
-            return nil
+            return isRoot ? nil : .unregistered
         }
 
-        guard pair.netuid != SubtensorPallet.rootNetuid else {
+        guard !isRoot else {
             return SubtensorValidatorChainStatus(hasPermit: nil, isActive: nil)
         }
 

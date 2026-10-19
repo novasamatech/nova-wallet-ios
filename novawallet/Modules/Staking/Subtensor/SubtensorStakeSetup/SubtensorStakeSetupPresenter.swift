@@ -48,6 +48,7 @@ final class SubtensorStakeSetupPresenter {
     var costBasis: SubtensorCostBasisState = .loading
     var novaFeeRate: BigRational?
     var isConfirmationShown = false
+    var isLockedValidatorPending = false
 
     init(
         interactor: SubtensorStakeSetupInteractorInputProtocol,
@@ -152,6 +153,7 @@ extension SubtensorStakeSetupPresenter {
         }
 
         if let hotkey = mode.lockedHotkey, let subnetRef {
+            isLockedValidatorPending = true
             interactor.loadLockedValidator(hotkey, on: subnetRef)
         }
 
