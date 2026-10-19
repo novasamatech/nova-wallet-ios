@@ -90,6 +90,8 @@ protocol SubtensorValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale
     ) -> DataValidating
 
+    func validatorIsActive(isInactive: Bool, locale: Locale) -> DataValidating
+
     func subnetStakingEnabled(
         subnetExists: Bool?,
         subtokenEnabled: Bool?,

@@ -10,6 +10,7 @@ struct SubtensorStakeValidatingDependencies {
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
     var quoteContext: SubtensorQuoteValidatingContext?
+    var isValidatorInactive = false
 
     var isSubnet: Bool {
         netuid != SubtensorPallet.rootNetuid
@@ -56,6 +57,7 @@ extension SubtensorValidationFactoryProtocol {
 
         validations.append(contentsOf: createStakeBalanceValidations(for: dependencies, locale: locale))
         validations.append(contentsOf: createStakePreflightValidations(for: dependencies, locale: locale))
+        validations.append(validatorIsActive(isInactive: dependencies.isValidatorInactive, locale: locale))
 
         if dependencies.isSubnet {
             validations.append(priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale))
@@ -157,5 +159,25 @@ private extension SubtensorValidationFactoryProtocol {
                 locale: locale
             )
         ] + createNetworkStateValidations(for: dependencies.preflight, locale: locale)
+    }
+}
+
+extension SubtensorValidationFactory {
+    func validatorIsActive(isInactive: Bool, locale: Locale) -> DataValidating {
+        WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentInactiveValidator(
+                view,
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                locale: locale
+            )
+        }, preservesCondition: {
+            !isInactive
+        })
     }
 }
