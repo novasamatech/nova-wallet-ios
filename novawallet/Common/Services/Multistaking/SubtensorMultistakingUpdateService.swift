@@ -29,7 +29,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.handle(state: $0) },
         onFailure: { [weak self] in self?.completeImmediate($0) },
-        onUnchangedState: { [weak self] _ in self?.performCataloguePricingRefresh() }
+        onUnchangedState: { [weak self] _ in self?.performCataloguePricingRefresh(marksSyncing: false) }
     )
 
     private var lastState: Multistaking.SubtensorState? {
@@ -293,24 +293,26 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         persistLastStateIfIdle()
     }
 
-    private func persistLastStateIfIdle() {
+    private func persistLastStateIfIdle(marksSyncing: Bool = true) {
         guard let lastState, !stakeStateSubscription.isFetching else {
             return
         }
 
-        markSyncingImmediate()
+        if marksSyncing {
+            markSyncingImmediate()
+        }
 
         persistState(lastState)
     }
 
-    private func performCataloguePricingRefresh() {
+    private func performCataloguePricingRefresh(marksSyncing: Bool = true) {
         cataloguePricing.refresh(
             latestState: { [weak self] in self?.lastState },
             runningCallbackIn: workingQueue,
             mutex: mutex,
             onUpdate: { [weak self] didChange in
                 if didChange {
-                    self?.persistLastStateIfIdle()
+                    self?.persistLastStateIfIdle(marksSyncing: marksSyncing)
                 }
             }
         )
