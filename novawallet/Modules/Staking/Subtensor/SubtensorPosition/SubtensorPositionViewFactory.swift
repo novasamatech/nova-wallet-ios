@@ -15,6 +15,7 @@ enum SubtensorPositionViewFactory {
             netuid: group.netuid,
             blockNumberSubscription: isRoot ? SubtensorFlowServicesFactory.createBlockSubscription(for: state) : nil,
             applicationHandler: ApplicationHandler(),
+            eventCenter: EventCenter.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

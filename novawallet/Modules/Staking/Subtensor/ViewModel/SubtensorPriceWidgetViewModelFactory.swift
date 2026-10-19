@@ -8,6 +8,7 @@ struct SubtensorPriceWidgetParams {
     let taoPrice: PriceData?
     let currencyId: Int?
     let chartEndDate: Date
+    let avgBuyPrice: Decimal?
 }
 
 struct SubtensorPriceHeaderParams {

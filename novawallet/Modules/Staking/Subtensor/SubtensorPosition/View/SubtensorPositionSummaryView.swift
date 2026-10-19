@@ -31,7 +31,7 @@ final class SubtensorPositionSummaryView: UIView {
     private let amountSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
     private let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
-    private let rowView = SubtensorPositionSummaryRowView()
+    private let rowsView = UIView.vStack(spacing: Constants.spacing, [])
     private var iconViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
@@ -89,7 +89,7 @@ final class SubtensorPositionSummaryView: UIView {
                 : R.color.colorChipsBackground()!
         }
 
-        rowView.bind(viewModel: viewModel.row)
+        bind(rows: viewModel.rows)
     }
 }
 
@@ -102,6 +102,20 @@ private extension SubtensorPositionSummaryView {
         static let detailLineHeight: CGFloat = 16
     }
 
+    func bind(rows: [SubtensorPositionRowViewModel]) {
+        while rowsView.arrangedSubviews.count < rows.count {
+            rowsView.addArrangedSubview(SubtensorPositionSummaryRowView())
+        }
+
+        rowsView.arrangedSubviews.enumerated().forEach { index, view in
+            view.isHidden = index >= rows.count
+
+            if index < rows.count {
+                (view as? SubtensorPositionSummaryRowView)?.bind(viewModel: rows[index])
+            }
+        }
+    }
+
     func setupLayout() {
         let textView = UIView.vStack(alignment: .leading, spacing: 2, [captionLabel, amountLabel, fiatLabel])
         let headerView = UIView.hStack(alignment: .top, spacing: 12, [iconView, textView, UIView(), statusView])
@@ -111,8 +125,8 @@ private extension SubtensorPositionSummaryView {
             make.top.leading.trailing.equalToSuperview().inset(12)
         }
 
-        addSubview(rowView)
-        rowView.snp.makeConstraints { make in
+        addSubview(rowsView)
+        rowsView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom).offset(Constants.spacing)
             make.leading.trailing.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(12)
@@ -207,6 +221,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
             skeletonView.setLoading(true)
         case let .loaded(value, detail):
             valueLabel.text = value
+            valueLabel.textColor = viewModel.tone.textColor
             detailLabel.text = detail
             detailLabel.isHidden = detail == nil
             skeletonView.setLoading(false)
