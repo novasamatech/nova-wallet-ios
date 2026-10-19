@@ -233,7 +233,9 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         }
 
         if state.history == .failed {
-            retryHistory()
+            historyRequest = nil
+            state.history = .loading
+            provideViewModel()
         } else if let historyRequest {
             interactor.loadHistory(for: historyRequest.subnet, period: historyRequest.period)
         }
