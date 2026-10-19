@@ -30,6 +30,19 @@ extension ModalCardPresentationController {
             }
         }
     }
+
+    func applySourceRestingTransforms() {
+        let sourceViewControllers = sourceViewControllers
+
+        sourceViewControllers.forEach { $0.viewIfLoaded?.transform = .identity }
+
+        sourceViewControllers.enumerated().reversed().forEach { depth, viewController in
+            viewController.viewIfLoaded?.transform = transformFactory.createRestingTransform(
+                for: viewController,
+                depth: depth
+            )
+        }
+    }
 }
 
 private extension ModalCardPresentationController {

@@ -4,6 +4,7 @@ import UIKit
 protocol ModalCardPresentationTransformFactoryProtocol {
     func createAppearanceTransform(for presentingViewController: UIViewController) -> CGAffineTransform
     func createDismissingTransform(for presentingViewController: UIViewController) -> CGAffineTransform
+    func createRestingTransform(for presentingViewController: UIViewController, depth: Int) -> CGAffineTransform
 }
 
 class ModalCardPresentationTransformFactory {}
@@ -75,6 +76,15 @@ extension ModalCardPresentationTransformFactory: ModalCardPresentationTransformF
         } else {
             createLastPresenterTransform(for: presentingViewController)
         }
+    }
+
+    func createRestingTransform(for presentingViewController: UIViewController, depth: Int) -> CGAffineTransform {
+        createLastPresenterTransform(for: presentingViewController).concatenating(
+            CGAffineTransform(
+                translationX: .zero,
+                y: Constants.cardPresenterTopInset * CGFloat(depth)
+            )
+        )
     }
 }
 

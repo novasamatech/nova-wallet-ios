@@ -7,7 +7,7 @@ public final class ModalCardPresentationController: UIPresentationController {
 
     private let contextRootViewController: UIViewController
     let configuration: ModalCardPresentationConfiguration
-    private let transformFactory: ModalCardPresentationTransformFactoryProtocol
+    let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
     weak var presentationDelegate: ModalCardPresentationControllerDelegate? {
         presentedViewController as? ModalCardPresentationControllerDelegate
@@ -56,9 +56,15 @@ public final class ModalCardPresentationController: UIPresentationController {
 
         containerView?.autoresizesSubviews = true
 
-        guard !completed else { return }
+        if completed {
+            let parentPresentationController = presentingViewController.presentationController
+                as? ModalCardPresentationController
 
-        presentedView?.frame = frameOfPresentedViewInContainerView
+            parentPresentationController?.applySourceRestingTransforms()
+        } else {
+            presentedView?.frame = frameOfPresentedViewInContainerView
+            applySourceRestingTransforms()
+        }
     }
 
     override public var frameOfPresentedViewInContainerView: CGRect {
