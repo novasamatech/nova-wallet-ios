@@ -35,6 +35,7 @@ private extension SubtensorPortfolioViewModelFactory {
         let chart: SubtensorPortfolioChartViewModel
         let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
         var points: [SubtensorPortfolioValuePoint] = []
+        var isChangeAvailable = false
     }
 
     var precision: Int16 {
@@ -122,7 +123,8 @@ private extension SubtensorPortfolioViewModelFactory {
             return ChartContent(
                 chart: .chart(chart),
                 change: change.map { .value($0) } ?? .hidden,
-                points: points
+                points: points,
+                isChangeAvailable: series.changeInFiat != nil
             )
         }
     }
@@ -348,6 +350,10 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactory
             periods: createPeriods(for: state, locale: locale)
         )
 
-        return SubtensorPortfolioChartSelection(header: header, points: chart.points)
+        return SubtensorPortfolioChartSelection(
+            header: header,
+            points: chart.points,
+            isChangeAvailable: chart.isChangeAvailable
+        )
     }
 }

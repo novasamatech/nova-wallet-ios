@@ -200,6 +200,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
             return
         }
 
+        historiesPeriod = nil
         state.histories = .failed
         provideViewModel()
     }
