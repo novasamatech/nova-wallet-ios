@@ -2,35 +2,6 @@ import DGCharts
 import UIKit
 import UIKit_iOS
 
-protocol SubtensorPriceChartViewDelegate: AnyObject {
-    func priceChartViewDidBeginSelection(_ chartView: SubtensorSubnetPriceChartView)
-    func priceChartView(_ chartView: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection)
-    func priceChartViewDidEndSelection(_ chartView: SubtensorSubnetPriceChartView)
-}
-
-protocol SubtensorChartHapticsHandling: SubtensorPriceChartViewDelegate {
-    var seekHapticPlayer: ProgressiveHapticPlayer { get }
-    var chartLongPressHapticPlayer: HapticPlayer { get }
-
-    func didSelectChart(_ selection: SubtensorPriceChartSelection?)
-}
-
-extension SubtensorChartHapticsHandling {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
-
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
-        seekHapticPlayer.play()
-        didSelectChart(selection)
-    }
-
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        didSelectChart(nil)
-    }
-}
-
 final class SubtensorSubnetPriceChartView: UIView {
     enum Style {
         case price
@@ -41,6 +12,16 @@ final class SubtensorSubnetPriceChartView: UIView {
 
     private let chart = LineChartView()
     private let style: Style
+
+    private let referenceView: BorderedLabelView = .create { view in
+        view.titleLabel.apply(style: .semiboldCaps1ChartLabel)
+        view.backgroundView.fillColor = R.color.colorChartLabelBackground()!
+        view.backgroundView.highlightedFillColor = R.color.colorChartLabelBackground()!
+        view.backgroundView.cornerRadius = Constants.referenceRadius
+        view.contentInsets = Constants.referenceInsets
+        view.isUserInteractionEnabled = false
+        view.isHidden = true
+    }
 
     private var viewModel: SubtensorPriceChartViewModel?
     private var plottedWidth: CGFloat?
@@ -55,6 +36,7 @@ final class SubtensorSubnetPriceChartView: UIView {
         super.init(frame: .zero)
         addSubview(chart)
         chart.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        addSubview(referenceView)
         chart.backgroundColor = .clear
         chart.noDataText = ""
         chart.chartDescription.enabled = false
@@ -92,6 +74,8 @@ final class SubtensorSubnetPriceChartView: UIView {
         if let viewModel, bounds.width != plottedWidth {
             plot(viewModel: viewModel)
         }
+
+        layoutReference()
     }
 
     func bind(viewModel: SubtensorPriceChartViewModel) {
@@ -103,8 +87,13 @@ final class SubtensorSubnetPriceChartView: UIView {
 private extension SubtensorSubnetPriceChartView {
     enum Constants {
         static let lineWidth: CGFloat = 1.5
-        static let midLineWidth: CGFloat = 1
+        static let guideLineWidth: CGFloat = 1
         static let midLineDashLengths: [CGFloat] = [3, 3]
+        static let referenceDashLengths: [CGFloat] = [4, 4]
+        static let referenceRadius: CGFloat = 4
+        static let referenceInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        static let referenceLineHeight: CGFloat = 14
+        static let referenceSpacing: CGFloat = 2
         static let fillTopAlpha: CGFloat = 0.28
         static let selectionPressDuration: TimeInterval = 0.05
     }
@@ -114,10 +103,13 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func plot(viewModel: SubtensorPriceChartViewModel) {
+        defer { layoutReference() }
+
         endSelection()
         plottedWidth = bounds.width
         chartData = SubtensorPriceChartDataFactory.create(
             series: viewModel.series,
+            reference: viewModel.reference?.value,
             availablePoints: Int(bounds.width)
         )
 
@@ -132,6 +124,15 @@ private extension SubtensorSubnetPriceChartView {
         chart.dragEnabled = chartData.coverageStart == nil
         chart.highlightPerDragEnabled = chart.dragEnabled
         applyAxis(lower: chartData.yRange.lowerBound, upper: chartData.yRange.upperBound, labels: viewModel.axisLabels)
+
+        if let reference = viewModel.reference {
+            addGuide(
+                at: reference.value,
+                color: R.color.colorTextSecondary()!,
+                dashLengths: Constants.referenceDashLengths
+            )
+            referenceView.titleLabel.apply(text: reference.label, lineHeight: Constants.referenceLineHeight)
+        }
 
         let lineColor = viewModel.isRising ? R.color.colorTextPositive()! : R.color.colorTextNegative()!
         self.lineColor = lineColor
@@ -172,7 +173,11 @@ private extension SubtensorSubnetPriceChartView {
         axis.removeAllLimitLines()
 
         if style == .price {
-            addMidLine(at: (lower + upper) / 2)
+            addGuide(
+                at: (lower + upper) / 2,
+                color: R.color.colorTextTertiary()!,
+                dashLengths: Constants.midLineDashLengths
+            )
         }
 
         guard labels.count > 1 else {
@@ -189,13 +194,33 @@ private extension SubtensorSubnetPriceChartView {
         }
     }
 
-    func addMidLine(at value: Double) {
+    func addGuide(at value: Double, color: UIColor, dashLengths: [CGFloat]) {
         let guide = ChartLimitLine(limit: value)
-        guide.lineColor = R.color.colorTextTertiary()!
-        guide.lineWidth = Constants.midLineWidth
-        guide.lineDashLengths = Constants.midLineDashLengths
+        guide.lineColor = color
+        guide.lineWidth = Constants.guideLineWidth
+        guide.lineDashLengths = dashLengths
         guide.drawLabelEnabled = false
         chart.rightAxis.addLimitLine(guide)
+    }
+
+    func layoutReference() {
+        guard let reference = viewModel?.reference, chartData != nil else {
+            referenceView.isHidden = true
+            return
+        }
+
+        let lineY = chart.getTransformer(forAxis: .right).pixelForValues(x: 0, y: reference.value).y
+        let size = referenceView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        let aboveY = lineY - Constants.referenceSpacing - size.height
+
+        referenceView.frame = CGRect(
+            origin: CGPoint(
+                x: chart.viewPortHandler.contentRight - size.width,
+                y: aboveY < bounds.minY ? lineY + Constants.referenceSpacing : aboveY
+            ),
+            size: size
+        )
+        referenceView.isHidden = false
     }
 
     func fill(for lineColor: UIColor) -> Fill? {

@@ -25,7 +25,16 @@ final class SubtensorPriceChartDataTests: XCTestCase {
         XCTAssertEqual(data.selection(at: data.xRange.lowerBound), .point(sourceIndex: 0))
     }
 
-    private func makeData(ages: [Int] = [6 * 86400, 3 * 86400, 1800]) -> SubtensorPriceChartData? {
+    func testAvgBuyPriceBelowTheSeriesWidensTheRange() throws {
+        let data = try XCTUnwrap(makeData(ages: [7 * 86400 - 1800, 3 * 86400, 1800], reference: 0.5))
+
+        XCTAssertEqual(data.yRange, 0.5 ... 3)
+    }
+
+    private func makeData(
+        ages: [Int] = [6 * 86400, 3 * 86400, 1800],
+        reference: Double? = nil
+    ) -> SubtensorPriceChartData? {
         let points = ages.enumerated().map { index, age in
             SubtensorPriceChartViewModel.Point(
                 sourceIndex: index,
@@ -41,6 +50,6 @@ final class SubtensorPriceChartDataTests: XCTestCase {
             coverageTolerance: SubtensorPricePeriod.week.coverageTolerance
         )
 
-        return SubtensorPriceChartDataFactory.create(series: .dated(series), availablePoints: 0)
+        return SubtensorPriceChartDataFactory.create(series: .dated(series), reference: reference, availablePoints: 0)
     }
 }
