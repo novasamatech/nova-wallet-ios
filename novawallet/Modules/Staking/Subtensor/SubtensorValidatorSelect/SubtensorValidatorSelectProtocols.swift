@@ -10,6 +10,7 @@ enum SubtensorValidatorSort: Equatable {
 struct SubtensorValidatorRowViewModel: Equatable {
     enum Trailing: Equatable {
         case rate(String)
+        case inactive(String)
         case none
     }
 
@@ -19,18 +20,29 @@ struct SubtensorValidatorRowViewModel: Equatable {
     let subtitle: String
     let trailing: Trailing
     let isSelected: Bool
+    let isSelectable: Bool
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.hotkey == rhs.hotkey && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle &&
-            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected
+            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected && lhs.isSelectable == rhs.isSelectable
     }
 }
 
+struct SubtensorValidatorFilteredEmptyViewModel: Equatable {
+    let message: String
+    let actionTitle: String
+}
+
 struct SubtensorValidatorListViewModel: Equatable {
+    enum Empty: Equatable {
+        case text(String)
+        case filtered(SubtensorValidatorFilteredEmptyViewModel)
+    }
+
     let rows: [SubtensorValidatorRowViewModel]
     let countTitle: String
     let sortTitle: String
-    let emptyText: String?
+    let empty: Empty?
     let selectTitle: String
     let canSelect: Bool
 }
@@ -69,6 +81,7 @@ protocol SubtensorValidatorSelectPresenterProtocol: AnyObject {
     func setup()
     func search(_ query: String)
     func showSortOptions()
+    func removeFilters()
     func select(hotkey: AccountId)
     func showInfo(hotkey: AccountId)
     func confirm()
@@ -90,7 +103,7 @@ protocol SubtensorValidatorSelectInteractorOutputProtocol: AnyObject {
     func didFailVerification(_ error: Error)
 }
 
-protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
+protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable, AlertPresentable {
     func showFilters(
         from view: SubtensorValidatorSelectViewProtocol?,
         applied: SubtensorValidatorFilters,

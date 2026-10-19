@@ -57,7 +57,8 @@ extension SubtensorStakeSetupPresenter {
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
             },
-            quoteContext: createQuoteContext()
+            quoteContext: createQuoteContext(),
+            isValidatorInactive: validatorItem?.isInactive == true
         )
     }
 

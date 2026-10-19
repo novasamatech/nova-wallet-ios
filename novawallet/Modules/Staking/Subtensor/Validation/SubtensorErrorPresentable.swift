@@ -20,6 +20,8 @@ protocol SubtensorErrorPresentable: SwapErrorPresentable {
         locale: Locale?
     )
 
+    func presentInactiveValidator(_ view: ControllerBackedProtocol, action: @escaping () -> Void, locale: Locale?)
+
     func presentSubnetTradesUnavailable(_ view: ControllerBackedProtocol, locale: Locale?)
 
     func presentDustRemainderWarning(
@@ -117,6 +119,22 @@ extension SubtensorErrorPresentable where Self: AlertPresentable & ErrorPresenta
             title: strings.stakingSubtensorPriceImpactWarningTitle(),
             message: strings.stakingSubtensorPriceImpactWarningMessage(impact),
             actions: [cancelAction, proceedAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentInactiveValidator(_ view: ControllerBackedProtocol, action: @escaping () -> Void, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let viewModel = AlertPresentableViewModel(
+            title: strings.stakingSubtensorUiValidatorInactiveTitle(),
+            message: strings.stakingSubtensorUiValidatorInactiveMessage(),
+            actions: [
+                AlertPresentableAction(title: strings.commonCancel()),
+                AlertPresentableAction(title: strings.commonContinue(), handler: action)
+            ],
             closeAction: nil
         )
 

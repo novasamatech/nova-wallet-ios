@@ -30,6 +30,10 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         label.isHidden = true
     }
 
+    let filteredEmptyView: SubtensorValidatorFilteredEmptyView = .create { view in
+        view.isHidden = true
+    }
+
     let errorView: WarningView = .create { view in
         view.isHidden = true
         view.contentInsets.bottom = 4
@@ -70,6 +74,22 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         }
     }
 
+    func bind(empty: SubtensorValidatorListViewModel.Empty?) {
+        emptyLabel.isHidden = true
+        filteredEmptyView.isHidden = true
+
+        switch empty {
+        case let .text(text):
+            emptyLabel.text = text
+            emptyLabel.isHidden = false
+        case let .filtered(viewModel):
+            filteredEmptyView.bind(viewModel)
+            filteredEmptyView.isHidden = false
+        case nil:
+            break
+        }
+    }
+
     func bindError(_ viewModel: SubtensorValidatorErrorViewModel) {
         errorView.bind(WarningView.Model(
             title: viewModel.title,
@@ -92,7 +112,7 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     private func setupLayout() {
-        [searchView, headerView, tableView, emptyLabel, errorView, bottomPanel].forEach(addSubview)
+        [searchView, headerView, tableView, emptyLabel, filteredEmptyView, errorView, bottomPanel].forEach(addSubview)
         bottomPanel.contentView.addSubview(actionButton)
 
         searchView.snp.makeConstraints { make in
@@ -113,6 +133,11 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         }
 
         emptyLabel.snp.makeConstraints { make in
+            make.center.equalTo(tableView)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
+
+        filteredEmptyView.snp.makeConstraints { make in
             make.center.equalTo(tableView)
             make.leading.trailing.equalToSuperview().inset(32)
         }
@@ -174,5 +199,51 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
         titleLabel.applySubtensorCaps(title)
         detailsLabel.applySubtensorCaps(details ?? "")
         detailsLabel.lineBreakMode = .byTruncatingTail
+    }
+}
+
+final class SubtensorValidatorFilteredEmptyView: UIView {
+    let messageLabel: UILabel = .create { label in
+        label.apply(style: .footnoteSecondary)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+    }
+
+    let actionButton: UIButton = .create { button in
+        button.titleLabel?.apply(style: .semiboldSubheadlineAccent)
+        button.setTitleColor(R.color.colorButtonTextAccent(), for: .normal)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        let stackView = UIView.vStack(
+            alignment: .center,
+            [UIImageView(image: R.image.iconEmptyHistory()), messageLabel, actionButton]
+        )
+
+        stackView.setCustomSpacing(Constants.actionSpacing, after: messageLabel)
+
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(_ viewModel: SubtensorValidatorFilteredEmptyViewModel) {
+        messageLabel.apply(text: viewModel.message, lineHeight: Constants.messageLineHeight)
+        actionButton.setTitle(viewModel.actionTitle, for: .normal)
+    }
+}
+
+private extension SubtensorValidatorFilteredEmptyView {
+    enum Constants {
+        static let actionSpacing: CGFloat = 8
+        static let messageLineHeight: CGFloat = 18
     }
 }
