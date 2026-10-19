@@ -8,7 +8,8 @@ enum SubtensorPricePeriod: Equatable {
     case year
     case all
 
-    static let selectable: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
+    static let subnetSelectable: [SubtensorPricePeriod] = [.day, .week, .month, .year, .all]
+    static let portfolioSelectable: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
 }
 
 struct SubtensorPricePoint: Equatable {

@@ -149,8 +149,8 @@ private extension SubtensorPriceWidgetViewModelFactory {
         locale: Locale
     ) -> SubtensorSubnetPeriodsViewModel {
         SubtensorSubnetPeriodsViewModel(
-            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
-            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
+            titles: SubtensorPricePeriod.subnetSelectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.subnetSelectable.firstIndex(of: params.period) ?? 0,
             isEnabled: params.history != .notListed && params.history != .loading
         )
     }
