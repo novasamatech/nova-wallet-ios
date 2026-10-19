@@ -6,7 +6,9 @@ enum SubtensorRecommendationVerifier {
         snapshot: SubtensorValidatorChainSnapshot,
         gates: SubtensorClientGates
     ) -> Bool {
-        guard let status = SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) else {
+        guard
+            snapshot.uids[pair] != nil,
+            let status = SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) else {
             return false
         }
 
