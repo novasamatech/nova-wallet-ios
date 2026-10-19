@@ -87,7 +87,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         newBadgeView.isHidden = !viewModel.isNew
         newBadgeView.contentView.apply(
-            text: R.string(preferredLanguages: locale.rLanguages).localizable.commonNew().uppercased(with: locale),
+            text: R.string(preferredLanguages: locale.rLanguages).localizable.commonNewBadge().uppercased(with: locale),
             lineHeight: Constants.newBadgeLineHeight,
             kern: Constants.newBadgeKern
         )
