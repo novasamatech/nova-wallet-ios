@@ -22,7 +22,7 @@ extension SubtensorPositionInteractor {
             return
         }
 
-        if let remaining = costBasisService.remainingSettleTime(for: accountId) {
+        if let remaining = costBasisService.remainingSettleTime(for: accountId, netuid: netuid) {
             scheduleOwnTradeSettle(after: remaining)
         } else if ownTradeScheduler?.isScheduled == true {
             ownTradeScheduler?.cancel()
@@ -64,11 +64,12 @@ extension SubtensorPositionInteractor: EventVisitorProtocol {
     func processSubtensorStakeChanged(event: SubtensorStakeChanged) {
         guard
             event.chainAssetId == chainAsset.chainAssetId,
+            event.netuids.contains(netuid),
             event.accountId == state.selectedAccount?.chainAccount.accountId else {
             return
         }
 
-        let remaining = costBasisService.remainingSettleTime(for: event.accountId)
+        let remaining = costBasisService.remainingSettleTime(for: event.accountId, netuid: netuid)
 
         scheduleOwnTradeSettle(after: remaining ?? SubtensorCostBasisService.ownTradeSettleTime)
     }

@@ -11,6 +11,7 @@ final class SubtensorCostBasisService {
 
     private let mutex = NSLock()
     private var seedBlockedUntil: [AccountId: TimeInterval] = [:]
+    private var settleDeadlines: [AccountId: [UInt16: TimeInterval]] = [:]
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
@@ -94,17 +95,22 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
         ).map { try Self.makeLedger(from: $0).costBasis(for: netuid) }
     }
 
-    func remainingSettleTime(for accountId: AccountId) -> TimeInterval? {
+    func remainingSettleTime(for accountId: AccountId, netuid: UInt16) -> TimeInterval? {
         mutex.lock()
         defer { mutex.unlock() }
 
-        let now = timeProvider()
-
-        guard let blockedUntil = seedBlockedUntil[accountId], blockedUntil > now else {
+        guard let deadline = settleDeadlines[accountId]?[netuid] else {
             return nil
         }
 
-        return blockedUntil - now
+        let now = timeProvider()
+
+        guard deadline > now else {
+            settleDeadlines[accountId]?[netuid] = nil
+            return nil
+        }
+
+        return deadline - now
     }
 }
 
@@ -117,7 +123,9 @@ extension SubtensorCostBasisService: EventVisitorProtocol {
         apiOperationFactory.dropOperations(accountSubject: accountSubject)
 
         mutex.lock()
-        seedBlockedUntil[event.accountId] = timeProvider() + Self.ownTradeSettleTime
+        let deadline = timeProvider() + Self.ownTradeSettleTime
+        seedBlockedUntil[event.accountId] = deadline
+        event.netuids.forEach { settleDeadlines[event.accountId, default: [:]][$0] = deadline }
         mutex.unlock()
     }
 }

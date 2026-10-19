@@ -99,7 +99,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         eventCenter.notify(
             with: SubtensorStakeChanged(
                 chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: AssetModel.utilityAssetId),
-                accountId: accountId
+                accountId: accountId,
+                netuids: [chutesNetuid]
             )
         )
         eventQueue.sync {}
@@ -127,7 +128,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         eventCenter.notify(
             with: SubtensorStakeChanged(
                 chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: AssetModel.utilityAssetId),
-                accountId: accountId
+                accountId: accountId,
+                netuids: [chutesNetuid]
             )
         )
         eventQueue.sync {}

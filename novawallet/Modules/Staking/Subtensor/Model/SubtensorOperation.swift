@@ -44,6 +44,17 @@ extension SubtensorOperation {
 
         return hotkey
     }
+
+    var netuids: Set<UInt16> {
+        switch self {
+        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
+            [SubtensorPallet.rootNetuid]
+        case let .subnetBuy(_, netuid, _, _, _),
+             let .subnetSell(_, netuid, _, _, _, _),
+             let .subnetSellGroup(_, _, netuid, _, _, _):
+            [netuid]
+        }
+    }
 }
 
 enum SubtensorOperationError: Error, Equatable {

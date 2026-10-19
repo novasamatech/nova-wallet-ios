@@ -9,7 +9,7 @@ protocol SubtensorCostBasisServiceProtocol: AnyObject {
 
     func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis>
 
-    func remainingSettleTime(for accountId: AccountId) -> TimeInterval?
+    func remainingSettleTime(for accountId: AccountId, netuid: UInt16) -> TimeInterval?
 }
 
 extension SubtensorLoadDelivering {

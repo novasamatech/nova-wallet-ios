@@ -45,10 +45,14 @@ final class SubtensorSubmissionOperationFactory {
 }
 
 private extension SubtensorSubmissionOperationFactory {
-    func createFinalizer(signer: SubtensorRecordingSigner) -> SubtensorSubmissionFinalizer {
+    func createFinalizer(
+        for operation: SubtensorOperation,
+        signer: SubtensorRecordingSigner
+    ) -> SubtensorSubmissionFinalizer {
         SubtensorSubmissionFinalizer(
             chainAssetId: chainAsset.chainAssetId,
             accountId: accountId,
+            netuids: operation.netuids,
             novaFeeBeneficiary: feeCalculator.beneficiary,
             signer: signer,
             eventCenter: eventCenter,
@@ -154,7 +158,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
             signedClosure()
         }
 
-        let finalizer = createFinalizer(signer: recordingSigner)
+        let finalizer = createFinalizer(for: operation, signer: recordingSigner)
 
         let markSentOperation = ClosureOperation { [sharedOperation] in
             DispatchQueue.main.async {
@@ -202,6 +206,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
 private struct SubtensorSubmissionFinalizer {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
+    let netuids: Set<UInt16>
     let novaFeeBeneficiary: AccountId?
     let signer: SubtensorRecordingSigner
     let eventCenter: EventCenterProtocol
@@ -278,7 +283,9 @@ private extension SubtensorSubmissionFinalizer {
     }
 
     func notifyStakeChanged() {
-        eventCenter.notify(with: SubtensorStakeChanged(chainAssetId: chainAssetId, accountId: accountId))
+        eventCenter.notify(
+            with: SubtensorStakeChanged(chainAssetId: chainAssetId, accountId: accountId, netuids: netuids)
+        )
     }
 }
 
