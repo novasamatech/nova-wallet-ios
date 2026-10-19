@@ -217,6 +217,9 @@ private extension ModalCardInteractiveDismissal {
             return
         }
 
+        self.transitionContext = nil
+        self.transitionAnimator = nil
+
         let remainingDistance = (finished ? 1 - fraction : fraction) * distance
         let towardsTarget = finished ? velocity : -velocity
         let relativeVelocity = remainingDistance > 1 ? towardsTarget / remainingDistance : 0
