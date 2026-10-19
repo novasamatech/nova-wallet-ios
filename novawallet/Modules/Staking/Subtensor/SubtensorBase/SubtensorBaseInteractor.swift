@@ -134,12 +134,12 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func estimateFee(for operation: SubtensorOperation) {
+        feeCallStore.cancel()
+
         feeDebouncer.debounce { [weak self] in
             guard let self else {
                 return
             }
-
-            feeCallStore.cancel()
 
             let wrapper = submissionOperationFactory.createFeeWrapper(for: operation)
 
@@ -184,12 +184,12 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func refreshQuote(for request: SubtensorTradeQuoteRequest) {
+        quoteCallStore.cancel()
+
         quoteDebouncer.debounce { [weak self] in
             guard let self else {
                 return
             }
-
-            quoteCallStore.cancel()
 
             let wrapper = tradeQuoteOperationFactory.createTradeQuoteWrapper(for: request)
 
