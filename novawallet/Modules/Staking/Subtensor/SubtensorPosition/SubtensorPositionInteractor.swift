@@ -14,6 +14,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
+    let eventCenter: EventCenterProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -21,6 +22,9 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let logger: LoggerProtocol
 
     var priceProvider: StreamableProvider<PriceData>?
+    var ownTradeScheduler: SchedulerProtocol?
+    var isOwnTradeSettleDue = false
+    let costBasisStore = CancellableCallStore()
     private var failedHoldsHotkeys: [AccountId]?
     private var isBlockFeedDown = false
     private var lastGroup: SubtensorPortfolioGroup?
@@ -32,7 +36,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     private let holdsStore = CancellableCallStore()
     private let historyStore = CancellableCallStore()
     private let subnetsInfoStore = CancellableCallStore()
-    private let costBasisStore = CancellableCallStore()
 
     private var isRoot: Bool {
         netuid == SubtensorPallet.rootNetuid
@@ -47,6 +50,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         netuid: UInt16,
         blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?,
         applicationHandler: ApplicationHandlerProtocol,
+        eventCenter: EventCenterProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -63,6 +67,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         costBasisService = state.earnServices.costBasisService
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
+        self.eventCenter = eventCenter
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -75,6 +80,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         }
 
         costBasisStore.cancel()
+        ownTradeScheduler?.cancel()
 
         blockNumberSubscription?.unsubscribe()
         state.positionsSyncService?.remove(observer: self)
@@ -196,21 +202,6 @@ private extension SubtensorPositionInteractor {
         presenter?.didReceive(pendingClaimHotkeys: hotkeys)
     }
 
-    func loadCostBasis() {
-        guard let accountId = state.selectedAccount?.chainAccount.accountId else {
-            return
-        }
-
-        loadCostBasis(
-            using: costBasisService,
-            accountId: accountId,
-            netuid: netuid,
-            in: costBasisStore
-        ) { [weak self] in
-            self?.presenter?.didReceive(costBasis: $0)
-        }
-    }
-
     func retryFailedRootHolds() {
         guard let hotkeys = failedHoldsHotkeys else {
             return
@@ -229,6 +220,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             loadSubnetLogos()
             loadSubnetsInfo()
             loadCostBasis()
+            eventCenter.add(observer: self, dispatchIn: .main)
         }
 
         subscribePositions()

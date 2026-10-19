@@ -21,6 +21,7 @@ struct SubtensorPositionState {
     var isRateResolved = false
     var yields: SubtensorAlphaYields?
     var costBasis = SubtensorCostBasisState.loading
+    var isOwnTradeSettling = false
     var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []

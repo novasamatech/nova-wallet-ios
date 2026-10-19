@@ -170,7 +170,7 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createEarnedRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel? {
-        guard state.costBasis != .resolved(.noPurchases) else {
+        guard state.costBasis != .resolved(.noPurchases), !state.isOwnTradeSettling else {
             return nil
         }
 
