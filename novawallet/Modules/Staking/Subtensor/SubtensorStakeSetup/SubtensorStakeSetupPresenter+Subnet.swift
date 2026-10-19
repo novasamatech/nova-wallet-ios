@@ -154,7 +154,10 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func showSwapRateInfo() {
-        guard !mode.isRootLane, let netuid = mode.netuid, let novaFeeRate else {
+        guard
+            !mode.isRootLane,
+            let netuid = mode.netuid,
+            let novaFeeRate = quoteFlow.freshQuote?.novaFeeRate ?? novaFeeRate else {
             return
         }
 

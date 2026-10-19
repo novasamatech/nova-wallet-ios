@@ -44,7 +44,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func showSwapRateInfo() {
-        guard !isRoot, let novaFeeRate else {
+        guard !isRoot, let novaFeeRate = quoteFlow.freshQuote?.novaFeeRate ?? novaFeeRate else {
             return
         }
 
