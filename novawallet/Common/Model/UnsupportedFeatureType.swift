@@ -13,6 +13,7 @@ enum UnsupportedFeatureType {
     case sell
     case card
     case gift
+    case subtensorStaking
 }
 
 enum FeatureUnsupportedWalletType {

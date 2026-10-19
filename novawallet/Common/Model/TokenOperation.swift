@@ -43,11 +43,11 @@ enum ReceiveAvailableCheckResult {
 
 enum OperationCheckCommonResult {
     case ledgerNotSupported
-    case signerNotSupported(NoSigningSupportType)
     case noSigning
     case noCardSupport(MetaAccountModel)
     case noSellSupport(MetaAccountModel, ChainAsset)
     case noGiftSupport(MetaAccountModel)
+    case noSubtensorStakingSupport(MetaAccountModel)
     case noRampActions
     case available
 

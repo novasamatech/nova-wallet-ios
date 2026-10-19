@@ -231,7 +231,9 @@ private extension FeatureSupportChecker {
             .commonResult(.available)
         case .ledger, .genericLedger:
             .commonResult(.ledgerNotSupported)
-        case .multisig, .proxied:
+        case .proxied:
+            .commonResult(.noSubtensorStakingSupport(wallet))
+        case .multisig:
             .delayedExecutionCheckRequired
         }
     }
@@ -342,12 +344,11 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
                 wallet: wallet,
                 chain: chain
             ) { hasSupport in
-                guard hasSupport else {
-                    completion(.signerNotSupported(.multisig))
-                    return
-                }
+                let result: OperationCheckCommonResult = hasSupport
+                    ? .available
+                    : .noSubtensorStakingSupport(wallet)
 
-                completion(wallet.type == .proxied ? .signerNotSupported(.proxy) : .available)
+                completion(result)
             }
         }
     }

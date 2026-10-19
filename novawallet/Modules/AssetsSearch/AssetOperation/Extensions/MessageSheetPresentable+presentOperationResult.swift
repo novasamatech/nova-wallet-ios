@@ -16,12 +16,6 @@ extension MessageSheetPresentable {
                 type: .ledger,
                 completion: {}
             )
-        case let .signerNotSupported(type):
-            presentSignerNotSupportedView(
-                from: view,
-                type: type,
-                completion: {}
-            )
         case let .noCardSupport(wallet):
             presentFeatureUnsupportedView(
                 from: view,
@@ -40,6 +34,13 @@ extension MessageSheetPresentable {
             presentFeatureUnsupportedView(
                 from: view,
                 type: .gift,
+                walletType: .init(walletType: wallet.type),
+                completion: {}
+            )
+        case let .noSubtensorStakingSupport(wallet):
+            presentFeatureUnsupportedView(
+                from: view,
+                type: .subtensorStaking,
                 walletType: .init(walletType: wallet.type),
                 completion: {}
             )
