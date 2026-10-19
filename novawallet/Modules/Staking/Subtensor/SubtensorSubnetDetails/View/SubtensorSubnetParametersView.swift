@@ -72,7 +72,7 @@ final class SubtensorParameterRowView: UIView {
     let valueLabel: UILabel = .create { $0.textAlignment = .right }
     let detailLabel: UILabel = .create { $0.apply(style: .caption1Secondary); $0.textAlignment = .right }
     let dividerView: UIView = .create { $0.backgroundColor = R.color.colorDivider() }
-    let loadingView = SubtensorSkeletonView()
+    let loadingView = SubtensorSkeletonView(cornerRadius: 6)
 
     init(style: Style) {
         self.style = style
@@ -97,7 +97,7 @@ final class SubtensorParameterRowView: UIView {
             $0.top.bottom.equalToSuperview().inset(style.verticalInset)
         }
         loadingView.snp
-            .makeConstraints { $0.trailing.centerY.equalToSuperview(); $0.width.equalTo(64); $0.height.equalTo(10) }
+            .makeConstraints { $0.trailing.centerY.equalToSuperview(); $0.width.equalTo(64); $0.height.equalTo(12) }
         snp.makeConstraints { $0.height.greaterThanOrEqualTo(style.minHeight) }
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         values.setContentCompressionResistancePriority(.required, for: .horizontal)
