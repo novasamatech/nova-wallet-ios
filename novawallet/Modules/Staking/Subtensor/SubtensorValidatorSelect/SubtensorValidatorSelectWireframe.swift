@@ -1,10 +1,19 @@
 import UIKit
 
-final class SubtensorValidatorSelectWireframe: ValidatorSelectWireframeProtocol {
-    let state: SubtensorStakingSharedStateProtocol
+final class SubtensorValidatorSelectWireframe: SubtensorValidatorSelectWireframeProtocol {
+    let state: SubtensorSharedStateProtocol
 
-    init(state: SubtensorStakingSharedStateProtocol) {
+    init(state: SubtensorSharedStateProtocol) {
         self.state = state
+    }
+
+    func showFilters(
+        from view: SubtensorValidatorSelectViewProtocol?,
+        applied: SubtensorValidatorFilters,
+        onApply: @escaping (SubtensorValidatorFilters) -> Void
+    ) {
+        let filters = SubtensorValidatorFiltersViewFactory.createView(applied: applied, onApply: onApply)
+        view?.controller.navigationController?.pushViewController(filters.controller, animated: true)
     }
 
     func complete(from view: SubtensorValidatorSelectViewProtocol?) {

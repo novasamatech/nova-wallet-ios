@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorSubnetDetailsViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         delegate: SubtensorSubnetSelectDelegate
@@ -11,6 +11,7 @@ enum SubtensorSubnetDetailsViewFactory {
         guard
             !input.target.isRoot,
             input.target.netuid == input.subnet.netuid,
+            input.target.subnetInfo?.networkRegisteredAt == input.subnet.ref.registeredAt,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -20,7 +21,7 @@ enum SubtensorSubnetDetailsViewFactory {
         let viewModelFactory = SubtensorSubnetDetailsViewModelFactory(
             subnet: input.subnet,
             chainAsset: state.stakingOption.chainAsset,
-            currency: currencyManager.selectedCurrency,
+            currencyManager: currencyManager,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -31,9 +32,7 @@ enum SubtensorSubnetDetailsViewFactory {
             interactor: interactor,
             wireframe: SubtensorSubnetDetailsWireframe(state: state),
             viewModelFactory: viewModelFactory,
-            earnSettings: state.earnServices.earnSettings,
-            localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            localizationManager: LocalizationManager.shared
         )
 
         let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
@@ -55,35 +54,38 @@ enum SubtensorSubnetDetailsViewFactory {
 
 private extension SubtensorSubnetDetailsViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         currencyManager: CurrencyManagerProtocol
     ) -> SubtensorSubnetDetailsInteractor {
-        let earnServices = state.earnServices
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        let presetFactory = SubtensorValidatorPresetFactory(
-            directoryService: earnServices.validatorDirectoryService,
-            recommendationService: earnServices.recommendationService,
-            operationQueue: operationQueue,
-            logger: Logger.shared
-        )
 
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
-            chainAsset: state.stakingOption.chainAsset,
-            accountId: state.selectedAccount?.chainAccount.accountId,
-            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
-            rankingViewService: earnServices.rankingViewService,
-            presetFactory: presetFactory,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            positionsSyncService: state.positionsSyncService,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            state: state,
+            parametersOperationFactory: createParametersOperationFactory(state: state, operationQueue: operationQueue),
+            applicationHandler: ApplicationHandler(),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: Logger.shared
+        )
+    }
+}
+
+extension SubtensorSubnetDetailsViewFactory {
+    static func createParametersOperationFactory(
+        state: SubtensorSharedStateProtocol,
+        operationQueue: OperationQueue
+    ) -> SubtensorSubnetParametersOperationFactoryProtocol {
+        let chain = state.stakingOption.chainAsset.chain
+        return SubtensorSubnetParametersOperationFactory(
+            apiFactory: state.apiOperationFactory,
+            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
+                chainId: chain.chainId, chainRegistry: state.chainRegistry
+            ),
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+            operationQueue: operationQueue, logger: state.logger
         )
     }
 }

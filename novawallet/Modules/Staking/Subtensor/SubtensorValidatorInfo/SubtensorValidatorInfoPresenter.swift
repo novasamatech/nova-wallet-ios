@@ -6,33 +6,37 @@ final class SubtensorValidatorInfoPresenter {
 
     let target: SubtensorStakeTarget
     let hotkey: AccountId
-    let interactor: SubtensorValInfoInteractorInputProtocol
+    let chain: ChainModel
+    let interactor: SubtensorValidatorInfoInteractorInputProtocol
     let wireframe: SubtensorValidatorInfoWireframeProtocol
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
-    let logger: LoggerProtocol
 
-    private var detail: SubtensorValidatorDetail?
+    private var detail: SubtensorValidatorDirectoryItem?
+    private var needsChainDetail: Bool
     private var annualRate: LoadableViewModelState<Decimal?> = .loading
     private var alphaPrice: LoadableViewModelState<Balance?> = .loading
+    private var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
     private var price: PriceData?
 
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?,
-        interactor: SubtensorValInfoInteractorInputProtocol,
+        chain: ChainModel,
+        detail: SubtensorValidatorDirectoryItem?,
+        needsChainDetail: Bool,
+        interactor: SubtensorValidatorInfoInteractorInputProtocol,
         wireframe: SubtensorValidatorInfoWireframeProtocol,
         viewModelFactory: SubtensorValidatorInfoViewModelFactory,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.target = target
         self.hotkey = hotkey
+        self.chain = chain
         self.detail = detail
+        self.needsChainDetail = needsChainDetail
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.logger = logger
         self.localizationManager = localizationManager
     }
 }
@@ -43,22 +47,14 @@ private extension SubtensorValidatorInfoPresenter {
             target: target,
             hotkey: hotkey,
             detail: detail,
+            needsChainDetail: needsChainDetail,
             annualRate: annualRate,
             alphaPrice: alphaPrice,
-            price: price
+            price: price,
+            coverage: coverage
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
-    }
-
-    func seed(from snapshot: SubtensorValidatorInfoSnapshot) {
-        if let annualRate = snapshot.annualRate.value {
-            self.annualRate = .loaded(value: annualRate)
-        }
-
-        if let alphaPrice = snapshot.alphaPrice.value {
-            self.alphaPrice = .loaded(value: alphaPrice)
-        }
     }
 
     func loadDetail() {
@@ -69,13 +65,25 @@ private extension SubtensorValidatorInfoPresenter {
 
 extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
         provideViewModel()
 
         interactor.setup()
 
-        if detail == nil {
+        if detail == nil || needsChainDetail {
             loadDetail()
+        }
+    }
+
+    func presentAccountOptions() {
+        if
+            let view = view,
+            let address = try? hotkey.toAddress(using: chain.chainFormat) {
+            wireframe.presentAccountOptions(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: selectedLocale
+            )
         }
     }
 
@@ -88,11 +96,17 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
     }
 }
 
-extension SubtensorValidatorInfoPresenter: SubtensorValInfoInteractorOutputProtocol {
-    func didReceive(detail: SubtensorValidatorDetail) {
+extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoInteractorOutputProtocol {
+    func didReceive(coverage: SubtensorValidatorCoverage?) {
+        self.coverage = .loaded(value: coverage)
+        provideViewModel()
+    }
+
+    func didReceive(detail: SubtensorValidatorDirectoryItem) {
         view?.didStopLoading()
 
         self.detail = detail
+        needsChainDetail = false
         provideViewModel()
     }
 

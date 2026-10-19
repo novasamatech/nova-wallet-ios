@@ -14,35 +14,35 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func selectChartPoint(at index: Int?)
 }
 
-protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorPortfolioSnapshot
+protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef])
+    func loadHistories(for period: SubtensorPricePeriod)
     func loadWeeklyChanges(for subnets: [SubtensorSubnetRef])
+    func loadRootYields()
+    func loadNetworkRootRate()
 }
 
-protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
-    func didReceive(state: Multistaking.SubtensorStakingState)
-    func didReceive(catalogue: SubtensorSubnetCatalogue?)
+protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
+    func didReceive(state: Multistaking.SubtensorState)
+    func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
-    func didReceive(rootRate: Decimal?)
+    func didReceive(rootYields: SubtensorAlphaYields?)
+    func didReceive(networkRootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)
     func didFailHistories(for period: SubtensorPricePeriod)
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
+    func didFailWeeklyChanges()
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()
+    func didBecomeActive()
+    func didChangeStake()
 }
 
-protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorEarnInfoPresentable {
+protocol SubtensorPortfolioWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorEarnInfoPresentable {
     func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup)
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?)
     func close(from view: SubtensorPortfolioViewProtocol?)
-}
-
-struct SubtensorPortfolioSnapshot {
-    let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
-    let rootRate: HTTPCachePeek<Decimal?>
 }

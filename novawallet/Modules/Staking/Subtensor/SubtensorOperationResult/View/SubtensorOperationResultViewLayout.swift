@@ -47,6 +47,15 @@ final class SubtensorOperationResultViewLayout: ScrollableContainerLayoutView {
         actionButton = nil
     }
 
+    func applySpacing(isCompact: Bool) {
+        let spacing = isCompact ? Constants.compactSpacing : Constants.spacing
+
+        stackView.layoutMargins.top = isCompact ? Constants.compactTopInset : Constants.topInset
+        statusView.applyPillSpacing(spacing)
+        stackView.setCustomSpacing(spacing, after: statusView)
+        stackView.setCustomSpacing(spacing, after: pairsView)
+    }
+
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
@@ -54,10 +63,10 @@ final class SubtensorOperationResultViewLayout: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
 
-        stackView.layoutMargins = UIEdgeInsets(top: 76, left: 16, bottom: 0, right: 16)
+        stackView.layoutMargins = UIEdgeInsets(top: Constants.topInset, left: 16, bottom: 0, right: 16)
 
-        addArrangedSubview(statusView, spacingAfter: 24)
-        addArrangedSubview(pairsView, spacingAfter: 24)
+        addArrangedSubview(statusView, spacingAfter: Constants.spacing)
+        addArrangedSubview(pairsView, spacingAfter: Constants.spacing)
         addArrangedSubview(detailsView)
 
         addSubview(backButton)
@@ -66,5 +75,14 @@ final class SubtensorOperationResultViewLayout: ScrollableContainerLayoutView {
             make.top.equalTo(safeAreaLayoutGuide).inset(8)
             make.size.equalTo(44)
         }
+    }
+}
+
+private extension SubtensorOperationResultViewLayout {
+    enum Constants {
+        static let topInset: CGFloat = 76
+        static let compactTopInset: CGFloat = 60
+        static let spacing: CGFloat = 24
+        static let compactSpacing: CGFloat = 16
     }
 }

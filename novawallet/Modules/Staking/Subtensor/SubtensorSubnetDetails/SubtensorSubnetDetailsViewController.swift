@@ -6,8 +6,8 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorSubnetDetailsPresenterProtocol
 
-    private let seekHapticPlayer: ProgressiveHapticPlayer
-    private let chartLongPressHapticPlayer: HapticPlayer
+    let seekHapticPlayer: ProgressiveHapticPlayer
+    let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     private var titleImageViewModel: ImageViewModelProtocol?
@@ -41,8 +41,6 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.titleView = rootView.titleView
-
         setupHandlers()
         setupLocalization()
 
@@ -52,7 +50,8 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
 private extension SubtensorSubnetDetailsViewController {
     enum Constants {
-        static let titleIconSize = CGSize(width: 24, height: 24)
+        static let titleIconSize = CGSize(width: 28, height: 28)
+        static let titleSpacing: CGFloat = 8
     }
 
     func setupHandlers() {
@@ -64,24 +63,17 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.favoriteButton.addTarget(self, action: #selector(actionFavorite), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionUseSubnet), for: .touchUpInside)
 
-        rootView.estimateView.chipButtons.forEach { button in
-            button.addTarget(self, action: #selector(actionChip(_:)), for: .touchUpInside)
-        }
-
         rootView.moreDetailsView.delegate = self
     }
 
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.validatorCaptionLabel.text = strings.stakingSubtensorUiDetailValidator()
-        rootView.validatorView.titleLabel.text = strings.stakingCommonValidator()
-        rootView.estimateCaptionLabel.text = strings.stakingSubtensorUiDetailEstimate()
-        rootView.estimateView.noteLabel.text = strings.stakingSubtensorUiDetailEstimateNote()
+        rootView.validatorCaptionLabel.applySubtensorCaps(strings.stakingSubtensorV22Validators())
+        rootView.parametersHeadingLabel.applySubtensorCaps(strings.stakingSubtensorV22Parameters())
 
         rootView.moreDetailsView.titleControl.titleLabel.text = strings.stakingSubtensorUiDetailMore()
         rootView.moreDetailsView.titleControl.invalidateLayout()
-        rootView.moreDetailsView.numberCell.titleLabel.text = strings.stakingSubtensorUiPickerNumber()
 
         rootView.actionButton.imageWithTitleView?.title = strings.stakingSubtensorUiDetailUseSubnet()
         rootView.actionButton.invalidateLayout()
@@ -104,10 +96,6 @@ private extension SubtensorSubnetDetailsViewController {
         presenter.selectValidator()
     }
 
-    @objc func actionChip(_ sender: UIControl) {
-        presenter.selectAmount(at: sender.tag)
-    }
-
     @objc func actionFavorite() {
         presenter.toggleFavorite()
     }
@@ -119,22 +107,32 @@ private extension SubtensorSubnetDetailsViewController {
 
 extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtocol {
     func didReceive(title: SubtensorSubnetDetailsTitleViewModel) {
-        let titleView = rootView.titleView
+        if let titleView = navigationItem.titleView as? IconDetailsView {
+            titleImageViewModel?.cancel(on: titleView.imageView)
+        }
 
-        titleImageViewModel?.cancel(on: titleView.imageView)
+        let titleView: IconDetailsView = .create { view in
+            view.detailsLabel.apply(style: .semiboldBodyPrimary)
+            view.detailsLabel.text = title.title
+            view.imageView.contentMode = .scaleAspectFit
+            view.imageView.layer.cornerRadius = Constants.titleIconSize.height / 2
+            view.imageView.clipsToBounds = true
+            view.iconWidth = Constants.titleIconSize.width
+            view.spacing = Constants.titleSpacing
+            view.imageView.snp.makeConstraints { $0.height.equalTo(Constants.titleIconSize.height) }
+        }
+
         titleImageViewModel = title.icon
-
-        titleView.detailsLabel.text = title.title
         title.icon.loadImage(on: titleView.imageView, targetSize: Constants.titleIconSize, animated: true)
+
+        navigationItem.titleView = titleView
     }
 
     func didReceive(viewModel: SubtensorSubnetDetailsViewModel) {
         rootView.priceWidget.bind(viewModel: viewModel.priceWidget)
         rootView.validatorView.bind(viewModel: viewModel.validator)
-        rootView.estimateView.bind(viewModel: viewModel.estimate)
-        rootView.bind(factorsHeading: viewModel.factors.heading)
-        rootView.factorsView.bind(viewModel: viewModel.factors)
-        rootView.moreDetailsView.numberCell.detailsLabel.text = viewModel.subnetNumber
+        rootView.parametersView.bind(viewModel.parameters)
+        rootView.moreDetailsView.bind(viewModel.moreDetails)
 
         rootView.favoriteButton.imageWithTitleView?.iconImage = viewModel.isFavorite
             ? R.image.iconFavToolbarSel()
@@ -156,19 +154,9 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
     }
 }
 
-extension SubtensorSubnetDetailsViewController: SubtensorPriceChartViewDelegate {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
-
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
-        seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
-    }
-
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        presenter.selectChartPoint(at: nil)
+extension SubtensorSubnetDetailsViewController: SubtensorChartHapticsHandling {
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?) {
+        presenter.selectChart(selection)
     }
 }
 

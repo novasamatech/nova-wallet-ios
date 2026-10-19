@@ -8,25 +8,25 @@ struct SubtensorHotkeySubnet: Hashable {
 
 struct SubtensorValidatorChainQuery: Equatable {
     let pairs: [SubtensorHotkeySubnet]
-    let includesHotkeyAlpha: Bool
+    var takeHotkeys: [AccountId] = []
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
-    let uid: UInt16
     let hasPermit: Bool?
-    let blocksSinceUpdate: UInt64?
     let isActive: Bool?
 }
 
 struct SubtensorValidatorChainSnapshot {
-    let blockHash: BlockHash
     let blockNumber: BlockNumber
     let uids: [SubtensorHotkeySubnet: UInt16]
     let permits: [UInt16: [Bool]]
     let lastUpdates: [UInt16: [UInt64]]
     let effectiveActivityCutoffs: [UInt16: UInt64]
     let takes: [AccountId: UInt16]
-    let hotkeyAlpha: [SubtensorHotkeySubnet: Balance]
+
+    var takeFractions: [AccountId: Decimal] {
+        takes.mapValues { Decimal($0) / Decimal(SubtensorPallet.perU16Denominator) }
+    }
 }
 
 extension SubtensorValidatorChainStatus {
@@ -45,13 +45,8 @@ extension SubtensorValidatorChainStatus {
             return nil
         }
 
-        guard pair.netuid != SubtensorStakingPallet.rootNetuid else {
-            return SubtensorValidatorChainStatus(
-                uid: uid,
-                hasPermit: nil,
-                blocksSinceUpdate: nil,
-                isActive: nil
-            )
+        guard pair.netuid != SubtensorPallet.rootNetuid else {
+            return SubtensorValidatorChainStatus(hasPermit: nil, isActive: nil)
         }
 
         let index = Int(uid)
@@ -69,29 +64,15 @@ extension SubtensorValidatorChainStatus {
         let lastUpdate = lastUpdates[index]
         let blocksSinceUpdate = head > lastUpdate ? head - lastUpdate : 0
 
-        return SubtensorValidatorChainStatus(
-            uid: uid,
-            hasPermit: permits[index],
-            blocksSinceUpdate: blocksSinceUpdate,
-            isActive: blocksSinceUpdate <= cutoff
-        )
+        return SubtensorValidatorChainStatus(hasPermit: permits[index], isActive: blocksSinceUpdate <= cutoff)
     }
 }
 
 enum SubtensorTakeGate {
     static func exceedsMax(take: UInt16, maxTake: BigRational) -> Bool {
         let takeScaled = BigUInt(take) * maxTake.denominator
-        let maxTakeScaled = BigUInt(SubtensorStakingPallet.perU16Denominator) * maxTake.numerator
+        let maxTakeScaled = BigUInt(SubtensorPallet.perU16Denominator) * maxTake.numerator
 
         return takeScaled > maxTakeScaled
     }
-}
-
-struct SubtensorValidatorIdentity: Equatable {
-    let name: String?
-    let url: String?
-    let githubRepo: String?
-    let image: String?
-    let discord: String?
-    let description: String?
 }

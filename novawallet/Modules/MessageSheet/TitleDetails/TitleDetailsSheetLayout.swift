@@ -11,6 +11,11 @@ final class TitleDetailsSheetViewLayout: UIView {
         $0.numberOfLines = 0
     }
 
+    private lazy var contentView = UIView.vStack(spacing: 10, [titleLabel, detailsLabel])
+
+    private var detailsLineHeight: CGFloat?
+    private var actionsBottomInset: CGFloat = 16
+
     private(set) var mainActionButton: TriangularedButton?
     private(set) var secondaryActionButton: TriangularedButton?
     private(set) var buttonsStackView: UIStackView?
@@ -44,7 +49,7 @@ final class TitleDetailsSheetViewLayout: UIView {
         addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-actionsBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
@@ -73,11 +78,28 @@ final class TitleDetailsSheetViewLayout: UIView {
         secondaryActionButton = button
     }
 
-    private func setupLayout() {
-        let stackView = UIView.vStack(spacing: 10, [titleLabel, detailsLabel])
+    func apply(style: Style) {
+        titleLabel.apply(style: style.title)
+        contentView.spacing = style.spacing
+        detailsLineHeight = style.detailsLineHeight
+        actionsBottomInset = style.actionsBottomInset
 
-        addSubview(stackView)
-        stackView.snp.makeConstraints { make in
+        buttonsStackView?.snp.updateConstraints { make in
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-actionsBottomInset)
+        }
+    }
+
+    func bind(details: String) {
+        if let detailsLineHeight {
+            detailsLabel.apply(text: details, lineHeight: detailsLineHeight)
+        } else {
+            detailsLabel.text = details
+        }
+    }
+
+    private func setupLayout() {
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
             make.top.equalToSuperview().inset(10)
         }
@@ -85,23 +107,42 @@ final class TitleDetailsSheetViewLayout: UIView {
 }
 
 extension TitleDetailsSheetViewLayout {
-    func contentHeight(model: TitleDetailsSheetViewModel, locale: Locale) -> CGFloat {
-        let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
-        let messageHeight = height(for: detailsLabel, with: model.message.value(for: locale))
-        let topOffset: CGFloat = 10
-        let bottomOffset: CGFloat = 16
-        let hasAnyActionButton = model.mainAction != nil || model.secondaryAction != nil
-        let buttonHeight: CGFloat = hasAnyActionButton ? UIConstants.actionHeight : 0
-        return topOffset + titleHeight + 10 + messageHeight + buttonHeight + bottomOffset
+    struct Style {
+        let title: UILabel.Style
+        let detailsLineHeight: CGFloat
+        let spacing: CGFloat
+        let actionsBottomInset: CGFloat
     }
 
-    private func height(for label: UILabel, with text: String) -> CGFloat {
+    func contentHeight(model: TitleDetailsSheetViewModel, locale: Locale) -> CGFloat {
+        let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
+        let messageHeight = height(
+            for: detailsLabel,
+            with: model.message.value(for: locale),
+            lineHeight: detailsLineHeight
+        )
+        let topOffset: CGFloat = 10
+        let hasAnyActionButton = model.mainAction != nil || model.secondaryAction != nil
+        let buttonHeight: CGFloat = hasAnyActionButton ? UIConstants.actionHeight : 0
+        return topOffset + titleHeight + contentView.spacing + messageHeight + buttonHeight + actionsBottomInset
+    }
+
+    private func height(for label: UILabel, with text: String, lineHeight: CGFloat? = nil) -> CGFloat {
         let width = UIScreen.main.bounds.width - UIConstants.horizontalInset * 2
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        var attributes: [NSAttributedString.Key: Any] = [.font: label.font as Any]
+
+        if let lineHeight {
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.minimumLineHeight = lineHeight
+            paragraph.maximumLineHeight = lineHeight
+            attributes[.paragraphStyle] = paragraph
+        }
+
         let boundingBox = text.boundingRect(
             with: constraintRect,
             options: .usesLineFragmentOrigin,
-            attributes: [.font: label.font],
+            attributes: attributes,
             context: nil
         )
         return boundingBox.height

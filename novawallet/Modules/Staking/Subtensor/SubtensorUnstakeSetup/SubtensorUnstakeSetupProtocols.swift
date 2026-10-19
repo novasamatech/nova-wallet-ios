@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol {
+protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountAsset(viewModel: AssetViewModel)
     func didReceive(viewModel: SubtensorUnstakeSetupViewModel)
@@ -8,6 +8,7 @@ protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol {
 
 protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
     func setup()
+    func didAppear()
     func updateAmount(_ newValue: Decimal?)
     func selectMax()
     func selectAmountPercentage(_ percentage: Float)
@@ -17,30 +18,15 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadSubnetsInfo(forcingRefresh: Bool)
-    func loadCatalogue()
-    func loadSubnetLogos()
+protocol SubtensorUnstakeSetupInteractorInputProtocol: SubtensorBaseInteractorInputProtocol {
+    func loadSubnetsInfo(for netuid: UInt16)
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
-    func loadRootHolds(for hotkeys: [AccountId])
-    func loadCostBasis(for netuid: UInt16)
+    func loadGroupHotkeys(_ hotkeys: [AccountId], netuid: UInt16)
 }
 
-protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+protocol SubtensorUnstakeSetupInteractorOutputProtocol: SubtensorBaseInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
-    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
-    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
-    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
-}
-
-protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
-    SubtensorValidatorInfoPresentable {
-    func showConfirm(
-        from view: SubtensorUnstakeSetupViewProtocol?,
-        model: SubtensorUnstakeConfirmModel
-    )
+    func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo])
 }

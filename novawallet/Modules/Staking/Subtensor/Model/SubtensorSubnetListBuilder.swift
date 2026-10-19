@@ -1,16 +1,10 @@
 import BigInt
 import Foundation
 
-struct SubtensorSubnetListEntry: Equatable {
-    let subnet: SubtensorCatalogueSubnet
-    let target: SubtensorStakeTarget
-}
-
 struct SubtensorSubnetListItem: Equatable {
     let subnet: SubtensorCatalogueSubnet
     let target: SubtensorStakeTarget
-    let weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
-    let ageBlocks: UInt64?
+    var weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
 
     var ref: SubtensorSubnetRef {
         subnet.ref
@@ -26,6 +20,7 @@ struct SubtensorSubnetList: Equatable {
     let picks: [SubtensorSubnetListItem]
     let others: [SubtensorSubnetListItem]
     let emptyKind: EmptyKind?
+    let total: Int
 
     var count: Int {
         picks.count + others.count
@@ -35,9 +30,10 @@ struct SubtensorSubnetList: Equatable {
 struct SubtensorSubnetListBuilder {
     static let thinPoolThreshold = BigUInt(2_000_000_000_000)
 
-    let entries: [SubtensorSubnetListEntry]
+    let entries: [SubtensorSubnetListItem]
     let weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
-    let ageBlocks: [UInt16: UInt64]
+    let apy: [UInt16: Decimal]?
+    var previousOrder: [SubtensorSubnetRef] = []
     let favourites: Set<SubtensorSubnetRef>
     let locale: Locale
 
@@ -47,34 +43,49 @@ struct SubtensorSubnetListBuilder {
         filters: SubtensorSubnetFilters
     ) -> SubtensorSubnetList {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let sorted = orderedItems(sort: sort).filter {
+            matches($0, query: trimmedQuery) && passes($0, filters: filters)
+        }
+        let picks = sorted.filter { favourites.contains($0.ref) }
+        let others = sorted.filter { !favourites.contains($0.ref) }
+        let emptyKind: SubtensorSubnetList.EmptyKind? = sorted.isEmpty
+            ? (trimmedQuery.isEmpty ? .filters : .query(trimmedQuery)) : nil
+        return SubtensorSubnetList(picks: picks, others: others, emptyKind: emptyKind, total: entries.count)
+    }
 
-        let items = entries
-            .map(createItem)
-            .filter { matches($0, query: trimmedQuery) && passes($0, filters: filters) }
+    func orderedRefs(sort: SubtensorSubnetSort) -> [SubtensorSubnetRef] {
+        orderedItems(sort: sort).map(\.ref)
+    }
 
+    private func orderedItems(sort: SubtensorSubnetSort) -> [SubtensorSubnetListItem] {
+        let items = entries.map { entry in
+            var item = entry
+            item.weekly = weekly?[entry.ref]
+            return item
+        }
+        let known = Set(previousOrder)
+        let missing: [SubtensorSubnetRef] = items.map(\.ref).filter { !known.contains($0) }
+        let appended = missing.sorted { lhs, rhs in
+            if lhs.netuid != rhs.netuid { return lhs.netuid < rhs.netuid }
+            return lhs.registeredAt < rhs.registeredAt
+        }
+        let ranks = Dictionary(
+            (previousOrder + appended).enumerated().map { ($1, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
         let titles = Dictionary(
             items.map { ($0.ref, SubtensorSubnetNaming.title(for: $0.subnet, locale: locale)) },
             uniquingKeysWith: { first, _ in first }
         )
-
-        let sorted = items.sorted { lhs, rhs in
-            isOrderedBefore(lhs, rhs, sort: sort, titles: titles)
+        return items.sorted { lhs, rhs in
+            isOrderedBefore(lhs, rhs, sort: sort, titles: titles) ?? ((ranks[lhs.ref] ?? 0) < (ranks[rhs.ref] ?? 0))
         }
-
-        let picks = sorted.filter { favourites.contains($0.ref) }
-        let others = sorted.filter { !favourites.contains($0.ref) }
-
-        let emptyKind: SubtensorSubnetList.EmptyKind? = sorted.isEmpty
-            ? (trimmedQuery.isEmpty ? .filters : .query(trimmedQuery))
-            : nil
-
-        return SubtensorSubnetList(picks: picks, others: others, emptyKind: emptyKind)
     }
 
     static func entries(
         from catalogue: SubtensorSubnetCatalogue,
         subnetsInfo: SubtensorSubnetsInfo
-    ) -> [SubtensorSubnetListEntry] {
+    ) -> [SubtensorSubnetListItem] {
         let chainSubnets = Dictionary(
             subnetsInfo.subnets.map { ($0.netuid, $0) },
             uniquingKeysWith: { first, _ in first }
@@ -89,29 +100,12 @@ struct SubtensorSubnetListBuilder {
                 return nil
             }
 
-            return SubtensorSubnetListEntry(subnet: subnet, target: .subnet(info: info, price: price))
+            return SubtensorSubnetListItem(subnet: subnet, target: .subnet(info: info, price: price))
         }
     }
 }
 
 private extension SubtensorSubnetListBuilder {
-    enum ChangeRank {
-        case value(Decimal)
-        case unavailable
-        case notListed
-    }
-
-    func createItem(from entry: SubtensorSubnetListEntry) -> SubtensorSubnetListItem {
-        let ref = entry.subnet.ref
-
-        return SubtensorSubnetListItem(
-            subnet: entry.subnet,
-            target: entry.target,
-            weekly: weekly?[ref],
-            ageBlocks: ageBlocks[entry.subnet.netuid]
-        )
-    }
-
     func matches(_ item: SubtensorSubnetListItem, query: String) -> Bool {
         guard !query.isEmpty else {
             return true
@@ -126,11 +120,7 @@ private extension SubtensorSubnetListBuilder {
     }
 
     func passes(_ item: SubtensorSubnetListItem, filters: SubtensorSubnetFilters) -> Bool {
-        if filters.hideThinPools, item.subnet.taoReserve < Self.thinPoolThreshold {
-            return false
-        }
-
-        return true
+        !filters.hideThinPools || favourites.contains(item.ref) || item.subnet.taoReserve >= Self.thinPoolThreshold
     }
 
     func isOrderedBefore(
@@ -138,81 +128,40 @@ private extension SubtensorSubnetListBuilder {
         _ rhs: SubtensorSubnetListItem,
         sort: SubtensorSubnetSort,
         titles: [SubtensorSubnetRef: String]
-    ) -> Bool {
-        let primary: Bool?
-
+    ) -> Bool? {
         switch sort {
         case .sevenDayChange:
-            primary = weekly != nil ? compare(weeklyRank(of: lhs), weeklyRank(of: rhs)) : nil
+            return compareOptional(weeklyValue(of: lhs), weeklyValue(of: rhs), ascending: false)
         case .poolDepth:
-            primary = lhs.subnet.taoReserve != rhs.subnet.taoReserve
-                ? lhs.subnet.taoReserve > rhs.subnet.taoReserve
-                : nil
+            return compare(lhs.subnet.taoReserve, rhs.subnet.taoReserve, ascending: false)
         case .age:
-            primary = compare(age: lhs.ageBlocks, rhs.ageBlocks)
+            return compare(lhs.subnet.networkRegisteredAt, rhs.subnet.networkRegisteredAt, ascending: true)
         case .name:
-            primary = nil
-        }
-
-        return primary ?? isNameOrdered(lhs, rhs, titles: titles)
-    }
-
-    func isNameOrdered(
-        _ lhs: SubtensorSubnetListItem,
-        _ rhs: SubtensorSubnetListItem,
-        titles: [SubtensorSubnetRef: String]
-    ) -> Bool {
-        let lhsTitle = titles[lhs.ref] ?? ""
-        let rhsTitle = titles[rhs.ref] ?? ""
-
-        switch lhsTitle.localizedStandardCompare(rhsTitle) {
-        case .orderedAscending:
-            return true
-        case .orderedDescending:
-            return false
-        case .orderedSame:
-            return lhs.subnet.netuid < rhs.subnet.netuid
+            switch (titles[lhs.ref] ?? "").localizedStandardCompare(titles[rhs.ref] ?? "") {
+            case .orderedAscending: return true
+            case .orderedDescending: return false
+            case .orderedSame: return nil
+            }
+        case .apy:
+            return compareOptional(apy?[lhs.subnet.netuid], apy?[rhs.subnet.netuid], ascending: false)
         }
     }
 
-    func weeklyRank(of item: SubtensorSubnetListItem) -> ChangeRank {
-        switch item.weekly {
-        case let .available(summary):
-            return .value(summary.change)
-        case .notListed:
-            return .notListed
-        case .unavailable, .none:
-            return .unavailable
-        }
+    func compare<Value: Comparable>(_ lhs: Value, _ rhs: Value, ascending: Bool) -> Bool? {
+        lhs == rhs ? nil : (ascending ? lhs < rhs : lhs > rhs)
     }
 
-    func compare(_ lhs: ChangeRank, _ rhs: ChangeRank) -> Bool? {
+    func compareOptional<Value: Comparable>(_ lhs: Value?, _ rhs: Value?, ascending: Bool) -> Bool? {
         switch (lhs, rhs) {
-        case let (.value(lhsValue), .value(rhsValue)):
-            return lhsValue != rhsValue ? lhsValue > rhsValue : nil
-        case (.value, _):
-            return true
-        case (_, .value):
-            return false
-        case (.unavailable, .notListed):
-            return true
-        case (.notListed, .unavailable):
-            return false
-        case (.unavailable, .unavailable), (.notListed, .notListed):
-            return nil
+        case let (.some(left), .some(right)): return compare(left, right, ascending: ascending)
+        case (.some, .none): return true
+        case (.none, .some): return false
+        case (.none, .none): return nil
         }
     }
 
-    func compare(age lhs: UInt64?, _ rhs: UInt64?) -> Bool? {
-        switch (lhs, rhs) {
-        case let (.some(lhsAge), .some(rhsAge)):
-            return lhsAge != rhsAge ? lhsAge > rhsAge : nil
-        case (.some, .none):
-            return true
-        case (.none, .some):
-            return false
-        case (.none, .none):
-            return nil
-        }
+    func weeklyValue(of item: SubtensorSubnetListItem) -> Decimal? {
+        guard case let .available(summary) = item.weekly else { return nil }
+        return summary.change
     }
 }

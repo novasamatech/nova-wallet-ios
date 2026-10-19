@@ -2,7 +2,7 @@ import UIKit
 
 final class SubtensorChartUnavailableView: UIControl {
     let iconView: UIImageView = .create { view in
-        view.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        view.image = R.image.iconInfoFilled()
         view.contentMode = .scaleAspectFit
     }
 
@@ -22,7 +22,7 @@ final class SubtensorChartUnavailableView: UIControl {
         super.init(frame: frame)
 
         backgroundColor = R.color.colorBlockBackground()
-        layer.cornerRadius = 12
+        layer.cornerRadius = 16
 
         setupLayout()
     }
@@ -33,9 +33,9 @@ final class SubtensorChartUnavailableView: UIControl {
     }
 
     func bind(title: String, details: String, isAction: Bool) {
-        titleLabel.text = title
-        detailsLabel.text = details
         detailsLabel.apply(style: isAction ? .caption1Accent : .caption1Secondary)
+        titleLabel.apply(text: title, lineHeight: 18)
+        detailsLabel.apply(text: details, lineHeight: 16)
         isUserInteractionEnabled = isAction
     }
 }
@@ -44,13 +44,12 @@ private extension SubtensorChartUnavailableView {
     func setupLayout() {
         let contentView = UIView.vStack(alignment: .center, spacing: 8, [iconView, titleLabel, detailsLabel])
         contentView.isUserInteractionEnabled = false
-        contentView.setCustomSpacing(16, after: iconView)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().inset(16)
-            make.trailing.lessThanOrEqualToSuperview().inset(16)
+            make.leading.greaterThanOrEqualToSuperview().inset(24)
+            make.trailing.lessThanOrEqualToSuperview().inset(24)
         }
 
         iconView.snp.makeConstraints { make in

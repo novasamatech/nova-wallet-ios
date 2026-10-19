@@ -1,12 +1,12 @@
 import Foundation
 
-enum SubtensorPricePeriod: Equatable, CaseIterable {
+enum SubtensorPricePeriod: Equatable {
     case day
     case week
     case month
     case quarter
-    case year
-    case all
+
+    static let selectable: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
 }
 
 struct SubtensorPricePoint: Equatable {
@@ -21,11 +21,6 @@ struct SubtensorPriceHistory: Equatable {
     let points: [SubtensorPricePoint]
     let changeInTao: Decimal?
     let changeInFiat: Decimal?
-}
-
-enum SubtensorPriceHistoryResult: Equatable {
-    case available(SubtensorPriceHistory)
-    case notListed
 }
 
 enum SubtensorPriceData<Value: Equatable>: Equatable {
@@ -45,32 +40,4 @@ enum SubtensorPriceData<Value: Equatable>: Equatable {
 struct SubtensorWeeklyPriceSummary: Equatable {
     let change: Decimal
     let sparkline: [Decimal]
-}
-
-extension SubtensorPriceHistory {
-    func replacingLatest(with latest: SubtensorPricePoint) -> SubtensorPriceHistory {
-        guard let first = points.first else {
-            return self
-        }
-
-        let updatedPoints = points.count > 1 ? points.dropLast() + [latest] : [latest]
-
-        return SubtensorPriceHistory(
-            subnet: subnet,
-            period: period,
-            points: updatedPoints,
-            changeInTao: changeInTao.flatMap { _ in
-                Self.change(from: first.taoPerAlpha, to: latest.taoPerAlpha)
-            },
-            changeInFiat: changeInFiat.flatMap { _ in
-                Self.change(from: first.fiatPerAlpha, to: latest.fiatPerAlpha)
-            }
-        )
-    }
-}
-
-private extension SubtensorPriceHistory {
-    static func change(from first: Decimal, to last: Decimal) -> Decimal? {
-        first > 0 ? (last - first) / first : nil
-    }
 }

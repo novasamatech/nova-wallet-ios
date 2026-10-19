@@ -6,34 +6,33 @@ final class SubtensorPositionPresenter {
 
     let interactor: SubtensorPositionInteractorInputProtocol
     let wireframe: SubtensorPositionWireframeProtocol
-    let viewModelFactory: SubnetPositionViewModelFactoryProtocol
+    let viewModelFactory: SubtensorPositionViewModelFactoryProtocol
+    let wallet: MetaAccountModel?
     let account: MetaChainAccountResponse?
     let chainAsset: ChainAsset
-    let pendingRootClaims: SubtensorPendingRootClaimsProtocol
 
     private var state: SubtensorPositionState
     private var target: SubtensorStakeTarget?
     private var validatorRequest: ValidatorRequest?
     private var historyRequest: HistoryRequest?
-    private var isCatalogueRefreshForced = false
     private var isSubnetsRefreshForced = false
     private var isSubnetsInfoUnavailable = false
     private var isClosed = false
 
     init(
         group: SubtensorPortfolioGroup,
+        wallet: MetaAccountModel?,
         account: MetaChainAccountResponse?,
         chainAsset: ChainAsset,
-        pendingRootClaims: SubtensorPendingRootClaimsProtocol,
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
-        viewModelFactory: SubnetPositionViewModelFactoryProtocol,
+        viewModelFactory: SubtensorPositionViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         state = SubtensorPositionState(netuid: group.netuid, group: group)
+        self.wallet = wallet
         self.account = account
         self.chainAsset = chainAsset
-        self.pendingRootClaims = pendingRootClaims
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -63,32 +62,7 @@ private extension SubtensorPositionPresenter {
     }
 
     func provideViewModel() {
-        state.pendingClaimHotkeys = account.map { account in
-            pendingRootClaims.pendingHotkeys(
-                for: account.chainAccount.accountId,
-                at: Date(),
-                claimable: state.claimable
-            )
-        } ?? []
-
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
-    }
-
-    func seed(from snapshot: SubtensorPositionSnapshot) {
-        if let catalogue = snapshot.catalogue.value {
-            state.catalogue = catalogue
-            state.isCatalogueResolved = true
-        }
-
-        if let rootRate = snapshot.rootRate.value {
-            state.isRateResolved = true
-            state.rootRate = rootRate
-        }
-
-        if let yields = snapshot.yields.value {
-            state.isRateResolved = true
-            state.yields = yields
-        }
     }
 
     func loadValidatorIfNeeded() {
@@ -122,7 +96,7 @@ private extension SubtensorPositionPresenter {
         }
 
         guard let subnet = state.catalogue?.subnet(for: state.netuid)?.ref else {
-            state.history = .notListed
+            state.history = state.catalogue == nil ? .failed : .notListed
             state.hasResolvedHistory = true
             return
         }
@@ -157,35 +131,35 @@ private extension SubtensorPositionPresenter {
         }
     }
 
+    func resolveCatalogue() {
+        state.isCatalogueResolved = true
+        loadValidatorIfNeeded()
+        requestHistoryIfNeeded()
+        provideViewModel()
+    }
+
     func retrySubnetsInfoIfUnavailable() {
         guard isSubnetsInfoUnavailable else {
             return
         }
 
         isSubnetsInfoUnavailable = false
-        interactor.loadSubnetsInfo(forcingRefresh: true)
+        interactor.loadSubnetsInfo()
     }
 }
 
 extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func setup() {
-        let snapshot = interactor.cachedSnapshot()
-
-        seed(from: snapshot)
         provideViewModel()
         interactor.setup()
 
         if let group = state.group {
             apply(group: group)
         }
-
-        if snapshot.catalogue.value != nil {
-            requestHistoryIfNeeded()
-        }
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorPriceWidgetViewModelFactory.periods
+        let periods = SubtensorPricePeriod.selectable
 
         guard periods.indices.contains(index), periods[index] != state.period else {
             return
@@ -198,22 +172,15 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
     func selectAction(_ action: SubtensorPositionAction) {
         if action == .claim {
-            provideViewModel()
+            interactor.refreshPendingClaims()
         }
 
-        guard let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
+        guard let wallet, let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
             return
         }
 
-        switch SubtensorOperationGate.verdict(for: account.chainAccount.type) {
-        case .allowed, .noSigning:
-            perform(action, account: account)
-        case let .signerNotSupported(type):
-            guard let view else {
-                return
-            }
-
-            wireframe.presentSignerNotSupportedView(from: view, type: type) {}
+        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.perform(action, account: account)
         }
     }
 
@@ -227,25 +194,34 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        let detail = state.isValidatorResolved
-            ? state.validator.map { SubtensorValidatorDetail(item: $0, identity: nil) }
-            : nil
+        let detail = state.isValidatorResolved ? state.validator : nil
+        let needsChainDetail = detail?.isChainDetailUnavailable == true
 
-        wireframe.showValidatorInfo(from: view, target: target, hotkey: hotkey, detail: detail)
+        wireframe.showValidatorInfo(
+            from: view, target: target, hotkey: hotkey, detail: detail, needsChainDetail: needsChainDetail
+        )
     }
 
     func retrySync() {
         interactor.refreshPositions()
+        loadValidatorIfNeeded()
     }
 
     func retryHistory() {
         historyRequest = nil
-        requestHistoryIfNeeded()
+
+        if state.catalogue == nil {
+            state.history = .loading
+            interactor.loadPrices()
+        } else {
+            requestHistoryIfNeeded()
+        }
+
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        state.chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        state.chartSelection = selection
 
         if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
             view?.didReceive(priceHeader: header)
@@ -253,7 +229,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 }
 
-extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
+extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol {
     func didReceive(group: SubtensorPortfolioGroup?) {
         guard let group else {
             guard !isClosed else {
@@ -284,19 +260,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(catalogue: SubtensorSubnetCatalogue?) {
-        state.catalogue = catalogue
+    func didReceive(prices: SubtensorAlphaPrices) {
+        state.prices = prices
+        resolveCatalogue()
+    }
 
-        if catalogue != nil, state.catalogue?.subnet(for: state.netuid) == nil, !isCatalogueRefreshForced {
-            isCatalogueRefreshForced = true
-            interactor.loadCatalogue()
-            return
-        }
-
-        state.isCatalogueResolved = true
-        loadValidatorIfNeeded()
-        requestHistoryIfNeeded()
-        provideViewModel()
+    func didFailPrices() {
+        resolveCatalogue()
     }
 
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?) {
@@ -307,7 +277,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
                 isSubnetsInfoUnavailable = true
             } else {
                 isSubnetsRefreshForced = true
-                interactor.loadSubnetsInfo(forcingRefresh: true)
+                interactor.loadSubnetsInfo()
             }
 
             return
@@ -331,10 +301,12 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(rootRate: Decimal?) {
-        state.isRateResolved = true
-        state.rootRate = rootRate
-        provideViewModel()
+    func didFailValidator(for hotkey: AccountId) {
+        guard hotkey == validatorRequest?.hotkey else {
+            return
+        }
+
+        validatorRequest = nil
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
@@ -343,18 +315,24 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(claimable: SubtensorRootClaimable?) {
+    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
-        provideViewModel()
-    }
-
-    func didReceiveClaimableFailure(_ isFailed: Bool) {
         state.isClaimableFailed = isFailed
         provideViewModel()
     }
 
-    func didReceive(holds: [AccountId: SubtensorRootHold]) {
+    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
+        guard pendingClaimHotkeys != state.pendingClaimHotkeys else {
+            return
+        }
+
+        state.pendingClaimHotkeys = pendingClaimHotkeys
+        provideViewModel()
+    }
+
+    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
         state.holds = holds
+        state.blockTime = blockTime
         provideViewModel()
     }
 
@@ -363,18 +341,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(history: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod) {
+    func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
         guard period == state.period else {
             return
         }
 
-        switch history {
-        case let .available(priceHistory):
-            state.history = .available(priceHistory)
-        case .notListed:
-            state.history = .notListed
-        }
-
+        state.chartEndDate = Date()
+        state.history = history.map { .available($0) } ?? .notListed
         state.hasResolvedHistory = true
         provideViewModel()
     }
@@ -387,6 +360,10 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.history = .failed
         state.hasResolvedHistory = true
         provideViewModel()
+    }
+
+    func didBecomeActive() {
+        loadValidatorIfNeeded()
     }
 }
 

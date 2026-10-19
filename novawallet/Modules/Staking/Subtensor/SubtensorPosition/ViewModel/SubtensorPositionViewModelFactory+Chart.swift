@@ -1,29 +1,44 @@
 import Foundation
-import Foundation_iOS
 
 extension SubtensorPositionViewModelFactory {
     func createPriceWidget(for state: SubtensorPositionState, locale: Locale) -> SubtensorPriceWidgetViewModel? {
-        createPriceWidgetParams(for: state, locale: locale).map { params in
-            priceWidgetFactory.createWidget(for: params, locale: locale)
+        createPriceWidgetParams(for: state).map { params in
+            priceWidgetFactory.createWidget(
+                for: params,
+                header: createPriceHeaderParams(for: state, locale: locale),
+                locale: locale
+            )
         }
     }
 
     func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel? {
-        createPriceWidgetParams(for: state, locale: locale).map { params in
-            priceWidgetFactory.createHeader(for: params, locale: locale)
+        createPriceWidgetParams(for: state).map { params in
+            priceWidgetFactory.createHeader(
+                createPriceHeaderParams(for: state, locale: locale),
+                for: params,
+                locale: locale
+            )
         }
     }
 }
 
 private extension SubtensorPositionViewModelFactory {
-    func createPriceWidgetParams(
-        for state: SubtensorPositionState,
-        locale: Locale
-    ) -> SubtensorPriceWidgetParams? {
+    func createPriceWidgetParams(for state: SubtensorPositionState) -> SubtensorPriceWidgetParams? {
         guard !state.isRoot, state.hasResolvedHistory else {
             return nil
         }
 
+        return SubtensorPriceWidgetParams(
+            history: state.history,
+            period: state.period,
+            isFiat: false,
+            taoPrice: nil,
+            currencyId: nil,
+            chartEndDate: state.chartEndDate
+        )
+    }
+
+    func createPriceHeaderParams(for state: SubtensorPositionState, locale: Locale) -> SubtensorPriceHeaderParams {
         let subnet = state.catalogue?.subnet(for: state.netuid)
 
         let caption = priceWidgetFactory.createCaption(
@@ -33,16 +48,11 @@ private extension SubtensorPositionViewModelFactory {
             locale: locale
         )
 
-        return SubtensorPriceWidgetParams(
+        return SubtensorPriceHeaderParams(
             caption: caption,
-            spotPrice: subnet?.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            history: state.history,
-            period: state.period,
-            isFiat: false,
-            taoPrice: nil,
-            currencyId: nil,
+            spotPrice: state.prices?.taoPerAlpha[state.netuid]?.decimal(assetInfo: chainAsset.assetDisplayInfo),
             currency: nil,
-            selectedPoint: state.chartPoint
+            selection: state.chartSelection
         )
     }
 }

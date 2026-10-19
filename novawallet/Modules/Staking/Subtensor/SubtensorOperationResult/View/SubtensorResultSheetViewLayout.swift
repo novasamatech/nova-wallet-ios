@@ -11,6 +11,7 @@ final class SubtensorResultSheetViewLayout: UIView {
     let spinnerView: UIActivityIndicatorView = .create { view in
         view.style = .medium
         view.color = R.color.colorIconPrimary()
+        view.transform = CGAffineTransform(scaleX: Constants.spinnerScale, y: Constants.spinnerScale)
     }
 
     let tileView: RoundedView = .create { view in
@@ -105,6 +106,7 @@ private extension SubtensorResultSheetViewLayout {
         static let tileSize: CGFloat = 96
         static let tileIconSize: CGFloat = 44
         static let spinnerBoxSize: CGFloat = 28
+        static let spinnerScale: CGFloat = 1.35
         static let reasonInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
         static let reasonSpacing: CGFloat = 12
         static let reasonIconSize: CGFloat = 16

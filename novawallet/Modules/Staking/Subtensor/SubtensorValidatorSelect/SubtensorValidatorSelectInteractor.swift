@@ -1,64 +1,51 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
-    weak var presenter: ValidatorSelectInteractorOutputProtocol?
+final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
+    weak var presenter: SubtensorValidatorSelectInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
+    let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorValidatorSelectSnapshot(
-        directory: .miss,
-        clientGates: .miss,
-        yields: .miss,
-        alphaPrice: .miss
-    )
     private let directoryStore = CancellableCallStore()
-    private let clientGatesStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
+    private let verificationStore = CancellableCallStore()
 
     init(
         target: SubtensorStakeTarget,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        recommendationService: SubtensorRecommendationServiceProtocol,
+        state: SubtensorSharedStateProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.target = target
-        self.directoryService = directoryService
-        self.yieldService = yieldService
-        self.catalogueService = catalogueService
-        self.recommendationService = recommendationService
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
+        recommendationOperationFactory = state.earnServices.recommendationOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
         directoryStore.cancel()
-        clientGatesStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
+        verificationStore.cancel()
     }
 }
 
 private extension SubtensorValidatorSelectInteractor {
-    var subnet: SubtensorSubnetRef {
-        SubtensorSubnetRef(netuid: target.netuid, registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0)
-    }
-
     func loadDirectory() {
         directoryStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDirectoryWrapper(for: subnet),
+            wrapper: directoryOperationFactory.createDirectoryWrapper(for: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: directoryStore,
             runningCallbackIn: .main
@@ -70,6 +57,11 @@ private extension SubtensorValidatorSelectInteractor {
             switch result {
             case let .success(directory):
                 presenter?.didReceive(directory: directory)
+                loadVerification(listedHotkeys: directory.items.map(\.hotkey))
+
+                if target.isRoot {
+                    loadYields()
+                }
             case let .failure(error):
                 logger.warning("Subnet validators unavailable: \(error)")
                 presenter?.didFailDirectory(error)
@@ -77,40 +69,36 @@ private extension SubtensorValidatorSelectInteractor {
         }
     }
 
-    func loadClientGates() {
-        clientGatesStore.cancel()
-
-        executeCancellable(
-            wrapper: recommendationService.createClientGatesWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: clientGatesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(clientGates):
-                self?.presenter?.didReceive(clientGates: clientGates)
-            case let .failure(error):
-                self?.logger.warning("Subtensor client gates unavailable for the validator list: \(error)")
-                self?.presenter?.didFailClientGates(error)
-            }
-        }
-    }
-
     func loadYields() {
         yieldStore.cancel()
 
+        load(
+            yieldOperationFactory.createAlphaYieldsWrapper(for: target.netuid),
+            in: yieldStore,
+            label: "validator yields"
+        ) { [weak self] in
+            self?.presenter?.didReceive(yields: $0)
+        }
+    }
+
+    func loadVerification(listedHotkeys: [AccountId]) {
+        verificationStore.cancel()
+
         executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            wrapper: recommendationOperationFactory.createListVerificationWrapper(
+                for: target.subnetRef,
+                listedHotkeys: listedHotkeys
+            ),
             inOperationQueue: operationQueue,
-            backingCallIn: yieldStore,
+            backingCallIn: verificationStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(yields: yields)
+            case let .success(verification):
+                self?.presenter?.didReceive(verification: verification)
             case let .failure(error):
-                self?.logger.warning("Subnet validator yields unavailable: \(error)")
-                self?.presenter?.didReceive(yields: nil)
+                self?.logger.warning("Validator list verification unavailable: \(error)")
+                self?.presenter?.didFailVerification(error)
             }
         }
     }
@@ -118,27 +106,19 @@ private extension SubtensorValidatorSelectInteractor {
     func loadAlphaPrice() {
         catalogueStore.cancel()
 
-        let subnet = subnet
+        let subnet = target.subnetRef
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
-            case let .failure(error):
-                self?.logger.warning("Subnet catalogue unavailable for validator stakes: \(error)")
-                self?.presenter?.didReceive(alphaPrice: nil)
-            }
+        load(
+            catalogueOperationFactory.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "catalogue for validator stakes"
+        ) { [weak self] in
+            self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
         }
     }
 
     func loadAll() {
         loadDirectory()
-        loadClientGates()
 
         guard !target.isRoot else {
             return
@@ -147,57 +127,28 @@ private extension SubtensorValidatorSelectInteractor {
         loadYields()
         loadAlphaPrice()
     }
-
-    func makeSnapshot() -> SubtensorValidatorSelectSnapshot {
-        let subnet = subnet
-        let directory = directoryService.cachedDirectory(for: subnet)
-        let clientGates = recommendationService.cachedClientGates()
-
-        guard !target.isRoot else {
-            return SubtensorValidatorSelectSnapshot(
-                directory: directory,
-                clientGates: clientGates,
-                yields: .miss,
-                alphaPrice: .miss
-            )
-        }
-
-        return SubtensorValidatorSelectSnapshot(
-            directory: directory,
-            clientGates: clientGates,
-            yields: yieldService.cachedAlphaYields(for: subnet.netuid),
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
-        )
-    }
 }
 
-extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
-        seed = makeSnapshot()
-
-        return seed
-    }
-
+extension SubtensorValidatorSelectInteractor: SubtensorValidatorSelectInteractorInputProtocol {
     func setup() {
-        if !seed.directory.isFresh {
-            loadDirectory()
-        }
+        let subnet = target.subnetRef
+        let isRoot = target.isRoot
+        let directoryOperationFactory = directoryOperationFactory
+        let yieldOperationFactory = yieldOperationFactory
+        let catalogueOperationFactory = catalogueOperationFactory
 
-        if !seed.clientGates.isFresh {
-            loadClientGates()
-        }
-
-        guard !target.isRoot else {
-            return
-        }
-
-        if !seed.yields.isFresh {
-            loadYields()
-        }
-
-        if !seed.alphaPrice.isFresh {
-            loadAlphaPrice()
-        }
+        loadCached({
+            SubtensorValidatorSelectSnapshot(
+                directory: directoryOperationFactory.cachedDirectory(for: subnet),
+                yields: yieldOperationFactory.cachedAlphaYields(for: subnet.netuid),
+                alphaPrice: isRoot
+                    ? .miss
+                    : catalogueOperationFactory.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+            )
+        }, in: directoryStore, then: { [weak self] snapshot in
+            self?.presenter?.didReceive(snapshot: snapshot)
+            self?.loadAll()
+        })
     }
 
     func retry() {

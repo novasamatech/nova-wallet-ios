@@ -2,7 +2,7 @@ import UIKit
 
 final class SubtensorPortfolioEmptyView: UIView {
     let captionLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
+        label.apply(style: .regularSubhedlineSecondary)
         label.textAlignment = .center
     }
 
@@ -14,13 +14,6 @@ final class SubtensorPortfolioEmptyView: UIView {
     let fiatLabel: UILabel = .create { label in
         label.apply(style: .regularSubhedlineSecondary)
         label.textAlignment = .center
-    }
-
-    let ratesAlertView: InlineAlertView = .create { view in
-        view.apply(style: .info)
-        view.backgroundView.cornerRadius = 12
-        view.contentView.detailsLabel.apply(style: .caption1Secondary)
-        view.isHidden = true
     }
 
     let subnetCardView = SubtensorPortfolioInfoCardView()
@@ -38,26 +31,31 @@ final class SubtensorPortfolioEmptyView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(caption: String) {
+        captionLabel.apply(text: caption, lineHeight: Constants.subheadlineLineHeight)
+    }
+
     func bind(viewModel: SubtensorPortfolioEmptyViewModel) {
         totalLabel.text = viewModel.total
-        fiatLabel.text = viewModel.fiat
+        fiatLabel.apply(text: viewModel.fiat ?? "", lineHeight: Constants.subheadlineLineHeight)
         fiatLabel.isHidden = viewModel.fiat == nil
-        rootCardView.subtitleLabel.text = viewModel.rootSubtitle
+        rootCardView.bind(subtitle: viewModel.rootSubtitle)
     }
 }
 
 private extension SubtensorPortfolioEmptyView {
     func setupLayout() {
-        let headerContentView = UIView.vStack(alignment: .center, spacing: 4, [captionLabel, totalLabel, fiatLabel])
-        let headerStackView = UIView.vStack(spacing: 16, [headerContentView, ratesAlertView])
+        let headerContentView = UIView.vStack(alignment: .center, spacing: 0, [captionLabel, totalLabel, fiatLabel])
+        headerContentView.setCustomSpacing(Constants.captionSpacing, after: captionLabel)
+        headerContentView.setCustomSpacing(Constants.totalSpacing, after: totalLabel)
 
         let headerView = UIView()
         headerView.backgroundColor = R.color.colorBlockBackground()
         headerView.layer.cornerRadius = 12
-        headerView.addSubview(headerStackView)
+        headerView.addSubview(headerContentView)
 
-        headerStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
+        headerContentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(Constants.headerInsets)
         }
 
         let contentView = UIView.vStack(
@@ -71,6 +69,13 @@ private extension SubtensorPortfolioEmptyView {
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    enum Constants {
+        static let headerInsets = UIEdgeInsets(top: 16, left: 16, bottom: 18, right: 16)
+        static let captionSpacing: CGFloat = 6
+        static let totalSpacing: CGFloat = 7
+        static let subheadlineLineHeight: CGFloat = 20
     }
 }
 
@@ -91,7 +96,7 @@ final class SubtensorPortfolioInfoCardView: UIView {
         backgroundColor = R.color.colorBlockBackground()
         layer.cornerRadius = 12
 
-        let contentView = UIView.vStack(spacing: 2, [titleLabel, subtitleLabel])
+        let contentView = UIView.vStack(spacing: Constants.spacing, [titleLabel, subtitleLabel])
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
@@ -102,5 +107,21 @@ final class SubtensorPortfolioInfoCardView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(title: String) {
+        titleLabel.apply(text: title, lineHeight: Constants.titleLineHeight)
+    }
+
+    func bind(subtitle: String?) {
+        subtitleLabel.apply(text: subtitle ?? "", lineHeight: Constants.subtitleLineHeight)
+    }
+}
+
+private extension SubtensorPortfolioInfoCardView {
+    enum Constants {
+        static let spacing: CGFloat = 4
+        static let titleLineHeight: CGFloat = 22
+        static let subtitleLineHeight: CGFloat = 16
     }
 }

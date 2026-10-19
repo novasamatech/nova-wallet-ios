@@ -5,7 +5,7 @@ import Operation_iOS
 extension StartStakingInfoViewFactory {
     static func createSubtensorView(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -36,7 +36,7 @@ extension StartStakingInfoViewFactory {
 
         let startStakingViewModelFactory = StartStakingViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            estimatedEarningsFormatter: NumberFormatter.percentSingle.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.subtensorPercent
         )
 
         let presenter = StartStakingInfoSubtensorPresenter(
@@ -51,10 +51,13 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
-        let view = StartStakingInfoSubtensorViewController(
+        let view = StartStakingInfoViewController(
             presenter: presenter,
+            localizationManager: LocalizationManager.shared,
             themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!,
-            localizationManager: LocalizationManager.shared
+            secondaryActionTitle: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorQuickAllOptions()
+            }
         )
 
         presenter.view = view
@@ -65,7 +68,7 @@ extension StartStakingInfoViewFactory {
     }
 
     private static func createSubtensorInteractor(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         currencyManager: CurrencyManagerProtocol
     ) -> StartStakingInfoSubtensorInteractor {
         let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
@@ -75,15 +78,14 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
-        let maxApyProvider = SubtensorStakingProcessServices.shared.createMaxApyProvider(
-            recommendationService: state.earnServices.recommendationService,
+        let maxApyOperationFactory = SubtensorProcessServices.shared.createMaxApyOperationFactory(
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 
         return StartStakingInfoSubtensorInteractor(
             state: state,
-            maxApyProvider: maxApyProvider,
+            maxApyOperationFactory: maxApyOperationFactory,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
@@ -92,8 +94,7 @@ extension StartStakingInfoViewFactory {
             announcementsRepository: AnnouncementsRepository.shared,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

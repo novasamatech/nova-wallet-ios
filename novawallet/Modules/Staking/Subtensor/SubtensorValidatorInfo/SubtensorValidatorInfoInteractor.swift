@@ -1,32 +1,31 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
-    weak var presenter: SubtensorValInfoInteractorOutputProtocol?
+final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
+    weak var presenter: SubtensorValidatorInfoInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let chainAsset: ChainAsset
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let coverageOperationFactory: SubtensorValidatorCoverageOperationFactoryProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorValidatorInfoSnapshot(annualRate: .miss, alphaPrice: .miss)
+    private let coverageStore = CancellableCallStore()
     private let detailStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
 
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        chainAsset: ChainAsset,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        state: SubtensorSharedStateProtocol,
+        coverageOperationFactory: SubtensorValidatorCoverageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -34,10 +33,11 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     ) {
         self.target = target
         self.hotkey = hotkey
-        self.chainAsset = chainAsset
-        self.directoryService = directoryService
-        self.yieldService = yieldService
-        self.catalogueService = catalogueService
+        chainAsset = state.stakingOption.chainAsset
+        self.coverageOperationFactory = coverageOperationFactory
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -45,6 +45,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     }
 
     deinit {
+        coverageStore.cancel()
         detailStore.cancel()
         rateStore.cancel()
         catalogueStore.cancel()
@@ -52,56 +53,34 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
 }
 
 private extension SubtensorValidatorInfoInteractor {
-    var subnet: SubtensorSubnetRef {
-        SubtensorSubnetRef(netuid: target.netuid, registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0)
-    }
-
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
-        guard !target.isRoot else {
-            let rootWrapper = yieldService.createRootYieldWrapper()
-
-            let mapOperation = ClosureOperation<Decimal?> {
-                let yield = try rootWrapper.targetOperation.extractNoCancellableResultData()
-
-                return SubtensorAlphaApyFormatter.annualRate(from: yield)
-            }
-
-            mapOperation.addDependency(rootWrapper.targetOperation)
-
-            return rootWrapper.insertingTail(operation: mapOperation)
-        }
-
         let hotkey = hotkey
-        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
 
-        let mapOperation = ClosureOperation<Decimal?> {
-            let yields = try yieldsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
+        return yieldOperationFactory.createAlphaYieldsWrapper(for: target.netuid).mapped { yields in
+            SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
         }
-
-        mapOperation.addDependency(yieldsWrapper.targetOperation)
-
-        return yieldsWrapper.insertingTail(operation: mapOperation)
     }
 
     func loadRate() {
         rateStore.cancel()
 
-        executeCancellable(
-            wrapper: createRateWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rate):
-                self?.presenter?.didReceive(annualRate: rate)
-            case let .failure(error):
-                self?.logger.warning("Validator reward rate unavailable: \(error)")
-                self?.presenter?.didReceive(annualRate: nil)
+        let yieldOperationFactory = yieldOperationFactory
+        let hotkey = hotkey
+        let netuid = target.netuid
+
+        load(
+            createRateWrapper(),
+            cached: {
+                yieldOperationFactory.cachedAlphaYields(for: netuid).value.map {
+                    SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: $0)
+                }
+            },
+            in: rateStore,
+            label: "validator reward rate",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(annualRate: $0 ?? nil)
             }
-        }
+        )
     }
 
     func loadAlphaPrice() {
@@ -112,77 +91,40 @@ private extension SubtensorValidatorInfoInteractor {
 
         catalogueStore.cancel()
 
-        let subnet = subnet
+        let subnet = target.subnetRef
+        let catalogueOperationFactory = catalogueOperationFactory
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
-            case let .failure(error):
-                self?.logger.warning("Subnet catalogue unavailable for the validator stake: \(error)")
-                self?.presenter?.didReceive(alphaPrice: nil)
+        load(
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
+            in: catalogueStore,
+            label: "catalogue for the validator stake",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
             }
-        }
-    }
-
-    func subscribePrice() {
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
-
-    func makeSnapshot() -> SubtensorValidatorInfoSnapshot {
-        guard !target.isRoot else {
-            return SubtensorValidatorInfoSnapshot(
-                annualRate: yieldService.cachedRootYield().map(SubtensorAlphaApyFormatter.annualRate(from:)),
-                alphaPrice: .miss
-            )
-        }
-
-        let hotkey = hotkey
-        let subnet = subnet
-
-        return SubtensorValidatorInfoSnapshot(
-            annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
-                SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
-            },
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
         )
     }
 }
 
-extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorValidatorInfoSnapshot {
-        seed = makeSnapshot()
-
-        return seed
-    }
-
+extension SubtensorValidatorInfoInteractor: SubtensorValidatorInfoInteractorInputProtocol {
     func setup() {
-        if !seed.annualRate.isFresh {
-            loadRate()
+        load(
+            coverageOperationFactory.createWrapper(for: hotkey),
+            in: coverageStore,
+            label: "validator coverage"
+        ) { [weak self] in
+            self?.presenter?.didReceive(coverage: $0 ?? nil)
         }
-
-        if !seed.alphaPrice.isFresh {
-            loadAlphaPrice()
-        }
-
-        subscribePrice()
+        loadRate()
+        loadAlphaPrice()
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 
     func loadDetail() {
         detailStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDetailWrapper(for: hotkey, subnet: subnet),
+            wrapper: directoryOperationFactory.createDetailWrapper(for: hotkey, subnet: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: detailStore,
             runningCallbackIn: .main
@@ -198,15 +140,9 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 }
 
-extension SubtensorValidatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceive(price: price)
-        case let .failure(error):
-            logger.warning("TAO price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorValidatorInfoInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -216,6 +152,7 @@ extension SubtensorValidatorInfoInteractor: SelectedCurrencyDepending {
             return
         }
 
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

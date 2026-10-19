@@ -7,33 +7,16 @@ final class SubtensorSubnetDetailsPresenter {
 
     let input: SubtensorSubnetDetailsInput
     let host: SubtensorSubnetDetailsHost
-    let interactor: SubnetDetailsInteractorInputProtocol
+    let interactor: SubtensorSubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
-    let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
-    let earnSettings: SubtensorEarnSettingsProtocol
-    let logger: LoggerProtocol
+    let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
 
-    private var isFiat = false
-    private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
-    private var chartPoint: Int?
-    private var history: SubtensorSubnetHistoryState = .loading {
-        didSet {
-            chartPoint = nil
-        }
-    }
-
-    private var listing: SubtensorSubnetListingState = .loading
-    private var isRankingLoaded = false
-    private var rankingView: SubtensorRankedSubnets?
-    private var hasExpiredRankingSeed = false
-    private var validator: SubtensorSubnetValidatorState
-    private var yields: SubtensorAlphaYields?
-    private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-    private var transferable: Balance?
-    private var taoPrice: PriceData?
+    private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
-    private var positions: Multistaking.SubtensorStakingState?
+    private var positions: Multistaking.SubtensorState?
+    private var registrationDate: Date?
     private var isPositionsSyncFailed = false
+    private var isParametersRequested = false
     private var isPresetRequested = false
     private var isUsePending = false
 
@@ -41,12 +24,10 @@ final class SubtensorSubnetDetailsPresenter {
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         selectionDelegate: SubtensorSubnetSelectDelegate,
-        interactor: SubnetDetailsInteractorInputProtocol,
+        interactor: SubtensorSubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
-        viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
-        earnSettings: SubtensorEarnSettingsProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
         self.host = host
@@ -54,14 +35,10 @@ final class SubtensorSubnetDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.earnSettings = earnSettings
-        self.logger = logger
 
-        if let validator = input.validator {
-            self.validator = .selected(validator)
-        } else {
-            validator = host == .picker ? .pending : .unselected
-        }
+        state = SubtensorSubnetDetailsState(
+            validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
+        )
 
         self.localizationManager = localizationManager
     }
@@ -72,77 +49,58 @@ private extension SubtensorSubnetDetailsPresenter {
         input.subnet.ref
     }
 
-    var isFavorite: Bool {
-        earnSettings.favouriteSubnets.contains(subnetRef)
-    }
-
-    var isUseEnabled: Bool {
-        validator != .pending
-    }
-
-    func createState() -> SubtensorSubnetDetailsState {
-        SubtensorSubnetDetailsState(
-            isFiat: isFiat,
-            period: period,
-            history: history,
-            listing: listing,
-            isRankingLoaded: isRankingLoaded,
-            rankingView: rankingView,
-            validator: validator,
-            yields: yields,
-            amount: amount,
-            transferable: transferable,
-            taoPrice: taoPrice,
-            isFavorite: isFavorite,
-            now: Date(),
-            chartPoint: chartPoint
-        )
-    }
-
     func provideTitle() {
         view?.didReceive(title: viewModelFactory.createTitle(subnetLogos: subnetLogos, locale: selectedLocale))
     }
 
     func provideViewModel() {
-        let viewModel = viewModelFactory.createViewModel(
-            for: createState(),
-            isUseEnabled: isUseEnabled,
-            locale: selectedLocale
-        )
+        state.now = Date()
 
-        view?.didReceive(viewModel: viewModel)
-    }
-
-    func seed(from snapshot: SubtensorSubnetDetailsSnapshot) {
-        if let rankingView = snapshot.rankingView.value {
-            self.rankingView = rankingView
-            isRankingLoaded = true
-            hasExpiredRankingSeed = !snapshot.rankingView.isFresh
-        }
-
-        if let yields = snapshot.yields.value {
-            self.yields = yields
-        }
+        view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
 
     func loadHistory() {
-        history = .loading
-        interactor.loadHistory(for: period)
+        state.history = .loading
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
+    }
+
+    func historyNeedsRegistrationClip() -> Bool {
+        guard let registrationDate else {
+            return false
+        }
+
+        switch state.history {
+        case .loading:
+            return true
+        case let .available(history):
+            guard
+                let lastDate = history.points.last?.date,
+                let windowStart = history.period.startDate(endingAt: lastDate) else {
+                return false
+            }
+
+            return registrationDate > windowStart
+        case .notListed, .failed:
+            return false
+        }
     }
 
     func existingPrimaryHotkey() -> AccountId? {
-        guard let positions else {
-            return nil
+        positions.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: subnetRef.netuid)?.primaryHotkey }
+    }
+
+    func requestParametersIfNeeded() {
+        guard !isParametersRequested else {
+            return
         }
 
-        let portfolio = SubtensorPortfolioBuilder.build(state: positions)
-
-        return portfolio.subnets.first { $0.netuid == subnetRef.netuid }?.primaryHotkey
+        isParametersRequested = true
+        interactor.loadParameters()
     }
 
     func requestPresetIfReady() {
         guard
-            validator == .pending,
+            state.validator == .pending,
             !isPresetRequested,
             positions != nil || isPositionsSyncFailed else {
             return
@@ -169,7 +127,7 @@ private extension SubtensorSubnetDetailsPresenter {
         wireframe.showValidators(
             from: view,
             target: input.target,
-            selectedHotkey: validator.item?.hotkey,
+            selectedHotkey: state.validator.item?.hotkey,
             delegate: self
         )
     }
@@ -177,62 +135,42 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
-
         provideTitle()
         provideViewModel()
 
         interactor.setup()
-        interactor.loadHistory(for: period)
+        requestParametersIfNeeded()
+        interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
     func selectCurrency(at index: Int) {
         let newIsFiat = index > 0
 
-        guard newIsFiat != isFiat, !newIsFiat || taoPrice != nil else {
+        guard newIsFiat != state.isFiat, !newIsFiat || state.taoPrice != nil else {
             provideViewModel()
             return
         }
 
-        isFiat = newIsFiat
+        state.chartSelection = nil
+        state.isFiat = newIsFiat
         provideViewModel()
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorPriceWidgetViewModelFactory.periods
+        let periods = SubtensorPricePeriod.selectable
 
-        guard periods.indices.contains(index), periods[index] != period, history != .notListed else {
+        guard periods.indices.contains(index), periods[index] != state.period, state.history != .notListed else {
             provideViewModel()
             return
         }
 
-        period = periods[index]
+        state.period = periods[index]
         loadHistory()
         provideViewModel()
     }
 
-    func selectAmount(at index: Int) {
-        let amounts = SubtensorSubnetDetailsViewModelFactory.chipAmounts
-
-        if amounts.indices.contains(index) {
-            amount = .fixed(amounts[index])
-        } else if SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) != nil {
-            amount = .max
-        }
-
-        provideViewModel()
-    }
-
     func toggleFavorite() {
-        var favorites = Set(earnSettings.favouriteSubnets)
-
-        if !favorites.insert(subnetRef).inserted {
-            favorites.remove(subnetRef)
-        }
-
-        earnSettings.favouriteSubnets = favorites.sorted { $0.netuid < $1.netuid }
-
-        provideViewModel()
+        interactor.toggleFavorite()
     }
 
     func selectValidator() {
@@ -240,7 +178,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func useSubnet() {
-        switch validator {
+        switch state.validator {
         case .pending:
             return
         case let .selected(item):
@@ -251,7 +189,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func retryHistory() {
-        guard history == .failed else {
+        guard state.history == .failed else {
             return
         }
 
@@ -259,98 +197,112 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        state.chartSelection = selection
+        state.now = Date()
 
-        let header = viewModelFactory.createPriceHeader(for: createState(), locale: selectedLocale)
+        let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale)
         view?.didReceive(priceHeader: header)
     }
 }
 
-extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
-    func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod) {
-        guard period == self.period else {
+extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutputProtocol {
+    func didReceive(isFavorite: Bool) {
+        state.isFavorite = isFavorite
+        provideViewModel()
+    }
+
+    func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
+        guard period == state.period else {
             return
         }
 
-        switch result {
-        case let .available(value):
-            history = .available(value)
-        case .notListed:
-            history = .notListed
-        }
+        state.chartEndDate = Date()
+        state.history = history.map { .available($0) } ?? .notListed
 
         provideViewModel()
     }
 
     func didFailHistory(for period: SubtensorPricePeriod) {
-        guard period == self.period else {
+        guard period == state.period else {
             return
         }
 
-        history = .failed
-        provideViewModel()
-    }
-
-    func didReceiveListing(_ result: SubtensorPriceHistoryResult?) {
-        switch result {
-        case let .available(value):
-            listing = .listed(since: value.points.first?.date)
-        case .notListed:
-            listing = .notListed
-        case .none:
-            listing = .failed
-        }
-
-        provideViewModel()
-    }
-
-    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
-        guard rankingView != nil || !hasExpiredRankingSeed else {
+        if case .available = state.history {
             return
         }
 
-        self.rankingView = rankingView
-        isRankingLoaded = true
+        state.history = .failed
         provideViewModel()
+    }
+
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters) {
+        guard parameters.ref == subnetRef else { return }
+        state.parameters = parameters
+        state.isParametersLoaded = true
+        registrationDate = parameters.age.map { Date(timeIntervalSinceNow: -$0) }
+
+        if historyNeedsRegistrationClip() {
+            interactor.loadHistory(for: state.period, registrationDate: registrationDate)
+        }
+
+        provideViewModel()
+    }
+
+    func didFailParameters() {
+        isParametersRequested = false
     }
 
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?) {
-        guard self.validator == .pending else {
+        guard state.validator == .pending else {
             return
         }
 
-        self.validator = validator.map { .selected($0) } ?? .unselected
+        state.validator = validator.map { .selected($0) } ?? .unselected
         provideViewModel()
+    }
+
+    func didFailPreset() {
+        isPresetRequested = false
     }
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
-        self.yields = yields
-        provideViewModel()
-    }
-
-    func didReceiveBalance(_ balance: AssetBalance?) {
-        transferable = balance?.transferable
-
-        if amount == .max, SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) == nil {
-            amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-        }
-
+        guard yields == nil || yields?.netuid == subnetRef.netuid else { return }
+        state.yields = yields
+        state.isRateResolved = true
         provideViewModel()
     }
 
     func didReceiveTaoPrice(_ price: PriceData?) {
-        taoPrice = price
+        state.taoPrice = price
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didChangeCurrency() {
+        state.taoPrice = nil
+        state.chartSelection = nil
+
+        if state.history != .notListed {
+            loadHistory()
+        }
+
+        provideViewModel()
+    }
+
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positions = state
+        requestParametersIfNeeded()
         requestPresetIfReady()
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
         isPositionsSyncFailed = isFailed
+        requestParametersIfNeeded()
+        requestPresetIfReady()
+    }
+
+    func didBecomeActive() {
+        requestParametersIfNeeded()
         requestPresetIfReady()
     }
 
@@ -361,8 +313,9 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 }
 
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
-    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for _: SubtensorStakeTarget) {
-        self.validator = .selected(validator)
+    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        guard target == input.target else { return }
+        state.validator = .selected(validator)
         provideViewModel()
 
         guard isUsePending else {

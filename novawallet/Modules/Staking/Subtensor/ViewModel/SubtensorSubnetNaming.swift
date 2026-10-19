@@ -30,6 +30,14 @@ enum SubtensorSubnetNaming {
     static func symbol(for netuid: UInt16, in catalogue: SubtensorSubnetCatalogue?) -> String {
         symbol(catalogue?.subnet(for: netuid)?.symbol, netuid: netuid)
     }
+
+    static func isolatedLeftToRight(_ text: String) -> String {
+        "\u{2066}\(text)\u{2069}"
+    }
+
+    static func isolatedRate(_ oneIn: String, _ rateOut: String) -> String {
+        isolatedLeftToRight(isolatedLeftToRight(oneIn).estimatedEqual(to: isolatedLeftToRight(rateOut)))
+    }
 }
 
 private extension SubtensorSubnetNaming {
@@ -61,5 +69,49 @@ private extension SubtensorSubnetNaming {
 
     static func symbol(_ symbol: String?, netuid: UInt16) -> String {
         trimmed(symbol) ?? "SN\(netuid)"
+    }
+}
+
+extension AssetBalanceDisplayInfo {
+    private static let subtensorFormatterFactory = AssetBalanceFormatterFactory()
+
+    func subtensorAlpha(symbol: String) -> AssetBalanceDisplayInfo {
+        AssetBalanceDisplayInfo(
+            displayPrecision: displayPrecision,
+            assetPrecision: assetPrecision,
+            symbol: symbol,
+            symbolValueSeparator: symbolValueSeparator,
+            symbolPosition: symbolPosition,
+            icon: nil
+        )
+    }
+
+    func subtensorAlpha(netuid: UInt16, catalogue: SubtensorSubnetCatalogue?) -> AssetBalanceDisplayInfo {
+        guard netuid != SubtensorPallet.rootNetuid else {
+            return self
+        }
+
+        return subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+    }
+
+    func subtensorAlphaAmount(
+        _ amount: Balance,
+        netuid: UInt16,
+        catalogue: SubtensorSubnetCatalogue?,
+        locale: Locale
+    ) -> String {
+        let alphaInfo = subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+
+        let text = Self.subtensorFormatterFactory.createTokenFormatter(for: alphaInfo)
+            .value(for: locale)
+            .stringFromDecimal(amount.decimal(assetInfo: self)) ?? .subtensorUnknown(for: locale)
+
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
+    }
+}
+
+extension String {
+    static func subtensorUnknown(for locale: Locale) -> String {
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
 }

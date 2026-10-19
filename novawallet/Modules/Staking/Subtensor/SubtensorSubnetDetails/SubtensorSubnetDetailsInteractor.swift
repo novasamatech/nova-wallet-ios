@@ -1,102 +1,69 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorSubnetDetailsInteractor {
-    weak var presenter: SubnetDetailsInteractorOutputProtocol?
+final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
+    weak var presenter: SubtensorSubnetDetailsInteractorOutputProtocol?
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
-    let accountId: AccountId?
-    let priceHistoryStore: SubtensorPriceHistoryStore
-    let rankingViewService: SubtensorRankingViewServiceProtocol
-    let presetFactory: SubtensorValidatorPresetFactoryProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol
+    let presetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: StreamableProvider<PriceData>?
-    private var seed = SubtensorSubnetDetailsSnapshot(rankingView: .miss, yields: .miss)
+    var priceProvider: StreamableProvider<PriceData>?
     private let historyCallStore = CancellableCallStore()
-    private let listingCallStore = CancellableCallStore()
-    private let rankingCallStore = CancellableCallStore()
+    private let parametersCallStore = CancellableCallStore()
     private let presetCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
 
     init(
         subnet: SubtensorSubnetRef,
-        chainAsset: ChainAsset,
-        accountId: AccountId?,
-        priceHistoryStore: SubtensorPriceHistoryStore,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
-        presetFactory: SubtensorValidatorPresetFactoryProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        state: SubtensorSharedStateProtocol,
+        parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.subnet = subnet
-        self.chainAsset = chainAsset
-        self.accountId = accountId
-        self.priceHistoryStore = priceHistoryStore
-        self.rankingViewService = rankingViewService
-        self.presetFactory = presetFactory
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.positionsSyncService = positionsSyncService
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        chainAsset = state.stakingOption.chainAsset
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        self.parametersOperationFactory = parametersOperationFactory
+        presetOperationFactory = state.earnServices.validatorPresetOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        earnSettings = state.earnServices.earnSettings
+        positionsSyncService = state.positionsSyncService
+        self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.currencyManager = currencyManager
         self.operationQueue = operationQueue
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {
         historyCallStore.cancel()
-        listingCallStore.cancel()
-        rankingCallStore.cancel()
+        parametersCallStore.cancel()
         presetCallStore.cancel()
         yieldsCallStore.cancel()
         logosCallStore.cancel()
 
         positionsSyncService?.remove(observer: self)
-        positionsSyncService?.remove(failureObserver: self)
     }
 }
 
 private extension SubtensorSubnetDetailsInteractor {
-    func subscribeBalance() {
-        guard let accountId else {
-            presenter?.didReceiveBalance(nil)
-            return
-        }
-
-        balanceProvider = subscribeToAssetBalanceProvider(
-            for: accountId,
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
-    }
-
-    func subscribePrice() {
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceiveTaoPrice(nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: currencyManager.selectedCurrency)
-    }
-
     func subscribePositions() {
         guard let positionsSyncService else {
             presenter?.didReceivePositionsSyncFailed(true)
@@ -105,180 +72,128 @@ private extension SubtensorSubnetDetailsInteractor {
 
         positionsSyncService.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, state in
-            self?.presenter?.didReceivePositions(state)
-        }
-
-        positionsSyncService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceivePositionsSyncFailed(isFailed)
-        }
+            onState: { [weak self] state in
+                self?.presenter?.didReceivePositions(state)
+            },
+            onFailure: { [weak self] isFailed in
+                self?.presenter?.didReceivePositionsSyncFailed(isFailed)
+            }
+        )
     }
 
-    func loadListing() {
-        priceHistoryStore.loadHistory(
-            for: subnet,
-            period: .all,
-            currency: currencyManager.selectedCurrency,
-            backingCallIn: listingCallStore
-        ) { [weak self] result in
-            switch result {
-            case let .success(listing):
-                self?.presenter?.didReceiveListing(listing)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet listing history unavailable: \(error)")
-                self?.presenter?.didReceiveListing(nil)
-            }
-        }
-    }
-
-    func loadRankingView() {
-        executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rankingCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rankingView):
-                self?.presenter?.didReceiveRankingView(rankingView)
-            case let .failure(error):
-                self?.logger.warning("Subtensor ranking view unavailable for the subnet: \(error)")
-                self?.presenter?.didReceiveRankingView(nil)
-            }
-        }
+    func provideFavorite() {
+        presenter?.didReceive(isFavorite: earnSettings.favouriteSubnets.contains(subnet))
     }
 
     func loadYields() {
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: yieldsCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceiveYields(yields)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet yields unavailable: \(error)")
-                self?.presenter?.didReceiveYields(nil)
+        let yieldOperationFactory = yieldOperationFactory
+        let netuid = subnet.netuid
+
+        load(
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
+            in: yieldsCallStore,
+            label: "subnet yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveYields($0)
             }
-        }
+        )
     }
 
     func loadSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceiveSubnetLogos(logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet logos unavailable for the subnet mark: \(error)")
-                self?.presenter?.didReceiveSubnetLogos(nil)
-            }
+        load(
+            subnetLogosProvider.createLogosWrapper(),
+            in: logosCallStore,
+            label: "subnet logos for the subnet mark"
+        ) { [weak self] in
+            self?.presenter?.didReceiveSubnetLogos($0)
         }
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot {
-        seed = SubtensorSubnetDetailsSnapshot(
-            rankingView: rankingViewService.cachedRankingView(),
-            yields: yieldService.cachedAlphaYields(for: subnet.netuid)
-        )
-
-        return seed
-    }
-
+extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInputProtocol {
     func setup() {
-        subscribeBalance()
-        subscribePrice()
+        provideFavorite()
+        subscribeTaoPrice(currency: selectedCurrency)
         subscribePositions()
 
-        loadListing()
-
-        if !seed.rankingView.isFresh {
-            loadRankingView()
-        }
-
-        if !seed.yields.isFresh {
-            loadYields()
-        }
-
+        loadYields()
         loadSubnetLogos()
+
+        applicationHandler.delegate = self
     }
 
-    func loadHistory(for period: SubtensorPricePeriod) {
-        priceHistoryStore.loadHistory(
+    func loadParameters() {
+        parametersCallStore.cancel()
+
+        load(
+            parametersOperationFactory.createWrapper(for: subnet),
+            in: parametersCallStore,
+            label: "parameters"
+        ) { [weak self] in
+            self?.presenter?.didReceiveParameters($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailParameters()
+        }
+    }
+
+    func loadHistory(for period: SubtensorPricePeriod, registrationDate: Date?) {
+        historyCallStore.cancel()
+
+        let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: currencyManager.selectedCurrency,
-            backingCallIn: historyCallStore
-        ) { [weak self] result in
-            switch result {
-            case let .success(history):
-                self?.presenter?.didReceiveHistory(history, for: period)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet price history unavailable: \(error)")
-                self?.presenter?.didFailHistory(for: period)
-            }
+            currency: selectedCurrency,
+            registrationDate: registrationDate
+        ) ?? .createWithResult(nil)
+
+        load(wrapper, in: historyCallStore, label: "subnet price history") { [weak self] in
+            self?.presenter?.didReceiveHistory($0, for: period)
+        } fail: { [weak self] in
+            self?.presenter?.didFailHistory(for: period)
         }
+    }
+
+    func toggleFavorite() {
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnet])
+        provideFavorite()
     }
 
     func presetValidator(existingHotkey: AccountId?) {
         presetCallStore.cancel()
 
-        executeCancellable(
-            wrapper: presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
-            inOperationQueue: operationQueue,
-            backingCallIn: presetCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(validator):
-                self?.presenter?.didReceivePreset(validator)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet validator preset failed: \(error)")
-                self?.presenter?.didReceivePreset(nil)
-            }
+        load(
+            presetOperationFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            in: presetCallStore,
+            label: "subnet validator preset"
+        ) { [weak self] in
+            self?.presenter?.didReceivePreset($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPreset()
         }
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(balance):
-            presenter?.didReceiveBalance(balance)
-        case let .failure(error):
-            logger.error("Subtensor subnet details balance subscription failed: \(error)")
-            presenter?.didReceiveBalance(nil)
-        }
+extension SubtensorSubnetDetailsInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        presenter?.didBecomeActive()
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceiveTaoPrice(price)
-        case let .failure(error):
-            logger.error("Subtensor subnet details price subscription failed: \(error)")
-            presenter?.didReceiveTaoPrice(nil)
+extension SubtensorSubnetDetailsInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceiveTaoPrice(price)
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else {
+            return
         }
+
+        presenter?.didChangeCurrency()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

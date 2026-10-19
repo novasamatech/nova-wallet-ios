@@ -4,6 +4,7 @@ struct SubtensorConfirmQuoteState {
     private(set) var acknowledged: SubtensorTradeQuote?
     private(set) var isPriceMoved = false
     private(set) var isLatestFailed = false
+    private(set) var verified: SubtensorTradeQuote?
     private var flow = SubtensorQuoteFlowModel()
 
     init(request: SubtensorTradeQuoteRequest, acknowledged: SubtensorTradeQuote?) {
@@ -22,6 +23,10 @@ struct SubtensorConfirmQuoteState {
         flow.freshQuote
     }
 
+    var displayed: SubtensorTradeQuote? {
+        latest ?? acknowledged
+    }
+
     var latestCrossesAcknowledgedLimit: Bool {
         guard let latest, let acknowledged else {
             return false
@@ -31,11 +36,11 @@ struct SubtensorConfirmQuoteState {
     }
 
     var signingLimit: Balance? {
-        guard let latest, let acknowledged else {
+        guard let verified, verified == latest, let acknowledged else {
             return nil
         }
 
-        return latest.tighterLimit(than: acknowledged.limitPrice)
+        return verified.tighterLimit(than: acknowledged.limitPrice)
     }
 
     mutating func apply(latest quote: SubtensorTradeQuote) -> Bool {
@@ -54,15 +59,13 @@ struct SubtensorConfirmQuoteState {
         return true
     }
 
-    mutating func acknowledgeLatest() -> Bool {
-        guard let latest else {
-            return false
-        }
+    mutating func verify(_ quote: SubtensorTradeQuote) {
+        verified = apply(latest: quote) ? quote : nil
+    }
 
-        acknowledged = latest
+    mutating func acknowledgeLatest() {
+        acknowledged = latest ?? acknowledged
         isPriceMoved = false
-
-        return true
     }
 
     mutating func raisePriceMovedIfCrossed() -> Bool {
@@ -81,10 +84,11 @@ struct SubtensorConfirmQuoteState {
 
     mutating func invalidateLatest() {
         flow.clearQuote()
+        isPriceMoved = false
     }
 
     mutating func markLatestFailed() {
-        flow.clearQuote()
+        invalidateLatest()
         isLatestFailed = true
     }
 }

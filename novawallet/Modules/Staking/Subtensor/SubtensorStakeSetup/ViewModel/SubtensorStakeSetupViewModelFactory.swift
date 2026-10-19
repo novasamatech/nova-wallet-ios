@@ -1,0 +1,269 @@
+import BigInt
+import Foundation
+
+final class SubtensorStakeSetupViewModelFactory {
+    let chainAsset: ChainAsset
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
+
+    init(
+        chainAsset: ChainAsset,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
+    ) {
+        self.chainAsset = chainAsset
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.quoteViewModelFactory = quoteViewModelFactory
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
+    }
+
+    func createViewModel(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorStakeSetupViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let details: SubtensorStakeSetupDetailsViewModel
+        if case let .quickPick(order) = input.mode {
+            details = .selection(createSelection(order: order, locale: locale))
+        } else {
+            details = input.mode.isRootLane
+                ? .root(createRootDetails(for: input, locale: locale))
+                : .subnet(createSubnetDetails(for: input, locale: locale))
+        }
+
+        let amountTitle: String
+
+        if case .buyMore = input.mode {
+            amountTitle = strings.swapsSetupAssetSelectPayTitle()
+        } else {
+            amountTitle = strings.stakingSubtensorUiYouStake()
+        }
+
+        return SubtensorStakeSetupViewModel(
+            title: createTitle(for: input, locale: locale),
+            amountTitle: amountTitle,
+            maxAmount: input.maxAmount.map { formatAmount($0, locale: locale) },
+            hasSettings: input.mode.hasSettings,
+            getTao: createGetTao(for: input, locale: locale),
+            reserveWarning: createReserveWarning(for: input, locale: locale),
+            failure: createFailure(for: input, locale: locale),
+            details: details,
+            caption: createCaption(for: input, locale: locale),
+            browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
+            action: createAction(for: input, locale: locale)
+        )
+    }
+}
+
+extension SubtensorStakeSetupViewModelFactory {
+    func formatAmount(_ amount: Balance, locale: Locale) -> String {
+        let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+        return balanceViewModelFactory.amountFromValue(decimal).value(for: locale)
+    }
+
+    func createNetworkFee(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        balanceViewModelFactory.subtensorFee(
+            input.fee, info: chainAsset.assetDisplayInfo, price: input.price, locale: locale
+        )
+    }
+}
+
+extension SubtensorStakeSetupViewModelFactory {
+    func createTitle(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        switch input.mode {
+        case .rootDetails:
+            return input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
+                ? strings.stakingSubtensorUiEarnTitle() : strings.stakingSubtensorUiStakeToRoot()
+        case .addStake:
+            return strings.stakingSubtensorUiAddStakeRootTitle()
+        case .quickPick, .subnetPick:
+            return strings.stakingSubtensorUiEarnTitle()
+        case let .buyMore(position):
+            let subnetTitle = SubtensorSubnetNaming.title(
+                for: position.netuid,
+                in: input.matchingCatalogue,
+                locale: locale
+            )
+
+            return strings.stakingSubtensorUiBuyMoreFormat(subnetTitle)
+        }
+    }
+
+    func createGetTao(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorGetTaoViewModel? {
+        guard input.amountState == .noTao else {
+            return nil
+        }
+
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let balance = formatAmount(input.transferable ?? 0, locale: locale)
+
+        return SubtensorGetTaoViewModel(
+            title: strings.stakingSubtensorUiGetTaoTitle(),
+            message: strings.stakingSubtensorUiGetTaoMessage(balance),
+            action: strings.stakingSubtensorUiGetTaoAction()
+        )
+    }
+
+    func createReserveWarning(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
+        guard input.amountState == .insufficient else {
+            return nil
+        }
+
+        let reserve = formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiFeeReserveFormat(
+            reserve,
+            reserve
+        )
+    }
+
+    func createRootDetails(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorStakeSetupRootViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let compact = createValidator(for: input, locale: locale)
+        let name: String?
+        let icon: ImageViewModelProtocol?
+        switch compact {
+        case .loading: name = nil; icon = nil
+        case let .unselected(title): name = title; icon = nil
+        case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
+        }
+        let annualRate = input.subnetData.annualRate
+        let validator: SubtensorStakeSetupRootValidatorViewModel
+        if case .addStake = input.mode {
+            validator = .rows(
+                validator: StackCellViewModel(details: name ?? "", imageViewModel: icon),
+                apy: SubtensorApyFormatter.text(for: annualRate, style: .paidInTao, locale: locale)
+            )
+        } else {
+            let isRateLoading = input.validator == .pending ||
+                (input.validator != .none && !input.subnetData.isRateResolved)
+            let rate = SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)
+            validator = .card(SubtensorValidatorCardViewModel(
+                icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
+                rate: isRateLoading ? .loading : .value(rate),
+                rateCaption: strings.stakingSubtensorV22EstApy()
+            ))
+        }
+        let networkFee = createNetworkFee(for: input, locale: locale)
+        let isQuickPick = input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
+
+        return SubtensorStakeSetupRootViewModel(
+            validator: validator,
+            pickCard: isQuickPick ? SubtensorPickCardViewModel(
+                validator: compact,
+                validatorRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
+                isValidatorEditable: true,
+                browseTitle: strings.stakingSubtensorQuickSeeAll(),
+                header: SubtensorPickCardHeaderViewModel(
+                    icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+                    title: strings.stakingSubtensorUiStakeToRoot(),
+                    isSelectable: true
+                ),
+                chips: [],
+                receive: .hidden,
+                swapRate: .hidden,
+                networkFee: networkFee,
+                isRoot: true
+            ) : nil,
+            networkFee: networkFee
+        )
+    }
+
+    func createValidator(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupValidatorViewModel {
+        let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
+
+        switch input.validator {
+        case .pending:
+            return .loading
+        case .none:
+            return .unselected(title: selectTitle)
+        case let .selected(validator):
+            return displayAddressFactory.subtensorValidator(
+                hotkey: validator.hotkey, name: validator.name, chainFormat: chainAsset.chain.chainFormat
+            ).map { .selected($0) } ?? .unselected(title: selectTitle)
+        }
+    }
+
+    func createCaption(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if input.amountState == .noTao {
+            return input.mode.isRootLane ? strings.stakingSubtensorUiGetTaoRootCaption() : nil
+        }
+
+        guard case .addStake = input.mode else {
+            return nil
+        }
+
+        return createAddStakeCaption(for: input, locale: locale)
+    }
+
+    func createAddStakeCaption(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        guard
+            let positionStake = input.positionStake, positionStake > 0,
+            let validator = input.validator.validator,
+            let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            return nil
+        }
+
+        return strings.stakingSubtensorUiAddsToFormat(
+            formatAmount(positionStake, locale: locale),
+            validator.name ?? address.mediumTruncated
+        )
+    }
+
+    func createAction(
+        for input: SubtensorStakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupActionViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if input.needsValidatorPick, input.amountState != .noTao {
+            return SubtensorSetupActionViewModel(title: strings.stakingSubtensorSelectValidator(), isEnabled: true)
+        }
+
+        let hasAmount = (input.amount ?? 0) > 0
+        let showsEnterAmount = !hasAmount && input.amountState != .noTao
+
+        return SubtensorSetupActionViewModel(
+            title: showsEnterAmount ? strings.transferSetupEnterAmount() : strings.commonContinue(),
+            isEnabled: input.canProceed
+        )
+    }
+}
+
+extension DisplayAddressViewModelFactoryProtocol {
+    func subtensorValidator(hotkey: AccountId, name: String?, chainFormat: ChainFormat) -> DisplayAddressViewModel? {
+        guard let address = try? hotkey.toAddress(using: chainFormat) else {
+            return nil
+        }
+
+        let image = createViewModel(from: DisplayAddress(address: address, username: name ?? "")).imageViewModel
+
+        return DisplayAddressViewModel(address: address, name: name ?? address.mediumTruncated, imageViewModel: image)
+    }
+}

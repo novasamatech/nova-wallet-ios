@@ -2,7 +2,7 @@ import UIKit
 import Foundation_iOS
 import UIKit_iOS
 
-protocol SubtensorInfoSheetPresentable: AddressOptionsPresentable {
+protocol SubtensorInfoSheetPresentable {
     func showSubtensorInfo(_ sheet: SubtensorInfoSheet, from view: ControllerBackedProtocol?)
 }
 
@@ -12,20 +12,7 @@ extension SubtensorInfoSheetPresentable {
             return
         }
 
-        if case let .account(address, chain) = sheet {
-            presentAccountOptions(
-                from: view,
-                address: address,
-                chain: chain,
-                locale: LocalizationManager.shared.selectedLocale
-            )
-
-            return
-        }
-
-        guard let text = sheet.text else {
-            return
-        }
+        let locale = LocalizationManager.shared.selectedLocale
 
         let gotItAction = MessageSheetAction(
             title: LocalizableResource { locale in
@@ -35,8 +22,8 @@ extension SubtensorInfoSheetPresentable {
         )
 
         let viewModel = TitleDetailsSheetViewModel(
-            title: text.title,
-            message: text.details,
+            title: sheet.title,
+            message: sheet.details,
             mainAction: gotItAction,
             secondaryAction: nil
         )
@@ -44,24 +31,23 @@ extension SubtensorInfoSheetPresentable {
         let bottomSheet = TitleDetailsSheetViewFactory.createContentSizedView(from: viewModel)
 
         if let titleDetailsView = bottomSheet as? TitleDetailsSheetViewController {
-            titleDetailsView.rootView.titleLabel.apply(style: .boldTitle3Primary)
+            titleDetailsView.rootView.apply(style: TitleDetailsSheetViewLayout.Style(
+                title: .boldTitle3Primary,
+                detailsLineHeight: 18,
+                spacing: 12,
+                actionsBottomInset: 0
+            ))
+            titleDetailsView.rootView.bind(details: sheet.details.value(for: locale))
             titleDetailsView.preferredContentSize.height = titleDetailsView.rootView.contentHeight(
                 model: viewModel,
-                locale: LocalizationManager.shared.selectedLocale
+                locale: locale
             )
         }
 
-        bottomSheet.controller.preferredContentSize.height += SubtensorInfoSheetConstants.actionTopSpacing
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.novaManual)
-
-        bottomSheet.controller.modalTransitioningFactory = factory
+        bottomSheet.controller.preferredContentSize.height += 24
+        bottomSheet.controller.modalTransitioningFactory = ModalSheetPresentationFactory(configuration: .novaManual)
         bottomSheet.controller.modalPresentationStyle = .custom
 
         view.controller.present(bottomSheet.controller, animated: true)
     }
-}
-
-private enum SubtensorInfoSheetConstants {
-    static let actionTopSpacing: CGFloat = 24
 }

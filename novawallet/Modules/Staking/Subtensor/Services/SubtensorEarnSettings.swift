@@ -13,8 +13,10 @@ final class SubtensorEarnSettings {
 extension SubtensorEarnSettings: SubtensorEarnSettingsProtocol {
     var slippageTolerance: BigRational {
         get {
+            let key = SettingsKey.subtensorEarnSlippageTolerance.rawValue
+
             guard
-                let stored = settingsManager.value(of: StoredRational.self, for: Key.slippageTolerance),
+                let stored = settingsManager.value(of: StoredRational.self, for: key),
                 let numerator = BigUInt(stored.numerator, radix: 10),
                 let denominator = BigUInt(stored.denominator, radix: 10),
                 denominator > 0 else {
@@ -30,38 +32,28 @@ extension SubtensorEarnSettings: SubtensorEarnSettingsProtocol {
                 denominator: String(newValue.denominator)
             )
 
-            settingsManager.set(value: stored, for: Key.slippageTolerance)
+            settingsManager.set(value: stored, for: SettingsKey.subtensorEarnSlippageTolerance.rawValue)
         }
     }
 
-    var favouriteSubnets: [SubtensorSubnetRef] {
+    var favouriteSubnets: Set<SubtensorSubnetRef> {
         get {
-            let stored = settingsManager.value(of: [StoredSubnetRef].self, for: Key.favouriteSubnets) ?? []
+            let key = SettingsKey.subtensorEarnFavouriteSubnets.rawValue
 
-            return stored.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.registeredAt) }
+            return Set(settingsManager.value(of: [SubtensorSubnetRef].self, for: key) ?? [])
         }
 
         set {
-            let stored = newValue.map { StoredSubnetRef(netuid: $0.netuid, registeredAt: $0.registeredAt) }
+            let stored = newValue.sorted { ($0.netuid, $0.registeredAt) < ($1.netuid, $1.registeredAt) }
 
-            settingsManager.set(value: stored, for: Key.favouriteSubnets)
+            settingsManager.set(value: stored, for: SettingsKey.subtensorEarnFavouriteSubnets.rawValue)
         }
     }
 }
 
 private extension SubtensorEarnSettings {
-    enum Key {
-        static let slippageTolerance = "subtensorEarnSlippageTolerance"
-        static let favouriteSubnets = "subtensorEarnFavouriteSubnets"
-    }
-
     struct StoredRational: Codable {
         let numerator: String
         let denominator: String
-    }
-
-    struct StoredSubnetRef: Codable {
-        let netuid: UInt16
-        let registeredAt: UInt64
     }
 }

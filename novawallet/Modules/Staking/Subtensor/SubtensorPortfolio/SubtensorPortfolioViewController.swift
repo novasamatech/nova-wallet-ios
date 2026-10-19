@@ -6,8 +6,8 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorPortfolioPresenterProtocol
 
-    private let seekHapticPlayer: ProgressiveHapticPlayer
-    private let chartLongPressHapticPlayer: HapticPlayer
+    let seekHapticPlayer: ProgressiveHapticPlayer
+    let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     init(
@@ -49,7 +49,9 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 private extension SubtensorPortfolioViewController {
     func setupHandlers() {
         rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
-        rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+        rootView.syncNoticeView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(actionRetry))
+        )
         rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.headerView.chartView.delegate = self
 
@@ -67,17 +69,16 @@ private extension SubtensorPortfolioViewController {
 
         rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
         rootView.headerView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
-        rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
-        rootView.syncNoticeLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
+        rootView.positionsCaptionLabel.applySubtensorCaps(strings.stakingSubtensorUiPortfolioPositions())
+        rootView.syncNoticeView.contentView.detailsLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
-        emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
-        emptyView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
-        emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
-        emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
-        emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
-        emptyView.unstakeCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle()
-        emptyView.unstakeCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle()
+        emptyView.bind(caption: strings.stakingSubtensorUiPortfolioEmptyCaption())
+        emptyView.subnetCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptySubnetTitle())
+        emptyView.subnetCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle())
+        emptyView.rootCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyRootTitle())
+        emptyView.unstakeCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle())
+        emptyView.unstakeCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle())
 
         rootView.addButton.imageWithTitleView?.title = strings.stakingSubtensorUiPortfolioAdd()
         rootView.addButton.invalidateLayout()
@@ -107,19 +108,14 @@ extension SubtensorPortfolioViewController: SubtensorPortfolioViewProtocol {
     }
 }
 
-extension SubtensorPortfolioViewController: SubtensorPriceChartViewDelegate {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
+extension SubtensorPortfolioViewController: SubtensorChartHapticsHandling {
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?) {
+        guard case let .point(sourceIndex) = selection else {
+            presenter.selectChartPoint(at: nil)
+            return
+        }
 
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
-        seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
-    }
-
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        presenter.selectChartPoint(at: nil)
+        presenter.selectChartPoint(at: sourceIndex)
     }
 }
 

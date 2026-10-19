@@ -7,19 +7,22 @@ final class SubtensorExternalBalanceServiceFactory {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
+    let processServices: SubtensorProcessServices
 
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        processServices: SubtensorProcessServices
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
+        self.processServices = processServices
     }
 }
 
@@ -41,11 +44,12 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             return []
         }
 
-        let chainId = chainAsset.chain.chainId
-
         guard
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            let stakeStateSource = processServices.stakeStateSourceFactory.getSource(
+                for: accountId,
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry
+            ) else {
             return []
         }
 
@@ -54,7 +58,7 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(
-            chainId: chainId,
+            chainId: chainAsset.chain.chainId,
             chainRegistry: chainRegistry
         )
 
@@ -63,18 +67,16 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             operationQueue: operationQueue
         )
 
-        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
         let service = SubtensorStakedBalanceUpdatingService(
             accountId: accountId,
             chainAsset: chainAsset,
             repository: AnyDataProviderRepository(repository),
-            stakeStateFetchFactory: stakeStateFetchFactory,
-            connection: connection,
-            runtimeService: runtimeService,
+            stakeStateSource: stakeStateSource,
+            cataloguePricing: processServices.createCataloguePricingTracker(
+                chainOperationFactory: apiOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger

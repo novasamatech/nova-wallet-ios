@@ -6,36 +6,20 @@ import UIKit_iOS
 
 enum SubtensorOperationResultViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
         delegate: SubtensorOperationResultDelegate
     ) -> ControllerBackedProtocol? {
         let chain = state.stakingOption.chainAsset.chain
 
         guard
-            let services = SubtensorFlowServicesFactory.createServices(for: state),
+            let services = SubtensorFlowServicesFactory.createServices(for: state, observesBlocks: false),
             services.isFlowAccount(request.account),
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
+            let connection = state.chainRegistry.getConnection(for: chain.chainId) else {
             return nil
         }
 
-        guard let operationService = try? state.createStakingOperationService(
-            for: services.account.chainAccount.accountId,
-            extrinsicService: services.extrinsicService,
-            extrinsicSubmitMonitor: services.extrinsicSubmitMonitor,
-            signer: services.signer
-        ) else {
-            return nil
-        }
-
-        let interactor = createInteractor(
-            for: state,
-            request: request,
-            operationService: operationService,
-            connection: connection,
-            services: services
-        )
+        let interactor = createInteractor(for: state, request: request, connection: connection, services: services)
 
         let presenter = SubtensorOperationResultPresenter(
             request: request,
@@ -44,7 +28,7 @@ enum SubtensorOperationResultViewFactory {
             wireframe: SubtensorOperationResultWireframe(state: state),
             viewModelFactory: SubtensorOperationResultViewModelFactory(
                 chainAsset: state.stakingOption.chainAsset,
-                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: services.currencyManager)
             ),
             localizationManager: LocalizationManager.shared
         )
@@ -61,19 +45,18 @@ enum SubtensorOperationResultViewFactory {
 
 private extension SubtensorOperationResultViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
-        operationService: SubtensorStakingOperationServiceProtocol,
         connection: JSONRPCEngine,
         services: SubtensorFlowServices
     ) -> SubtensorOperationResultInteractor {
         let operationQueue = services.operationQueue
 
-        let chainFactory = SubtensorResultChainFactory(
+        let chainOperationFactory = SubtensorOperationResultChainOperationFactory(
             chain: state.stakingOption.chainAsset.chain,
             connection: connection,
             runtimeProvider: services.runtimeProvider,
-            rootHoldFactory: state.earnServices.rootHoldFactory,
+            rootHoldOperationFactory: state.earnServices.rootHoldOperationFactory,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: state.chainRegistry,
                 operationQueue: operationQueue
@@ -88,13 +71,11 @@ private extension SubtensorOperationResultViewFactory {
             operation: request.operation,
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
-            operationService: operationService,
-            chainFactory: chainFactory,
-            catalogueService: state.earnServices.catalogueService,
+            submissionOperationFactory: services.submissionOperationFactory,
+            chainOperationFactory: chainOperationFactory,
+            catalogueOperationFactory: state.earnServices.catalogueOperationFactory,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
-            positionsSyncService: services.positionsSyncService,
             osMediator: OperatingSystemMediator(),
-            applicationHandler: ApplicationHandler(),
             schedulerFactory: { Scheduler(with: $0, callbackQueue: .main) },
             operationQueue: operationQueue,
             logger: Logger.shared
@@ -104,7 +85,7 @@ private extension SubtensorOperationResultViewFactory {
     static func createPresentedView(
         for request: SubtensorOperationResultRequest,
         presenter: SubtensorOperationResultPresenter
-    ) -> SubtensorResultViewProtocol {
+    ) -> SubtensorOperationResultViewProtocol {
         guard request.target.isRoot else {
             let view = SubtensorOperationResultViewController(
                 presenter: presenter,

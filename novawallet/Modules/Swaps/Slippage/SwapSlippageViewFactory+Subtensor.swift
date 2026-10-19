@@ -3,19 +3,6 @@ import Foundation_iOS
 import UIKit_iOS
 
 extension SwapSlippageViewFactory {
-    static func createSubtensorView(
-        percent: BigRational?,
-        chainAsset: ChainAsset,
-        completionHandler: @escaping (BigRational) -> Void
-    ) -> SwapSlippageViewProtocol? {
-        createView(
-            percent: percent,
-            chainAsset: chainAsset,
-            config: SlippageConfig.subtensorStaking,
-            completionHandler: completionHandler
-        )
-    }
-
     static func createSubtensorSheet(
         percent: BigRational?,
         chainAsset: ChainAsset,
@@ -23,7 +10,7 @@ extension SwapSlippageViewFactory {
     ) -> SwapSlippageViewProtocol? {
         let presenter = SwapSlippagePresenter(
             wireframe: SubtensorSlippageSheetWireframe(),
-            percentFormatterLocalizable: NumberFormatter.percentSingle.localizableResource(),
+            percentFormatterLocalizable: NumberFormatter.subtensorPercentSingle,
             localizationManager: LocalizationManager.shared,
             initSlippage: percent,
             config: SlippageConfig.subtensorStaking,
@@ -31,10 +18,9 @@ extension SwapSlippageViewFactory {
             completionHandler: completionHandler
         )
 
-        let view = SwapSlippageViewController(
+        let view = SubtensorSlippageViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared,
-            presentation: .subtensorSheet
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -43,7 +29,6 @@ extension SwapSlippageViewFactory {
 
         view.modalTransitioningFactory = factory
         view.modalPresentationStyle = .custom
-        view.preferredContentSize = CGSize(width: 0, height: SubtensorSlippageSheetConstants.height)
 
         return view
     }
@@ -53,8 +38,4 @@ private final class SubtensorSlippageSheetWireframe: SwapSlippageWireframeProtoc
     func close(from view: ControllerBackedProtocol?) {
         view?.controller.presentingViewController?.dismiss(animated: true)
     }
-}
-
-private enum SubtensorSlippageSheetConstants {
-    static let height: CGFloat = 430
 }

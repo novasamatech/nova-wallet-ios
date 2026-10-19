@@ -14,27 +14,28 @@ struct SubtensorPositionState {
     var isSyncFailed = false
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
-    var catalogue: SubtensorSubnetCatalogue?
+    var prices: SubtensorAlphaPrices?
     var subnetLogos: SubtensorSubnetLogos?
     var validatorHotkey: AccountId?
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false
-    var rootRate: Decimal?
     var yields: SubtensorAlphaYields?
-    var claimable: SubtensorRootClaimable?
+    var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
     var blockNumber: BlockNumber?
+    var blockTime: BlockTime?
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
     var history = SubtensorSubnetHistoryState.loading {
         didSet {
-            chartPoint = nil
+            chartSelection = nil
         }
     }
 
     var hasResolvedHistory = false
-    var chartPoint: Int?
+    var chartEndDate = Date.distantPast
+    var chartSelection: SubtensorPriceChartSelection?
 
     init(netuid: UInt16, group: SubtensorPortfolioGroup?) {
         self.netuid = netuid
@@ -42,10 +43,14 @@ struct SubtensorPositionState {
     }
 
     var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
-    var primaryPosition: SubtensorStakingPosition? {
+    var catalogue: SubtensorSubnetCatalogue? {
+        prices?.catalogue
+    }
+
+    var primaryPosition: SubtensorPosition? {
         group.flatMap { group in
             group.positions.first { $0.hotkey == group.primaryHotkey }
         }
@@ -56,11 +61,7 @@ struct SubtensorPositionState {
     }
 
     var annualRate: Decimal? {
-        guard !isRoot else {
-            return rootRate
-        }
-
-        return group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
+        group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
     }
 
     var unstakeBasis: SubtensorGroupUnstakeBasis? {
@@ -68,7 +69,7 @@ struct SubtensorPositionState {
     }
 
     var taoValue: Balance? {
-        group.flatMap { catalogue?.taoValue(of: $0.totalAlpha, netuid: netuid) }
+        group.flatMap { prices?.taoValue(of: $0.totalAlpha, netuid: netuid) }
     }
 
     var primaryHold: SubtensorRootHold? {
@@ -93,7 +94,9 @@ struct SubtensorPositionState {
         switch action {
         case .claim:
             return isRoot && !isClaimableFailed && claimTarget != nil
-        case .addStake, .unstake:
+        case .addStake:
+            return primaryPosition != nil
+        case .unstake:
             return primaryPosition != nil && holdRemainingBlocks == nil
         case .buy:
             return true
@@ -109,7 +112,6 @@ extension SubtensorPositionState {
         chainFormat: ChainFormat
     ) -> SubtensorClaimRewardsModel? {
         guard
-            let minimumClaim = claimable?.minimumClaim,
             let target = claimTarget,
             let address = try? target.hotkey.toAddress(using: chainFormat) else {
             return nil
@@ -124,29 +126,29 @@ extension SubtensorPositionState {
                 display: DisplayAddress(address: address, username: name ?? ""),
                 annualRate: nil
             ),
-            shownPreview: target,
-            minimumClaim: minimumClaim
+            shownPreview: target
         )
     }
 }
 
 enum SubtensorPositionValueViewModel: Equatable {
     case loading
-    case loaded(value: String, detail: String?, isPositive: Bool)
+    case loaded(value: String, detail: String?)
 }
 
 struct SubtensorPositionRowViewModel: Equatable {
     let title: String
     let value: SubtensorPositionValueViewModel
+    let caption: String?
 }
 
 struct SubtensorPositionSummaryViewModel {
     let icon: ImageViewModelProtocol?
     let caption: String?
     let amount: String?
-    let fiat: SubtensorPortfolioLoadable<String>
+    let fiat: SubtensorRowState<String>
     let isActive: Bool?
-    let rows: [SubtensorPositionRowViewModel]
+    let row: SubtensorPositionRowViewModel
 }
 
 struct SubtensorPositionActionViewModel: Equatable {
@@ -154,14 +156,6 @@ struct SubtensorPositionActionViewModel: Equatable {
     let title: String
     let isEnabled: Bool
     let details: String?
-}
-
-struct SubtensorPositionValidatorViewModel {
-    let icon: ImageViewModelProtocol?
-    let name: String?
-    let subtitle: String
-    let rate: SubtensorPortfolioLoadable<String>
-    let rateCaption: String
 }
 
 struct SubtensorPositionNoticeViewModel: Equatable {
@@ -175,7 +169,7 @@ struct SubtensorPositionViewModel {
     let summary: SubtensorPositionSummaryViewModel
     let priceWidget: SubtensorPriceWidgetViewModel?
     let actions: [SubtensorPositionActionViewModel]
-    let validator: SubtensorPositionValidatorViewModel
+    let validator: SubtensorValidatorCardViewModel
     let notice: SubtensorPositionNoticeViewModel?
     let isSyncFailed: Bool
 }

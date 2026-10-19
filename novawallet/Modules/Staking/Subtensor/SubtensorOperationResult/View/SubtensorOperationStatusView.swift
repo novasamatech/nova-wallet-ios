@@ -1,11 +1,11 @@
 import UIKit
 import UIKit_iOS
+import SnapKit
 
 final class SubtensorOperationStatusView: UIView {
     let progressView = OperationExecutionProgressView()
 
-    let pendingView: UIImageView = .create { view in
-        view.image = R.image.iconPending()
+    let statusImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
     }
 
@@ -20,14 +20,16 @@ final class SubtensorOperationStatusView: UIView {
     }
 
     let pillIconView: UIImageView = .create { view in
-        view.image = R.image.iconErrorFilled()
         view.contentMode = .scaleAspectFit
     }
 
     let pillLabel: ShimmerLabel = .create { label in
-        label.textAlignment = .center
         label.numberOfLines = 0
     }
+
+    private let contentView = UIView.vStack(alignment: .fill, [])
+
+    private var pillLabelIconConstraint: Constraint?
 
     convenience init() {
         self.init(frame: .zero)
@@ -49,7 +51,6 @@ final class SubtensorOperationStatusView: UIView {
 
         statusTitleView.bind(topValue: viewModel.title, bottomValue: viewModel.subtitle)
         pillLabel.text = viewModel.details
-        pillIconView.isHidden = viewModel.status != .failed
 
         applyStyle(for: viewModel.status)
     }
@@ -61,12 +62,26 @@ final class SubtensorOperationStatusView: UIView {
     func updateAnimationOnAppear() {
         progressView.updateAnimationOnAppear()
     }
+
+    func applyPillSpacing(_ spacing: CGFloat) {
+        contentView.setCustomSpacing(spacing, after: statusTitleView)
+    }
 }
 
 private extension SubtensorOperationStatusView {
     func bindIcon(for viewModel: SubtensorResultStatusViewModel) {
-        progressView.isHidden = viewModel.status == .pending
-        pendingView.isHidden = viewModel.status != .pending
+        let statusImage: UIImage? = switch viewModel.status {
+        case .failed:
+            R.image.iconSubtensorOperationFailed()
+        case .pending:
+            R.image.iconPending()
+        case .progress, .done:
+            nil
+        }
+
+        statusImageView.image = statusImage
+        statusImageView.isHidden = statusImage == nil
+        progressView.isHidden = statusImage != nil
 
         switch viewModel.status {
         case .progress:
@@ -75,9 +90,7 @@ private extension SubtensorOperationStatusView {
             }
         case .done:
             progressView.bind(viewModel: .completed)
-        case .failed:
-            progressView.bind(viewModel: .failed)
-        case .pending:
+        case .failed, .pending:
             break
         }
     }
@@ -98,15 +111,29 @@ private extension SubtensorOperationStatusView {
 
         if status == .failed {
             pillBackgroundView.applyErrorBlockBackgroundStyle()
+            pillIconView.image = R.image.iconErrorFilled()?.withRenderingMode(.alwaysTemplate)
+            pillIconView.tintColor = R.color.colorIconNegative()
             pillLabel.applyShimmer(style: .regularSubheadlinePrimary)
             pillLabel.apply(style: .regularSubhedlinePrimary)
         } else {
             pillBackgroundView.applyCellBackgroundStyle()
+            pillIconView.image = R.image.iconRoute()?.withRenderingMode(.alwaysTemplate)
+            pillIconView.tintColor = R.color.colorIconSecondary()
             pillLabel.applyShimmer(style: .regularSubheadlineSecondary)
             pillLabel.apply(style: .regularSubhedlineSecondary)
         }
 
         pillBackgroundView.cornerRadius = 12
+        pillLabel.textAlignment = status == .failed ? .left : .center
+
+        let hasIcon = status != .pending
+        pillIconView.isHidden = !hasIcon
+
+        if hasIcon {
+            pillLabelIconConstraint?.activate()
+        } else {
+            pillLabelIconConstraint?.deactivate()
+        }
 
         if status == .progress {
             pillLabel.startShimmering()
@@ -118,32 +145,34 @@ private extension SubtensorOperationStatusView {
     func setupLayout() {
         let iconContainer = UIView()
         iconContainer.addSubview(progressView)
-        iconContainer.addSubview(pendingView)
+        iconContainer.addSubview(statusImageView)
 
         progressView.snp.makeConstraints { make in
             make.top.bottom.centerX.equalToSuperview()
         }
 
-        pendingView.snp.makeConstraints { make in
+        statusImageView.snp.makeConstraints { make in
             make.center.equalTo(progressView)
             make.size.equalTo(progressView.preferredSize)
         }
 
-        let pillContent = UIView.hStack(alignment: .center, spacing: 8, [pillIconView, pillLabel])
-
+        pillBackgroundView.addSubview(pillIconView)
         pillIconView.snp.makeConstraints { make in
-            make.size.equalTo(16)
+            make.leading.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(24)
         }
 
-        pillBackgroundView.addSubview(pillContent)
-        pillContent.snp.makeConstraints { make in
+        pillBackgroundView.addSubview(pillLabel)
+        pillLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(14)
-            make.centerX.equalToSuperview()
+            make.centerX.equalToSuperview().priority(.high)
             make.leading.greaterThanOrEqualToSuperview().inset(16)
             make.trailing.lessThanOrEqualToSuperview().inset(16)
+            pillLabelIconConstraint = make.leading.greaterThanOrEqualTo(pillIconView.snp.trailing).constraint
         }
 
-        let contentView = UIView.vStack(alignment: .fill, [iconContainer, statusTitleView, pillBackgroundView])
+        [iconContainer, statusTitleView, pillBackgroundView].forEach(contentView.addArrangedSubview)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in

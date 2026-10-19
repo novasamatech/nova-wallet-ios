@@ -44,15 +44,6 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
 
         let onchainState = entity.onchainState.flatMap { Multistaking.DashboardItemOnchainState(rawValue: $0) }
 
-        let subtensorDetails = entity.subtensorSubnetCount.map { subnetCount in
-            Multistaking.DashboardItemSubtensorDetails(
-                rootStake: entity.subtensorRootStake.flatMap { BigUInt($0) },
-                subnetCount: subnetCount.intValue,
-                rootRate: entity.subtensorRootRate as Decimal?,
-                isFullyPriced: entity.subtensorIsFullyPriced?.boolValue
-            )
-        }
-
         return .init(
             stakingOption: stakingOption,
             onchainState: onchainState,
@@ -60,7 +51,20 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
             stake: stake,
             totalRewards: totalRewards,
             maxApy: maxApy,
-            subtensorDetails: subtensorDetails
+            subtensorDetails: decodeSubtensorDetails(from: entity, stakingType: stakingType)
         )
+    }
+}
+
+private extension StakingDashboardItemMapper {
+    func decodeSubtensorDetails(
+        from entity: CoreDataEntity,
+        stakingType: StakingType
+    ) -> Multistaking.DashboardItemSubtensorDetails? {
+        guard stakingType == .subtensor, let typeDetails = entity.typeDetails else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode(Multistaking.DashboardItemSubtensorDetails.self, from: typeDetails)
     }
 }

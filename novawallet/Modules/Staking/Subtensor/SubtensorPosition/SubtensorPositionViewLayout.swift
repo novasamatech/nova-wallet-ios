@@ -21,26 +21,22 @@ final class SubtensorPositionViewLayout: UIView {
 
     let actionsTableView: StackTableView = .create { view in
         view.hasSeparators = false
-        view.contentInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        view.contentInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
     }
 
-    let validatorView = SubtensorPositionValidatorView()
+    let validatorView = SubtensorValidatorCardView()
 
     let noticeView: SubtensorPositionNoticeView = .create { view in
         view.isHidden = true
     }
 
-    let syncNoticeControl: UIControl = .create { view in
-        view.backgroundColor = R.color.colorBlockBackground()
-        view.layer.cornerRadius = 12
+    let syncNoticeView: InlineAlertView = {
+        let view = InlineAlertView.warning()
         view.isHidden = true
-    }
+        return view
+    }()
 
-    let syncNoticeLabel: UILabel = .create { label in
-        label.apply(style: .footnotePrimary)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-    }
+    let bottomPanel = SubtensorBottomPanelView(style: .solid)
 
     let sellButton: TriangularedButton = .create { button in
         button.applySecondaryDefaultStyle()
@@ -88,8 +84,8 @@ final class SubtensorPositionViewLayout: UIView {
             noticeView.bind(viewModel: notice)
         }
 
-        syncNoticeControl.isHidden = !viewModel.isSyncFailed
-        syncNoticeLabel.text = R.string(
+        syncNoticeView.isHidden = !viewModel.isSyncFailed
+        syncNoticeView.contentView.detailsLabel.text = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.stakingSubtensorUiPortfolioSyncFailed()
     }
@@ -106,6 +102,11 @@ private extension SubtensorPositionViewLayout {
 
     func bind(actions viewModels: [SubtensorPositionActionViewModel]) {
         actions = viewModels.map(\.action)
+
+        actionCells.enumerated().forEach { index, cell in
+            cell.isHidden = index >= viewModels.count
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0 && !cell.isHidden)
+        }
 
         for viewModel in viewModels {
             switch viewModel.action {
@@ -192,23 +193,27 @@ private extension SubtensorPositionViewLayout {
             containerView.stackView.addArrangedSubview(validatorView)
         }
 
-        setupSyncNotice()
+        containerView.stackView.addArrangedSubview(syncNoticeView)
     }
 
     func setupBottomBar() {
         let buttonsView = UIView.hStack(distribution: .fillEqually, spacing: 16, [sellButton, buyButton])
 
-        addSubview(buttonsView)
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+
+        bottomPanel.contentView.addSubview(buttonsView)
         buttonsView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.edges.equalToSuperview()
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(buttonsView.snp.top).offset(-16)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
     }
 
@@ -233,15 +238,5 @@ private extension SubtensorPositionViewLayout {
         }
 
         containerView.stackView.addArrangedSubview(backgroundView)
-    }
-
-    func setupSyncNotice() {
-        syncNoticeControl.addSubview(syncNoticeLabel)
-        syncNoticeLabel.isUserInteractionEnabled = false
-        syncNoticeLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
-        }
-
-        containerView.stackView.addArrangedSubview(syncNoticeControl)
     }
 }

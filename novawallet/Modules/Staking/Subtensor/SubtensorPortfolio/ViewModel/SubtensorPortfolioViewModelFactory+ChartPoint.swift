@@ -6,7 +6,7 @@ struct SubtensorPortfolioChartSelection {
     let points: [SubtensorPortfolioValuePoint]
 }
 
-protocol SubnetPortfolioChartFactoryProtocol {
+protocol SubtensorPortfolioChartFactoryProtocol {
     func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection?
 
     func createHeader(
@@ -16,7 +16,7 @@ protocol SubnetPortfolioChartFactoryProtocol {
     ) -> SubtensorPortfolioHeaderViewModel
 }
 
-extension SubtensorPortfolioViewModelFactory: SubnetPortfolioChartFactoryProtocol {
+extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioChartFactoryProtocol {
     func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection? {
         guard let portfolio = state.portfolio, !state.isValuationPending, !state.groups.isEmpty else {
             return nil
@@ -43,17 +43,17 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioChartFactoryProtoco
 
         let point = points[index]
 
-        let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
+        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
             header.change
         } else {
-            createPointChange(from: first, to: point, locale: locale).map { .loaded($0) } ?? .hidden
+            createPointChange(from: first, to: point, locale: locale).map { .value($0) } ?? .hidden
         }
 
         let fiat = balanceViewModelFactory.priceFromFiatAmount(point.fiatValue, currencyId: price.currencyId)
 
         return SubtensorPortfolioHeaderViewModel(
             total: balanceViewModelFactory.amountFromValue(point.taoValue, roundingMode: .down).value(for: locale),
-            fiat: .loaded(fiat.value(for: locale)),
+            fiat: .value(fiat.value(for: locale)),
             change: change,
             chart: header.chart,
             periods: header.periods
@@ -73,8 +73,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let change = (point.fiatValue - first.fiatValue) / first.fiatValue
 
-        let formatter = NumberFormatter.signedPercentSingle
-        formatter.locale = locale
+        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         guard let percent = formatter.stringFromDecimal(change) else {
             return nil

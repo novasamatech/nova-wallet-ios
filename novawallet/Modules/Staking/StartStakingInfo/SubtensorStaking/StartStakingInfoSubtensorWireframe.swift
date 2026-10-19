@@ -2,20 +2,28 @@ import UIKit
 
 final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
+
+    let browseState = SubtensorSubnetBrowseState()
 
     weak var subnetSelectDelegate: SubtensorSubnetSelectDelegate?
 
-    init(state: SubtensorStakingSharedStateProtocol) {
+    init(state: SubtensorSharedStateProtocol) {
         self.state = state
     }
 
     override func showSetupAmount(from view: ControllerBackedProtocol?) {
+        let carousel = SubtensorWhereToStakeViewFactory.createView(for: state)
+        view?.controller.navigationController?.pushViewController(carousel.controller, animated: true)
+    }
+
+    func showAllOptions(from view: ControllerBackedProtocol?) {
         guard
             let subnetSelectDelegate,
             let picker = SubtensorSubnetSelectViewFactory.createPicker(
                 for: state,
-                delegate: subnetSelectDelegate
+                delegate: subnetSelectDelegate,
+                browseState: browseState
             ) else {
             return
         }
@@ -24,7 +32,9 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     }
 
     func showRootDetails(from view: ControllerBackedProtocol?) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createRootDetailsView(for: state) else {
+        guard let setupView = SubtensorStakeSetupViewFactory.createRootDetailsView(
+            for: state, browseState: browseState
+        ) else {
             return
         }
 
@@ -39,10 +49,11 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?
     ) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createSubnetView(
+        guard let setupView = SubtensorStakeSetupViewFactory.createSubnetView(
             for: state,
             target: target,
-            validator: validator
+            validator: validator,
+            browseState: browseState
         ) else {
             return
         }

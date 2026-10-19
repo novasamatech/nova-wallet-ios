@@ -9,19 +9,15 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         view.stackView.spacing = 8
     }
 
-    let accountView: IdentityAccountInfoView = .create { view in
-        view.actionIcon = nil
-        view.isUserInteractionEnabled = false
-    }
+    let accountView = IdentityAccountInfoView()
 
-    let stakingTitleLabel: UILabel = .create { label in
-        label.font = .semiBoldCaps1
-        label.textColor = R.color.colorTextSecondary()
-    }
+    let stakingTitleLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
 
     let stakingTableView: StackTableView = .create { view in
         view.isHidden = true
     }
+
+    let coverageCell: StackTitleMultiValueCell = .create { $0.canSelect = false }
 
     let statusCell: StackTableCell = .create { cell in
         cell.isUserInteractionEnabled = false
@@ -54,11 +50,17 @@ final class SubtensorValidatorInfoViewLayout: UIView {
     func bind(viewModel: SubtensorValidatorInfoViewModel) {
         accountView.bind(viewModel: viewModel.account)
 
-        guard let staking = viewModel.staking else {
-            stakingTitleLabel.isHidden = true
-            stakingTableView.isHidden = true
-            return
+        coverageCell.bind(loadableViewModel: viewModel.coverage)
+        [statusCell, stakeCell, takeCell, rewardCell].forEach { $0.isHidden = viewModel.staking == nil }
+        stakingTitleLabel.isHidden = false
+        stakingTableView.isHidden = false
+        stakingTableView.updateLayout()
+        let cells: [StackTableViewCellProtocol] = [statusCell, stakeCell, takeCell, coverageCell, rewardCell]
+        cells.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
+        cells.filter { !$0.isHidden }.enumerated().forEach { index, cell in
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
         }
+        guard let staking = viewModel.staking else { return }
 
         stakingTitleLabel.isHidden = false
         stakingTableView.isHidden = false
@@ -67,8 +69,6 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         statusCell.detailsLabel.textColor = staking.isActive
             ? R.color.colorTextPositive()
             : R.color.colorTextSecondary()
-
-        stakeCell.titleLabel.text = staking.stakeTitle
 
         switch staking.stake {
         case .loading:
@@ -80,7 +80,14 @@ final class SubtensorValidatorInfoViewLayout: UIView {
 
         takeCell.detailsLabel.text = staking.take
 
-        rewardCell.bind(loadableViewModel: staking.reward)
+        switch staking.reward {
+        case .loading:
+            rewardCell.bind(loadableViewModel: .loading)
+        case let .cached(reward), let .loaded(reward):
+            rewardCell.bind(loadableViewModel: .loaded(value: reward))
+            rewardCell.rowContentView.valueView.bind(topValue: reward, bottomValue: staking.rewardDetail)
+        }
+
         rewardCell.rowContentView.valueView.valueTop.textColor = staking.hasReward
             ? R.color.colorTextPositive()
             : R.color.colorTextSecondary()
@@ -91,8 +98,10 @@ final class SubtensorValidatorInfoViewLayout: UIView {
     func setupLocalization(for locale: Locale) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        stakingTitleLabel.text = strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale)
+        stakingTitleLabel.applySubtensorCaps(strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale))
+        coverageCell.titleLabel.text = strings.stakingSubtensorV22Coverage()
         statusCell.titleLabel.text = strings.commonStatus()
+        stakeCell.titleLabel.text = strings.stakingMainTotalStakedTitle()
         takeCell.titleLabel.text = strings.stakingSubtensorUiValidatorInfoTake()
         rewardCell.titleLabel.text = strings.stakingValidatorEstimatedReward()
     }
@@ -118,6 +127,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         stakingTableView.addArrangedSubview(statusCell)
         stakingTableView.addArrangedSubview(stakeCell)
         stakingTableView.addArrangedSubview(takeCell)
+        stakingTableView.addArrangedSubview(coverageCell)
         stakingTableView.addArrangedSubview(rewardCell)
     }
 }

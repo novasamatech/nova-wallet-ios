@@ -1,53 +1,50 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
-    weak var presenter: SubnetPositionInteractorOutputProtocol?
+final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
+    weak var presenter: SubtensorPositionInteractorOutputProtocol?
 
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
     let netuid: UInt16
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryStore: SubtensorPriceHistoryStore
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
+    let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
+    let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
-    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
+    var priceProvider: StreamableProvider<PriceData>?
     private var failedHoldsHotkeys: [AccountId]?
-    private var seed = SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
-    private let catalogueStore = CancellableCallStore()
+    private var isBlockFeedDown = false
+    private var lastGroup: SubtensorPortfolioGroup?
+    private var claimable: [SubtensorRootClaimPreview]?
+    private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let holdsStore = CancellableCallStore()
     private let historyStore = CancellableCallStore()
+    private let subnetsInfoStore = CancellableCallStore()
 
     private var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
-    private var chainAsset: ChainAsset {
+    var chainAsset: ChainAsset {
         state.stakingOption.chainAsset
     }
 
-    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
-        state.generalLocalSubscriptionFactory
-    }
-
     init(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         netuid: UInt16,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryStore: SubtensorPriceHistoryStore,
-        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
-        rootHoldFactory: SubtensorRootHoldFactoryProtocol,
+        blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?,
+        applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -55,12 +52,14 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     ) {
         self.state = state
         self.netuid = netuid
-        self.catalogueService = catalogueService
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryStore = priceHistoryStore
-        self.validatorFactory = validatorFactory
-        self.rootHoldFactory = rootHoldFactory
+        alphaPriceOperationFactory = state.earnServices.alphaPriceOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
+        rootHoldOperationFactory = state.earnServices.rootHoldOperationFactory
+        self.blockNumberSubscription = blockNumberSubscription
+        self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -68,17 +67,17 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     }
 
     deinit {
-        [catalogueStore, logosStore, validatorStore, rateStore, holdsStore, historyStore].forEach { $0.cancel() }
+        [pricesStore, logosStore, validatorStore, rateStore, holdsStore, historyStore, subnetsInfoStore].forEach {
+            $0.cancel()
+        }
 
+        blockNumberSubscription?.unsubscribe()
         state.positionsSyncService?.remove(observer: self)
-        state.positionsSyncService?.remove(failureObserver: self)
-        state.rootClaimableService?.remove(observer: self)
-        state.rootClaimableService?.remove(failureObserver: self)
     }
 }
 
 private extension SubtensorPositionInteractor {
-    func findGroup(in positionsState: Multistaking.SubtensorStakingState) -> SubtensorPortfolioGroup? {
+    func findGroup(in positionsState: Multistaking.SubtensorState) -> SubtensorPortfolioGroup? {
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
         let group = isRoot ? portfolio.root : portfolio.subnets.first { $0.netuid == netuid }
 
@@ -88,108 +87,99 @@ private extension SubtensorPositionInteractor {
     func subscribePositions() {
         state.positionsSyncService?.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            guard let self, let newState else {
-                return
+            onState: { [weak self] newState in
+                guard let self, let newState else {
+                    return
+                }
+
+                let group = findGroup(in: newState)
+
+                presenter?.didReceive(group: group)
+
+                if !isRoot, group != lastGroup, !pricesStore.hasCall {
+                    loadPrices()
+                }
+
+                lastGroup = group
+
+                if isRoot {
+                    claimable = newState.rootClaimPreviews
+                    providePendingClaims()
+
+                    presenter?.didReceive(
+                        claimable: newState.rootClaimPreviews,
+                        isFailed: newState.isRootRedeemableStale
+                    )
+                }
+            },
+            onFailure: { [weak self] isFailed in
+                self?.presenter?.didReceiveSyncFailure(isFailed)
             }
+        )
+    }
 
-            presenter?.didReceive(group: findGroup(in: newState))
-        }
+    func subscribeBlockNumber() {
+        do {
+            try blockNumberSubscription?.start { [weak self] result in
+                switch result {
+                case let .success(blockNumber):
+                    self?.isBlockFeedDown = false
 
-        state.positionsSyncService?.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceiveSyncFailure(isFailed)
+                    if let blockNumber {
+                        self?.providePendingClaims()
+                        self?.presenter?.didReceive(blockNumber: blockNumber)
+                        self?.retryFailedRootHolds()
+                    }
+                case let .failure(error):
+                    self?.logger.warning("Subtensor position block number unavailable: \(error)")
+                    self?.isBlockFeedDown = true
+                }
+            }
+        } catch {
+            logger.warning("Subtensor position block number unavailable: \(error)")
+            isBlockFeedDown = true
         }
     }
 
-    func subscribeClaimable() {
-        guard let claimableService = state.rootClaimableService else {
-            presenter?.didReceiveClaimableFailure(true)
-            return
-        }
-
-        claimableService.add(
-            observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, claimable in
-            self?.presenter?.didReceive(claimable: claimable)
-        }
-
-        claimableService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceiveClaimableFailure(isFailed)
-        }
-    }
-
-    func subscribePrice() {
-        clear(streamableProvider: &priceProvider)
-
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    func rearmBlockFeed() {
+        isBlockFeedDown = false
+        blockNumberSubscription?.unsubscribe()
+        subscribeBlockNumber()
     }
 
     func loadSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position subnet mark unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
-        }
-    }
-
-    func loadRootRate() {
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceive(rootRate: SubtensorAlphaApyFormatter.annualRate(from: yield))
-            case let .failure(error):
-                self?.logger.warning("Subtensor position root rate unavailable: \(error)")
-                self?.presenter?.didReceive(rootRate: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "position subnet mark") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 
     func loadYields() {
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(yields: yields)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position yields unavailable: \(error)")
-                self?.presenter?.didReceive(yields: nil)
+        let yieldOperationFactory = yieldOperationFactory
+        let netuid = netuid
+
+        load(
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
+            in: rateStore,
+            label: "position yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(yields: $0)
             }
+        )
+    }
+
+    func providePendingClaims() {
+        guard isRoot, let coldkey = state.selectedAccount?.chainAccount.accountId else {
+            return
         }
+
+        let hotkeys = state.flowState.pendingRootClaims.pendingHotkeys(
+            for: coldkey,
+            at: Date(),
+            claimable: claimable
+        )
+
+        presenter?.didReceive(pendingClaimHotkeys: hotkeys)
     }
 
     func retryFailedRootHolds() {
@@ -199,111 +189,81 @@ private extension SubtensorPositionInteractor {
 
         loadRootHolds(for: hotkeys)
     }
-
-    func makeSnapshot() -> SubtensorPositionSnapshot {
-        guard !isRoot else {
-            let rootRate = yieldService.cachedRootYield().map(SubtensorAlphaApyFormatter.annualRate(from:))
-
-            return SubtensorPositionSnapshot(catalogue: .miss, rootRate: rootRate, yields: .miss)
-        }
-
-        let catalogue = catalogueService.cachedCatalogue()
-
-        return SubtensorPositionSnapshot(
-            catalogue: catalogue.value?.subnet(for: netuid) != nil ? catalogue : .miss,
-            rootRate: .miss,
-            yields: yieldService.cachedAlphaYields(for: netuid)
-        )
-    }
 }
 
 extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorPositionSnapshot {
-        seed = makeSnapshot()
+    func setup() {
+        if isRoot {
+            subscribeBlockNumber()
+        } else {
+            loadPrices()
+            loadSubnetLogos()
+            loadSubnetsInfo()
+        }
 
-        return seed
+        subscribePositions()
+        subscribeTaoPrice(currency: selectedCurrency)
+        loadYields()
+
+        applicationHandler.delegate = self
     }
 
-    func setup() {
-        subscribePositions()
-        subscribePrice()
-
-        if isRoot {
-            subscribeClaimable()
-            blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
-
-            if !seed.rootRate.isFresh {
-                loadRootRate()
-            }
-        } else {
-            if !seed.catalogue.isFresh {
-                loadCatalogue()
-            }
-
-            loadSubnetLogos()
-
-            if !seed.yields.isFresh {
-                loadYields()
-            }
-
-            loadSubnetsInfo(forcingRefresh: false)
-        }
+    func refreshPendingClaims() {
+        providePendingClaims()
     }
 
     func refreshPositions() {
         state.positionsSyncService?.refresh()
-    }
 
-    func loadCatalogue() {
-        catalogueStore.cancel()
-
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(catalogue: catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position catalogue unavailable: \(error)")
-                self?.presenter?.didReceive(catalogue: nil)
-            }
+        if !isRoot {
+            loadPrices()
         }
     }
 
-    func loadSubnetsInfo(forcingRefresh: Bool) {
-        state.subnetsService.fetchSubnetsInfo(
-            forcingRefresh: forcingRefresh,
-            runningCompletionIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(subnetsInfo):
-                self?.presenter?.didReceive(subnetsInfo: subnetsInfo)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position subnets unavailable: \(error)")
-                self?.presenter?.didReceive(subnetsInfo: nil)
+    func loadPrices() {
+        pricesStore.cancel()
+
+        let alphaPriceOperationFactory = alphaPriceOperationFactory
+        let netuid = netuid
+
+        load(
+            alphaPriceOperationFactory.createPricesWrapper(for: [netuid]),
+            cached: { alphaPriceOperationFactory.cachedPrices().flatMap { $0.taoPerAlpha[netuid] != nil ? $0 : nil } },
+            in: pricesStore,
+            label: "position alpha prices",
+            deliver: { [weak self] prices in
+                if let prices {
+                    self?.presenter?.didReceive(prices: prices)
+                } else {
+                    self?.presenter?.didFailPrices()
+                }
             }
+        )
+    }
+
+    func loadSubnetsInfo() {
+        subnetsInfoStore.cancel()
+
+        load(
+            state.subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
+            in: subnetsInfoStore,
+            label: "position subnets"
+        ) { [weak self] in
+            self?.presenter?.didReceive(subnetsInfo: $0)
         }
     }
 
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
         validatorStore.cancel()
 
-        executeCancellable(
-            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
-            inOperationQueue: operationQueue,
-            backingCallIn: validatorStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(validator):
-                self?.presenter?.didReceive(validator: validator, for: hotkey)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position validator unavailable: \(error)")
-                self?.presenter?.didReceive(validator: nil, for: hotkey)
-            }
+        load(
+            directoryOperationFactory.createListedDetailWrapper(for: hotkey, subnet: subnet),
+            in: validatorStore,
+            label: "position validator"
+        ) { [weak self] in
+            self?.presenter?.didReceive(validator: $0, for: hotkey)
+        } fail: { [weak self] in
+            self?.presenter?.didFailValidator(for: hotkey)
         }
     }
 
@@ -315,15 +275,20 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         failedHoldsHotkeys = nil
         holdsStore.cancel()
 
+        guard !hotkeys.isEmpty else {
+            presenter?.didReceive(holds: [:], blockTime: nil)
+            return
+        }
+
         executeCancellable(
-            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
+            wrapper: rootHoldOperationFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             backingCallIn: holdsStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(holds):
-                self?.presenter?.didReceive(holds: holds)
+            case let .success((holds, blockTime)):
+                self?.presenter?.didReceive(holds: holds, blockTime: blockTime)
             case let .failure(error):
                 self?.logger.warning("Subtensor position root holds unavailable: \(error)")
                 self?.failedHoldsHotkeys = hotkeys
@@ -332,50 +297,41 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     }
 
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod) {
-        priceHistoryStore.loadHistory(
+        historyStore.cancel()
+
+        let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
             currency: selectedCurrency,
-            backingCallIn: historyStore
-        ) { [weak self] result in
-            switch result {
-            case let .success(history):
-                self?.presenter?.didReceive(history: history, for: period)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position price history unavailable: \(error)")
-                self?.presenter?.didFailHistory(for: period)
-            }
+            registrationDate: nil
+        ) ?? .createWithResult(nil)
+
+        load(wrapper, in: historyStore, label: "position price history") { [weak self] in
+            self?.presenter?.didReceive(history: $0, for: period)
+        } fail: { [weak self] in
+            self?.presenter?.didFailHistory(for: period)
         }
     }
 }
 
-extension SubtensorPositionInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber {
-                presenter?.didReceive(blockNumber: blockNumber)
-                retryFailedRootHolds()
-            }
-        case let .failure(error):
-            logger.warning("Subtensor position block number unavailable: \(error)")
+extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        priceProvider?.refresh()
+        providePendingClaims()
+
+        if !isRoot {
+            loadPrices()
+        } else if isBlockFeedDown {
+            rearmBlockFeed()
         }
+
+        presenter?.didBecomeActive()
     }
 }
 
-extension SubtensorPositionInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        guard chainAsset.asset.priceId == priceId else {
-            return
-        }
-
-        switch result {
-        case let .success(priceData):
-            presenter?.didReceive(price: priceData)
-        case let .failure(error):
-            logger.error("Subtensor position price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorPositionInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -386,6 +342,7 @@ extension SubtensorPositionInteractor: SelectedCurrencyDepending {
         }
 
         presenter?.didChangeCurrency()
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

@@ -57,13 +57,16 @@ final class StakingDashboardViewModelFactory {
     func createEstimatedEarnings(
         from value: Decimal?,
         isSyncing: Bool,
+        formatter: LocalizableResource<NumberFormatter>? = nil,
         locale: Locale
     ) -> LoadableViewModelState<String?> {
         guard let value = value else {
             return isSyncing ? .loading : .loaded(value: nil)
         }
 
-        guard let valueString = estimatedEarningsFormatter.value(for: locale).stringFromDecimal(value) else {
+        let formatter = formatter ?? estimatedEarningsFormatter
+
+        guard let valueString = formatter.value(for: locale).stringFromDecimal(value) else {
             return isSyncing ? .loading : .loaded(value: nil)
         }
 
@@ -236,11 +239,9 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
 
-        let estimatedEarnings = createEstimatedEarnings(
-            from: model.maxApy,
-            isSyncing: model.isOffchainSync,
-            locale: locale
-        )
+        let estimatedEarnings = chainAsset.asset.hasSubtensorStaking
+            ? createSubtensorMaxApy(from: model.maxApy, isSyncing: model.isOnchainSync, locale: locale)
+            : createEstimatedEarnings(from: model.maxApy, isSyncing: model.isOffchainSync, locale: locale)
 
         let balance = createAmount(
             for: model.availableBalance,
@@ -260,7 +261,8 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             chainAssetViewModel: loadableChainAsset,
             estimatedEarnings: estimatedEarnings,
             balance: .wrapped(balance, with: privacyModeEnabled),
-            stakingType: stakingType
+            stakingType: stakingType,
+            isNew: chainAsset.chain.newFeatures.contains(.staking)
         )
     }
 

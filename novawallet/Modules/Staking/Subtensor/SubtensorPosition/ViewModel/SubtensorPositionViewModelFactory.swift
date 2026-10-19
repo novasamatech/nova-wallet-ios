@@ -1,33 +1,24 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPositionViewModelFactoryProtocol {
+protocol SubtensorPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel
     func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel?
 }
 
 final class SubtensorPositionViewModelFactory {
     let chainAsset: ChainAsset
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let assetIconFactory: AssetIconViewModelFactoryProtocol
-    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
-        self.iconFactory = iconFactory
-        self.assetIconFactory = assetIconFactory
-        self.displayAddressFactory = displayAddressFactory
-        self.formatterFactory = formatterFactory
 
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -36,15 +27,8 @@ final class SubtensorPositionViewModelFactory {
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            formatterFactory: formatterFactory
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
-    }
-}
-
-extension SubtensorPositionViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
 }
 
@@ -53,8 +37,12 @@ private extension SubtensorPositionViewModelFactory {
         amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
     }
 
-    func formatTao(_ amount: Balance, locale: Locale) -> String {
-        balanceViewModelFactory.amountFromValue(decimal(amount), roundingMode: .down).value(for: locale)
+    func formatTao(
+        _ amount: Balance,
+        roundingMode: NumberFormatter.RoundingMode = .down,
+        locale: Locale
+    ) -> String {
+        balanceViewModelFactory.amountFromValue(decimal(amount), roundingMode: roundingMode).value(for: locale)
     }
 
     func formatFiat(_ amount: Balance, price: PriceData?, locale: Locale) -> String? {
@@ -62,28 +50,16 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func formatAlpha(_ amount: Balance, state: SubtensorPositionState, locale: Locale) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        chainAsset.assetDisplayInfo.subtensorAlphaAmount(
+            amount,
+            netuid: state.netuid,
+            catalogue: state.catalogue,
+            locale: locale
         )
-
-        let text = formatterFactory.createTokenFormatter(for: alphaInfo)
-            .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
-
-        return "\u{2066}\(text)\u{2069}"
     }
 
-    func formatDuration(blocks: UInt64, locale: Locale) -> String {
-        let time = (TimeInterval(blocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
-
-        return time.localizedDaysHoursOrFallbackMinutes(for: locale)
+    func formatDuration(blocks: UInt64, blockTime: BlockTime, locale: Locale) -> String {
+        (TimeInterval(blocks) * blockTime.timeInterval).localizedDaysHoursOrFallbackMinutes(for: locale)
     }
 
     func createTitle(for state: SubtensorPositionState, locale: Locale) -> String? {
@@ -98,7 +74,7 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorSubnetNaming.titleWithSymbol(for: state.netuid, in: state.catalogue, locale: locale)
     }
 
-    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorPortfolioLoadable<String> {
+    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorRowState<String> {
         guard state.isRoot, let group = state.group else {
             return .hidden
         }
@@ -107,7 +83,7 @@ private extension SubtensorPositionViewModelFactory {
         case .loading:
             return .loading
         case let .loaded(price):
-            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .loaded($0) } ?? .hidden
+            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .value($0) } ?? .hidden
         }
     }
 
@@ -115,12 +91,11 @@ private extension SubtensorPositionViewModelFactory {
         let value: SubtensorPositionValueViewModel
 
         if state.isClaimableFailed {
-            value = .loaded(value: unknownValue(for: locale), detail: nil, isPositive: false)
-        } else if let claimable = state.claimable {
+            value = .loaded(value: .subtensorUnknown(for: locale), detail: nil)
+        } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
-                value: formatTao(claimable.totalRedeemable, locale: locale),
-                detail: formatFiat(claimable.totalRedeemable, price: state.price.value, locale: locale),
-                isPositive: false
+                value: formatTao(redeemable, locale: locale),
+                detail: formatFiat(redeemable, price: state.price.value, locale: locale)
             )
         } else {
             value = .loading
@@ -128,29 +103,28 @@ private extension SubtensorPositionViewModelFactory {
 
         return SubtensorPositionRowViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.commonRewards(),
-            value: value
+            value: value,
+            caption: createClaimMinimumCaption(for: state, locale: locale)
         )
     }
 
-    func createSubnetRows(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionRowViewModel] {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let apyRow: SubtensorPositionRowViewModel?
-
-        if !state.isRateResolved {
-            apyRow = SubtensorPositionRowViewModel(title: strings.stakingEstimatedEarnings(), value: .loading)
-        } else {
-            apyRow = state.annualRate.map { rate in
-                SubtensorPositionRowViewModel(
-                    title: strings.stakingEstimatedEarnings(),
-                    value: .loaded(
-                        value: SubtensorApyFormatter.text(for: rate, style: .trailing, locale: locale),
-                        detail: nil,
-                        isPositive: true
-                    )
-                )
-            }
+    func createClaimMinimumCaption(for state: SubtensorPositionState, locale: Locale) -> String? {
+        guard
+            !state.isClaimableFailed,
+            let claimable = state.claimable,
+            !claimable.contains(where: SubtensorRootClaimRule.isClaimable),
+            let accrued = claimable.first(where: { $0.redeemable > 0 }) else {
+            return nil
         }
+
+        let minimum = formatTao(accrued.minimumClaim, roundingMode: .up, locale: locale)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable
+            .stakingSubtensorUiPositionClaimMinimumFormat(minimum)
+    }
+
+    func createWorthRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let worthValue: SubtensorPositionValueViewModel
 
@@ -159,19 +133,17 @@ private extension SubtensorPositionViewModelFactory {
         } else if let taoValue = state.taoValue {
             worthValue = .loaded(
                 value: formatTao(taoValue, locale: locale).approximatelyEqual(),
-                detail: formatFiat(taoValue, price: state.price.value, locale: locale),
-                isPositive: false
+                detail: formatFiat(taoValue, price: state.price.value, locale: locale)
             )
         } else {
-            worthValue = .loaded(value: strings.stakingSubtensorUiPriceUnavailable(), detail: nil, isPositive: false)
+            worthValue = .loaded(value: strings.stakingSubtensorUiPriceUnavailable(), detail: nil)
         }
 
-        let worthRow = SubtensorPositionRowViewModel(
+        return SubtensorPositionRowViewModel(
             title: strings.stakingSubtensorUiPositionWorth(),
-            value: worthValue
+            value: worthValue,
+            caption: nil
         )
-
-        return [apyRow, worthRow].compactMap { $0 }
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
@@ -185,7 +157,7 @@ private extension SubtensorPositionViewModelFactory {
                 amount: state.group.map { formatTao($0.totalAlpha, locale: locale) },
                 fiat: createFiat(for: state, locale: locale),
                 isActive: state.primaryPosition.map(\.isRegistered),
-                rows: [createRewardsRow(for: state, locale: locale)]
+                row: createRewardsRow(for: state, locale: locale)
             )
         }
 
@@ -201,39 +173,16 @@ private extension SubtensorPositionViewModelFactory {
             amount: isResolved ? state.group.map { formatAlpha($0.totalAlpha, state: state, locale: locale) } : nil,
             fiat: .hidden,
             isActive: isResolved ? isActive : nil,
-            rows: createSubnetRows(for: state, locale: locale)
+            row: createWorthRow(for: state, locale: locale)
         )
     }
 
     func createClaimDetails(for state: SubtensorPositionState, locale: Locale) -> String? {
-        guard
-            !state.isClaimableFailed,
-            let claimable = state.claimable,
-            let minimumClaim = claimable.minimumClaim else {
+        guard !state.isClaimableFailed, let target = state.claimTarget else {
             return nil
         }
 
-        if let target = state.claimTarget {
-            return formatTao(target.redeemable, locale: locale)
-        }
-
-        let isOwed = claimable.previews.contains { $0.redeemable > 0 }
-        let reachesMinimum = claimable.previews.contains { preview in
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim)
-        }
-
-        guard isOwed, !reachesMinimum else {
-            return nil
-        }
-
-        let minimum = balanceViewModelFactory.amountFromValue(
-            decimal(minimumClaim),
-            roundingMode: .up
-        ).value(for: locale)
-
-        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorClaimMinimumDetailsFormat(
-            minimum
-        )
+        return formatTao(target.redeemable, locale: locale)
     }
 
     func createActions(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionActionViewModel] {
@@ -257,7 +206,7 @@ private extension SubtensorPositionViewModelFactory {
         }
     }
 
-    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionValidatorViewModel {
+    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorValidatorCardViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let address = state.group.flatMap { try? $0.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) }
 
@@ -268,25 +217,25 @@ private extension SubtensorPositionViewModelFactory {
         }
 
         let name = state.isValidatorResolved
-            ? state.validator?.name ?? address?.mediumTruncated ?? unknownValue(for: locale)
+            ? state.validator?.name ?? address?.mediumTruncated ?? .subtensorUnknown(for: locale)
             : nil
 
-        let rate: SubtensorPortfolioLoadable<String>
+        let rate: SubtensorRowState<String>
 
         if !state.isRateResolved {
             rate = .loading
-        } else if let annualRate = state.annualRate {
-            rate = .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))
+        } else if state.annualRate != nil || (state.isRoot && state.yields != nil) {
+            rate = .value(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }
 
-        return SubtensorPositionValidatorViewModel(
+        return SubtensorValidatorCardViewModel(
             icon: icon,
             name: name,
             subtitle: strings.stakingCommonValidator(),
             rate: rate,
-            rateCaption: strings.stakingSubtensorUiValidatorSortApy()
+            rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }
 
@@ -294,15 +243,20 @@ private extension SubtensorPositionViewModelFactory {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         if state.isRoot {
-            guard let remaining = state.holdRemainingBlocks, let hold = state.primaryHold else {
+            guard
+                let remaining = state.holdRemainingBlocks,
+                let hold = state.primaryHold,
+                let blockTime = state.blockTime else {
                 return nil
             }
 
             return SubtensorPositionNoticeViewModel(
                 title: strings.stakingSubtensorUiPositionHoldTitle(),
-                timeLeft: strings.commonTimeLeftFormat(formatDuration(blocks: remaining, locale: locale)),
+                timeLeft: strings.commonTimeLeftFormat(
+                    formatDuration(blocks: remaining, blockTime: blockTime, locale: locale)
+                ),
                 message: strings.stakingSubtensorUiPositionHoldMessageFormat(
-                    formatDuration(blocks: hold.interval, locale: locale)
+                    formatDuration(blocks: hold.interval, blockTime: blockTime, locale: locale)
                 )
             )
         }
@@ -323,7 +277,7 @@ private extension SubtensorPositionViewModelFactory {
     }
 }
 
-extension SubtensorPositionViewModelFactory: SubnetPositionViewModelFactoryProtocol {
+extension SubtensorPositionViewModelFactory: SubtensorPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel {
         SubtensorPositionViewModel(
             title: createTitle(for: state, locale: locale),

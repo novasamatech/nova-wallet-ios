@@ -3,10 +3,11 @@ import Foundation_iOS
 
 enum SubtensorValidatorInfoViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?
+        detail: SubtensorValidatorDirectoryItem?,
+        needsChainDetail: Bool
     ) -> ControllerBackedProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -18,10 +19,12 @@ enum SubtensorValidatorInfoViewFactory {
         let interactor = SubtensorValidatorInfoInteractor(
             target: target,
             hotkey: hotkey,
-            chainAsset: chainAsset,
-            directoryService: earnServices.validatorDirectoryService,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
+            state: state,
+            coverageOperationFactory: SubtensorValidatorCoverageOperationFactory(
+                apiFactory: state.apiOperationFactory,
+                catalogueOperationFactory: earnServices.catalogueOperationFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -36,15 +39,16 @@ enum SubtensorValidatorInfoViewFactory {
         let presenter = SubtensorValidatorInfoPresenter(
             target: target,
             hotkey: hotkey,
+            chain: chainAsset.chain,
             detail: detail,
+            needsChainDetail: needsChainDetail,
             interactor: interactor,
             wireframe: SubtensorValidatorInfoWireframe(),
             viewModelFactory: SubtensorValidatorInfoViewModelFactory(
                 chainAsset: chainAsset,
                 balanceViewModelFactory: balanceViewModelFactory
             ),
-            localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            localizationManager: LocalizationManager.shared
         )
 
         let view = SubtensorValidatorInfoViewController(

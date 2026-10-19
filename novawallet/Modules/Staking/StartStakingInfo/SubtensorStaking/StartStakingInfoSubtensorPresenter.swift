@@ -1,13 +1,19 @@
 import Foundation
+import BigInt
 import Foundation_iOS
 
 final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
-    let subtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol
+    let interactor: StartStakingInfoSubtensorInteractorInputProtocol
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
-    private var walletType: MetaAccountModelType?
-    private var headlineRate: Decimal?
+    private var wallet: MetaAccountModel?
+
+    private var state = State() {
+        didSet {
+            provideViewModel(state: state)
+        }
+    }
 
     init(
         chainAsset: ChainAsset,
@@ -20,7 +26,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
-        subtensorInteractor = interactor
+        self.interactor = interactor
         subtensorWireframe = wireframe
         self.subtensorViewModelFactory = subtensorViewModelFactory
 
@@ -37,14 +43,20 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     }
 
     override func setup() {
-        seedHeadline(from: subtensorInteractor.cachedHeadlineRate())
-
         super.setup()
-        provideSubtensorViewModel()
+        view?.didReceive(viewModel: .loading)
+    }
+
+    override func createCaption() -> String? {
+        subtensorViewModelFactory.createCaption(locale: selectedLocale)
+    }
+
+    override func createParagraphs(for _: StartStakingStateProtocol) -> [ParagraphView.Model]? {
+        subtensorViewModelFactory.createParagraphs(locale: selectedLocale)
     }
 
     override func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
-        walletType = wallet.type
+        self.wallet = wallet
 
         super.didReceive(wallet: wallet, chainAccountId: chainAccountId)
     }
@@ -52,69 +64,45 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     override func didReceiveStakingEnabled() {}
 
     override func startStaking() {
-        guard let view, let walletType, let accountExistense else {
+        startStakingWithGate { [weak self] in self?.subtensorWireframe.showSetupAmount(from: self?.view) }
+    }
+
+    override func selectSecondaryAction() {
+        startStakingWithGate { [weak self] in self?.subtensorWireframe.showAllOptions(from: self?.view) }
+    }
+
+    func startStakingWithGate(continuation: @escaping () -> Void) {
+        guard let view, let wallet, let accountExistense else { return }
+
+        guard case .assetBalance = accountExistense else {
+            super.startStaking(continuation: continuation)
             return
         }
 
-        if
-            case .assetBalance = accountExistense,
-            case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: walletType) {
-            subtensorWireframe.presentSignerNotSupportedView(from: view, type: type) {}
-            return
+        subtensorWireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.proceedStaking(continuation: continuation)
         }
-
-        super.startStaking()
-    }
-}
-
-extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenterProtocol {
-    func refreshContent() {
-        provideSubtensorViewModel()
-        provideBalanceModel()
-    }
-}
-
-private extension StartStakingInfoSubtensorPresenter {
-    func seedHeadline(from snapshot: HTTPCachePeek<Decimal?>) {
-        guard let headlineRate = snapshot.value else {
-            return
-        }
-
-        self.headlineRate = headlineRate
     }
 
-    func provideSubtensorViewModel() {
-        let viewModel = subtensorViewModelFactory.createViewModel(
-            title: createTitle(locale: selectedLocale),
-            locale: selectedLocale
-        )
-
-        (view as? StartStakingInfoSubtensorViewProtocol)?.didReceive(subtensorViewModel: viewModel)
-    }
-
-    func createTitle(locale: Locale) -> AccentTextModel {
-        guard let headlineRate else {
-            let symbol = chainAsset.asset.displayInfo.symbol
-
-            return AccentTextModel(
-                text: R.string(preferredLanguages: locale.rLanguages).localizable.stakingStakeFormat(symbol),
-                accents: [symbol]
-            )
-        }
-
-        return startStakingViewModelFactory.earnupModel(
-            earnings: headlineRate,
-            chainAsset: chainAsset,
-            locale: locale
-        )
+    private func proceedStaking(continuation: () -> Void) {
+        super.startStaking(continuation: continuation)
     }
 }
 
 extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteractorOutputProtocol {
-    func didReceive(headlineRate: Decimal?) {
-        self.headlineRate = headlineRate
+    func didReceive(maxApy: Decimal) {
+        state.maxApy = maxApy
+    }
 
-        provideSubtensorViewModel()
+    func didReceive(error: SubtensorStartStakingInfoError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .maxApy:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryMaxApy()
+            }
+        }
     }
 
     func didReceiveAccountChange() {
@@ -129,5 +117,20 @@ extension StartStakingInfoSubtensorPresenter: SubtensorSubnetSelectDelegate {
         } else {
             subtensorWireframe.showSubnetSetup(from: view, target: target, validator: validator)
         }
+    }
+}
+
+extension StartStakingInfoSubtensorPresenter {
+    struct State: StartStakingStateProtocol {
+        var maxApy: Decimal?
+
+        var minStake: BigUInt? { nil }
+        var rewardTime: TimeInterval? { nil }
+        var unstakingTime: TimeInterval? { nil }
+        var rewardDelay: TimeInterval? { nil }
+        var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
+        var govThresholdAmount: BigUInt? { nil }
+        var shouldHaveGovInfo: Bool { false }
+        var rewardsDestination: DefaultStakingRewardDestination { .manual }
     }
 }

@@ -2,16 +2,33 @@ import DGCharts
 import UIKit
 import UIKit_iOS
 
-struct SubtensorPriceChartViewModel: Equatable {
-    let values: [Double]
-    let axisLabels: [String]
-    let isRising: Bool
-}
-
 protocol SubtensorPriceChartViewDelegate: AnyObject {
     func priceChartViewDidBeginSelection(_ chartView: SubtensorSubnetPriceChartView)
-    func priceChartView(_ chartView: SubtensorSubnetPriceChartView, didSelectPointAt index: Int)
+    func priceChartView(_ chartView: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection)
     func priceChartViewDidEndSelection(_ chartView: SubtensorSubnetPriceChartView)
+}
+
+protocol SubtensorChartHapticsHandling: SubtensorPriceChartViewDelegate {
+    var seekHapticPlayer: ProgressiveHapticPlayer { get }
+    var chartLongPressHapticPlayer: HapticPlayer { get }
+
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?)
+}
+
+extension SubtensorChartHapticsHandling {
+    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
+        chartLongPressHapticPlayer.play()
+    }
+
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
+        seekHapticPlayer.play()
+        didSelectChart(selection)
+    }
+
+    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
+        seekHapticPlayer.reset()
+        didSelectChart(nil)
+    }
 }
 
 final class SubtensorSubnetPriceChartView: UIView {
@@ -24,18 +41,17 @@ final class SubtensorSubnetPriceChartView: UIView {
 
     private let chart = LineChartView()
     private let style: Style
-    private let isSelectable: Bool
 
     private var viewModel: SubtensorPriceChartViewModel?
     private var plottedWidth: CGFloat?
     private var entries: [ChartDataEntry] = []
     private var lineColor: UIColor?
     private var dotShadowColor: UIColor?
-    private var selectedIndex: Int?
+    private var selection: SubtensorPriceChartSelection?
+    private var chartData: SubtensorPriceChartData?
 
-    init(style: Style = .price, isSelectable: Bool = false) {
+    init(style: Style = .price) {
         self.style = style
-        self.isSelectable = isSelectable
         super.init(frame: .zero)
         addSubview(chart)
         chart.snp.makeConstraints { make in make.edges.equalToSuperview() }
@@ -64,9 +80,7 @@ final class SubtensorSubnetPriceChartView: UIView {
         axis.gridLineWidth = 0.5
         axis.setLabelCount(3, force: true)
 
-        if isSelectable {
-            setupSelection()
-        }
+        setupSelection()
     }
 
     @available(*, unavailable)
@@ -89,11 +103,9 @@ final class SubtensorSubnetPriceChartView: UIView {
 private extension SubtensorSubnetPriceChartView {
     enum Constants {
         static let lineWidth: CGFloat = 1.5
-        static let midLineWidth: CGFloat = 0.5
-        static let midLineDashLengths: [CGFloat] = [2, 3]
+        static let midLineWidth: CGFloat = 1
+        static let midLineDashLengths: [CGFloat] = [3, 3]
         static let fillTopAlpha: CGFloat = 0.28
-        static let flatRangeFactor: Double = 0.02
-        static let minimumSpread: Double = 1e-6
         static let selectionPressDuration: TimeInterval = 0.05
     }
 
@@ -102,31 +114,24 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func plot(viewModel: SubtensorPriceChartViewModel) {
-        let hadSelection = selectedIndex != nil
-
-        clearSelection()
+        endSelection()
         plottedWidth = bounds.width
+        chartData = SubtensorPriceChartDataFactory.create(
+            series: viewModel.series,
+            availablePoints: Int(bounds.width)
+        )
 
-        defer {
-            if hadSelection {
-                delegate?.priceChartViewDidEndSelection(self)
-            }
-        }
-
-        let points = viewModel.values.enumerated().filter(\.element.isFinite)
-        let values = points.map(\.element)
-
-        guard values.count > 1, let minimum = values.min(), let maximum = values.max() else {
+        guard let chartData else {
             entries = []
             chart.clear()
             return
         }
 
-        let padding = maximum > minimum ? 0 : max(abs(maximum) * Constants.flatRangeFactor, Constants.minimumSpread)
-        let lower = minimum - padding
-        let upper = maximum + padding
-
-        applyAxis(lower: lower, upper: upper, labels: viewModel.axisLabels)
+        chart.xAxis.axisMinimum = chartData.xRange.lowerBound
+        chart.xAxis.axisMaximum = chartData.xRange.upperBound
+        chart.dragEnabled = chartData.coverageStart == nil
+        chart.highlightPerDragEnabled = chart.dragEnabled
+        applyAxis(lower: chartData.yRange.lowerBound, upper: chartData.yRange.upperBound, labels: viewModel.axisLabels)
 
         let lineColor = viewModel.isRising ? R.color.colorTextPositive()! : R.color.colorTextNegative()!
         self.lineColor = lineColor
@@ -134,11 +139,8 @@ private extension SubtensorSubnetPriceChartView {
             ? R.color.colorPriceChartPositiveShadow()!
             : R.color.colorPriceChartNegativeShadow()!
 
-        let availablePoints = Int(bounds.width)
-        let plottedPoints = availablePoints > 0 ? points.optimizedForChart(availablePoints: availablePoints) : points
-
-        entries = plottedPoints.map { index, value in
-            ChartDataEntry(x: Double(index), y: value)
+        entries = chartData.entries.map { entry in
+            ChartDataEntry(x: entry.coordinate, y: entry.value, data: entry.sourceIndex)
         }
 
         applyLine(lineColor: lineColor)
@@ -189,12 +191,11 @@ private extension SubtensorSubnetPriceChartView {
 
     func addMidLine(at value: Double) {
         let guide = ChartLimitLine(limit: value)
-        guide.lineColor = R.color.colorChartGridLine()!
+        guide.lineColor = R.color.colorTextTertiary()!
         guide.lineWidth = Constants.midLineWidth
         guide.lineDashLengths = Constants.midLineDashLengths
         guide.drawLabelEnabled = false
         chart.rightAxis.addLimitLine(guide)
-        chart.rightAxis.drawLimitLinesBehindDataEnabled = true
     }
 
     func fill(for lineColor: UIColor) -> Fill? {
@@ -229,9 +230,7 @@ private extension SubtensorSubnetPriceChartView {
         line.lineWidth = Constants.lineWidth
         line.drawCirclesEnabled = false
         line.drawValuesEnabled = false
-        line.highlightEnabled = isSelectable
         line.drawHorizontalHighlightIndicatorEnabled = false
-        line.drawVerticalHighlightIndicatorEnabled = isSelectable
         line.highlightColor = R.color.colorNeutralPriceChartLine()!
 
         let fill = fill(for: lineColor)
@@ -252,7 +251,7 @@ private extension SubtensorSubnetPriceChartView {
 
     func applySelection(of entry: ChartDataEntry) {
         guard
-            let position = entries.firstIndex(where: { $0.x == entry.x }),
+            let position = entries.firstIndex(where: { $0 === entry }),
             let lineColor,
             let selectionRenderer else {
             return
@@ -271,8 +270,6 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func clearSelection() {
-        selectedIndex = nil
-
         guard let selectionRenderer else {
             return
         }
@@ -284,25 +281,21 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func selectEntry(_ entry: ChartDataEntry) {
-        applySelection(of: entry)
-
-        let index = Int(entry.x)
-
-        guard index != selectedIndex else {
+        guard let sourceIndex = entry.data as? Int else {
             return
         }
 
-        selectedIndex = index
-        delegate?.priceChartView(self, didSelectPointAt: index)
+        applySelection(of: entry)
+        notifySelection(.point(sourceIndex: sourceIndex))
     }
 
-    func endSelection() {
-        clearSelection()
-        delegate?.priceChartViewDidEndSelection(self)
-    }
+    func notifySelection(_ newSelection: SubtensorPriceChartSelection) {
+        guard newSelection != selection else {
+            return
+        }
 
-    func highlightEntry(at location: CGPoint) {
-        chart.highlightValue(chart.getHighlightByTouchPoint(location), callDelegate: true)
+        selection = newSelection
+        delegate?.priceChartView(self, didSelect: newSelection)
     }
 
     @objc func handleLongPress(_ recognizer: UILongPressGestureRecognizer) {
@@ -320,51 +313,55 @@ private extension SubtensorSubnetPriceChartView {
     }
 }
 
+extension SubtensorSubnetPriceChartView {
+    func endSelection() {
+        let hadSelection = selection != nil
+        selection = nil
+        clearSelection()
+
+        if hadSelection {
+            delegate?.priceChartViewDidEndSelection(self)
+        }
+    }
+
+    func highlightEntry(at location: CGPoint) {
+        guard let chartData else {
+            return
+        }
+
+        let coordinate = chart.valueForTouchPoint(point: location, axis: .right).x
+
+        guard let selection = chartData.selection(at: coordinate) else {
+            return
+        }
+
+        switch selection {
+        case let .point(sourceIndex):
+            guard let entry = entries.first(where: { ($0.data as? Int) == sourceIndex }) else {
+                return
+            }
+
+            chart.highlightValue(x: entry.x, y: entry.y, dataSetIndex: 0, callDelegate: false)
+            applySelection(of: entry)
+        case .noData:
+            clearSelection()
+        }
+
+        notifySelection(selection)
+    }
+}
+
 extension SubtensorSubnetPriceChartView: ChartViewDelegate {
     func chartValueSelected(_: ChartViewBase, entry: ChartDataEntry, highlight _: Highlight) {
+        guard chartData?.coverageStart == nil else {
+            chart.highlightValues(nil)
+            return
+        }
+
         selectEntry(entry)
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
         endSelection()
-    }
-}
-
-final class SubtensorChartLoadingView: UIView, SkeletonableView {
-    var skeletonView: SkrullableView?
-    var skeletonSuperview: UIView { self }
-    var hidingViews: [UIView] { [] }
-
-    private var loading = false
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        layer.cornerRadius = 12
-        clipsToBounds = true
-        isHidden = true
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if loading { updateLoadingState() }
-    }
-
-    func setLoading(_ value: Bool) {
-        loading = value
-        isHidden = !value
-        if value { startLoadingIfNeeded() } else { stopLoadingIfNeeded() }
-    }
-
-    func createSkeletons(for size: CGSize) -> [Skeletonable] {
-        [SingleSkeleton.createRow(
-            on: self,
-            containerView: self,
-            spaceSize: size,
-            offset: .zero,
-            size: size
-        )]
     }
 }

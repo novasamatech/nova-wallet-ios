@@ -1,351 +1,283 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
+import NovaAuth
 import Operation_iOS
 
 final class BittensorApiOperationFactoryTests: XCTestCase {
-    func testSubnetsDecodeFromTheFixture() throws {
-        let result = try fetch(makeFactory().createSubnetsWrapper())
+    private let subnetsJson = """
+    {"items":[{"additional":"","alphaOutstanding":"5120000","alphaReserve":"3410260.348230173","discord":"",\
+    "githubRepo":"","name":"Chutes","netuid":64,"networkRegisteredAt":4531295,\
+    "ownerColdkey":"5HAQXW8HcVSKCp6Se52dEePjsiFtkWqjTK9huLi1Hfa9DmTC",\
+    "ownerHotkey":"5GBCaF2ekuV49ipSHxtntwHBNr8Lj3c2XYJtd8eacVwREVek","reportedRootProportion":"0.1311",\
+    "subnetContact":"","subnetUrl":"","subnetWebsite":"","symbol":"ش","taoPerAlpha":"0.054961234",\
+    "taoReserve":"187432.117","tempo":360}],"meta":{"completeness":"COMPLETE","components":{\
+    "alphaPrices":{"asOf":"2026-09-24T09:29:30Z","availability":"AVAILABLE","freshness":"FRESH",\
+    "sourceClass":"PRIMARY","valueQuality":"REPORTED"},\
+    "subnetMetadata":{"asOf":"2026-09-24T09:25:00Z","availability":"AVAILABLE","freshness":"FRESH",\
+    "sourceClass":"PRIMARY","valueQuality":"REPORTED"}}}}
+    """
 
-        XCTAssertEqual(result.value.items.count, 10)
+    private let generationMetaJson = """
+    "clientGates":{"maxTake":"0.18","requireActiveWithinCutoff":true,"requirePermit":true},\
+    "completeness":"COMPLETE","components":{"recommendations":{"asOf":"2026-09-24T09:23:00Z",\
+    "availability":"AVAILABLE","freshness":"FRESH","sourceClass":"PRIMARY","valueQuality":"DERIVED"}},\
+    "generation":{"ageSeconds":420,"carriedOverNetuids":[],"excludedNetuids":[],\
+    "id":"8ebc85abd0bbeb6f282302ac48909c3d","inputFlags":[],"modelVersion":"5.0","servedFrom":"REDIS",\
+    "sourceBlockNumber":9139880}
+    """
+
+    private var rankedSubnetsJson: String {
+        """
+        {"items":[],"meta":{\(generationMetaJson),"policy":{"classification":"PAIR",\
+        "insufficientHistory":"NEUTRAL","requireIdentity":true,"requirePositiveSignal":false}}}
+        """
+    }
+
+    private let operationsJson = """
+    {"items":[],"pageInfo":{"page":1,"pageSize":100,"total":0,"nextPage":null},"historyScope":"TAO_APP_PARTIAL",\
+    "meta":{"completeness":"COMPLETE","components":{"operationHistory":{"asOf":"2026-09-24T09:29:30Z",\
+    "availability":"AVAILABLE","freshness":"FRESH","sourceClass":"PRIMARY","valueQuality":"REPORTED"}}}}
+    """
+
+    private let aliceSubject = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+    private let bobSubject = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+
+    func testSubnetsDecodeFromTheFixture() throws {
+        let transport = try createTransport(replies: [createResponse(Data(subnetsJson.utf8), requestId: "req-subnets")])
+        let factory = createFactory(transport: transport)
+
+        let result = try run(factory.createSubnetsWrapper())
+
+        XCTAssertEqual(result.value.items.count, 1)
         XCTAssertEqual(result.value.items.first { $0.netuid == 64 }?.taoPerAlpha, "0.054961234")
-        XCTAssertEqual(result.requestId, "fixture-1")
+        XCTAssertEqual(result.requestId, "req-subnets")
         XCTAssertFalse(result.isFromExpiredCache)
     }
 
-    func testValidatorsDecodeForTheRequestedNetuid() throws {
-        let result = try fetch(makeFactory().createValidatorsWrapper(netuid: 64))
-
-        XCTAssertEqual(result.value.items.count, 8)
-        XCTAssertEqual(Set(result.value.items.map(\.netuid)), [64])
-        XCTAssertEqual(result.value.meta.completeness, .complete)
-    }
-
-    func testRemovedRootYieldIsUnavailableWithoutARequest() {
-        let transport = makeTransport(replies: [])
-        let factory = makeFactory(transport: transport)
-        guard case .routeNotPublished = fetchError(factory.createRootYieldWrapper(page: 1)) else {
-            return XCTFail("Expected removed root yield route")
-        }
-        guard case .miss = factory.peekRootYield(page: 1) else {
-            return XCTFail("Expected no root yield cache")
-        }
-        verify(transport, never()).createResponseWrapper(for: any())
-    }
-
-    func testAlphaYieldDecodesTheRequestedNetuidAndPage() throws {
-        let result = try fetch(makeFactory().createAlphaYieldWrapper(netuid: 64, page: 1))
-
-        XCTAssertEqual(result.value.items.count, 8)
-        XCTAssertEqual(Set(result.value.items.map(\.metricKind)), ["ALPHA_VALIDATOR_APY"])
-        XCTAssertEqual(result.value.pageInfo.pageSize, 100)
-    }
-
-    func testOperationsSearchPostsTheAccountSubjectAndPageAsSortedJson() throws {
-        let accountSubject = BittensorApiFixtureWorld.validator(.aster).coldkey
-
-        let transport = makeTransport(replies: [
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.operations(page: 2)), requestId: "req-operations")
-        ])
-
-        let result = try fetch(
-            makeFactory(transport: transport).createOperationsWrapper(accountSubject: accountSubject, page: 2)
-        )
-
-        let expectedRequest = BittensorApiRequest(
-            method: .post,
-            path: "/operations/search",
-            pathTemplate: "/operations/search",
-            queryItems: [],
-            jsonBody: Data(#"{"accountSubject":"\#(accountSubject)","page":2}"#.utf8)
-        )
-
-        verify(transport, times(1)).createResponseWrapper(for: equal(to: expectedRequest))
-        XCTAssertEqual(result.value.pageInfo, BittensorApi.PageInfo(page: 2, pageSize: 100, total: 137, nextPage: nil))
-    }
-
-    func testRecommendationsDecodeWithTheirGeneration() throws {
-        let result = try fetch(makeFactory().createRecommendationsWrapper())
-
-        XCTAssertEqual(result.value.meta.generation.id, "8ebc85abd0bbeb6f282302ac48909c3d")
-        XCTAssertEqual(result.value.meta.generation.servedFrom, .redis)
-        XCTAssertEqual(result.value.classes.balanced.map(\.validatorName), ["Delta Relay", "Cinder Node", "Fjord Validators"])
-    }
-
-    func testRankedSubnetsDecodeWithRootFirst() throws {
-        let result = try fetch(makeFactory().createRankedSubnetsWrapper())
-
-        XCTAssertEqual(Array(result.value.items.map(\.netuid).prefix(3)), [0, 64, 4])
-        XCTAssertEqual(result.value.meta.policy.classification, .pair)
-    }
-
-    func testUnknownServedFromIsAContractViolationWithTheRequestId() throws {
-        let body = try mutatedBody(
-            BittensorApiFixtureDocuments.recommendations(),
-            replacing: [(#""servedFrom":"REDIS""#, #""servedFrom":"DISK""#)]
-        )
-
-        let transport = makeTransport(replies: [makeResponse(body, requestId: "req-enum")])
-
-        let error = fetchError(makeFactory(transport: transport).createRecommendationsWrapper())
-
-        guard case let .contractViolation(detail, requestId) = error else {
-            return XCTFail("Unexpected error: \(String(describing: error))")
-        }
-
-        XCTAssertEqual(requestId, "req-enum")
-        XCTAssertTrue(detail.contains("servedFrom"))
-    }
-
-    func testReorderedClientChecksAreAContractViolation() throws {
-        let body = try mutatedBody(
-            BittensorApiFixtureDocuments.recommendations(),
-            replacing: [(#"["uid","validator_permit","take","last_update"]"#, #"["uid","take","validator_permit","last_update"]"#)]
-        )
-
-        let transport = makeTransport(replies: [makeResponse(body, requestId: "req-order")])
-
-        let error = fetchError(makeFactory(transport: transport).createRecommendationsWrapper())
-
-        guard case let .contractViolation(detail, requestId) = error else {
-            return XCTFail("Unexpected error: \(String(describing: error))")
-        }
-
-        XCTAssertEqual(requestId, "req-order")
-        XCTAssertTrue(detail.contains("clientChecks"))
-    }
-
     func testGrammarInvalidDecimalIsAContractViolationWithTheRequestId() throws {
-        let body = try mutatedBody(
-            BittensorApiFixtureDocuments.recommendations(),
-            replacing: [(#""maxTake":"0.18""#, #""maxTake":".18""#)]
+        let body = mutatedBody(
+            subnetsJson,
+            replacing: [(#""taoPerAlpha":"0.054961234""#, #""taoPerAlpha":".054961234""#)]
         )
+        let transport = try createTransport(replies: [createResponse(body, requestId: "req-decimal")])
+        let factory = createFactory(transport: transport)
 
-        let transport = makeTransport(replies: [makeResponse(body, requestId: "req-decimal")])
+        XCTAssertThrowsError(try run(factory.createSubnetsWrapper())) { error in
+            guard case let .contractViolation(detail, requestId) = error as? BittensorApiError else {
+                return XCTFail("Unexpected error: \(error)")
+            }
 
-        let error = fetchError(makeFactory(transport: transport).createRecommendationsWrapper())
-
-        guard case let .contractViolation(detail, requestId) = error else {
-            return XCTFail("Unexpected error: \(String(describing: error))")
+            XCTAssertEqual(requestId, "req-decimal")
+            XCTAssertTrue(detail.contains("taoPerAlpha"))
         }
-
-        XCTAssertEqual(requestId, "req-decimal")
-        XCTAssertTrue(detail.contains("maxTake"))
     }
 
-    func testEachFetchReachesTransportAndPeeksAreOnlyStalePresentationSeeds() throws {
-        let clock = ManualClock()
-        let body = try makeBody(BittensorApiFixtureDocuments.subnets())
-        let transport = makeTransport(replies: [
-            makeResponse(body, requestId: "req-first"),
-            makeResponse(body, requestId: "req-second"),
-            makeResponse(body, requestId: "req-third")
+    func testAnOlderGenerationIsRejectedAndKeepsTheNewerSeed() throws {
+        var now: TimeInterval = 0
+        let newer = Data(rankedSubnetsJson.utf8)
+        let older = mutatedBody(
+            rankedSubnetsJson,
+            replacing: [
+                (#""asOf":"2026-09-24T09:23:00Z""#, #""asOf":"2026-09-24T08:23:00Z""#),
+                (#""id":"8ebc85abd0bbeb6f282302ac48909c3d""#, #""id":"0123456789abcdef0123456789abcdef""#)
+            ]
+        )
+        let transport = try createTransport(replies: [
+            createResponse(newer, requestId: "req-newer", directives: .reusable(lifetime: 60)),
+            createResponse(older, requestId: "req-older")
         ])
-        let factory = makeFactory(transport: transport, clock: clock)
-        _ = try fetch(factory.createSubnetsWrapper())
-        let seed = factory.peekSubnets()
-        XCTAssertFalse(seed.isFresh)
-        XCTAssertTrue(seed.value?.isFromExpiredCache == true)
-        let second = try fetch(factory.createSubnetsWrapper())
-        clock.advance(by: 150)
-        let third = try fetch(factory.createSubnetsWrapper())
-        XCTAssertEqual(second.requestId, "req-second")
-        XCTAssertEqual(third.requestId, "req-third")
-        verify(transport, times(3)).createResponseWrapper(for: any())
-    }
+        let factory = createFactory(transport: transport, timeProvider: { now })
+        _ = try run(factory.createRankedSubnetsWrapper())
+        now = 60
 
-    func testResponsesAreStampedOnTheCacheClock() throws {
-        let clock = ManualClock()
-
-        let result = try fetch(makeFactory(clock: clock).createRecommendationsWrapper())
-
-        XCTAssertEqual(result.receivedAt, clock.now)
-    }
-
-    func testConcurrentCallersShareOneFetchThatACancelledCallerDoesNotCancel() throws {
-        let replyLatch = ReplyLatch()
-        let body = try makeBody(BittensorApiFixtureDocuments.subnets())
-
-        let transport = makeTransport(
-            replies: [makeResponse(body, requestId: "req-shared")],
-            replyLatch: replyLatch
-        )
-
-        let factory = makeFactory(transport: transport)
-        let queue = OperationQueue()
-
-        let cancelled = factory.createSubnetsWrapper()
-        let first = factory.createSubnetsWrapper()
-        let second = factory.createSubnetsWrapper()
-        let completed = completionExpectation(for: [cancelled, first, second])
-
-        for wrapper in [cancelled, first, second] {
-            queue.addOperation(wrapper.targetOperation)
-            wrapper.dependencies.forEach { $0.start() }
-        }
-
-        verify(transport, times(1)).createResponseWrapper(for: any())
-
-        cancelled.cancel()
-        replyLatch.release()
-        wait(for: [completed], timeout: 10)
-
-        XCTAssertEqual(try first.targetOperation.extractNoCancellableResultData().requestId, "req-shared")
-        XCTAssertEqual(try second.targetOperation.extractNoCancellableResultData().requestId, "req-shared")
-        XCTAssertThrowsError(try cancelled.targetOperation.extractNoCancellableResultData()) { error in
-            guard case .parentOperationCancelled = error as? BaseOperationError else {
+        XCTAssertThrowsError(try run(factory.createRankedSubnetsWrapper())) { error in
+            guard case .generationStale = error as? BittensorApiError else {
                 return XCTFail("Unexpected error: \(error)")
             }
         }
-        verify(transport, times(1)).createResponseWrapper(for: any())
+
+        XCTAssertEqual(factory.peekRankedSubnets().value?.requestId, "req-newer")
     }
 
-    func testAnOlderGenerationPreservesNewerSeedAndReturnsTypedFailureWithoutRetry() throws {
-        let newer = try makeBody(BittensorApiFixtureDocuments.rankedSubnets())
-        let older = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
-        let transport = makeTransport(replies: [
-            makeResponse(newer, requestId: "req-newer"), makeResponse(older, requestId: "req-older")
+    func testFreshResponseIsReusedWithoutAdmissionOrTransport() throws {
+        let transport = try createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
+        let factory = createFactory(transport: transport)
+
+        _ = try run(factory.createSubnetsWrapper())
+        let reused = try run(factory.createSubnetsWrapper())
+
+        XCTAssertEqual(reused.requestId, "req-first")
+        XCTAssertFalse(reused.isFromExpiredCache)
+        XCTAssertTrue(factory.peekSubnets().isFresh)
+        verify(transport, times(1)).createAdmissionWrapper()
+        verify(transport, times(1)).createResponseWrapper(for: any(), admission: any())
+    }
+
+    func testResponseIsFetchedAgainAfterMaxAge() throws {
+        var now: TimeInterval = 0
+        let transport = try createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
+        let factory = createFactory(transport: transport, timeProvider: { now })
+
+        _ = try run(factory.createSubnetsWrapper())
+        now = 60
+
+        XCTAssertFalse(factory.peekSubnets().isFresh)
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-second")
+        verify(transport, times(2)).createResponseWrapper(for: any(), admission: any())
+    }
+
+    func testAgeShortensTheLifetime() throws {
+        var now: TimeInterval = 0
+        let directives = HTTPCacheDirectives(cacheControl: "public, max-age=60, must-revalidate", age: "50")
+        let transport = try createTransport(replies: createSubnetReplies(directives: directives))
+        let factory = createFactory(transport: transport, timeProvider: { now })
+
+        _ = try run(factory.createSubnetsWrapper())
+
+        now = 9
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-first")
+        now = 10
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-second")
+    }
+
+    func testNoStoreResponseIsNotStored() throws {
+        try assertNotStored(HTTPCacheDirectives(cacheControl: "no-store", age: nil))
+    }
+
+    func testResponseWithoutCacheControlIsNotStored() throws {
+        try assertNotStored(HTTPCacheDirectives(cacheControl: nil, age: nil))
+    }
+
+    func testPageFetchedBeforeADropIsNotStored() throws {
+        var now: TimeInterval = 0
+        var isDropping = true
+        var factory: BittensorApiOperationFactory?
+        let transport = try createTransport(
+            replies: [
+                createResponse(Data(operationsJson.utf8), requestId: "req-before", directives: .reusable(lifetime: 60)),
+                createResponse(Data(operationsJson.utf8), requestId: "req-after", directives: .reusable(lifetime: 60))
+            ],
+            beforeReply: {
+                now += 1
+                if isDropping { factory?.dropOperations(accountSubject: self.aliceSubject) }
+            }
+        )
+        factory = createFactory(transport: transport, timeProvider: { now })
+        let fetchedFactory = try XCTUnwrap(factory)
+
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-before")
+        XCTAssertNil(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value)
+
+        isDropping = false
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-after")
+        XCTAssertEqual(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value?.requestId, "req-after")
+    }
+
+    func testPrivateResponseIsReusable() throws {
+        let directives = HTTPCacheDirectives(cacheControl: "private, max-age=60, must-revalidate", age: nil)
+        let transport = try createTransport(replies: [
+            createResponse(Data(operationsJson.utf8), requestId: "req-first", directives: directives),
+            createResponse(Data(operationsJson.utf8), requestId: "req-second", directives: directives)
         ])
-        let factory = makeFactory(transport: transport)
-        let accepted = try fetch(factory.createRankedSubnetsWrapper())
-        guard case .generationStale? = fetchError(factory.createRankedSubnetsWrapper()) else {
-            return XCTFail("Expected stale generation failure")
-        }
-        let seed = try XCTUnwrap(factory.peekRankedSubnets().value)
-        XCTAssertEqual(seed.requestId, accepted.requestId)
-        XCTAssertEqual(seed.receivedAt, accepted.receivedAt)
-        XCTAssertTrue(seed.isFromExpiredCache)
-        verify(transport, times(2)).createResponseWrapper(for: any())
+        let factory = createFactory(transport: transport)
+
+        _ = try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1))
+
+        XCTAssertEqual(try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-first")
+        verify(transport, times(1)).createResponseWrapper(for: any(), admission: any())
     }
 
-    func testAnOlderRankingGenerationCannotEvictNewerAcceptedRecommendations() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
-        let olderRanking = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
-        let transport = makeTransport(replies: [
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
-            makeResponse(olderRanking, requestId: "req-older")
+    func testDropOperationsRemovesOnlyThatSubjectsEntries() throws {
+        let transport = try createTransport(replies: [
+            createResponse(Data(operationsJson.utf8), requestId: "req-alice", directives: .reusable(lifetime: 60)),
+            createResponse(Data(operationsJson.utf8), requestId: "req-bob", directives: .reusable(lifetime: 60))
         ])
-        let factory = BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
-        _ = try fetch(factory.createRecommendationsWrapper())
-        guard case .generationStale? = fetchError(factory.createRankedSubnetsWrapper()) else {
-            return XCTFail("Expected stale generation failure")
-        }
-        let key = BittensorApiCacheKey(method: "GET", path: "/recommendations", query: [], bodyDigest: nil)
-        XCTAssertEqual(cache.peek(key, invalidationRevision: 0).value?.requestId, "req-newer")
-        XCTAssertFalse(cache.peek(key, invalidationRevision: 0).isFresh)
-        verify(transport, times(2)).createResponseWrapper(for: any())
+        let factory = createFactory(transport: transport)
+        _ = try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1))
+        _ = try run(factory.createOperationsWrapper(accountSubject: bobSubject, page: 1))
+
+        factory.dropOperations(accountSubject: aliceSubject)
+
+        XCTAssertNil(factory.peekOperations(accountSubject: aliceSubject, page: 1).value)
+        XCTAssertEqual(factory.peekOperations(accountSubject: bobSubject, page: 1).value?.requestId, "req-bob")
     }
 
-    func testDomainCacheDoesNotOwnOriginRateLimitBackoff() throws {
-        let transport = makeTransport(replies: [
-            .failure(BittensorApiError.rateLimited(requestId: "req-limited")),
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.subnets()), requestId: "req-recovered")
+    private func assertNotStored(_ directives: HTTPCacheDirectives, line: UInt = #line) throws {
+        var now: TimeInterval = 0
+        let transport = try createTransport(replies: [
+            createResponse(Data(subnetsJson.utf8), requestId: "req-first", directives: .reusable(lifetime: 60)),
+            createResponse(Data(subnetsJson.utf8), requestId: "req-second", directives: directives),
+            createResponse(Data(subnetsJson.utf8), requestId: "req-third", directives: directives)
         ])
-        let factory = makeFactory(transport: transport)
-        guard case .rateLimited? = fetchError(factory.createSubnetsWrapper()) else {
-            return XCTFail("Expected rate limit")
-        }
-        XCTAssertEqual(try fetch(factory.createSubnetsWrapper()).requestId, "req-recovered")
-        verify(transport, times(2)).createResponseWrapper(for: any())
+        let factory = createFactory(transport: transport, timeProvider: { now })
+
+        _ = try run(factory.createSubnetsWrapper())
+        now = 60
+        XCTAssertEqual(factory.peekSubnets().value?.requestId, "req-first", line: line)
+
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-second", line: line)
+        XCTAssertNil(factory.peekSubnets().value, line: line)
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-third", line: line)
     }
 
-    private var olderGeneration: [(String, String)] {
+    private func createSubnetReplies(directives: HTTPCacheDirectives) -> [BittensorApiRawResponse] {
         [
-            (#""asOf":"2026-09-24T09:23:00Z""#, #""asOf":"2026-09-24T08:23:00Z""#),
-            (#""id":"8ebc85abd0bbeb6f282302ac48909c3d""#, #""id":"0123456789abcdef0123456789abcdef""#)
+            createResponse(Data(subnetsJson.utf8), requestId: "req-first", directives: directives),
+            createResponse(Data(subnetsJson.utf8), requestId: "req-second", directives: directives)
         ]
     }
 
-    func testDelayedInvalidationOfTheAdmittedRevisionKeepsItsCacheAndAdmission() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
-        let job = makeCacheJob(revision: 2)
-        _ = try fetch(cache.createWrapper(for: job))
-        cache.invalidate(before: 2)
-        XCTAssertEqual(cache.peek(job.key, invalidationRevision: 2).value?.value as? String, "current")
-        XCTAssertNoThrow(try fetch(cache.createWrapper(for: job)))
-    }
-
-    func testAStaleAdmissionNeverPopulatesTheInvalidatedGeneration() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
-        let job = makeCacheJob(revision: 1)
-        cache.invalidate(before: 2)
-        guard case .attestationUnavailable? = fetchError(cache.createWrapper(for: job)) else {
-            return XCTFail("Expected the stale admission to be rejected")
-        }
-        XCTAssertNil(cache.peek(job.key, invalidationRevision: 2).value)
-    }
-
-    private func makeCacheJob(revision: UInt64) -> BittensorApiCacheJob {
-        let scope = BittensorApiCacheScope(
-            origin: "https://second.test", profile: 3, generation: revision, invalidationRevision: revision
-        )
-        return BittensorApiCacheJob(
-            key: BittensorApiCacheKey(method: "GET", path: "/subnets", query: [], bodyDigest: nil),
-            routeKey: BittensorApiRouteKey(method: "GET", pathTemplate: "/subnets", accountDigest: nil),
-            currentInvalidationRevision: { revision },
-            admit: { .createWithResult(BittensorApiAdmission(scope: scope, endpoint: nil)) },
-            fetch: { _ in
-                .createWithResult(BittensorApiFetchedValue(
-                    value: "current", requestId: nil, cacheDirectives: .reusable(lifetime: 300), generation: nil
-                ))
-            }
-        )
-    }
-
-    private func olderRecommendationsBody() throws -> Data {
-        try mutatedBody(BittensorApiFixtureDocuments.recommendations(), replacing: olderGeneration)
-    }
-
-    private func makeFactory(
-        transport: BittensorApiTransportProtocol = BittensorApiFixtureTransport(),
-        clock: ManualClock = ManualClock()
+    private func createFactory(
+        transport: BittensorApiTransportProtocol,
+        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
     ) -> BittensorApiOperationFactory {
-        let cache = BittensorApiResponseCache(
-            operationQueue: OperationQueue(),
-            timeProvider: { clock.now }
+        BittensorApiOperationFactory(
+            transport: transport,
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), timeProvider: timeProvider),
+            logger: Logger.shared
         )
-
-        return BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
     }
 
-    private func makeTransport(
-        replies: [Result<BittensorApiRawResponse, Error>],
-        replyLatch: ReplyLatch? = nil
-    ) -> MockBittensorApiTransportProtocol {
+    private func createTransport(
+        replies: [BittensorApiRawResponse],
+        beforeReply: @escaping () -> Void = {}
+    ) throws -> MockBittensorApiTransportProtocol {
         let transport = MockBittensorApiTransportProtocol()
-        let lock = NSLock()
         var remaining = replies
 
+        let context = try NovaAuthContext(origin: NovaAuthOrigin("https://bittensor.test"), generation: 0)
+        let admission = BittensorApiAdmission(
+            scope: BittensorApiCacheScope(origin: "test", generation: 0),
+            endpoint: NovaAuthEndpoint(context: context, client: MockNovaAuthClientProtocol())
+        )
+
         stub(transport) { stub in
-            when(stub.createResponseWrapper(for: any())).then { _ in
-                lock.lock()
-                let reply: Result<BittensorApiRawResponse, Error> = remaining.isEmpty
-                    ? .failure(BittensorApiError.routeNotPublished)
-                    : remaining.removeFirst()
-                lock.unlock()
+            when(stub.createAdmissionWrapper()).then { CompoundOperationWrapper.createWithResult(admission) }
+            when(stub.createResponseWrapper(for: any(), admission: any())).then { _ in
+                beforeReply()
 
-                let operation = AsyncClosureOperation<BittensorApiRawResponse> { completion in
-                    guard let replyLatch else {
-                        completion(reply)
-                        return
-                    }
-
-                    replyLatch.hold { completion(reply) }
+                guard !remaining.isEmpty else {
+                    return .createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
                 }
 
-                return CompoundOperationWrapper(targetOperation: operation)
+                return .createWithResult(remaining.removeFirst())
             }
         }
 
         return transport
     }
 
-    private func makeBody(_ document: [String: Any]) throws -> Data {
-        try JSONSerialization.data(withJSONObject: document, options: [.sortedKeys])
+    private func createResponse(
+        _ body: Data,
+        requestId: String,
+        directives: HTTPCacheDirectives = .notStorable
+    ) -> BittensorApiRawResponse {
+        BittensorApiRawResponse(requestId: requestId, body: body, directives: directives)
     }
 
-    private func mutatedBody(_ document: [String: Any], replacing replacements: [(String, String)]) throws -> Data {
-        var json = String(decoding: try makeBody(document), as: UTF8.self)
+    private func mutatedBody(_ original: String, replacing replacements: [(String, String)]) -> Data {
+        var json = original
 
         for (target, replacement) in replacements {
             XCTAssertTrue(json.contains(target))
@@ -355,49 +287,9 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         return Data(json.utf8)
     }
 
-    private func makeResponse(
-        _ body: Data,
-        requestId: String,
-        cacheControl: String = "public, max-age=150, must-revalidate"
-    ) -> Result<BittensorApiRawResponse, Error> {
-        .success(
-            BittensorApiRawResponse(
-                statusCode: 200,
-                requestId: requestId,
-                body: body,
-                cacheDirectives: HTTPCacheDirectives(cacheControl: cacheControl, age: nil)
-            )
-        )
-    }
-
-    private func completionExpectation<T>(for wrappers: [CompoundOperationWrapper<T>]) -> XCTestExpectation {
-        let completed = expectation(description: "Bittensor API calls finished")
-        completed.expectedFulfillmentCount = wrappers.count
-
-        wrappers.forEach { wrapper in
-            wrapper.targetOperation.completionBlock = { completed.fulfill() }
-        }
-
-        return completed
-    }
-
-    private func fetch<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
-        let completed = completionExpectation(for: [wrapper])
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
-
-        wait(for: [completed], timeout: 10)
+    private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()
-    }
-
-    private func fetchError<T>(_ wrapper: CompoundOperationWrapper<T>) -> BittensorApiError? {
-        do {
-            _ = try fetch(wrapper)
-
-            return nil
-        } catch {
-            return error as? BittensorApiError
-        }
     }
 }

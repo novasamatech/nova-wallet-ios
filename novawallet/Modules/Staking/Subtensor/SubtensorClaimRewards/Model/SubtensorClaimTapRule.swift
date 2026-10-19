@@ -7,11 +7,10 @@ enum SubtensorClaimTapRule {
         case proceed(SubtensorRootClaimPreview)
     }
 
-    static func verdict(shown: SubtensorRootClaimPreview, fresh: SubtensorRootClaimable) -> Verdict {
+    static func verdict(shown: SubtensorRootClaimPreview, fresh: [SubtensorRootClaimPreview]) -> Verdict {
         guard
-            let minimumClaim = fresh.minimumClaim,
-            let preview = fresh.previews.first(where: { $0.hotkey == shown.hotkey }),
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim) else {
+            let preview = fresh.first(where: { $0.hotkey == shown.hotkey }),
+            SubtensorRootClaimRule.isClaimable(preview) else {
             return .nothingToClaim
         }
 
@@ -31,7 +30,7 @@ private extension SubtensorClaimTapRule {
             return false
         }
 
-        let threshold = SubtensorStakingFlowConstants.priceImpactWarningThreshold
+        let threshold = SubtensorFlowConstants.priceImpactWarningThreshold
 
         return (shown - fresh) * threshold.denominator > threshold.numerator * shown
     }

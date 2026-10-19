@@ -4,7 +4,7 @@ import Foundation_iOS
 enum SubtensorPortfolioViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> SubtensorPortfolioViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -21,9 +21,8 @@ enum SubtensorPortfolioViewFactory {
 
         guard
             let state = try? stateFactory.createSubtensorStaking(for: stakingOption, flowState: flowState),
-            let account = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
-                for: stakingOption.chainAsset.chain.accountRequest()
-            ),
+            let wallet = SelectedWalletSettings.shared.value,
+            let account = wallet.fetchMetaChainAccount(for: stakingOption.chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -42,6 +41,7 @@ enum SubtensorPortfolioViewFactory {
                 chainAsset: stakingOption.chainAsset,
                 priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
             ),
+            wallet: wallet,
             account: account,
             chainAsset: stakingOption.chainAsset,
             localizationManager: LocalizationManager.shared
@@ -68,26 +68,19 @@ enum SubtensorPortfolioViewFactory {
 
 private extension SubtensorPortfolioViewFactory {
     static func createInteractor(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         account: MetaChainAccountResponse,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) -> SubtensorPortfolioInteractor {
-        let earnServices = state.earnServices
-
-        return SubtensorPortfolioInteractor(
+        SubtensorPortfolioInteractor(
             state: state,
             account: account,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
-            catalogueService: earnServices.catalogueService,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryService: earnServices.priceHistoryService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            flowState: state.flowState,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

@@ -2,38 +2,34 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorOperationResultInteractor {
-    weak var presenter: SubtensorResultInteractorOutputProtocol?
+final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
+    weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
-    let operation: SubtensorStakingOperation
+    let operation: SubtensorOperation
     let coldkey: AccountId
     let loadsSubnetData: Bool
-    let operationService: SubtensorStakingOperationServiceProtocol
-    let chainFactory: SubtensorResultChainFactoryProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
+    let chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let osMediator: OperatingSystemMediating
-    let applicationHandler: ApplicationHandlerProtocol
     let schedulerFactory: (SchedulerDelegate) -> SchedulerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed: HTTPCachePeek<SubtensorSubnetCatalogue> = .miss
+    private let catalogueStore = CancellableCallStore()
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
     init(
-        operation: SubtensorStakingOperation,
+        operation: SubtensorOperation,
         coldkey: AccountId,
         loadsSubnetData: Bool,
-        operationService: SubtensorStakingOperationServiceProtocol,
-        chainFactory: SubtensorResultChainFactoryProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol,
+        chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         osMediator: OperatingSystemMediating,
-        applicationHandler: ApplicationHandlerProtocol,
         schedulerFactory: @escaping (SchedulerDelegate) -> SchedulerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -41,19 +37,18 @@ final class SubtensorOperationResultInteractor {
         self.operation = operation
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
-        self.operationService = operationService
-        self.chainFactory = chainFactory
-        self.catalogueService = catalogueService
+        self.submissionOperationFactory = submissionOperationFactory
+        self.chainOperationFactory = chainOperationFactory
+        self.catalogueOperationFactory = catalogueOperationFactory
         self.subnetLogosProvider = subnetLogosProvider
-        self.positionsSyncService = positionsSyncService
         self.osMediator = osMediator
-        self.applicationHandler = applicationHandler
         self.schedulerFactory = schedulerFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
+        catalogueStore.cancel()
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
     }
@@ -73,7 +68,7 @@ private extension SubtensorOperationResultInteractor {
     func submit() {
         osMediator.disableScreenSleep()
 
-        let wrapper = operationService.createSubmitWrapper(for: operation) { [weak self] in
+        let wrapper = submissionOperationFactory.createSubmitWrapper(for: operation) { [weak self] in
             DispatchQueue.main.async {
                 self?.startConfirmationCap()
             }
@@ -88,7 +83,7 @@ private extension SubtensorOperationResultInteractor {
         }
     }
 
-    func finishSubmission(with result: Result<SubtensorStakingOperationOutcome, Error>) {
+    func finishSubmission(with result: Result<SubtensorOperationOutcome, Error>) {
         isSubmissionFinished = true
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
@@ -97,25 +92,10 @@ private extension SubtensorOperationResultInteractor {
         case let .success(outcome):
             presenter?.didReceiveSubmission(result: .success(outcome))
         case let .failure(error):
-            let failure = error as? SubtensorStakingSubmissionFailure ??
-                SubtensorStakingSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: error)
+            let failure = error as? SubtensorSubmissionFailure ??
+                SubtensorSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: error)
 
             presenter?.didReceiveSubmission(result: .failure(failure))
-        }
-    }
-
-    func provideExpectedBlockTime() {
-        execute(
-            wrapper: chainFactory.createExpectedBlockTimeWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(blockTime):
-                self?.presenter?.didReceiveExpectedBlockTime(blockTime)
-            case let .failure(error):
-                self?.logger.warning("Expected block time unavailable: \(error)")
-            }
         }
     }
 
@@ -124,21 +104,17 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        if !seed.isFresh {
-            execute(
-                wrapper: catalogueService.createCatalogueWrapper(),
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                switch result {
-                case let .success(catalogue):
-                    self?.presenter?.didReceiveCatalogue(catalogue)
-                case let .failure(error):
-                    self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
-                    self?.presenter?.didReceiveCatalogue(nil)
-                }
+        let catalogueOperationFactory = catalogueOperationFactory
+
+        load(
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
+            in: catalogueStore,
+            label: "catalogue for the result",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveCatalogue($0)
             }
-        }
+        )
 
         execute(
             wrapper: subnetLogosProvider.createLogosWrapper(),
@@ -152,24 +128,15 @@ private extension SubtensorOperationResultInteractor {
     }
 }
 
-extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        seed = loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
-
-        return seed
-    }
-
+extension SubtensorOperationResultInteractor: SubtensorOperationResultInteractorInputProtocol {
     func setup() {
-        applicationHandler.delegate = self
-
-        provideExpectedBlockTime()
         provideSubnetData()
         submit()
     }
 
     func fetchBlockTimestamp(at blockHash: BlockHash) {
         execute(
-            wrapper: chainFactory.createBlockTimestampWrapper(at: blockHash),
+            wrapper: chainOperationFactory.createBlockTimestampWrapper(at: blockHash),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -184,7 +151,7 @@ extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProt
 
     func fetchRootHoldRemainingBlocks(for hotkeys: [AccountId]) {
         execute(
-            wrapper: chainFactory.createRootHoldRemainingBlocksWrapper(coldkey: coldkey, hotkeys: hotkeys),
+            wrapper: chainOperationFactory.createRootHoldRemainingBlocksWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -195,10 +162,6 @@ extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProt
                 self?.logger.warning("Root hold unavailable: \(error)")
             }
         }
-    }
-
-    func refreshPositions() {
-        positionsSyncService?.refresh()
     }
 }
 
@@ -212,11 +175,5 @@ extension SubtensorOperationResultInteractor: SchedulerDelegate {
             osMediator.enableScreenSleep()
             presenter?.didReachConfirmationCap()
         }
-    }
-}
-
-extension SubtensorOperationResultInteractor: ApplicationHandlerDelegate {
-    func didReceiveDidBecomeActive(notification _: Notification) {
-        presenter?.didBecomeActive()
     }
 }

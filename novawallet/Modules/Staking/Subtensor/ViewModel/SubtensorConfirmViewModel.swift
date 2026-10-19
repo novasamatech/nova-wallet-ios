@@ -1,24 +1,21 @@
 import Foundation
 
-struct SubtensorConfirmTileViewModel {
-    let amount: String
-    let price: String?
-}
-
 struct SubtensorConfirmTileIconsViewModel {
     let pay: ImageViewModelProtocol?
     let receive: ImageViewModelProtocol?
 }
 
 struct SubtensorConfirmSwapViewModel {
-    let pay: SubtensorConfirmTileViewModel
-    let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
+    let pay: BalanceViewModel
+    let receive: LoadableViewModelState<BalanceViewModel>
     let swapRate: LoadableViewModelState<String>
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let youWillEarn: SubtensorCostBasisRowViewModel
+    let isQuoteFailed: Bool
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    let youWillEarn: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let slippage: String?
     let validatorApy: String?
     let remark: String?
+    let feeDisclosure: String?
 }
 
 struct SubtensorConfirmRootViewModel {
@@ -32,42 +29,17 @@ enum SubtensorConfirmContentViewModel {
     case root(SubtensorConfirmRootViewModel)
 }
 
-struct SubtensorConfirmActionViewModel: Equatable {
-    let title: String
-    let isEnabled: Bool
-}
-
 struct SubtensorConfirmViewModel {
     let title: String
     let content: SubtensorConfirmContentViewModel
     let networkFee: BalanceViewModelProtocol?
     let isPriceMoved: Bool
-    let action: SubtensorConfirmActionViewModel
+    let action: SubtensorSetupActionViewModel
     let signingHint: String?
 }
 
 struct SubtensorConfirmViewModelInput {
-    let model: SubtensorStakingConfirmModel
-    let catalogue: SubtensorSubnetCatalogue?
-    let latestQuote: SubtensorTradeQuote?
-    let tradesUnavailable: Bool
-    let isQuoteFailed: Bool
-    let isPriceMoved: Bool
-    let price: PriceData?
-    let fee: ExtrinsicFeeProtocol?
-    let stakeBefore: Balance?
-    let signing: SubtensorOperationGate.Verdict
-    let costBasis: SubtensorCostBasisState?
-}
-
-struct SubtensorConfirmStakeChange: Equatable {
-    let before: Balance
-    let after: Balance
-    let isEstimated: Bool
-}
-
-struct SubtensorUnstakeConfirmViewModelInput {
-    let model: SubtensorUnstakeConfirmModel
+    let model: SubtensorConfirmModel
     let catalogue: SubtensorSubnetCatalogue?
     let latestQuote: SubtensorTradeQuote?
     let tradesUnavailable: Bool
@@ -77,5 +49,10 @@ struct SubtensorUnstakeConfirmViewModelInput {
     let fee: ExtrinsicFeeProtocol?
     let stakeChange: SubtensorConfirmStakeChange?
     let signing: SubtensorOperationGate.Verdict
-    let costBasis: SubtensorCostBasisState
+    let costBasis: SubtensorCostBasisState?
+}
+
+struct SubtensorConfirmStakeChange: Equatable {
+    let before: Balance
+    let after: Balance
 }

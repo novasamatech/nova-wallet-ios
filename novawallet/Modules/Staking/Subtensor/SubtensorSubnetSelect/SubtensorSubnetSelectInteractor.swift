@@ -1,71 +1,56 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetSelectInteractor {
-    weak var presenter: SubnetSelectInteractorOutputProtocol?
+final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
+    weak var presenter: SubtensorSubnetSelectInteractorOutputProtocol?
 
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let rankingViewService: SubtensorRankingViewServiceProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorSubnetSelectSnapshot(entries: .miss, rootRate: .miss, rankedSubnets: .miss)
     private let entriesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
-    private let rootRateStore = CancellableCallStore()
-    private let rankingStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
+    private let apyStore = CancellableCallStore()
 
-    init(
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
-    ) {
-        self.catalogueService = catalogueService
-        self.subnetsService = subnetsService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.yieldService = yieldService
-        self.rankingViewService = rankingViewService
-        self.priceHistoryService = priceHistoryService
+    init(state: SubtensorSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
+        subnetsOperationFactory = state.subnetsOperationFactory
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        maxApyOperationFactory = state.earnServices.maxApyOperationFactory
+        earnSettings = state.earnServices.earnSettings
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
-        [entriesStore, logosStore, rootRateStore, rankingStore, weeklyStore].forEach { $0.cancel() }
+        [entriesStore, logosStore, weeklyStore, apyStore].forEach { $0.cancel() }
     }
 }
 
 private extension SubtensorSubnetSelectInteractor {
-    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
-        let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let subnetsService = subnetsService
+    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListItem]> {
+        let catalogueWrapper = catalogueOperationFactory.createCatalogueWrapper()
+        let subnetsInfoWrapper = subnetsOperationFactory.createSubnetsInfoWrapper()
 
-        let subnetsInfoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
-            subnetsService.fetchSubnetsInfo(runningCompletionIn: .global(), completion: completion)
-        }
-
-        let entriesOperation = ClosureOperation<[SubtensorSubnetListEntry]> {
+        let entriesOperation = ClosureOperation<[SubtensorSubnetListItem]> {
             let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
-            let subnetsInfo = try subnetsInfoOperation.extractNoCancellableResultData()
+            let subnetsInfo = try subnetsInfoWrapper.targetOperation.extractNoCancellableResultData()
 
             return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
         }
 
         entriesOperation.addDependency(catalogueWrapper.targetOperation)
-        entriesOperation.addDependency(subnetsInfoOperation)
+        entriesOperation.addDependency(subnetsInfoWrapper.targetOperation)
 
         return catalogueWrapper
-            .insertingHead(operations: [subnetsInfoOperation])
+            .insertingHead(operations: subnetsInfoWrapper.allOperations)
             .insertingTail(operation: entriesOperation)
     }
 
@@ -89,54 +74,13 @@ private extension SubtensorSubnetSelectInteractor {
     }
 
     func provideSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "subnet marks") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 
-    func provideRootRate() {
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceive(rootRate: yield?.annualRate)
-            case let .failure(error):
-                self?.logger.warning("Root rate unavailable: \(error)")
-                self?.presenter?.didReceive(rootRate: nil)
-            }
-        }
-    }
-
-    func provideRankingView() {
-        executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rankingStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rankedSubnets):
-                self?.presenter?.didReceive(rankedSubnets: rankedSubnets)
-            case let .failure(error):
-                self?.logger.warning("Subnet ages unavailable: \(error)")
-                self?.presenter?.didReceive(rankedSubnets: nil)
-            }
-        }
+    func provideFavourites() {
+        presenter?.didReceive(favourites: earnSettings.favouriteSubnets)
     }
 
     func unavailablePrices<Value: Equatable>(
@@ -144,63 +88,38 @@ private extension SubtensorSubnetSelectInteractor {
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
         Dictionary(subnets.map { ($0, .unavailable) }, uniquingKeysWith: { first, _ in first })
     }
-
-    func makeCachedEntries() -> HTTPCachePeek<[SubtensorSubnetListEntry]> {
-        guard let subnetsInfo = subnetsService.cachedSubnetsInfo() else {
-            return .miss
-        }
-
-        return catalogueService.cachedCatalogue().map { catalogue in
-            SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
-        }
-    }
-
-    func makeSnapshot() -> SubtensorSubnetSelectSnapshot {
-        SubtensorSubnetSelectSnapshot(
-            entries: makeCachedEntries(),
-            rootRate: yieldService.cachedRootYield().map { $0?.annualRate },
-            rankedSubnets: rankingViewService.cachedRankingView()
-        )
-    }
 }
 
-extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorSubnetSelectSnapshot {
-        seed = makeSnapshot()
-
-        return seed
-    }
-
+extension SubtensorSubnetSelectInteractor: SubtensorSubnetSelectInteractorInputProtocol {
     func setup() {
-        if !seed.entries.isFresh {
-            provideEntries()
-        }
-
+        provideFavourites()
+        provideEntries()
         provideSubnetLogos()
-
-        if !seed.rootRate.isFresh {
-            provideRootRate()
-        }
-
-        if !seed.rankedSubnets.isFresh {
-            provideRankingView()
-        }
     }
 
     func refresh() {
         provideEntries()
     }
 
+    func refreshFavourites() {
+        provideFavourites()
+    }
+
+    func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnetRef])
+        provideFavourites()
+    }
+
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {
         weeklyStore.cancel()
 
-        guard let priceHistoryService else {
+        guard let priceHistoryOperationFactory else {
             presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
             return
         }
 
         executeCancellable(
-            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            wrapper: priceHistoryOperationFactory.createWeeklyChangesWrapper(for: subnets),
             inOperationQueue: operationQueue,
             backingCallIn: weeklyStore,
             runningCallbackIn: .main
@@ -216,6 +135,14 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
                 logger.warning("Subnet weekly prices unavailable: \(error)")
                 presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
             }
+        }
+    }
+
+    func loadApy() {
+        apyStore.cancel()
+
+        load(maxApyOperationFactory.createMaxApyWrapper(), in: apyStore, label: "subnet apy") { [weak self] in
+            self?.presenter?.didReceive(apy: $0)
         }
     }
 }

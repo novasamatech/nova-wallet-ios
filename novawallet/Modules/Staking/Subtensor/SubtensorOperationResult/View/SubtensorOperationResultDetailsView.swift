@@ -45,6 +45,7 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         super.init(frame: frame)
 
         backgroundView.sideLength = 12
+        titleControl.titleLabel.apply(style: .regularSubhedlineSecondary)
     }
 
     override var rows: [UIView] {
@@ -62,6 +63,7 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
 
     func bind(viewModel: SubtensorResultDetailsViewModel, locale: Locale) {
         titleControl.titleLabel.text = viewModel.title
+        titleControl.invalidateLayout()
 
         swapRateCell.bind(loadableViewModel: .loaded(value: viewModel.swapRate))
         validatorCell.bind(loadableViewModel: .loaded(value: viewModel.validator))

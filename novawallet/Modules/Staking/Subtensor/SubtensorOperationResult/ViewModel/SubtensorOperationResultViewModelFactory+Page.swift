@@ -62,7 +62,10 @@ private extension SubtensorOperationResultViewModelFactory {
         let quotedOut = request.quote?.expectedOut
 
         guard case let .done(outcome, _) = state, let executed = outcome.executed else {
-            return SubtensorResultTradeAmounts(pay: request.payAmount, receive: quotedOut)
+            let receive = direction == .sell
+                ? quotedOut?.subtractOrZero(request.estimatedNetworkFee.amountForCurrentAccount ?? 0)
+                : quotedOut
+            return SubtensorResultTradeAmounts(pay: request.payAmount, receive: receive)
         }
 
         switch direction {
@@ -70,7 +73,8 @@ private extension SubtensorOperationResultViewModelFactory {
             let pay = outcome.novaFeePaid.map { executed.tao + $0 } ?? request.payAmount
             return SubtensorResultTradeAmounts(pay: pay, receive: executed.alpha)
         case .sell:
-            let receive = executed.tao.subtractOrZero(outcome.novaFeePaid ?? 0)
+            let networkFee = outcome.alphaFeePaid == nil ? (outcome.networkFeePaid ?? 0) : 0
+            let receive = executed.tao.subtractOrZero((outcome.novaFeePaid ?? 0) + networkFee)
             return SubtensorResultTradeAmounts(pay: executed.alpha, receive: receive)
         }
     }
@@ -102,14 +106,16 @@ private extension SubtensorOperationResultViewModelFactory {
 
         let taoAmount = tile.isTao
             ? amount
-            : request.prices.alphaSpot.map { amount * $0 / SubtensorStakingPallet.alphaPriceScale }
+            : request.prices.alphaSpot.map { amount * $0 / SubtensorPallet.alphaPriceScale }
 
         let fiat = taoAmount.flatMap { formatTaoFiat($0, prices: request.prices, locale: locale) }
+
+        let displayAmount = tile.isApproximate ? amountString.approximatelyEqual() : amountString
 
         return SwapAssetAmountViewModel(
             imageViewModel: icon,
             hub: NetworkViewModel(name: "", icon: nil),
-            amount: tile.isApproximate ? amountString.approximatelyEqual() : amountString,
+            amount: tile.isTao ? displayAmount : SubtensorSubnetNaming.isolatedLeftToRight(displayAmount),
             price: fiat.map { $0.approximately() }
         )
     }
@@ -175,7 +181,7 @@ private extension SubtensorOperationResultViewModelFactory {
     }
 
     func failureDetails(
-        for failure: SubtensorStakingSubmissionFailure,
+        for failure: SubtensorSubmissionFailure,
         holdRemaining: TimeInterval?,
         request: SubtensorOperationResultRequest,
         locale: Locale
@@ -206,13 +212,15 @@ private extension SubtensorOperationResultViewModelFactory {
         let direction = request.operation.tradeDirection ?? .buy
         let subnetInfo = alphaInfo(for: context)
 
-        let swapRate = formatSwapRate(
-            pay: amounts.pay,
-            receive: amounts.receive,
-            payInfo: direction == .buy ? taoInfo : subnetInfo,
-            receiveInfo: direction == .buy ? subnetInfo : taoInfo,
-            locale: locale
-        ) ?? strings.stakingSubtensorUiValueUnknown()
+        let swapRate = amounts.receive.flatMap { receive in
+            formatterFactory.subtensorSwapRate(
+                amountIn: amounts.pay,
+                amountOut: receive,
+                inInfo: direction == .buy ? taoInfo : subnetInfo,
+                outInfo: direction == .buy ? subnetInfo : taoInfo,
+                locale: locale
+            )
+        } ?? strings.stakingSubtensorUiValueUnknown()
 
         let slippage: String? = if request.origin == .newPosition {
             formatTolerance(request.slippage ?? SubtensorSlippageTolerance.defaultTolerance, locale: locale)
@@ -227,7 +235,7 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: validatorName(for: request),
+            validator: request.validator.name,
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )
@@ -291,49 +299,17 @@ private extension SubtensorOperationResultViewModelFactory {
         return false
     }
 
-    func formatSwapRate(
-        pay: Balance,
-        receive: Balance?,
-        payInfo: AssetBalanceDisplayInfo,
-        receiveInfo: AssetBalanceDisplayInfo,
-        locale: Locale
-    ) -> String? {
-        guard
-            let receive,
-            let rate = Decimal.rateFromSubstrate(
-                amount1: pay,
-                amount2: receive,
-                precision1: payInfo.assetPrecision,
-                precision2: receiveInfo.assetPrecision
-            ) else {
-            return nil
-        }
-
-        let payFormatter = formatterFactory.createTokenFormatter(for: payInfo).value(for: locale)
-        let receiveFormatter = formatterFactory.createTokenFormatter(for: receiveInfo).value(for: locale)
-
-        guard
-            let oneIn = payFormatter.stringFromDecimal(1),
-            let rateOut = receiveFormatter.stringFromDecimal(rate) else {
-            return nil
-        }
-
-        return oneIn.estimatedEqual(to: rateOut)
-    }
-
     func createPageAction(
         for state: SubtensorOperationResultState,
         locale: Locale
     ) -> SubtensorResultActionViewModel? {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
         switch state {
         case .progress:
             return nil
         case .done, .unconfirmed:
-            return SubtensorResultActionViewModel(action: .done, title: strings.commonDone())
+            return action(.done, locale: locale)
         case let .failed(failure, _, _):
-            return failureAction(for: failure, locale: locale)
+            return action(failure.isRetryable ? .tryAgain : .close, locale: locale)
         }
     }
 }

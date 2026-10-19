@@ -1,39 +1,24 @@
 import Foundation
 
 private extension SubtensorUnstakeSetupPresenter {
-    func findGroup(in state: Multistaking.SubtensorStakingState?) -> SubtensorPortfolioGroup? {
-        guard let state else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
-
-        return isRoot ? portfolio.stakedRoot : portfolio.subnets.first { $0.netuid == netuid }
+    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
+        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
-    func applyMaxChange(from previousMax: Balance?) {
-        guard case .rate = inputResult, maxAmount != previousMax else {
-            return
-        }
-
-        provideAmountInputViewModel()
-        refreshFee()
-        updateQuote()
-    }
-
-    func applyBasisChange(from previousMax: Balance?) {
+    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
         if group?.primaryHotkey != preflightRequest {
             preflight = nil
             refreshPreflight()
         }
 
         loadValidatorIfNeeded()
+        loadGroupHotkeys()
 
-        if isRoot, let basis, !basis.hotkeys.isEmpty {
-            interactor.loadRootHolds(for: basis.hotkeys)
+        if isRoot, let group, !group.positions.isEmpty {
+            interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
 
-        if case .rate = inputResult, maxAmount != previousMax {
+        if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
         }
 
@@ -43,12 +28,16 @@ private extension SubtensorUnstakeSetupPresenter {
 
     func presentSubnetRetry() {
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.interactor.loadSubnetsInfo(forcingRefresh: true)
+            guard let self else {
+                return
+            }
+
+            interactor.loadSubnetsInfo(for: netuid)
         }
     }
 }
 
-extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtocol {
+extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo) {
         guard !isRoot else {
             return
@@ -63,13 +52,20 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
             }
 
             isSubnetsRefreshForced = true
-            interactor.loadSubnetsInfo(forcingRefresh: true)
+            interactor.loadSubnetsInfo(for: netuid)
             return
         }
+
+        let previousPlan = feePlan()
 
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
         loadValidatorIfNeeded()
+
+        if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
+            provideAmountInputViewModel()
+        }
+
         refreshFee()
         updateQuote()
         provideViewModel()
@@ -83,11 +79,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
-
-        if !isRoot, let catalogue, catalogue.subnet(for: netuid) == nil, !isCatalogueRefreshForced {
-            isCatalogueRefreshForced = true
-            interactor.loadCatalogue()
-        }
 
         provideAssetViewModel()
         provideViewModel()
@@ -109,12 +100,21 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         provideViewModel()
     }
 
+    func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo]) {
+        let previousPlan = feePlan()
+
+        groupHotkeys = info
+
+        applyPlanChange(from: previousPlan)
+        provideViewModel()
+    }
+
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
-        let previousMax = maxAmount
+        let previousPlan = feePlan()
 
         self.holds = holds
 
-        applyMaxChange(from: previousMax)
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 
@@ -140,15 +140,15 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         provideViewModel()
     }
 
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         let previousBasis = basis
-        let previousMax = maxAmount
+        let previousPlan = feePlan()
 
         positionsState = state
         group = findGroup(in: state)
 
         if basis != previousBasis {
-            applyBasisChange(from: previousMax)
+            applyBasisChange(from: previousPlan)
         }
 
         provideViewModel()
@@ -158,61 +158,31 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         isPositionsSyncFailed = isFailed
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        let previousMax = maxAmount
+        let previousPlan = feePlan()
 
         currentBlock = blockNumber
 
         if isRoot {
-            applyMaxChange(from: previousMax)
-        } else {
+            applyPlanChange(from: previousPlan)
+        } else if !isConfirmationShown {
             forceQuoteRefresh()
         }
 
         provideViewModel()
     }
 
-    func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
+    func didReceivePreflight(_ preflight: SubtensorPreflight) {
+        let previousPlan = feePlan()
+
         self.preflight = preflight
-    }
+        blockTime = preflight.blockTime
 
-    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
-        guard quoteFlow.applyQuote(quote) else {
-            return
-        }
-
-        tradesUnavailable = false
-        isQuoteFailed = false
-
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
-    }
-
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
-        logger.error("Subtensor unstake setup error: \(error)")
-
-        if error.isNovaFeeUnavailable {
-            tradesUnavailable = true
-        }
-
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteFlow.clearQuote()
-            isQuoteFailed = true
-            provideViewModel()
-        }
     }
 }

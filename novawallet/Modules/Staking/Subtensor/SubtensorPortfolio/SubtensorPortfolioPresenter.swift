@@ -4,22 +4,26 @@ import Foundation_iOS
 final class SubtensorPortfolioPresenter {
     weak var view: SubtensorPortfolioViewProtocol?
 
-    let interactor: SubnetPortfolioInteractorInputProtocol
+    let interactor: SubtensorPortfolioInteractorInputProtocol
     let wireframe: SubtensorPortfolioWireframeProtocol
-    let viewModelFactory: SubnetPortfolioViewModelFactoryProtocol
+    let viewModelFactory: SubtensorPortfolioViewModelFactoryProtocol
+    let wallet: MetaAccountModel
     let account: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let localizationManager: LocalizationManagerProtocol
 
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
-    private var historiesRequest: HistoriesRequest?
+    private var historiesPeriod: SubtensorPricePeriod?
+    private var isRootYieldsRequested = false
+    private var isNetworkRootRateRequested = false
     private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
-        interactor: SubnetPortfolioInteractorInputProtocol,
+        interactor: SubtensorPortfolioInteractorInputProtocol,
         wireframe: SubtensorPortfolioWireframeProtocol,
-        viewModelFactory: SubnetPortfolioViewModelFactoryProtocol,
+        viewModelFactory: SubtensorPortfolioViewModelFactoryProtocol,
+        wallet: MetaAccountModel,
         account: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol
@@ -27,6 +31,7 @@ final class SubtensorPortfolioPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.wallet = wallet
         self.account = account
         self.chainAsset = chainAsset
         self.localizationManager = localizationManager
@@ -34,11 +39,6 @@ final class SubtensorPortfolioPresenter {
 }
 
 private extension SubtensorPortfolioPresenter {
-    struct HistoriesRequest: Equatable {
-        let period: SubtensorPricePeriod
-        let subnets: [SubtensorSubnetRef]
-    }
-
     func provideViewModel() {
         chartSelection = nil
 
@@ -46,17 +46,20 @@ private extension SubtensorPortfolioPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
-    func seed(from snapshot: SubtensorPortfolioSnapshot) {
-        if case let .fresh(catalogue, _) = snapshot.catalogue {
-            state.catalogue = catalogue
-            state.isCatalogueResolved = true
+    func requestRootRateIfNeeded() {
+        guard state.positions != nil else {
+            return
         }
 
-        if let rootRate = snapshot.rootRate.value {
-            state.rootRate = rootRate
-        }
+        let groups = state.groups
 
-        state.isRootRateResolved = snapshot.rootRate.isFresh
+        if groups.isEmpty, !isNetworkRootRateRequested {
+            isNetworkRootRateRequested = true
+            interactor.loadNetworkRootRate()
+        } else if !isRootYieldsRequested, groups.contains(where: { $0.netuid == SubtensorPallet.rootNetuid }) {
+            isRootYieldsRequested = true
+            interactor.loadRootYields()
+        }
     }
 
     func requestPriceDataIfNeeded() {
@@ -71,37 +74,30 @@ private extension SubtensorPortfolioPresenter {
             interactor.loadWeeklyChanges(for: subnets)
         }
 
-        guard chainAsset.asset.priceId != nil else {
+        guard chainAsset.asset.priceId != nil, historiesPeriod != state.period else {
             return
         }
 
-        let request = HistoriesRequest(period: state.period, subnets: subnets)
-
-        guard historiesRequest != request else {
-            return
-        }
-
-        historiesRequest = request
+        historiesPeriod = state.period
         state.histories = .loading
-        interactor.loadHistories(for: request.period, subnets: request.subnets)
+        interactor.loadHistories(for: state.period)
     }
 }
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
         provideViewModel()
         interactor.setup()
     }
 
     func selectPeriod(at index: Int) {
         guard
-            SubtensorPortfolioViewModelFactory.periods.indices.contains(index),
-            SubtensorPortfolioViewModelFactory.periods[index] != state.period else {
+            SubtensorPricePeriod.selectable.indices.contains(index),
+            SubtensorPricePeriod.selectable[index] != state.period else {
             return
         }
 
-        state.period = SubtensorPortfolioViewModelFactory.periods[index]
+        state.period = SubtensorPricePeriod.selectable[index]
         state.histories = .loading
         requestPriceDataIfNeeded()
         provideViewModel()
@@ -118,17 +114,16 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func addPosition() {
-        switch SubtensorOperationGate.verdict(for: account.chainAccount.type) {
-        case .allowed, .noSigning:
-            wireframe.showAddPosition(from: view)
-        case let .signerNotSupported(type):
-            guard let view else { return }
-            wireframe.presentSignerNotSupportedView(from: view, type: type) {}
+        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.wireframe.showAddPosition(from: self?.view)
         }
     }
 
     func retry() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
         interactor.refresh()
+        requestRootRateIfNeeded()
     }
 
     func selectChartPoint(at index: Int?) {
@@ -148,16 +143,17 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 }
 
-extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
-    func didReceive(state positions: Multistaking.SubtensorStakingState) {
+extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtocol {
+    func didReceive(state positions: Multistaking.SubtensorState) {
         state.positions = positions
+        requestRootRateIfNeeded()
         requestPriceDataIfNeeded()
         provideViewModel()
     }
 
-    func didReceive(catalogue: SubtensorSubnetCatalogue?) {
+    func didReceive(prices: SubtensorAlphaPrices?) {
         state.isCatalogueResolved = true
-        state.catalogue = catalogue
+        state.prices = prices
 
         requestPriceDataIfNeeded()
         provideViewModel()
@@ -168,9 +164,16 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(rootRate: Decimal?) {
-        state.rootRate = rootRate
+    func didReceive(rootYields: SubtensorAlphaYields?) {
+        state.rootYields = rootYields
         state.isRootRateResolved = true
+        isRootYieldsRequested = rootYields != nil
+        provideViewModel()
+    }
+
+    func didReceive(networkRootRate: Decimal?) {
+        state.networkRootRate = networkRootRate
+        isNetworkRootRateRequested = networkRootRate != nil
         provideViewModel()
     }
 
@@ -189,7 +192,7 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
     }
 
     func didFailHistories(for period: SubtensorPricePeriod) {
-        guard period == state.period else {
+        guard period == state.period, state.histories == .loading else {
             return
         }
 
@@ -202,6 +205,10 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
         provideViewModel()
     }
 
+    func didFailWeeklyChanges() {
+        weeklyChangesRequest = nil
+    }
+
     func didReceiveSyncFailure(_ isFailed: Bool) {
         state.isSyncFailed = isFailed
         provideViewModel()
@@ -210,13 +217,27 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
     func didChangeCurrency() {
         state.price = .loading
         state.histories = .loading
-        historiesRequest = nil
+        historiesPeriod = nil
         requestPriceDataIfNeeded()
         provideViewModel()
     }
 
     func didReceiveAccountChange() {
         wireframe.close(from: view)
+    }
+
+    func didBecomeActive() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
+        requestRootRateIfNeeded()
+    }
+
+    func didChangeStake() {
+        guard historiesPeriod == state.period else {
+            return
+        }
+
+        interactor.loadHistories(for: state.period)
     }
 }
 

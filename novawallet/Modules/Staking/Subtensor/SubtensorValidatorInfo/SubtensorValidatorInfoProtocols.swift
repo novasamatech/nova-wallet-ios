@@ -9,20 +9,16 @@ struct SubtensorValidatorInfoViewModel {
     struct Staking {
         let status: String
         let isActive: Bool
-        let stakeTitle: String
         let stake: LoadableViewModelState<Stake>
         let take: String
         let reward: LoadableViewModelState<String>
+        let rewardDetail: String?
         let hasReward: Bool
     }
 
+    let coverage: LoadableViewModelState<String>
     let account: DisplayAddressViewModel
     let staking: Staking?
-}
-
-struct SubtensorValidatorInfoSnapshot {
-    let annualRate: HTTPCachePeek<Decimal?>
-    let alphaPrice: HTTPCachePeek<Balance?>
 }
 
 protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
@@ -31,18 +27,19 @@ protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol, LoadableV
 
 protocol SubtensorValidatorInfoPresenterProtocol: AnyObject {
     func setup()
+    func presentAccountOptions()
     func showStakeInfo()
     func showTakeInfo()
 }
 
-protocol SubtensorValInfoInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorValidatorInfoSnapshot
+protocol SubtensorValidatorInfoInteractorInputProtocol: AnyObject {
     func setup()
     func loadDetail()
 }
 
-protocol SubtensorValInfoInteractorOutputProtocol: AnyObject {
-    func didReceive(detail: SubtensorValidatorDetail)
+protocol SubtensorValidatorInfoInteractorOutputProtocol: AnyObject {
+    func didReceive(coverage: SubtensorValidatorCoverage?)
+    func didReceive(detail: SubtensorValidatorDirectoryItem)
     func didFailDetail(_ error: Error)
     func didReceive(annualRate: Decimal?)
     func didReceive(alphaPrice: Balance?)
@@ -50,6 +47,6 @@ protocol SubtensorValInfoInteractorOutputProtocol: AnyObject {
 }
 
 protocol SubtensorValidatorInfoWireframeProtocol: SubtensorInfoSheetPresentable, AlertPresentable,
-    CommonRetryable {
+    CommonRetryable, AddressOptionsPresentable {
     func close(view: ControllerBackedProtocol?)
 }

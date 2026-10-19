@@ -9,9 +9,7 @@ struct SubtensorUnstakeSetupViewModel {
     let details: SubtensorUnstakeDetailsViewModel
     let note: String?
     let feeWarning: String?
-    let feeDisclosure: String?
     let holdWarning: String?
-    let caption: String?
     let action: SubtensorSetupActionViewModel
 }
 
@@ -24,10 +22,10 @@ struct SubtensorUnstakeHeaderViewModel {
 }
 
 struct SubtensorUnstakeDetailsViewModel {
-    let receive: SubtensorSetupBalanceRowViewModel
-    let swapRate: SubtensorSetupRowViewModel
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let earned: SubtensorCostBasisRowViewModel
+    let receive: SubtensorRowState<BalanceViewModelProtocol>
+    let swapRate: SubtensorRowState<String>
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    let earned: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let validator: SubtensorSetupValidatorViewModel
     let networkFee: BalanceViewModelProtocol?
 }
@@ -45,11 +43,12 @@ struct SubtensorUnstakeSetupViewModelInput {
     let price: PriceData?
     let quote: SubtensorTradeQuote?
     let isQuoteFailed: Bool
-    let holdRemaining: TimeInterval?
+    let holdRemainingBlocks: UInt64?
+    let blockTime: BlockTime?
     let costBasis: SubtensorCostBasisState
 
     var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
     var isFullyLocked: Bool {
@@ -65,6 +64,7 @@ struct SubtensorUnstakeSetupViewModelInput {
     }
 
     var canProceed: Bool {
-        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemaining == nil
+        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemainingBlocks == nil &&
+            (isRoot || quote?.amountIn == amount)
     }
 }

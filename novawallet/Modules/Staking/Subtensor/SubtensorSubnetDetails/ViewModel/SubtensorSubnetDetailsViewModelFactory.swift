@@ -1,14 +1,10 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetDetailsViewModelFactoryProtocol {
+protocol SubtensorSubnetDetailsViewModelFactoryProtocol {
     func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel
 
     func createPriceHeader(
         for state: SubtensorSubnetDetailsState,
@@ -17,98 +13,91 @@ protocol SubnetDetailsViewModelFactoryProtocol {
 }
 
 final class SubtensorSubnetDetailsViewModelFactory {
-    static let chipAmounts: [Decimal] = [1, 5, 10]
-    static let defaultChip = SubtensorSubnetAmountChip.fixed(5)
-
     let subnet: SubtensorCatalogueSubnet
     let chainAsset: ChainAsset
-    let currency: Currency
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
+    let currencyManager: CurrencyManagerProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
-    let tokenFormatter: LocalizableResource<TokenFormatter>
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+
     let alphaFormatter: LocalizableResource<TokenFormatter>
     let compactTokenFormatter: LocalizableResource<TokenFormatter>
 
     init(
         subnet: SubtensorCatalogueSubnet,
         chainAsset: ChainAsset,
-        currency: Currency,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        currencyManager: CurrencyManagerProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
+        let formatterFactory = AssetBalanceFormatterFactory()
         self.subnet = subnet
         self.chainAsset = chainAsset
-        self.currency = currency
-        self.iconFactory = iconFactory
-        self.displayAddressFactory = displayAddressFactory
+        self.currencyManager = currencyManager
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            formatterFactory: formatterFactory
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         let taoInfo = chainAsset.assetDisplayInfo
 
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: subnet),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        alphaFormatter = formatterFactory.createTokenFormatter(
+            for: taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: subnet))
         )
-
-        tokenFormatter = formatterFactory.createTokenFormatter(for: taoInfo)
-        alphaFormatter = formatterFactory.createTokenFormatter(for: alphaInfo)
         compactTokenFormatter = formatterFactory.createCompactTokenFormatter(for: taoInfo)
     }
 }
 
 extension SubtensorSubnetDetailsViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
     func formatAlpha(_ amount: Balance, locale: Locale) -> String {
         let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-        let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
+        let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? .subtensorUnknown(for: locale)
 
-        return text.isolatedLeftToRight()
-    }
-
-    func formatTao(_ amount: Decimal, locale: Locale) -> String {
-        tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatCompactTao(_ amount: Decimal, locale: Locale) -> String {
-        compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
+        compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? .subtensorUnknown(for: locale)
     }
 
-    func formatPercent(_ value: Decimal, locale: Locale) -> String {
-        let formatter = NumberFormatter.percentSingle
-        formatter.locale = locale
+    func formatPercent(_ value: Decimal, maximumFractionDigits: Int = 2, locale: Locale) -> String {
+        let formatter = NumberFormatter.subtensorPercentSingle.value(for: locale)
+        formatter.maximumFractionDigits = maximumFractionDigits
+        formatter.roundingMode = .halfEven
 
-        return formatter.stringFromDecimal(value) ?? unknownValue(for: locale)
+        return formatter.stringFromDecimal(value) ?? .subtensorUnknown(for: locale)
     }
 
     func formatCount(_ value: Int, locale: Locale) -> String {
         let formatter = NumberFormatter.quantity
         formatter.locale = locale
 
-        return formatter.string(from: NSNumber(value: value)) ?? unknownValue(for: locale)
+        return formatter.string(from: NSNumber(value: value)) ?? .subtensorUnknown(for: locale)
     }
 }
 
 private extension SubtensorSubnetDetailsViewModelFactory {
-    func createPriceWidgetParams(
+    func createPriceWidgetParams(for state: SubtensorSubnetDetailsState) -> SubtensorPriceWidgetParams {
+        SubtensorPriceWidgetParams(
+            history: state.history,
+            period: state.period,
+            isFiat: state.isFiat,
+            taoPrice: state.taoPrice,
+            currencyId: currencyManager.selectedCurrency.id,
+            chartEndDate: state.chartEndDate
+        )
+    }
+
+    func createPriceHeaderParams(
         for state: SubtensorSubnetDetailsState,
         locale: Locale
-    ) -> SubtensorPriceWidgetParams {
+    ) -> SubtensorPriceHeaderParams {
         let caption = priceWidgetFactory.createCaption(
             subnetTitle: SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale),
             stamps: subnet.stamps,
@@ -117,58 +106,51 @@ private extension SubtensorSubnetDetailsViewModelFactory {
         )
 
         let currencyViewModel = SubtensorSubnetCurrencyViewModel(
-            titles: [chainAsset.assetDisplayInfo.symbol, currency.code],
+            titles: [chainAsset.assetDisplayInfo.symbol, currencyManager.selectedCurrency.code],
             selectedIndex: state.isFiat ? 1 : 0,
             isEnabled: state.taoPrice != nil || state.isFiat
         )
 
-        return SubtensorPriceWidgetParams(
+        return SubtensorPriceHeaderParams(
             caption: caption,
             spotPrice: subnet.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            history: state.history,
-            period: state.period,
-            isFiat: state.isFiat,
-            taoPrice: state.taoPrice,
-            currencyId: currency.id,
             currency: currencyViewModel,
-            selectedPoint: state.chartPoint
+            selection: state.chartSelection
         )
     }
 
     func createValidator(
         for state: SubtensorSubnetDetailsState,
         locale: Locale
-    ) -> SubtensorSubnetValidatorRowViewModel {
-        switch state.validator {
-        case .pending:
-            return .loading
-        case .unselected:
-            return .unselected(
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiDetailChooseValidator()
-            )
-        case let .selected(item):
-            let address = try? item.hotkey.toAddress(using: chainAsset.chain.chainFormat)
-
-            let icon = address.flatMap { address in
-                displayAddressFactory.createViewModel(
-                    from: DisplayAddress(address: address, username: item.name ?? "")
-                ).imageViewModel
-            }
-
-            let apy = SubtensorAlphaApyFormatter.annualRate(for: item.hotkey, in: state.yields).map { rate in
-                SubtensorApyFormatter.text(for: rate, style: .trailing, locale: locale)
-            }
-
-            return .selected(
-                name: item.name ?? address?.mediumTruncated ?? unknownValue(for: locale),
-                icon: icon,
-                apy: apy
-            )
+    ) -> SubtensorValidatorCardViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let item = state.validator.item
+        let address = item.flatMap { try? $0.hotkey.toAddress(using: chainAsset.chain.chainFormat) }
+        let display = address.map {
+            displayAddressFactory.createViewModel(from: DisplayAddress(address: $0, username: item?.name ?? ""))
         }
+        let rate = item.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.hotkey, in: state.yields) }
+        let name: String? = state.validator == .pending ? nil : item?.name ?? address?.mediumTruncated ??
+            strings.stakingSubtensorUiDetailChooseValidator()
+        let rateState: SubtensorRowState<String>
+        if state.validator == .pending || (item != nil && !state.isRateResolved) {
+            rateState = .loading
+        } else if item != nil {
+            rateState = .value(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale))
+        } else {
+            rateState = .hidden
+        }
+        return SubtensorValidatorCardViewModel(
+            icon: display?.imageViewModel,
+            name: name,
+            subtitle: strings.stakingCommonValidator(),
+            rate: rateState,
+            rateCaption: strings.stakingSubtensorV22EstApy()
+        )
     }
 }
 
-extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryProtocol {
+extension SubtensorSubnetDetailsViewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol {
     func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel {
         SubtensorSubnetDetailsTitleViewModel(
             title: SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale),
@@ -176,27 +158,23 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         )
     }
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel {
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return SubtensorSubnetDetailsViewModel(
             priceWidget: priceWidgetFactory.createWidget(
-                for: createPriceWidgetParams(for: state, locale: locale),
+                for: createPriceWidgetParams(for: state),
+                header: createPriceHeaderParams(for: state, locale: locale),
                 locale: locale
             ),
             validator: createValidator(for: state, locale: locale),
-            estimate: createEstimate(for: state, locale: locale),
-            factors: createFactors(for: state, locale: locale),
-            subnetNumber: String(subnet.netuid),
+            parameters: createParameters(for: state, locale: locale),
+            moreDetails: createMoreDetails(for: state, locale: locale),
             isFavorite: state.isFavorite,
             favoriteAccessibilityLabel: state.isFavorite
                 ? strings.stakingSubtensorUiDetailFavoriteRemove()
                 : strings.dappFavoriteAddTitle(),
-            isUseEnabled: isUseEnabled
+            isUseEnabled: state.validator != .pending
         )
     }
 
@@ -204,12 +182,10 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         for state: SubtensorSubnetDetailsState,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        priceWidgetFactory.createHeader(for: createPriceWidgetParams(for: state, locale: locale), locale: locale)
-    }
-}
-
-private extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
+        priceWidgetFactory.createHeader(
+            createPriceHeaderParams(for: state, locale: locale),
+            for: createPriceWidgetParams(for: state),
+            locale: locale
+        )
     }
 }

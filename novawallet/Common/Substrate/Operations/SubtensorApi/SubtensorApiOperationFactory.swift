@@ -8,25 +8,25 @@ protocol SubtensorApiOperationFactoryProtocol {
     func createStakeInfoWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.StakeInfo]>
 
     func createStakeAvailabilityWrapper(
         for coldkeys: [AccountId],
-        netuids: [UInt16]?,
+        netuids: [UInt16],
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.ColdkeyStakeAvailability]>
 
     func createAllDynamicInfoWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DynamicInfo?]>
+
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorPallet.DynamicInfo?>
 
     func createDelegatesWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]>
 
-    func createAlphaPricesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]>
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorPallet.SubnetPrice]>
 
     func createAlphaPriceWrapper(
         for netuid: UInt16,
@@ -37,85 +37,48 @@ protocol SubtensorApiOperationFactoryProtocol {
         netuid: UInt16,
         taoAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult>
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult>
 
     func createSimSwapAlphaForTaoWrapper(
         netuid: UInt16,
         alphaAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult>
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult>
 
     func createFeeRateWrapper(
         for netuid: UInt16,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<UInt16>
 
-    /// nil when the chain-wide ValueQuery key is unset, so the caller applies the runtime default
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?>
-
-    func createSubtokenEnabledWrapper(
-        for netuids: [UInt16],
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Set<UInt16>>
-
-    func createRootBasketOwedWrapper(
-        for coldkey: AccountId,
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Balance>
-
-    func createRootBasketPositionsWrapper(
-        for coldkey: AccountId,
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.RootBasketPosition]>
+    func createSubtokenEnabledWrapper(for netuids: [UInt16]) -> CompoundOperationWrapper<Set<UInt16>>
 
     func createRootClaimPreviewsWrapper(
         coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.BasketClaimPreview]>
 
     func createRootClaimableThresholdWrapper(
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?>
-}
-
-extension SubtensorApiOperationFactoryProtocol {
-    func createAllDynamicInfoWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]> {
-        createAllDynamicInfoWrapper(at: nil)
-    }
-
-    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
-        createAlphaPricesWrapper(at: nil)
-    }
-
-    func createSubnetOwnerCutWrapper() -> CompoundOperationWrapper<UInt16?> {
-        createSubnetOwnerCutWrapper(blockHash: nil)
-    }
+    ) -> CompoundOperationWrapper<SubtensorPallet.FixedPoint96F32?>
 }
 
 final class SubtensorApiOperationFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let operationQueue: OperationQueue
 
-    let stateCallFactory: StateCallRequestFactory
+    let stateCallFactory = StateCallRequestFactory()
     let blockHashOperationFactory = BlockHashOperationFactory()
 
     private let requestFactory: StorageRequestFactoryProtocol
 
-    init(
-        runtimeConnectionStore: RuntimeConnectionStoring,
-        operationQueue: OperationQueue,
-        rpcTimeout: Int = JSONRPCTimeout.singleNode
-    ) {
+    init(runtimeConnectionStore: RuntimeConnectionStoring, operationQueue: OperationQueue) {
         self.runtimeConnectionStore = runtimeConnectionStore
         self.operationQueue = operationQueue
 
-        stateCallFactory = StateCallRequestFactory(rpcTimeout: rpcTimeout)
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
     }
 
-    private func createAccountParamsClosure(for accountId: AccountId) -> StateCallWithApiParamsClosure {
+    private func createSingleParamClosure<P: Encodable>(_ param: P) -> StateCallWithApiParamsClosure {
         { runtimeApi, encoder, context in
             let paramsCount = runtimeApi.method.inputs.count
             guard paramsCount == 1 else {
@@ -123,7 +86,7 @@ final class SubtensorApiOperationFactory {
             }
 
             try encoder.append(
-                BytesCodable(wrappedValue: accountId),
+                param,
                 ofType: runtimeApi.method.inputs[0].paramType.asTypeId(),
                 with: context.toRawContext()
             )
@@ -159,9 +122,9 @@ final class SubtensorApiOperationFactory {
         netuid: UInt16,
         amount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         do {
-            try SubtensorStakingPallet.ensureU64Amount(amount)
+            try SubtensorPallet.ensureU64Amount(amount)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -171,6 +134,29 @@ final class SubtensorApiOperationFactory {
             blockHash: blockHash,
             paramsClosure: createNetuidAmountParamsClosure(netuid: netuid, amount: amount)
         )
+    }
+
+    private func createStorageWrapper<Q, R>(
+        blockHash: BlockHash?,
+        query: (JSONRPCEngine, @escaping () throws -> RuntimeCoderFactoryProtocol, Data?)
+            -> CompoundOperationWrapper<Q>,
+        mapping: @escaping (Q) throws -> R
+    ) -> CompoundOperationWrapper<R> {
+        do {
+            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
+            let engine = try runtimeConnectionStore.getConnection()
+            let atBlock = try blockHash.map { try Data(hexString: $0) }
+
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+            let queryWrapper = query(engine, { try codingFactoryOperation.extractNoCancellableResultData() }, atBlock)
+
+            queryWrapper.addDependency(operations: [codingFactoryOperation])
+
+            return queryWrapper.insertingHead(operations: [codingFactoryOperation]).mapped(mapping)
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
     }
 
     private func createWrapper<R: Decodable>(
@@ -205,15 +191,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                 connection: connection
             )
 
-            let mappingOperation = ClosureOperation<BlockHash> {
-                try blockHashWrapper.targetOperation
-                    .extractNoCancellableResultData()
-                    .toHex(includePrefix: true)
-            }
-
-            mappingOperation.addDependency(blockHashWrapper.targetOperation)
-
-            return blockHashWrapper.insertingTail(operation: mappingOperation)
+            return blockHashWrapper.mapped { $0.toHex(includePrefix: true) }
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -222,32 +200,21 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
     func createStakeInfoWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.StakeInfo]> {
         createWrapper(
-            path: SubtensorStakingPallet.stakeInfoForColdkeyApi,
+            path: SubtensorPallet.stakeInfoForColdkeyApi,
             blockHash: blockHash,
-            paramsClosure: { runtimeApi, encoder, context in
-                let paramsCount = runtimeApi.method.inputs.count
-                guard paramsCount == 1 else {
-                    throw SubstrateRuntimeApiOperationFactoryError.unexpectedParamsCount
-                }
-
-                try encoder.append(
-                    BytesCodable(wrappedValue: coldkey),
-                    ofType: runtimeApi.method.inputs[0].paramType.asTypeId(),
-                    with: context.toRawContext()
-                )
-            }
+            paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
         )
     }
 
     func createStakeAvailabilityWrapper(
         for coldkeys: [AccountId],
-        netuids: [UInt16]?,
+        netuids: [UInt16],
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.ColdkeyStakeAvailability]> {
         createWrapper(
-            path: SubtensorStakingPallet.stakeAvailabilityForColdkeysApi,
+            path: SubtensorPallet.stakeAvailabilityForColdkeysApi,
             blockHash: blockHash,
             paramsClosure: { runtimeApi, encoder, context in
                 let paramsCount = runtimeApi.method.inputs.count
@@ -261,49 +228,45 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                     with: context.toRawContext()
                 )
 
-                let netuidsTypeId = runtimeApi.method.inputs[1].paramType.asTypeId()
-
-                if let netuids {
-                    try encoder.append(
-                        netuids.map { StringScaleMapper(value: $0) },
-                        ofType: netuidsTypeId,
-                        with: context.toRawContext()
-                    )
-                } else {
-                    try encoder.append(json: .null, type: netuidsTypeId)
-                }
+                try encoder.append(
+                    netuids.map { StringScaleMapper(value: $0) },
+                    ofType: runtimeApi.method.inputs[1].paramType.asTypeId(),
+                    with: context.toRawContext()
+                )
             }
         )
     }
 
     func createAllDynamicInfoWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DynamicInfo?]> {
         createWrapper(
-            path: SubtensorStakingPallet.allDynamicInfoApi,
+            path: SubtensorPallet.allDynamicInfoApi,
             blockHash: blockHash,
             paramsClosure: nil
+        )
+    }
+
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorPallet.DynamicInfo?> {
+        createWrapper(
+            path: SubtensorPallet.dynamicInfoApi,
+            blockHash: nil,
+            paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
     }
 
     func createDelegatesWrapper(
         at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]> {
         createWrapper(
-            path: SubtensorStakingPallet.delegatesApi,
+            path: SubtensorPallet.delegatesApi,
             blockHash: blockHash,
             paramsClosure: nil
         )
     }
 
-    func createAlphaPricesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
-        createWrapper(
-            path: SubtensorStakingPallet.alphaPriceAllApi,
-            blockHash: blockHash,
-            paramsClosure: nil
-        )
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorPallet.SubnetPrice]> {
+        createWrapper(path: SubtensorPallet.alphaPriceAllApi, blockHash: nil, paramsClosure: nil)
     }
 
     func createAlphaPriceWrapper(
@@ -311,38 +274,21 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<Balance> {
         let priceWrapper: CompoundOperationWrapper<StringScaleMapper<Balance>> = createWrapper(
-            path: SubtensorStakingPallet.alphaPriceApi,
+            path: SubtensorPallet.alphaPriceApi,
             blockHash: blockHash,
-            paramsClosure: { runtimeApi, encoder, context in
-                let paramsCount = runtimeApi.method.inputs.count
-                guard paramsCount == 1 else {
-                    throw SubstrateRuntimeApiOperationFactoryError.unexpectedParamsCount
-                }
-
-                try encoder.append(
-                    StringScaleMapper(value: netuid),
-                    ofType: runtimeApi.method.inputs[0].paramType.asTypeId(),
-                    with: context.toRawContext()
-                )
-            }
+            paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
 
-        let mappingOperation = ClosureOperation<Balance> {
-            try priceWrapper.targetOperation.extractNoCancellableResultData().value
-        }
-
-        mappingOperation.addDependency(priceWrapper.targetOperation)
-
-        return priceWrapper.insertingTail(operation: mappingOperation)
+        return priceWrapper.mapped { $0.value }
     }
 
     func createSimSwapTaoForAlphaWrapper(
         netuid: UInt16,
         taoAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         createSimSwapWrapper(
-            path: SubtensorStakingPallet.simSwapTaoForAlphaApi,
+            path: SubtensorPallet.simSwapTaoForAlphaApi,
             netuid: netuid,
             amount: taoAmount,
             blockHash: blockHash
@@ -353,9 +299,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         netuid: UInt16,
         alphaAmount: Balance,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         createSimSwapWrapper(
-            path: SubtensorStakingPallet.simSwapAlphaForTaoApi,
+            path: SubtensorPallet.simSwapAlphaForTaoApi,
             netuid: netuid,
             amount: alphaAmount,
             blockHash: blockHash
@@ -366,188 +312,73 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         for netuid: UInt16,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<UInt16> {
-        do {
-            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
-            let engine = try runtimeConnectionStore.getConnection()
-            let atBlock = try blockHash.map { try Data(hexString: $0) }
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let queryWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt16>>]> =
-                requestFactory.queryItems(
+        createStorageWrapper(
+            blockHash: blockHash,
+            query: { engine, factory, atBlock in
+                self.requestFactory.queryItems(
                     engine: engine,
                     keyParams: { [StringScaleMapper(value: netuid)] },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: SubtensorStakingPallet.feeRatePath,
+                    factory: factory,
+                    storagePath: SubtensorPallet.feeRatePath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
-
-            queryWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<UInt16> {
-                try queryWrapper.targetOperation.extractNoCancellableResultData()
-                    .first?.value?.value ?? SubtensorStakingPallet.defaultFeeRate
+            },
+            mapping: { (responses: [StorageResponse<StringScaleMapper<UInt16>>]) in
+                responses.first?.value?.value ?? SubtensorPallet.defaultFeeRate
             }
-
-            mappingOperation.addDependency(queryWrapper.targetOperation)
-
-            return queryWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mappingOperation)
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
+        )
     }
 
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?> {
-        do {
-            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
-            let engine = try runtimeConnectionStore.getConnection()
-            let atBlock = try blockHash.map { try Data(hexString: $0) }
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let queryWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<UInt16>>> =
-                requestFactory.queryItem(
-                    engine: engine,
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: SubtensorStakingPallet.subnetOwnerCutPath,
-                    at: atBlock
-                )
-
-            queryWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<UInt16?> {
-                try queryWrapper.targetOperation.extractNoCancellableResultData().value?.value
-            }
-
-            mappingOperation.addDependency(queryWrapper.targetOperation)
-
-            return queryWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mappingOperation)
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
-    }
-
-    func createSubtokenEnabledWrapper(
-        for netuids: [UInt16],
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Set<UInt16>> {
-        do {
-            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
-            let engine = try runtimeConnectionStore.getConnection()
-            let atBlock = try blockHash.map { try Data(hexString: $0) }
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let queryWrapper: CompoundOperationWrapper<[StorageResponse<Bool>]> =
-                requestFactory.queryItems(
+    func createSubtokenEnabledWrapper(for netuids: [UInt16]) -> CompoundOperationWrapper<Set<UInt16>> {
+        createStorageWrapper(
+            blockHash: nil,
+            query: { engine, factory, atBlock in
+                self.requestFactory.queryItems(
                     engine: engine,
                     keyParams: { netuids.map { StringScaleMapper(value: $0) } },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: SubtensorStakingPallet.subtokenEnabledPath,
+                    factory: factory,
+                    storagePath: SubtensorPallet.subtokenEnabledPath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
-
-            queryWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<Set<UInt16>> {
-                let responses = try queryWrapper.targetOperation.extractNoCancellableResultData()
-
-                return zip(netuids, responses).reduce(into: Set<UInt16>()) { accum, pair in
+            },
+            mapping: { (responses: [StorageResponse<Bool>]) in
+                zip(netuids, responses).reduce(into: Set<UInt16>()) { accum, pair in
                     if pair.1.value == true {
                         accum.insert(pair.0)
                     }
                 }
             }
-
-            mappingOperation.addDependency(queryWrapper.targetOperation)
-
-            return queryWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mappingOperation)
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
-    }
-
-    func createRootBasketOwedWrapper(
-        for coldkey: AccountId,
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Balance> {
-        let owedWrapper: CompoundOperationWrapper<StringScaleMapper<Balance>> = createWrapper(
-            path: SubtensorStakingPallet.rootBasketOwedApi,
-            blockHash: blockHash,
-            paramsClosure: createAccountParamsClosure(for: coldkey)
-        )
-
-        let mappingOperation = ClosureOperation<Balance> {
-            try owedWrapper.targetOperation.extractNoCancellableResultData().value
-        }
-
-        mappingOperation.addDependency(owedWrapper.targetOperation)
-
-        return owedWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    func createRootBasketPositionsWrapper(
-        for coldkey: AccountId,
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.RootBasketPosition]> {
-        createWrapper(
-            path: SubtensorStakingPallet.rootBasketPositionsApi,
-            blockHash: blockHash,
-            paramsClosure: createAccountParamsClosure(for: coldkey)
         )
     }
 
     func createRootClaimPreviewsWrapper(
         coldkey: AccountId,
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]> {
+    ) -> CompoundOperationWrapper<[SubtensorPallet.BasketClaimPreview]> {
         createWrapper(
-            path: SubtensorStakingPallet.rootBasketClaimPreviewsApi,
+            path: SubtensorPallet.rootBasketClaimPreviewsApi,
             blockHash: blockHash,
-            paramsClosure: createAccountParamsClosure(for: coldkey)
+            paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
         )
     }
 
     func createRootClaimableThresholdWrapper(
         blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?> {
-        do {
-            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
-            let engine = try runtimeConnectionStore.getConnection()
-            let atBlock = try blockHash.map { try Data(hexString: $0) }
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let queryWrapper: CompoundOperationWrapper<[StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]> =
-                requestFactory.queryItems(
+    ) -> CompoundOperationWrapper<SubtensorPallet.FixedPoint96F32?> {
+        createStorageWrapper(
+            blockHash: blockHash,
+            query: { engine, factory, atBlock in
+                self.requestFactory.queryItems(
                     engine: engine,
-                    keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
+                    keyParams: { [StringScaleMapper(value: SubtensorPallet.rootNetuid)] },
+                    factory: factory,
+                    storagePath: SubtensorPallet.rootClaimableThresholdPath,
                     options: StorageQueryListOptions(atBlock: atBlock)
                 )
-
-            queryWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<SubtensorStakingPallet.FixedPoint96F32?> {
-                try queryWrapper.targetOperation.extractNoCancellableResultData().first?.value
+            },
+            mapping: { (responses: [StorageResponse<SubtensorPallet.FixedPoint96F32>]) in
+                responses.first?.value
             }
-
-            mappingOperation.addDependency(queryWrapper.targetOperation)
-
-            return queryWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mappingOperation)
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
+        )
     }
 }

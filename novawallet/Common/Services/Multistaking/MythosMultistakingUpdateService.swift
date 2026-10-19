@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class MythosMultistakingUpdateService: ObservableSyncService {
+final class MythosMultistakingUpdateService: ObservableSyncService, MultistakingOnchainSyncServiceProtocol {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset

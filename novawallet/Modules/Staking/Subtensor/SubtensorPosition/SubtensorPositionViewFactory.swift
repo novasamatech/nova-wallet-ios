@@ -3,39 +3,29 @@ import Foundation_iOS
 
 enum SubtensorPositionViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         group: SubtensorPortfolioGroup
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let earnServices = state.earnServices
+        let isRoot = group.netuid == SubtensorPallet.rootNetuid
 
         let interactor = SubtensorPositionInteractor(
             state: state,
             netuid: group.netuid,
-            catalogueService: earnServices.catalogueService,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
-            validatorFactory: SubtensorValidatorPresetFactory(
-                directoryService: earnServices.validatorDirectoryService,
-                recommendationService: earnServices.recommendationService,
-                operationQueue: operationQueue,
-                logger: Logger.shared
-            ),
-            rootHoldFactory: earnServices.rootHoldFactory,
+            blockNumberSubscription: isRoot ? SubtensorFlowServicesFactory.createBlockSubscription(for: state) : nil,
+            applicationHandler: ApplicationHandler(),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 
         let presenter = SubtensorPositionPresenter(
             group: group,
+            wallet: SelectedWalletSettings.shared.value,
             account: state.selectedAccount,
             chainAsset: state.stakingOption.chainAsset,
-            pendingRootClaims: state.flowState.pendingRootClaims,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
             viewModelFactory: SubtensorPositionViewModelFactory(
@@ -49,7 +39,7 @@ enum SubtensorPositionViewFactory {
 
         let view = SubtensorPositionViewController(
             presenter: presenter,
-            isRoot: group.netuid == SubtensorStakingPallet.rootNetuid,
+            isRoot: isRoot,
             seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
             chartLongPressHapticPlayer: singleTapHapticPlayer,
             periodControlHapticPlayer: singleTapHapticPlayer,

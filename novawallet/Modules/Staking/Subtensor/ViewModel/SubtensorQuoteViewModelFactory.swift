@@ -12,7 +12,9 @@ protocol SubtensorQuoteViewModelFactoryProtocol {
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
+        networkFee: Balance?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel?
 
@@ -65,30 +67,6 @@ private extension SubtensorQuoteViewModelFactory {
         ).value(for: locale).price
     }
 
-    func formatSwapRate(
-        for quote: SubtensorTradeQuote,
-        inInfo: AssetBalanceDisplayInfo,
-        outInfo: AssetBalanceDisplayInfo,
-        locale: Locale
-    ) -> String {
-        guard let rate = Decimal.rateFromSubstrate(
-            amount1: quote.amountIn,
-            amount2: quote.expectedOut,
-            precision1: inInfo.assetPrecision,
-            precision2: outInfo.assetPrecision
-        ) else {
-            return ""
-        }
-
-        let inFormatter = formatterFactory.createTokenFormatter(for: inInfo).value(for: locale)
-        let outFormatter = formatterFactory.createTokenFormatter(for: outInfo).value(for: locale)
-
-        let oneIn = inFormatter.stringFromDecimal(1) ?? ""
-        let rateOut = outFormatter.stringFromDecimal(rate) ?? ""
-
-        return oneIn.estimatedEqual(to: rateOut)
-    }
-
     func createBuyReceive(
         for quote: SubtensorTradeQuote,
         alphaInfo: AssetBalanceDisplayInfo,
@@ -96,7 +74,7 @@ private extension SubtensorQuoteViewModelFactory {
         locale: Locale
     ) -> BalanceViewModelProtocol {
         let spotPrice = quote.quote.spotPrice
-        let scale = SubtensorStakingPallet.alphaPriceScale
+        let scale = SubtensorPallet.alphaPriceScale
 
         return BalanceViewModel(
             amount: formatAmount(quote.expectedOut, displayInfo: alphaInfo, locale: locale).approximatelyEqual(),
@@ -111,7 +89,9 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
+        networkFee: Balance?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
         guard let quote, case .subnet = target else {
@@ -119,7 +99,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         }
 
         let taoInfo = chainAsset.assetDisplayInfo
-        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo)
+        let alphaInfo = taoInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
         let hasReceive = amountIn == quote.amountIn
 
         switch (direction, quote.quote.args.direction) {
@@ -133,17 +113,30 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
 
             return SubtensorTradePanelViewModel(
                 receive: hasReceive ? receive : nil,
-                swapRate: formatSwapRate(for: quote, inInfo: taoInfo, outInfo: alphaInfo, locale: locale)
+                swapRate: formatterFactory.subtensorSwapRate(
+                    amountIn: quote.amountIn,
+                    amountOut: quote.expectedOut,
+                    inInfo: taoInfo,
+                    outInfo: alphaInfo,
+                    locale: locale
+                ) ?? ""
             )
         case (.sell, .unstake):
+            let netOut = quote.expectedOut.subtractOrZero(networkFee ?? 0)
             let receive = BalanceViewModel(
-                amount: formatAmount(quote.expectedOut, displayInfo: taoInfo, locale: locale).approximatelyEqual(),
-                price: formatFiat(taoAmount: quote.expectedOut, taoPrice: taoPrice, locale: locale)
+                amount: formatAmount(netOut, displayInfo: taoInfo, locale: locale).approximatelyEqual(),
+                price: formatFiat(taoAmount: netOut, taoPrice: taoPrice, locale: locale)
             )
 
             return SubtensorTradePanelViewModel(
                 receive: hasReceive ? receive : nil,
-                swapRate: formatSwapRate(for: quote, inInfo: alphaInfo, outInfo: taoInfo, locale: locale)
+                swapRate: formatterFactory.subtensorSwapRate(
+                    amountIn: quote.amountIn,
+                    amountOut: quote.expectedOut,
+                    inInfo: alphaInfo,
+                    outInfo: taoInfo,
+                    locale: locale
+                ) ?? ""
             )
         case (.buy, .unstake), (.sell, .stake):
             return nil
@@ -168,5 +161,47 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         )
 
         return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiNovaFeeDisclosure(percent)
+    }
+}
+
+extension PrimitiveBalanceViewModelFactoryProtocol {
+    func subtensorFee(
+        _ fee: ExtrinsicFeeProtocol?,
+        info: AssetBalanceDisplayInfo,
+        price: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        fee.map { fee in
+            balanceFromPrice(
+                fee.amount.decimal(assetInfo: info),
+                priceData: price,
+                roundingMode: .up
+            ).value(for: locale)
+        }
+    }
+}
+
+extension AssetBalanceFormatterFactoryProtocol {
+    func subtensorSwapRate(
+        amountIn: Balance,
+        amountOut: Balance,
+        inInfo: AssetBalanceDisplayInfo,
+        outInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> String? {
+        let rate = Decimal.rateFromSubstrate(
+            amount1: amountIn,
+            amount2: amountOut,
+            precision1: inInfo.assetPrecision,
+            precision2: outInfo.assetPrecision
+        ) ?? 0
+
+        guard
+            let oneIn = createTokenFormatter(for: inInfo).value(for: locale).stringFromDecimal(1),
+            let rateOut = createTokenFormatter(for: outInfo).value(for: locale).stringFromDecimal(rate) else {
+            return nil
+        }
+
+        return SubtensorSubnetNaming.isolatedRate(oneIn, rateOut)
     }
 }

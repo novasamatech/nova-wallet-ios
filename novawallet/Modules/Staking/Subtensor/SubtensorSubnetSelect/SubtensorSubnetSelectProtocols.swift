@@ -1,9 +1,10 @@
 import Foundation
 
 enum SubtensorSubnetSort: CaseIterable, Equatable {
-    case sevenDayChange
     case poolDepth
     case age
+    case apy
+    case sevenDayChange
     case name
 }
 
@@ -13,19 +14,8 @@ struct SubtensorSubnetFilters: Equatable {
     var isApplied: Bool { hideThinPools }
 }
 
-struct SubtensorSubnetSelectSnapshot {
-    let entries: HTTPCachePeek<[SubtensorSubnetListEntry]>
-    let rootRate: HTTPCachePeek<Decimal?>
-    let rankedSubnets: HTTPCachePeek<SubtensorRankedSubnets>
-}
-
 protocol SubtensorSubnetSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(list: SubtensorSubnetListViewModel)
-    func didReceive(rootBar: SubtensorStakeToRootBarViewModel)
-}
-
-protocol SubtensorSubnetFiltersViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModel: SubtensorSubnetFiltersViewModel)
 }
 
 protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
@@ -37,25 +27,28 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func selectRoot()
     func showSort()
     func showFilters()
+    func retry()
 }
 
-protocol SubnetSelectInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorSubnetSelectSnapshot
+protocol SubtensorSubnetSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func refreshFavourites()
+    func toggleFavorite(_ subnetRef: SubtensorSubnetRef)
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef])
+    func loadApy()
 }
 
-protocol SubnetSelectInteractorOutputProtocol: AnyObject {
-    func didReceive(entries: [SubtensorSubnetListEntry])
+protocol SubtensorSubnetSelectInteractorOutputProtocol: AnyObject {
+    func didReceive(entries: [SubtensorSubnetListItem])
+    func didReceive(favourites: Set<SubtensorSubnetRef>)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
-    func didReceive(rootRate: Decimal?)
-    func didReceive(rankedSubnets: SubtensorRankedSubnets?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
+    func didReceive(apy: [UInt16: Decimal]?)
     func didReceiveError(_ error: Error)
 }
 
-protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresentable,
     SubtensorSortSheetPresentable, SubtensorSubnetPickerCompleting {
     func showDetails(
         from view: SubtensorSubnetSelectViewProtocol?,
@@ -65,8 +58,7 @@ protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresenta
 
     func showFilters(
         from view: SubtensorSubnetSelectViewProtocol?,
-        viewModel: SubtensorSubnetFiltersViewModel,
-        onChange: @escaping (SubtensorSubnetFilters) -> Void,
-        onApply: @escaping (SubtensorSubnetFilters) -> Void
-    ) -> SubtensorSubnetFiltersViewProtocol?
+        filters: SubtensorSubnetFilters,
+        delegate: SubtensorSubnetFiltersDelegate
+    )
 }

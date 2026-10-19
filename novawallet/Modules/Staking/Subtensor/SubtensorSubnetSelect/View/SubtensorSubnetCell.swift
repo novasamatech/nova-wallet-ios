@@ -1,9 +1,7 @@
-import SnapKit
 import UIKit
 import UIKit_iOS
 
-final class SubtensorSubnetCell: UITableViewCell {
-    static let preferredHeight: CGFloat = 60
+final class SubtensorSubnetCell: SubtensorSubnetCardCell {
     static let unfavoriteImage = R.image.iconFavToolbar()?.tinted(with: R.color.colorIconSecondary()!)
 
     let iconView: UIImageView = .create { view in
@@ -14,11 +12,6 @@ final class SubtensorSubnetCell: UITableViewCell {
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldSubhedlinePrimary)
-        view.lineBreakMode = .byTruncatingTail
-    }
-
-    let subtitleLabel: UILabel = .create { view in
-        view.apply(style: .caption1Secondary)
         view.lineBreakMode = .byTruncatingTail
     }
 
@@ -34,34 +27,23 @@ final class SubtensorSubnetCell: UITableViewCell {
 
     let sparklineView = SubtensorSparklineView()
 
-    let changeLoadingView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = Constants.changePlaceholderSize.height / 2
-    }
+    let changeLoadingView = SubtensorSkeletonView(cornerRadius: Constants.changePlaceholderSize.height / 2)
 
-    let sparklineLoadingView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = Constants.sparklinePlaceholderSize.height / 2
-    }
+    let sparklineLoadingView = SubtensorSkeletonView(cornerRadius: Constants.sparklinePlaceholderSize.height / 2)
 
-    let favoriteButton: UIButton = .create { view in
-        view.imageView?.contentMode = .scaleAspectFit
-    }
+    let favoriteButton = UIButton()
 
-    let dividerView: UIView = .create { view in
-        view.backgroundColor = R.color.colorDivider()
+    let favoriteIconView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+        view.isUserInteractionEnabled = false
     }
 
     var favoriteAction: (() -> Void)?
 
     private var iconViewModel: ImageViewModelProtocol?
-    private var sparklineWidthConstraint: Constraint?
-    private var valuesTrailingConstraint: Constraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        backgroundColor = .clear
-        selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
 
         favoriteButton.addTarget(self, action: #selector(actionFavorite), for: .touchUpInside)
 
@@ -93,17 +75,12 @@ final class SubtensorSubnetCell: UITableViewCell {
         )
 
         titleLabel.text = viewModel.title
-        subtitleLabel.text = viewModel.subtitle
-        subtitleLabel.isHidden = viewModel.subtitle == nil
 
         priceLabel.text = viewModel.price
 
         bind(change: viewModel.change)
 
-        favoriteButton.setImage(
-            viewModel.isFavorite ? R.image.iconFavToolbarSel() : Self.unfavoriteImage,
-            for: .normal
-        )
+        favoriteIconView.image = viewModel.isFavorite ? R.image.iconFavToolbarSel() : Self.unfavoriteImage
 
         favoriteButton.accessibilityLabel = viewModel.favoriteAccessibilityLabel
         favoriteButton.accessibilityValue = viewModel.favoriteAccessibilityValue
@@ -117,31 +94,17 @@ private extension SubtensorSubnetCell {
             changeLabel.text = nil
             sparklineView.clear()
             setChangeLoading(true)
-            setSparklineSlot(isVisible: true)
         case let .value(text, isRising, sparkline):
             changeLabel.text = text
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
             sparklineView.bind(values: sparkline, isRising: isRising)
             setChangeLoading(false)
-            setSparklineSlot(isVisible: true)
         case let .unavailable(text):
             changeLabel.text = text
             changeLabel.textColor = R.color.colorTextSecondary()
             sparklineView.clear()
             setChangeLoading(false)
-            setSparklineSlot(isVisible: true)
-        case let .notListed(text):
-            changeLabel.text = text
-            changeLabel.textColor = R.color.colorTextSecondary()
-            sparklineView.clear()
-            setChangeLoading(false)
-            setSparklineSlot(isVisible: false)
         }
-    }
-
-    func setSparklineSlot(isVisible: Bool) {
-        sparklineWidthConstraint?.update(offset: isVisible ? Constants.sparklineSize.width : 0)
-        valuesTrailingConstraint?.update(offset: isVisible ? -Constants.contentSpacing : 0)
     }
 
     func setChangeLoading(_ isLoading: Bool) {
@@ -154,11 +117,6 @@ private extension SubtensorSubnetCell {
     }
 
     func setupLayout() {
-        let labelsView = UIView.vStack(alignment: .leading, spacing: Constants.labelsSpacing, [
-            titleLabel,
-            subtitleLabel
-        ])
-
         let valuesView = UIView.vStack(alignment: .trailing, spacing: Constants.labelsSpacing, [
             priceLabel,
             changeLabel
@@ -166,17 +124,16 @@ private extension SubtensorSubnetCell {
 
         [
             iconView,
-            labelsView,
+            titleLabel,
             valuesView,
             sparklineView,
             changeLoadingView,
             sparklineLoadingView,
-            favoriteButton,
-            dividerView
-        ].forEach(contentView.addSubview)
+            favoriteButton
+        ].forEach(cardView.addSubview)
 
         setupEdgesLayout()
-        setupValuesLayout(labelsView: labelsView, valuesView: valuesView)
+        setupValuesLayout(valuesView: valuesView)
     }
 
     func setupEdgesLayout() {
@@ -192,32 +149,29 @@ private extension SubtensorSubnetCell {
             make.size.equalTo(Constants.favoriteSize + 2 * Constants.favoriteTouchOutset)
         }
 
+        favoriteButton.addSubview(favoriteIconView)
+        favoriteIconView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.size.equalTo(Constants.favoriteSize)
+        }
+
         sparklineView.snp.makeConstraints { make in
             make.trailing.equalTo(favoriteButton.snp.leading).offset(
                 -(Constants.contentSpacing - Constants.favoriteTouchOutset)
             )
             make.centerY.equalToSuperview()
-            make.height.equalTo(Constants.sparklineSize.height)
-            sparklineWidthConstraint = make.width.equalTo(Constants.sparklineSize.width).constraint
+            make.size.equalTo(Constants.sparklineSize)
         }
 
         sparklineLoadingView.snp.makeConstraints { make in
             make.center.equalTo(sparklineView)
             make.size.equalTo(Constants.sparklinePlaceholderSize)
         }
-
-        dividerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalToSuperview()
-            make.height.equalTo(UIConstants.separatorHeight)
-        }
     }
 
-    func setupValuesLayout(labelsView: UIView, valuesView: UIView) {
+    func setupValuesLayout(valuesView: UIView) {
         valuesView.snp.makeConstraints { make in
-            valuesTrailingConstraint = make.trailing.equalTo(sparklineView.snp.leading)
-                .offset(-Constants.contentSpacing)
-                .constraint
+            make.trailing.equalTo(sparklineView.snp.leading).offset(-Constants.contentSpacing)
             make.centerY.equalToSuperview()
         }
 
@@ -231,7 +185,7 @@ private extension SubtensorSubnetCell {
             make.size.equalTo(Constants.changePlaceholderSize)
         }
 
-        labelsView.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(Constants.contentSpacing)
             make.trailing.lessThanOrEqualTo(valuesView.snp.leading).offset(-Constants.contentSpacing)
             make.centerY.equalToSuperview()
@@ -242,10 +196,10 @@ private extension SubtensorSubnetCell {
     }
 }
 
-final class SubtensorSubnetSkeletonCell: UITableViewCell, SkeletonableView {
+final class SubtensorSubnetSkeletonCell: SubtensorSubnetCardCell, SkeletonableView {
     var skeletonView: SkrullableView?
-    var skeletonSuperview: UIView { contentView }
-    var skeletonSpaceSize: CGSize { contentView.bounds.size }
+    var skeletonSuperview: UIView { cardView }
+    var skeletonSpaceSize: CGSize { cardView.bounds.size }
     var hidingViews: [UIView] { [] }
 
     let favoriteView: UIImageView = .create { view in
@@ -253,17 +207,16 @@ final class SubtensorSubnetSkeletonCell: UITableViewCell, SkeletonableView {
         view.contentMode = .scaleAspectFit
     }
 
-    let dividerView: UIView = .create { view in
-        view.backgroundColor = R.color.colorDivider()
-    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
-        selectionStyle = .none
+        cardView.addSubview(favoriteView)
 
-        setupLayout()
+        favoriteView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(SubtensorSubnetCell.Constants.contentInset)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(SubtensorSubnetCell.Constants.favoriteSize)
+        }
     }
 
     @available(*, unavailable)
@@ -327,35 +280,19 @@ final class SubtensorSubnetSkeletonCell: UITableViewCell, SkeletonableView {
 
         return shapes.map { offset, shapeSize in
             SingleSkeleton.createRow(
-                on: self,
-                containerView: contentView,
+                on: cardView,
+                containerView: cardView,
                 spaceSize: size,
                 offset: offset,
                 size: shapeSize
             )
         }
     }
-
-    private func setupLayout() {
-        [favoriteView, dividerView].forEach(contentView.addSubview)
-
-        favoriteView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(SubtensorSubnetCell.Constants.contentInset)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(SubtensorSubnetCell.Constants.favoriteSize)
-        }
-
-        dividerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalToSuperview()
-            make.height.equalTo(UIConstants.separatorHeight)
-        }
-    }
 }
 
 extension SubtensorSubnetCell {
     enum Constants {
-        static let contentInset: CGFloat = 28
+        static let contentInset: CGFloat = 12
         static let iconSize: CGFloat = 32
         static let favoriteSize: CGFloat = 20
         static let favoriteTouchOutset: CGFloat = 8

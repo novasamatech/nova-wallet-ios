@@ -30,12 +30,6 @@ protocol NominationPoolErrorPresentable: StakingBaseErrorPresentable {
         locale: Locale
     )
 
-    func presentNoProfitAfterClaimRewards(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale
-    )
-
     func presentPoolIsNotOpen(
         from view: ControllerBackedProtocol,
         locale: Locale
@@ -132,23 +126,6 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             title: title,
             closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
-        )
-    }
-
-    func presentNoProfitAfterClaimRewards(
-        from view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale
-    ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirmationTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingWarningTinyPayout()
-
-        presentWarning(
-            for: title,
-            message: message,
-            action: action,
-            view: view,
-            locale: locale
         )
     }
 

@@ -12,19 +12,17 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         }
     }
 
-    let state: SubtensorStakingSharedStateProtocol
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
+    let state: SubtensorSharedStateProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol
 
-    private let headlineCallStore = CancellableCallStore()
+    private let maxApyCallStore = CancellableCallStore()
     private var boundWalletId: MetaAccountModel.Id?
     private var hasReportedAccountChange = false
-    private var seed: HTTPCachePeek<Decimal?> = .miss
 
     init(
-        state: SubtensorStakingSharedStateProtocol,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
+        state: SubtensorSharedStateProtocol,
+        maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -33,13 +31,11 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         announcementsRepository: AnnouncementsRepositoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.state = state
-        self.maxApyProvider = maxApyProvider
+        self.maxApyOperationFactory = maxApyOperationFactory
         self.eventCenter = eventCenter
-        self.logger = logger
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -58,7 +54,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     deinit {
         state.throttle()
 
-        headlineCallStore.cancel()
+        maxApyCallStore.cancel()
     }
 
     override func setup() {
@@ -69,28 +65,37 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         boundWalletId = selectedWalletSettings.value?.metaId
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        if !seed.isFresh {
-            provideHeadline()
-        }
+        provideMaxApy()
+    }
+}
+
+extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
+    func retryMaxApy() {
+        provideMaxApy()
     }
 }
 
 private extension StartStakingInfoSubtensorInteractor {
-    func provideHeadline() {
-        headlineCallStore.cancel()
+    func provideMaxApy() {
+        maxApyCallStore.cancel()
 
         executeCancellable(
-            wrapper: maxApyProvider.createMaxApyWrapper(),
+            wrapper: maxApyOperationFactory.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: headlineCallStore,
+            backingCallIn: maxApyCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(maxApy):
-                self?.presenter?.didReceive(headlineRate: maxApy)
+            case let .success(rates):
+                self?.eventCenter.notify(with: SubtensorMaxApyFetched())
+
+                if let maxApy = rates.values.max() {
+                    self?.presenter?.didReceive(maxApy: maxApy)
+                } else {
+                    self?.presenter?.didReceive(error: .maxApy(nil))
+                }
             case let .failure(error):
-                self?.logger.warning("Max APY fetch error: \(error)")
-                self?.presenter?.didReceive(headlineRate: nil)
+                self?.presenter?.didReceive(error: .maxApy(error))
             }
         }
     }
@@ -114,14 +119,6 @@ private extension StartStakingInfoSubtensorInteractor {
         )?.chainAccount.accountId
 
         return accountId == selectedAccount?.chainAccount.accountId
-    }
-}
-
-extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
-    func cachedHeadlineRate() -> HTTPCachePeek<Decimal?> {
-        seed = maxApyProvider.cachedMaxApy()
-
-        return seed
     }
 }
 

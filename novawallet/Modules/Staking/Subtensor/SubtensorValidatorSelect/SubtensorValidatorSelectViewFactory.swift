@@ -3,20 +3,16 @@ import Foundation_iOS
 
 enum SubtensorValidatorSelectViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
     ) -> SubtensorValidatorSelectViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
-        let earnServices = state.earnServices
 
         let interactor = SubtensorValidatorSelectInteractor(
             target: target,
-            directoryService: earnServices.validatorDirectoryService,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
-            recommendationService: earnServices.recommendationService,
+            state: state,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
@@ -34,7 +30,7 @@ enum SubtensorValidatorSelectViewFactory {
             listFactory: listFactory,
             delegate: delegate,
             localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            filterSession: state.flowState.validatorFilterSession
         )
 
         let view = SubtensorValidatorSelectViewController(

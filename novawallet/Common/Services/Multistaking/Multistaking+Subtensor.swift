@@ -1,69 +1,41 @@
 import Foundation
 import BigInt
+import SubstrateSdk
 
-struct SubtensorStakingPosition: Equatable {
+struct SubtensorPosition: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let stakeAlpha: BigUInt
-    // StakeInfo.emission is AlphaDividendsPerSubnet[netuid, hotkey] — the hotkey-wide nominator
-    // dividend per tempo; scale by stakeAlpha / TotalHotkeyAlpha before showing a per-user rate
-    let hotkeyEmissionPerTempo: BigUInt
-    let totalHotkeyAlpha: BigUInt?
     let isRegistered: Bool
-
-    func byReplacing(totalHotkeyAlpha: BigUInt?) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(
-            hotkey: hotkey,
-            netuid: netuid,
-            stakeAlpha: stakeAlpha,
-            hotkeyEmissionPerTempo: hotkeyEmissionPerTempo,
-            totalHotkeyAlpha: totalHotkeyAlpha,
-            isRegistered: isRegistered
-        )
-    }
-}
-
-enum SubtensorStakingStateError: Error {
-    case staleRootRedeemable
 }
 
 extension Multistaking {
-    struct SubtensorStakingState: Equatable {
-        let positions: [SubtensorStakingPosition]
-        let prices: [UInt16: BigUInt]
-        let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
-        let unpricedNetuids: Set<UInt16>
-        let rootRedeemable: [AccountId: BigUInt]
+    struct SubtensorState: Equatable {
+        let positions: [SubtensorPosition]
+        let availability: [UInt16: SubtensorPallet.StakeAvailability]
+        let rootClaimPreviews: [SubtensorRootClaimPreview]
         let isRootRedeemableStale: Bool
 
         init(
-            positions: [SubtensorStakingPosition],
-            prices: [UInt16: BigUInt],
-            availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
-            unpricedNetuids: Set<UInt16> = [],
-            rootRedeemable: [AccountId: BigUInt] = [:],
+            positions: [SubtensorPosition],
+            availability: [UInt16: SubtensorPallet.StakeAvailability] = [:],
+            rootClaimPreviews: [SubtensorRootClaimPreview] = [],
             isRootRedeemableStale: Bool = false
         ) {
             self.positions = positions
-            self.prices = prices
             self.availability = availability
-            self.unpricedNetuids = unpricedNetuids
-            self.rootRedeemable = rootRedeemable
+            self.rootClaimPreviews = rootClaimPreviews
             self.isRootRedeemableStale = isRootRedeemableStale
         }
 
-        var rootRedeemableError: SubtensorStakingStateError? {
-            isRootRedeemableStale ? .staleRootRedeemable : nil
+        var rootRedeemable: [AccountId: BigUInt] {
+            rootClaimPreviews.filter(SubtensorRootClaimRule.isClaimable).reduce(into: [:]) { accum, preview in
+                accum[preview.hotkey, default: .zero] += preview.redeemable
+            }
         }
 
         var totalRootRedeemable: BigUInt {
             rootRedeemable.values.reduce(BigUInt.zero, +)
-        }
-
-        var totalStakeInRao: BigUInt {
-            positions.reduce(BigUInt.zero) { total, position in
-                total + (taoValue(of: position) ?? .zero)
-            }
         }
 
         var hasActiveStaking: Bool {
@@ -71,7 +43,7 @@ extension Multistaking {
         }
 
         var rootStakeInRao: BigUInt? {
-            let rootPositions = positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+            let rootPositions = positions.filter { $0.netuid == SubtensorPallet.rootNetuid }
 
             guard !rootPositions.isEmpty || totalRootRedeemable > 0 else {
                 return nil
@@ -82,47 +54,23 @@ extension Multistaking {
             }
         }
 
+        var heldSubnetNetuids: Set<UInt16> {
+            Set(positions.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid })
+        }
+
         var subnetCount: Int {
-            Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }).count
+            heldSubnetNetuids.count
         }
 
-        func taoValue(of position: SubtensorStakingPosition) -> BigUInt? {
-            guard position.netuid != SubtensorStakingPallet.rootNetuid else {
-                return position.stakeAlpha
-            }
-
-            guard
-                !unpricedNetuids.contains(position.netuid),
-                let price = prices[position.netuid],
-                price > 0 else {
-                return nil
-            }
-
-            return position.stakeAlpha * price / SubtensorStakingPallet.alphaPriceScale
-        }
-
-        func byReplacing(positions: [SubtensorStakingPosition]) -> SubtensorStakingState {
-            SubtensorStakingState(
-                positions: positions,
-                prices: prices,
-                availability: availability,
-                unpricedNetuids: unpricedNetuids,
-                rootRedeemable: rootRedeemable,
-                isRootRedeemableStale: isRootRedeemableStale
-            )
-        }
-
-        func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {
+        func byKeepingRootRedeemable(of previousState: SubtensorState?) -> SubtensorState {
             guard isRootRedeemableStale, let previousState else {
                 return self
             }
 
-            return SubtensorStakingState(
+            return SubtensorState(
                 positions: positions,
-                prices: prices,
                 availability: availability,
-                unpricedNetuids: unpricedNetuids,
-                rootRedeemable: previousState.rootRedeemable,
+                rootClaimPreviews: previousState.rootClaimPreviews,
                 isRootRedeemableStale: true
             )
         }
@@ -132,6 +80,7 @@ extension Multistaking {
         let rootStake: BigUInt?
         let subnetCount: Int
         let rootRate: Decimal?
+        let subnetRate: Decimal?
         let isFullyPriced: Bool?
     }
 
@@ -142,29 +91,57 @@ extension Multistaking {
         }
 
         let stakingOption: OptionWithWallet
-        let state: SubtensorStakingState
+        let state: SubtensorState
+        let stake: BigUInt
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
+        let subnetRate: Decimal?
         let isFullyPriced: Bool?
 
-        init(
-            stakingOption: OptionWithWallet,
-            state: SubtensorStakingState,
-            maxApy: MaxApyUpdate = .keep,
-            rootRate: Decimal? = nil,
-            isFullyPriced: Bool? = nil
-        ) {
-            self.stakingOption = stakingOption
-            self.state = state
-            self.maxApy = maxApy
-            self.rootRate = rootRate
-            self.isFullyPriced = isFullyPriced
+        var details: DashboardItemSubtensorDetails {
+            DashboardItemSubtensorDetails(
+                rootStake: state.rootStakeInRao,
+                subnetCount: state.subnetCount,
+                rootRate: rootRate,
+                subnetRate: subnetRate,
+                isFullyPriced: isFullyPriced
+            )
         }
     }
 }
 
+extension Multistaking.DashboardItemSubtensorDetails: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case rootStake
+        case subnetCount
+        case rootRate
+        case subnetRate
+        case isFullyPriced
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        rootStake = try container.decodeIfPresent(StringCodable<BigUInt>.self, forKey: .rootStake)?.wrappedValue
+        subnetCount = try container.decode(Int.self, forKey: .subnetCount)
+        rootRate = try container.decodeIfPresent(AmountDecimal.self, forKey: .rootRate)?.decimalValue
+        subnetRate = try container.decodeIfPresent(AmountDecimal.self, forKey: .subnetRate)?.decimalValue
+        isFullyPriced = try container.decodeIfPresent(Bool.self, forKey: .isFullyPriced)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encodeIfPresent(rootStake.map { StringCodable(wrappedValue: $0) }, forKey: .rootStake)
+        try container.encode(subnetCount, forKey: .subnetCount)
+        try container.encodeIfPresent(rootRate.map { AmountDecimal(value: $0) }, forKey: .rootRate)
+        try container.encodeIfPresent(subnetRate.map { AmountDecimal(value: $0) }, forKey: .subnetRate)
+        try container.encodeIfPresent(isFullyPriced, forKey: .isFullyPriced)
+    }
+}
+
 extension Multistaking.DashboardItemOnchainState {
-    static func from(subtensorState: Multistaking.SubtensorStakingState) -> Multistaking.DashboardItemOnchainState? {
+    static func from(subtensorState: Multistaking.SubtensorState) -> Multistaking.DashboardItemOnchainState? {
         subtensorState.hasActiveStaking ? .activeIndependent : nil
     }
 }

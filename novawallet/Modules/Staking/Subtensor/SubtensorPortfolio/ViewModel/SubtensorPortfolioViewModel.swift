@@ -20,14 +20,25 @@ enum SubtensorPortfolioHistoriesState: Equatable {
 }
 
 struct SubtensorPortfolioState {
-    var positions: Multistaking.SubtensorStakingState?
+    var positions: Multistaking.SubtensorState? {
+        didSet {
+            rebuildPortfolio()
+        }
+    }
+
     var isSyncFailed = false
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
-    var catalogue: SubtensorSubnetCatalogue?
+    var prices: SubtensorAlphaPrices? {
+        didSet {
+            rebuildPortfolio()
+        }
+    }
+
     var subnetLogos: SubtensorSubnetLogos?
-    var rootRate: Decimal?
+    var rootYields: SubtensorAlphaYields?
     var isRootRateResolved = false
+    var networkRootRate: Decimal?
     var weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] = [:]
     var histories = SubtensorPortfolioHistoriesState.loading {
         didSet {
@@ -38,22 +49,15 @@ struct SubtensorPortfolioState {
     var period = SubtensorPortfolioViewModelFactory.defaultPeriod
     var chartPoint: Int?
 
-    var portfolio: SubtensorPortfolio? {
-        positions.map { SubtensorPortfolioBuilder.build(state: $0, catalogue: catalogue) }
+    var catalogue: SubtensorSubnetCatalogue? {
+        prices?.catalogue
     }
 
-    var groups: [SubtensorPortfolioGroup] {
-        guard let portfolio else {
-            return []
-        }
-
-        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { group in
-            group.totalAlpha > 0 || group.redeemable > 0
-        }
-    }
+    private(set) var portfolio: SubtensorPortfolio?
+    private(set) var groups: [SubtensorPortfolioGroup] = []
 
     var isValuationPending: Bool {
-        !isCatalogueResolved && groups.contains { $0.netuid != SubtensorStakingPallet.rootNetuid }
+        !isCatalogueResolved && groups.contains { $0.netuid != SubtensorPallet.rootNetuid }
     }
 
     var subnetRefs: [SubtensorSubnetRef] {
@@ -67,11 +71,11 @@ struct SubtensorPortfolioState {
     }
 
     var isRootRateUnavailable: Bool {
-        isRootRateResolved && rootRate == nil
+        isRootRateResolved && rootYields == nil && groups.contains { $0.netuid == SubtensorPallet.rootNetuid }
     }
 
     var isCatalogueUnavailable: Bool {
-        let heldNetuids = groups.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }
+        let heldNetuids = groups.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid }
 
         guard isCatalogueResolved, !heldNetuids.isEmpty else {
             return false
@@ -83,12 +87,16 @@ struct SubtensorPortfolioState {
 
         return heldNetuids.contains { catalogue.subnet(for: $0)?.pricesStamp.freshness == .stale }
     }
-}
 
-enum SubtensorPortfolioLoadable<Value: Equatable>: Equatable {
-    case loading
-    case hidden
-    case loaded(Value)
+    private mutating func rebuildPortfolio() {
+        portfolio = positions.map { SubtensorPortfolioBuilder.build(state: $0, prices: prices) }
+
+        groups = portfolio.map { portfolio in
+            ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { group in
+                group.totalAlpha > 0 || group.redeemable > 0
+            }
+        } ?? []
+    }
 }
 
 struct SubtensorPortfolioChangeViewModel: Equatable {
@@ -110,8 +118,8 @@ struct SubtensorPortfolioPeriodsViewModel: Equatable {
 
 struct SubtensorPortfolioHeaderViewModel: Equatable {
     let total: String?
-    let fiat: SubtensorPortfolioLoadable<String>
-    let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+    let fiat: SubtensorRowState<String>
+    let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
     let chart: SubtensorPortfolioChartViewModel
     let periods: SubtensorPortfolioPeriodsViewModel
 }
@@ -126,6 +134,7 @@ struct SubtensorPortfolioRowViewModel {
     let title: String
     let subtitle: String?
     let value: String
+    let symbol: String
     let detail: Detail?
 }
 
@@ -136,7 +145,11 @@ struct SubtensorPortfolioEmptyViewModel: Equatable {
 }
 
 enum SubtensorPortfolioContentViewModel {
-    case positions(header: SubtensorPortfolioHeaderViewModel, rows: [SubtensorPortfolioRowViewModel]?)
+    case positions(
+        header: SubtensorPortfolioHeaderViewModel,
+        rows: [SubtensorPortfolioRowViewModel],
+        loadingRows: Int = 0
+    )
     case empty(SubtensorPortfolioEmptyViewModel)
 }
 

@@ -1,30 +1,26 @@
 import Foundation
 
-protocol SubtensorClaimViewModelFactoryProtocol {
+protocol SubtensorClaimRewardsViewModelFactoryProtocol {
     func createViewModel(
         for input: SubtensorClaimRewardsViewModelInput,
         locale: Locale
     ) -> SubtensorClaimRewardsViewModel
-
-    func createMinimumClaim(_ amount: Balance, locale: Locale) -> String
 }
 
 final class SubtensorClaimRewardsViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
-        self.formatterFactory = formatterFactory
     }
 }
 
@@ -40,12 +36,6 @@ private extension SubtensorClaimRewardsViewModelFactory {
         ).value(for: locale)
     }
 
-    func formatDuration(blocks: UInt64, locale: Locale) -> String {
-        let time = (TimeInterval(blocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
-
-        return time.localizedDaysHoursOrFallbackMinutes(for: locale)
-    }
-
     func createAmount(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> BalanceViewModelProtocol {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             input.preview.redeemable.decimal(assetInfo: taoInfo),
@@ -54,16 +44,6 @@ private extension SubtensorClaimRewardsViewModelFactory {
         ).value(for: locale)
 
         return BalanceViewModel(amount: viewModel.amount.approximatelyEqual(), price: viewModel.price)
-    }
-
-    func createFee(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> BalanceViewModelProtocol? {
-        input.fee.map { fee in
-            balanceViewModelFactory.balanceFromPrice(
-                fee.amount.decimal(assetInfo: taoInfo),
-                priceData: input.price,
-                roundingMode: .up
-            ).value(for: locale)
-        }
     }
 
     func createStakeAfter(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> String? {
@@ -87,11 +67,11 @@ private extension SubtensorClaimRewardsViewModelFactory {
 
         var sentences = [strings.stakingSubtensorClaimRestakeHintFormat(input.validatorName)]
 
-        if let unlockInterval = input.unlockInterval, unlockInterval > 0 {
+        if let unlockTime = input.unlockTime, unlockTime > 0 {
             sentences.append(
                 strings.stakingSubtensorClaimHoldHintFormat(
                     input.validatorName,
-                    formatDuration(blocks: unlockInterval, locale: locale)
+                    unlockTime.localizedDaysHoursOrFallbackMinutes(for: locale)
                 )
             )
         }
@@ -110,7 +90,7 @@ private extension SubtensorClaimRewardsViewModelFactory {
     }
 }
 
-extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimViewModelFactoryProtocol {
+extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol {
     func createViewModel(
         for input: SubtensorClaimRewardsViewModelInput,
         locale: Locale
@@ -119,15 +99,13 @@ extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimViewModelFactoryP
 
         return SubtensorClaimRewardsViewModel(
             amount: createAmount(for: input, locale: locale),
-            networkFee: createFee(for: input, locale: locale),
+            networkFee: balanceViewModelFactory.subtensorFee(
+                input.fee, info: taoInfo, price: input.price, locale: locale
+            ),
             stakeAfter: createStakeAfter(for: input, locale: locale),
             notice: createNotice(for: input, locale: locale),
             signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil,
             isActionEnabled: input.signing == .allowed && !input.isNothingToClaim
         )
-    }
-
-    func createMinimumClaim(_ amount: Balance, locale: Locale) -> String {
-        formatTao(amount, roundingMode: .up, locale: locale)
     }
 }

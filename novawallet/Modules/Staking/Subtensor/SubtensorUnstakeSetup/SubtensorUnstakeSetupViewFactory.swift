@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorUnstakeSetupViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         netuid: UInt16
     ) -> SubtensorUnstakeSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
@@ -11,12 +11,12 @@ enum SubtensorUnstakeSetupViewFactory {
         }
 
         let chainAsset = state.stakingOption.chainAsset
-        let interactor = createInteractor(for: state, services: services)
-        let wireframe = SubtensorUnstakeSetupWireframe(state: state)
+        let interactor = SubtensorUnstakeSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let wireframe = SubtensorStakeSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
 
-        let dataValidationFactory = SubtensorStakingValidationFactory(
+        let dataValidationFactory = SubtensorValidationFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
@@ -47,9 +47,9 @@ enum SubtensorUnstakeSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = SubtensorUnstakeSetupVC(
+        let view = SubtensorUnstakeSetupViewController(
             presenter: presenter,
-            isRoot: netuid == SubtensorStakingPallet.rootNetuid,
+            isRoot: netuid == SubtensorPallet.rootNetuid,
             localizationManager: localizationManager
         )
 
@@ -58,34 +58,5 @@ enum SubtensorUnstakeSetupViewFactory {
         dataValidationFactory.view = view
 
         return view
-    }
-}
-
-private extension SubtensorUnstakeSetupViewFactory {
-    static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
-        services: SubtensorFlowServices
-    ) -> SubtensorUnstakeSetupInteractor {
-        let earnServices = state.earnServices
-
-        let validatorFactory = SubtensorValidatorPresetFactory(
-            directoryService: earnServices.validatorDirectoryService,
-            recommendationService: earnServices.recommendationService,
-            operationQueue: services.operationQueue,
-            logger: Logger.shared
-        )
-
-        return SubtensorUnstakeSetupInteractor(
-            flowServices: services,
-            chainAsset: state.stakingOption.chainAsset,
-            subnetsService: state.subnetsService,
-            catalogueService: earnServices.catalogueService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            validatorFactory: validatorFactory,
-            rootHoldFactory: earnServices.rootHoldFactory,
-            costBasisService: earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            logger: Logger.shared
-        )
     }
 }

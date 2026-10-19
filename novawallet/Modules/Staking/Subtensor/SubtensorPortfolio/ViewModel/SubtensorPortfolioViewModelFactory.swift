@@ -1,33 +1,27 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryProtocol {
+protocol SubtensorPortfolioViewModelFactoryProtocol: SubtensorPortfolioChartFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel
 }
 
 final class SubtensorPortfolioViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .year, .all]
     static let defaultPeriod = SubtensorPricePeriod.month
+    private static let placeholderRows = 2
 
     let chainAsset: ChainAsset
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let assetIconFactory: AssetIconViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.priceAssetInfoFactory = priceAssetInfoFactory
-        self.iconFactory = iconFactory
-        self.assetIconFactory = assetIconFactory
-        self.formatterFactory = formatterFactory
 
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -39,7 +33,7 @@ final class SubtensorPortfolioViewModelFactory {
 private extension SubtensorPortfolioViewModelFactory {
     struct ChartContent {
         let chart: SubtensorPortfolioChartViewModel
-        let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
         var points: [SubtensorPortfolioValuePoint] = []
     }
 
@@ -59,64 +53,16 @@ private extension SubtensorPortfolioViewModelFactory {
         balanceViewModelFactory.priceFromAmount(amount, priceData: price).value(for: locale)
     }
 
-    func formatAlpha(
-        _ amount: Balance,
-        netuid: UInt16,
-        catalogue: SubtensorSubnetCatalogue?,
-        locale: Locale
-    ) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
-        )
-
-        let text = formatterFactory.createTokenFormatter(for: alphaInfo)
-            .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
-
-        return "\u{2066}\(text)\u{2069}"
-    }
-
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {
-        let formatter = NumberFormatter.signedPercentSingle
-        formatter.locale = locale
+        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         return formatter.stringFromDecimal(value)
     }
 
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
-    func periodTitle(for period: SubtensorPricePeriod, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch period {
-        case .day:
-            return strings.commonPeriod1d().uppercased(with: locale)
-        case .week:
-            return strings.commonPeriod7d().uppercased(with: locale)
-        case .month:
-            return strings.commonPeriod30d().uppercased(with: locale)
-        case .quarter:
-            return strings.commonPeriod3m().uppercased(with: locale)
-        case .year:
-            return strings.commonPeriod1y().uppercased(with: locale)
-        case .all:
-            return strings.commonPeriodAll().capitalized(with: locale)
-        }
-    }
-
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
         SubtensorPortfolioPeriodsViewModel(
-            titles: Self.periods.map { periodTitle(for: $0, locale: locale) },
-            selectedIndex: Self.periods.firstIndex(of: state.period) ?? 0
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: state.period) ?? 0
         )
     }
 
@@ -175,7 +121,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
             return ChartContent(
                 chart: .chart(chart),
-                change: change.map { .loaded($0) } ?? .hidden,
+                change: change.map { .value($0) } ?? .hidden,
                 points: points
             )
         }
@@ -192,7 +138,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinDotFormat(
             percent,
-            periodTitle(for: period, locale: locale)
+            period.title(for: locale)
         )
 
         return SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0)
@@ -220,11 +166,11 @@ private extension SubtensorPortfolioViewModelFactory {
         ).value(for: locale)
 
         let axisLabels = [maximum, (maximum + minimum) / 2, minimum].map { value in
-            formatter.stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
+            formatter.stringFromDecimal(Decimal(value)) ?? .subtensorUnknown(for: locale)
         }
 
         return SubtensorPriceChartViewModel(
-            values: values,
+            series: .indexed(values),
             axisLabels: axisLabels,
             isRising: series.changeInFiat.map { $0 >= 0 } ?? (last >= first)
         )
@@ -241,11 +187,21 @@ private extension SubtensorPortfolioViewModelFactory {
             SubtensorPortfolioRowViewModel.Detail.fiat(formatFiat(amount, price: price, locale: locale))
         }
 
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let rate = SubtensorStakeRateCalculator.rootRate(of: group.positions, in: state.rootYields)
+        let subtitle = state.rootYields != nil
+            ? strings.stakingSubtensorUiPortfolioRootApyFormat(
+                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
+            )
+            : nil
+
         return SubtensorPortfolioRowViewModel(
             icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiRootStaking(),
-            subtitle: state.rootRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
+            title: strings.stakingSubtensorUiRootStaking(),
+            subtitle: subtitle,
             value: formatTao(amount, locale: locale),
+            symbol: chainAsset.assetDisplayInfo.symbol,
             detail: detail
         )
     }
@@ -261,7 +217,12 @@ private extension SubtensorPortfolioViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiPriceUnavailable()
 
         let subtitle = state.isCatalogueResolved
-            ? formatAlpha(group.totalAlpha, netuid: group.netuid, catalogue: state.catalogue, locale: locale)
+            ? chainAsset.assetDisplayInfo.subtensorAlphaAmount(
+                group.totalAlpha,
+                netuid: group.netuid,
+                catalogue: state.catalogue,
+                locale: locale
+            )
             : nil
 
         let detail = state.isCatalogueUnavailable
@@ -273,6 +234,7 @@ private extension SubtensorPortfolioViewModelFactory {
             title: SubtensorSubnetNaming.titleWithSymbol(for: group.netuid, in: state.catalogue, locale: locale),
             subtitle: subtitle,
             value: value,
+            symbol: chainAsset.assetDisplayInfo.symbol,
             detail: detail
         )
     }
@@ -290,7 +252,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinSpaceFormat(
             percent,
-            periodTitle(for: .week, locale: locale)
+            SubtensorPricePeriod.week.title(for: locale)
         )
 
         return .change(SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0))
@@ -303,55 +265,56 @@ private extension SubtensorPortfolioViewModelFactory {
             formatFiat(0, price: price, locale: locale)
         }
 
-        let rootSubtitle = state.rootRate.map { rate in
-            strings.stakingSubtensorUiPortfolioEmptyRootSubtitleFormat(
-                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
-            )
-        } ?? strings.stakingSubtensorUiPickerRootSubtitle()
-
         return SubtensorPortfolioEmptyViewModel(
             total: formatTao(0, locale: locale),
             fiat: fiat,
-            rootSubtitle: rootSubtitle
+            rootSubtitle: state.networkRootRate.map {
+                strings.stakingSubtensorUiPortfolioEmptyRootSubtitleFormat(
+                    SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)
+                )
+            } ?? strings.stakingSubtensorUiPickerRootSubtitle()
         )
     }
 }
 
-extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryProtocol {
+extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel {
+        let groups = state.groups
+
         guard let portfolio = state.portfolio, !state.isValuationPending else {
+            let rootRows = groups
+                .filter { $0.netuid == SubtensorPallet.rootNetuid }
+                .map { createRootRow(for: $0, state: state, locale: locale) }
+            let loadingRows = state.portfolio == nil ? Self.placeholderRows : groups.count - rootRows.count
+            let header = createLoadingHeader(for: state, locale: locale)
+
             return SubtensorPortfolioViewModel(
-                content: .positions(header: createLoadingHeader(for: state, locale: locale), rows: nil),
+                content: .positions(header: header, rows: rootRows, loadingRows: loadingRows),
                 isSyncFailed: state.isSyncFailed,
                 isRatesUnavailable: false
             )
         }
 
-        let groups = state.groups
-
         guard !groups.isEmpty else {
             return SubtensorPortfolioViewModel(
                 content: .empty(createEmpty(for: state, locale: locale)),
                 isSyncFailed: state.isSyncFailed,
-                isRatesUnavailable: state.isRootRateUnavailable
+                isRatesUnavailable: false
             )
         }
 
         let rows = groups.map { group in
-            group.netuid == SubtensorStakingPallet.rootNetuid
+            group.netuid == SubtensorPallet.rootNetuid
                 ? createRootRow(for: group, state: state, locale: locale)
                 : createSubnetRow(for: group, state: state, locale: locale)
         }
-
-        let isRootRateUnavailable = state.isRootRateUnavailable &&
-            groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
 
         let selection = createSelection(for: portfolio, state: state, locale: locale)
 
         return SubtensorPortfolioViewModel(
             content: .positions(header: createHeader(for: selection, state: state, locale: locale), rows: rows),
             isSyncFailed: state.isSyncFailed,
-            isRatesUnavailable: state.isCatalogueUnavailable || isRootRateUnavailable
+            isRatesUnavailable: state.isCatalogueUnavailable || state.isRootRateUnavailable
         )
     }
 
@@ -366,7 +329,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
 
         let total = decimal(portfolio.pricedTaoValue)
 
-        let fiat: SubtensorPortfolioLoadable<String>
+        let fiat: SubtensorRowState<String>
 
         switch state.price {
         case .loading:
@@ -374,11 +337,11 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         case .loaded(.none):
             fiat = .hidden
         case let .loaded(.some(price)):
-            fiat = .loaded(formatFiat(total, price: price, locale: locale))
+            fiat = .value(formatFiat(total, price: price, locale: locale))
         }
 
         let header = SubtensorPortfolioHeaderViewModel(
-            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : unknownValue(for: locale),
+            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : .subtensorUnknown(for: locale),
             fiat: portfolio.isFullyPriced ? fiat : .hidden,
             change: chart.change,
             chart: chart.chart,

@@ -6,10 +6,12 @@ import SubstrateSdk
 struct SubtensorValidatorInfoInput {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
-    let detail: SubtensorValidatorDetail?
+    let detail: SubtensorValidatorDirectoryItem?
+    let needsChainDetail: Bool
     let annualRate: LoadableViewModelState<Decimal?>
     let alphaPrice: LoadableViewModelState<Balance?>
     let price: PriceData?
+    var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
 }
 
 final class SubtensorValidatorInfoViewModelFactory {
@@ -22,19 +24,19 @@ final class SubtensorValidatorInfoViewModelFactory {
 
     init(
         chainAsset: ChainAsset,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
-        stakeFormatter = formatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
-        takeFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
+        stakeFormatter = AssetBalanceFormatterFactory().createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
+        takeFormatter = NumberFormatter.subtensorPercentSingleHalfEven
     }
 
     func createViewModel(for input: SubtensorValidatorInfoInput, locale: Locale) -> SubtensorValidatorInfoViewModel {
         SubtensorValidatorInfoViewModel(
+            coverage: createCoverage(for: input, locale: locale),
             account: createAccountViewModel(for: input),
-            staking: input.detail.map { createStakingViewModel(for: $0.item, input: input, locale: locale) }
+            staking: input.detail.map { createStakingViewModel(for: $0, input: input, locale: locale) }
         )
     }
 
@@ -65,19 +67,37 @@ final class SubtensorValidatorInfoViewModelFactory {
 
         return BigRational(
             numerator: stake.numerator * alphaPrice,
-            denominator: stake.denominator * SubtensorStakingPallet.alphaPriceScale
+            denominator: stake.denominator * SubtensorPallet.alphaPriceScale
         ).decimalValue
     }
 }
 
 private extension SubtensorValidatorInfoViewModelFactory {
+    func createCoverage(for input: SubtensorValidatorInfoInput, locale: Locale) -> LoadableViewModelState<String> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        switch input.coverage {
+        case .loading: return .loading
+        case let .loaded(value), let .cached(value):
+            return .loaded(
+                value: value.map { strings.stakingSubtensorV22CoverageFormat($0.permitted, $0.total) }
+                    ?? strings.stakingSubtensorUiValueUnknown()
+            )
+        }
+    }
+
     func createAccountViewModel(for input: SubtensorValidatorInfoInput) -> DisplayAddressViewModel {
         let chainFormat = chainAsset.chain.chainFormat
         let address = (try? input.hotkey.toAddress(using: chainFormat)) ?? input.hotkey.toHex(includePrefix: true)
 
-        return displayAddressFactory.createViewModel(
-            from: DisplayAddress(address: address, username: input.detail?.item.name ?? ""),
+        let viewModel = displayAddressFactory.createViewModel(
+            from: DisplayAddress(address: address, username: input.detail?.name ?? ""),
             using: chainFormat
+        )
+
+        return DisplayAddressViewModel(
+            address: address.truncated(prefix: Constants.addressPrefix, suffix: Constants.addressSuffix),
+            name: viewModel.name,
+            imageViewModel: viewModel.imageViewModel
         )
     }
 
@@ -90,6 +110,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         let isRoot = input.target.isRoot
         let isActive = Self.isActive(item, isRoot: isRoot)
         let unknown = strings.stakingSubtensorUiValueUnknown()
+        let activeStatus = isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive()
 
         let reward: LoadableViewModelState<String>
         let hasReward: Bool
@@ -99,20 +120,20 @@ private extension SubtensorValidatorInfoViewModelFactory {
             reward = .loading
             hasReward = false
         case let .cached(rate), let .loaded(rate):
-            reward = .loaded(value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
-                ?? unknown)
+            reward = .loaded(
+                value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
+                    ?? unknown
+            )
             hasReward = rate != nil
         }
 
         return SubtensorValidatorInfoViewModel.Staking(
-            status: isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive(),
+            status: input.needsChainDetail ? unknown : activeStatus,
             isActive: isActive,
-            stakeTitle: isRoot
-                ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
-                : strings.stakingSubtensorUiValidatorInfoStakedSubnet(),
             stake: createStakeViewModel(for: item, input: input, locale: locale),
             take: item.take.flatMap { takeFormatter.value(for: locale).stringFromDecimal($0) } ?? unknown,
             reward: reward,
+            rewardDetail: hasReward ? strings.stakingSubtensorUiValidatorInfoRewardAverage() : nil,
             hasReward: hasReward
         )
     }
@@ -143,5 +164,12 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return .loaded(value: SubtensorValidatorInfoViewModel.Stake(amount: amountText, price: priceText))
+    }
+}
+
+private extension SubtensorValidatorInfoViewModelFactory {
+    enum Constants {
+        static let addressPrefix = 7
+        static let addressSuffix = 5
     }
 }

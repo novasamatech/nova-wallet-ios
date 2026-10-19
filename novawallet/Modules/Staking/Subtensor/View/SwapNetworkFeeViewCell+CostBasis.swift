@@ -1,7 +1,7 @@
 import UIKit
 
 extension SwapNetworkFeeViewCell {
-    func bind(costBasisRow viewModel: SubtensorCostBasisRowViewModel, locale: Locale) {
+    func bind(costBasisRow viewModel: SubtensorRowState<SubtensorCostBasisValueViewModel>, locale: Locale) {
         isAccessibilityElement = true
         accessibilityLabel = titleButton.imageWithTitleView?.title
 
@@ -15,48 +15,20 @@ extension SwapNetworkFeeViewCell {
         case let .value(value):
             isHidden = false
             accessibilityValue = value.accessibilityValue(for: locale)
-            valueTopButton.imageWithTitleView?.titleColor = value.tone.textColor
+
+            let arrow = value.trend?.arrow
+            valueTopButton.imageWithTitleView?.titleColor = (arrow?.tone ?? value.tone).textColor
+            valueTopButton.imageWithTitleView?.titleFont = arrow != nil ? .caption2 : .regularFootnote
 
             let info = NetworkFeeInfoViewModel(
                 isEditable: false,
-                balanceViewModel: BalanceViewModel(amount: value.amount, price: value.detail)
+                balanceViewModel: BalanceViewModel(
+                    amount: arrow.map { $0.glyph + " " + value.amount } ?? value.amount,
+                    price: value.detail
+                )
             )
 
             bind(loadableViewModel: .loaded(value: info))
-
-            valueTopButton.imageWithTitleView?.iconImage = value.trend?.arrowImage
-            valueTopButton.invalidateLayout()
-        }
-    }
-}
-
-private extension SubtensorAvgBuyPriceTrend {
-    static let risingArrowImage = SubtensorAvgBuyPriceTrend.rising.renderArrowImage()
-    static let fallingArrowImage = SubtensorAvgBuyPriceTrend.falling.renderArrowImage()
-
-    var arrowImage: UIImage? {
-        switch self {
-        case .rising:
-            return Self.risingArrowImage
-        case .falling:
-            return Self.fallingArrowImage
-        case .unchanged:
-            return nil
-        }
-    }
-
-    func renderArrowImage() -> UIImage? {
-        guard let arrow else {
-            return nil
-        }
-
-        var attributes: [NSAttributedString.Key: Any] = [.font: UIFont.caption2]
-        attributes[.foregroundColor] = arrow.tone.textColor
-
-        let glyph = NSAttributedString(string: arrow.glyph, attributes: attributes)
-
-        return UIGraphicsImageRenderer(size: glyph.size()).image { _ in
-            glyph.draw(at: .zero)
         }
     }
 }

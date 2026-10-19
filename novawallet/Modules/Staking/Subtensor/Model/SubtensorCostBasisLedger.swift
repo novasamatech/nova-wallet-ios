@@ -4,7 +4,9 @@ import BigInt
 struct SubtensorCostBasisLedger {
     static let atomicScale = 9
     static let priceTolerance = BigRational(numerator: 3, denominator: 2)
-    static let nonTradeLabelWords: Set<String> = ["move", "transfer"]
+    static let nonTradeLabelWords: Set<String> = ["move", "moved", "transfer", "transferred"]
+    static let purchaseLabelWords: Set<String> = ["add", "added", "buy", "bought"]
+    static let saleLabelWords: Set<String> = ["remove", "removed", "unstake", "sell", "sold"]
 
     private let openPositions: [UInt16: SubtensorPurchaseTotals]
     private let unclassifiedNetuids: Set<UInt16>
@@ -46,7 +48,7 @@ struct SubtensorCostBasisLedger {
 
     func costBasis(for netuid: UInt16) throws -> SubtensorCostBasis {
         guard isHistoryComplete else {
-            return .noPurchases
+            return .incompleteHistory
         }
 
         guard !unclassifiedNetuids.contains(netuid) else {
@@ -70,9 +72,11 @@ private extension SubtensorCostBasisLedger {
     }
 
     static func classify(_ operation: BittensorApi.Operation) -> Classification {
+        let labelWords = words(in: operation.sourceOperationType)
+
         guard
-            operation.netuid != SubtensorStakingPallet.rootNetuid,
-            !isNonTrade(label: operation.sourceOperationType) else {
+            operation.netuid != SubtensorPallet.rootNetuid,
+            labelWords.isDisjoint(with: nonTradeLabelWords) else {
             return .ignored
         }
 
@@ -87,8 +91,11 @@ private extension SubtensorCostBasisLedger {
             return .ignored
         }
 
-        let isPurchase = fits(tao: amountIn, alpha: amountOut, price: price)
-        let isSale = fits(tao: amountOut, alpha: amountIn, price: price)
+        let fitsPurchase = fits(tao: amountIn, alpha: amountOut, price: price)
+        let fitsSale = fits(tao: amountOut, alpha: amountIn, price: price)
+
+        let isPurchase = fitsPurchase && (!fitsSale || !labelWords.isDisjoint(with: purchaseLabelWords))
+        let isSale = fitsSale && (!fitsPurchase || !labelWords.isDisjoint(with: saleLabelWords))
 
         switch (isPurchase, isSale) {
         case (true, false):
@@ -100,15 +107,17 @@ private extension SubtensorCostBasisLedger {
         }
     }
 
-    static func isNonTrade(label: String?) -> Bool {
+    static func words(in label: String?) -> Set<String> {
         guard let label else {
-            return false
+            return []
         }
 
-        return label
-            .split { !$0.isLetter }
-            .flatMap { camelCaseWords(in: Array($0)) }
-            .contains { nonTradeLabelWords.contains($0.lowercased()) }
+        return Set(
+            label
+                .split { !$0.isLetter }
+                .flatMap { camelCaseWords(in: Array($0)) }
+                .map { $0.lowercased() }
+        )
     }
 
     static func camelCaseWords(in letters: [Character]) -> [String] {

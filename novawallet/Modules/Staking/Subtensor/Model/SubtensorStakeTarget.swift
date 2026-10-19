@@ -3,14 +3,14 @@ import Foundation
 
 enum SubtensorStakeTarget: Equatable {
     case root
-    case subnet(info: SubtensorStakingPallet.DynamicInfo, price: Balance)
+    case subnet(info: SubtensorPallet.DynamicInfo, price: Balance)
 }
 
 extension SubtensorStakeTarget {
     var netuid: UInt16 {
         switch self {
         case .root:
-            return SubtensorStakingPallet.rootNetuid
+            return SubtensorPallet.rootNetuid
         case let .subnet(info, _):
             return info.netuid
         }
@@ -24,12 +24,16 @@ extension SubtensorStakeTarget {
         return false
     }
 
-    var subnetInfo: SubtensorStakingPallet.DynamicInfo? {
+    var subnetInfo: SubtensorPallet.DynamicInfo? {
         if case let .subnet(info, _) = self {
             return info
         }
 
         return nil
+    }
+
+    var subnetRef: SubtensorSubnetRef {
+        SubtensorSubnetRef(netuid: netuid, registeredAt: subnetInfo?.networkRegisteredAt ?? 0)
     }
 
     var listedPrice: Balance? {
@@ -56,25 +60,5 @@ extension SubtensorStakeTarget {
         }
 
         return try? SubtensorLimitPriceCalculator.sellLimit(spot: spot, tolerance: tolerance)
-    }
-}
-
-extension SubtensorStakeTarget {
-    func assetDisplayInfo(basedOn taoDisplayInfo: AssetBalanceDisplayInfo) -> AssetBalanceDisplayInfo {
-        switch self {
-        case .root:
-            return taoDisplayInfo
-        case let .subnet(info, _):
-            let symbol = info.displaySymbol
-
-            return AssetBalanceDisplayInfo(
-                displayPrecision: taoDisplayInfo.displayPrecision,
-                assetPrecision: taoDisplayInfo.assetPrecision,
-                symbol: symbol.isEmpty ? "SN\(info.netuid)" : symbol,
-                symbolValueSeparator: taoDisplayInfo.symbolValueSeparator,
-                symbolPosition: taoDisplayInfo.symbolPosition,
-                icon: nil
-            )
-        }
     }
 }

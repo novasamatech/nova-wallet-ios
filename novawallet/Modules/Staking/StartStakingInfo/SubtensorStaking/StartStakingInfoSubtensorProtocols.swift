@@ -1,24 +1,19 @@
 import Foundation
 
-protocol StartStakingInfoSubtensorViewProtocol: StartStakingInfoViewProtocol {
-    func didReceive(subtensorViewModel: StartStakingInfoSubtensorViewModel)
-}
-
-protocol StartStakingInfoSubtensorPresenterProtocol: StartStakingInfoPresenterProtocol {
-    func refreshContent()
-}
-
 protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
-    func cachedHeadlineRate() -> HTTPCachePeek<Decimal?>
+    func retryMaxApy()
 }
 
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
-    func didReceive(headlineRate: Decimal?)
+    func didReceive(maxApy: Decimal)
+    func didReceive(error: SubtensorStartStakingInfoError)
     func didReceiveAccountChange()
 }
 
 protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframeProtocol,
-    MessageSheetPresentable {
+    SubtensorOperationGating {
+    func showAllOptions(from view: ControllerBackedProtocol?)
+
     func showRootDetails(from view: ControllerBackedProtocol?)
 
     func showSubnetSetup(
@@ -28,4 +23,8 @@ protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframePr
     )
 
     func close(from view: ControllerBackedProtocol?)
+}
+
+enum SubtensorStartStakingInfoError: Error {
+    case maxApy(Error?)
 }

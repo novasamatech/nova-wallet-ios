@@ -3,48 +3,39 @@ import SubstrateSdk
 import Operation_iOS
 
 final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
-    struct PositionKey: Hashable {
-        let hotkey: AccountId
-        let netuid: UInt16
-    }
-
     let accountId: AccountId
     let chainAsset: ChainAsset
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
     let repository: AnyDataProviderRepository<SubtensorStakedBalance>
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
-    let eventCenter: EventCenterProtocol
+    let stakeStateSource: SubtensorStakeStateSource
+    let cataloguePricing: SubtensorCataloguePricingTracker
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
-    private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
-    private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
-    private var subscribedPositionKeys: Set<PositionKey>?
-    private var lastState: Multistaking.SubtensorStakingState?
-
-    private var fetchCallStore = CancellableCallStore()
-    private var saveCallStore = CancellableCallStore()
+    private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
+        source: stakeStateSource,
+        mutex: mutex,
+        operationQueue: operationQueue,
+        workingQueue: workingQueue,
+        onSyncing: { [weak self] in self?.markSyncingImmediate() },
+        onState: { [weak self] in self?.persistPricedState($0) },
+        onFailure: { [weak self] in self?.completeImmediate($0) }
+    )
 
     init(
         accountId: AccountId,
         chainAsset: ChainAsset,
         repository: AnyDataProviderRepository<SubtensorStakedBalance>,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        stakeStateSource: SubtensorStakeStateSource,
+        cataloguePricing: SubtensorCataloguePricingTracker,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol,
-        eventCenter: EventCenterProtocol = EventCenter.shared
+        logger: LoggerProtocol
     ) {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.repository = repository
-        self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.eventCenter = eventCenter
+        self.stakeStateSource = stakeStateSource
+        self.cataloguePricing = cataloguePricing
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -52,228 +43,82 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        clearSubscriptions()
-        fetchCallStore.cancel()
-
-        eventCenter.add(observer: self, dispatchIn: workingQueue)
-
-        makeHotkeysSubscription(for: accountId)
+        stakeStateSubscription.subscribe()
     }
 
     override func stopSyncUp() {
-        fetchCallStore.cancel()
-        clearSubscriptions()
+        cataloguePricing.cancel()
+        stakeStateSubscription.unsubscribe()
     }
 
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
-        eventCenter.remove(observer: self)
-
-        fetchCallStore.cancel()
-        clearSubscriptions()
+        stopSyncUp()
     }
 
-    private func clearSubscriptions() {
-        hotkeysSubscription = nil
-
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-        subscribedPositionKeys = nil
-    }
-
-    private func makeHotkeysSubscription(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: SubtensorStakingPallet.stakingHotkeysPath,
-            localKey: .empty
-        ) {
-            BytesCodable(wrappedValue: accountId)
+    private func persistPricedState(_ state: Multistaking.SubtensorState) {
+        guard state.subnetCount > 0 else {
+            persistState(state)
+            return
         }
 
-        hotkeysSubscription = CallbackStorageSubscription(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleHotkeys(result: result)
-
-            self?.mutex.unlock()
-        }
-    }
-
-    private func handleHotkeys(result: Result<[BytesCodable]?, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            completeImmediate(error)
-        }
-    }
-
-    private func handleAlphaTrigger(result: Result<BatchStorageSubscriptionRawResult, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            completeImmediate(error)
-        }
-    }
-
-    private func performStateFetch() {
-        fetchCallStore.cancel()
-
-        let wrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: fetchCallStore,
+        cataloguePricing.refresh(
+            latestState: { [weak self] in self?.stakeStateSubscription.lastState },
             runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case let .success(fetchedState):
-                let state = fetchedState.byKeepingRootRedeemable(of: self?.lastState)
-                self?.lastState = state
-                self?.updateAlphaTriggerSubscription(for: state)
-                self?.persistState(state)
-            case let .failure(error):
-                self?.logger.error("State fetch error: \(error)")
+            mutex: mutex,
+            onUpdate: { [weak self] _ in
+                guard let self, let lastState = stakeStateSubscription.lastState else {
+                    return
+                }
 
-                self?.completeImmediate(error)
+                persistState(lastState)
             }
-        }
-    }
-
-    private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
-        let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
-                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
         )
-
-        guard newKeys != subscribedPositionKeys else {
-            return
-        }
-
-        subscribedPositionKeys = newKeys
-
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-
-        guard !newKeys.isEmpty else {
-            return
-        }
-
-        let requests = newKeys.map { positionKey in
-            BatchStorageSubscriptionRequest(
-                innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: SubtensorStakingPallet.totalHotkeyAlphaPath,
-                    localKey: "",
-                    keyParamClosure: {
-                        (
-                            BytesCodable(wrappedValue: positionKey.hotkey),
-                            StringScaleMapper(value: positionKey.netuid)
-                        )
-                    }
-                ),
-                mappingKey: nil
-            )
-        }
-
-        alphaTriggerSubscription = CallbackBatchStorageSubscription(
-            requests: requests,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleAlphaTrigger(result: result)
-
-            self?.mutex.unlock()
-        }
-
-        alphaTriggerSubscription?.subscribe()
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState) {
-        let optItem: SubtensorStakedBalance?
-        let removeIdentifier: String?
-
-        if state.hasActiveStaking {
-            optItem = SubtensorStakedBalance(
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId,
-                amount: state.totalStakeInRao
-            )
-
-            removeIdentifier = nil
-        } else {
-            optItem = nil
-
-            removeIdentifier = SubtensorStakedBalance.createIdentifier(
-                from: chainAsset.chainAssetId,
-                accountId: accountId
-            )
-        }
-
-        let saveOperation = repository.saveOperation({
-            optItem.map { [$0] } ?? []
-        }, {
-            removeIdentifier.map { [$0] } ?? []
-        })
-
-        let wrapper = CompoundOperationWrapper(targetOperation: saveOperation)
-
-        if let pendingOperations = saveCallStore.operatingCall?.allOperations {
-            wrapper.addDependency(operations: pendingOperations)
-        }
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: saveCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.completeImmediate(state.rootRedeemableError)
-            case let .failure(error):
-                self?.completeImmediate(error)
-            }
+    private func persistState(_ state: Multistaking.SubtensorState) {
+        stakeStateSubscription.save(createSaveWrapper(for: state)) { [weak self] in
+            self?.completeImmediate($0)
         }
     }
 }
 
-extension SubtensorStakedBalanceUpdatingService: EventVisitorProtocol {
-    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
-        mutex.lock()
+private extension SubtensorStakedBalanceUpdatingService {
+    func createSaveWrapper(for state: Multistaking.SubtensorState) -> CompoundOperationWrapper<Void> {
+        let identifier = SubtensorStakedBalance.createIdentifier(from: chainAsset.chainAssetId, accountId: accountId)
 
-        defer {
-            mutex.unlock()
+        guard state.hasActiveStaking else {
+            return CompoundOperationWrapper(targetOperation: repository.saveOperation({ [] }, { [identifier] }))
         }
 
-        guard
-            isActive,
-            event.accountId == accountId,
-            event.chainAssetId == chainAsset.chainAssetId else {
-            return
+        let valuation = cataloguePricing.valuation(of: state)
+
+        let item = SubtensorStakedBalance(
+            chainAssetId: chainAsset.chainAssetId,
+            accountId: accountId,
+            amount: valuation.stake,
+            isComplete: valuation.isFullyPriced == true
+        )
+
+        guard !item.isComplete else {
+            return CompoundOperationWrapper(targetOperation: repository.saveOperation({ [item] }, { [] }))
         }
 
-        markSyncingImmediate()
+        let fetchOperation = repository.fetchOperation(by: { identifier }, options: .init())
 
-        performStateFetch()
+        let saveOperation = repository.saveOperation({
+            let stored = try fetchOperation.extractNoCancellableResultData()
+
+            guard stored?.isComplete != true else {
+                return []
+            }
+
+            return [item]
+        }, { [] })
+
+        saveOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: saveOperation, dependencies: [fetchOperation])
     }
 }

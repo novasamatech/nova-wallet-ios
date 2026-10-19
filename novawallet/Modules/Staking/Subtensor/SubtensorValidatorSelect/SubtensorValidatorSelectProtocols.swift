@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 enum SubtensorValidatorSort: Equatable {
     case apy
@@ -9,16 +10,20 @@ enum SubtensorValidatorSort: Equatable {
 struct SubtensorValidatorRowViewModel: Equatable {
     enum Trailing: Equatable {
         case rate(String)
-        case inactive(String)
         case none
     }
 
     let hotkey: AccountId
+    let icon: DrawableIcon?
     let title: String
     let subtitle: String
     let trailing: Trailing
     let isSelected: Bool
-    let isSelectable: Bool
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hotkey == rhs.hotkey && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle &&
+            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected
+    }
 }
 
 struct SubtensorValidatorListViewModel: Equatable {
@@ -51,16 +56,16 @@ enum SubtensorValidatorListState: Equatable {
 
 struct SubtensorValidatorSelectSnapshot {
     let directory: HTTPCachePeek<SubtensorValidatorDirectory>
-    let clientGates: HTTPCachePeek<SubtensorClientGates>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
     let alphaPrice: HTTPCachePeek<Balance?>
 }
 
 protocol SubtensorValidatorSelectViewProtocol: ControllerBackedProtocol {
+    func didReceive(header: SubtensorValidatorListHeaderViewModel, isFilterActive: Bool)
     func didReceive(state: SubtensorValidatorListState)
 }
 
-protocol ValidatorSelectPresenterProtocol: AnyObject {
+protocol SubtensorValidatorSelectPresenterProtocol: AnyObject {
     func setup()
     func search(_ query: String)
     func showSortOptions()
@@ -70,21 +75,26 @@ protocol ValidatorSelectPresenterProtocol: AnyObject {
     func retry()
 }
 
-protocol ValidatorSelectInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot
+protocol SubtensorValidatorSelectInteractorInputProtocol: AnyObject {
     func setup()
     func retry()
 }
 
-protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
+protocol SubtensorValidatorSelectInteractorOutputProtocol: AnyObject {
+    func didReceive(snapshot: SubtensorValidatorSelectSnapshot)
     func didReceive(directory: SubtensorValidatorDirectory)
     func didFailDirectory(_ error: Error)
-    func didReceive(clientGates: SubtensorClientGates)
-    func didFailClientGates(_ error: Error)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(alphaPrice: Balance?)
+    func didReceive(verification: SubtensorValidatorListVerification)
+    func didFailVerification(_ error: Error)
 }
 
-protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable, SubtensorSortSheetPresentable {
+protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
+    func showFilters(
+        from view: SubtensorValidatorSelectViewProtocol?,
+        applied: SubtensorValidatorFilters,
+        onApply: @escaping (SubtensorValidatorFilters) -> Void
+    )
     func complete(from view: SubtensorValidatorSelectViewProtocol?)
 }

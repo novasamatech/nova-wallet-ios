@@ -2,10 +2,10 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorUnstakeInteractorOutputProtocol? {
+final class SubtensorUnstakeSetupInteractor: SubtensorBaseInteractor {
+    var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeInteractorOutputProtocol
+            basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
         }
 
         set {
@@ -13,68 +13,42 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
-    let subnetsService: SubtensorSubnetsServiceProtocol
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
+    let validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
+    let groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol
 
-    private let catalogueCallStore = CancellableCallStore()
-    private let logosCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
-    private let holdsCallStore = CancellableCallStore()
-    private let costBasisCallStore = CancellableCallStore()
+    private let subnetsInfoCallStore = CancellableCallStore()
+    private let groupHotkeysCallStore = CancellableCallStore()
 
-    init(
+    override init(
         flowServices: SubtensorFlowServices,
-        chainAsset: ChainAsset,
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
-        rootHoldFactory: SubtensorRootHoldFactoryProtocol,
-        costBasisService: SubtensorCostBasisServiceProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        state: SubtensorSharedStateProtocol,
         logger: LoggerProtocol
     ) {
-        self.subnetsService = subnetsService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.validatorFactory = validatorFactory
-        self.rootHoldFactory = rootHoldFactory
+        subnetsOperationFactory = state.subnetsOperationFactory
+        validatorPresetOperationFactory = state.earnServices.validatorPresetOperationFactory
+        groupHotkeyOperationFactory = state.earnServices.groupHotkeyOperationFactory
 
-        super.init(
-            chainAsset: chainAsset,
-            selectedAccount: flowServices.account.chainAccount,
-            positionsSyncService: flowServices.positionsSyncService,
-            rootClaimableService: flowServices.rootClaimableService,
-            preflightFactory: flowServices.preflightFactory,
-            tradeQuoteFactory: flowServices.tradeQuoteFactory,
-            operationService: flowServices.operationService,
-            catalogueService: catalogueService,
-            costBasisService: costBasisService,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            runtimeProvider: flowServices.runtimeProvider,
-            currencyManager: flowServices.currencyManager,
-            operationQueue: flowServices.operationQueue,
-            logger: logger
-        )
+        super.init(flowServices: flowServices, state: state, logger: logger)
     }
 
     deinit {
-        catalogueCallStore.cancel()
-        logosCallStore.cancel()
         validatorCallStore.cancel()
-        holdsCallStore.cancel()
-        costBasisCallStore.cancel()
+        subnetsInfoCallStore.cancel()
+        groupHotkeysCallStore.cancel()
     }
 }
 
-extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
-    func loadSubnetsInfo(forcingRefresh: Bool) {
-        subnetsService.fetchSubnetsInfo(
-            forcingRefresh: forcingRefresh,
-            runningCompletionIn: .main
+extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputProtocol {
+    func loadSubnetsInfo(for netuid: UInt16) {
+        subnetsInfoCallStore.cancel()
+
+        executeCancellable(
+            wrapper: subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: subnetsInfoCallStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(info):
@@ -85,49 +59,11 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         }
     }
 
-    func loadCatalogue() {
-        catalogueCallStore.cancel()
-
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor catalogue unavailable for the unstake: \(error)")
-                self?.presenter?.didReceiveCatalogue(nil)
-            }
-        }
-    }
-
-    func loadSubnetLogos() {
-        logosCallStore.cancel()
-
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceiveSubnetLogos(logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet logos unavailable for the unstake mark: \(error)")
-                self?.presenter?.didReceiveSubnetLogos(nil)
-            }
-        }
-    }
-
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
         validatorCallStore.cancel()
 
         executeCancellable(
-            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            wrapper: validatorPresetOperationFactory.createLockedWrapper(for: hotkey, subnet: subnet),
             inOperationQueue: operationQueue,
             backingCallIn: validatorCallStore,
             runningCallbackIn: .main
@@ -142,39 +78,24 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         }
     }
 
-    func loadRootHolds(for hotkeys: [AccountId]) {
-        holdsCallStore.cancel()
+    func loadGroupHotkeys(_ hotkeys: [AccountId], netuid: UInt16) {
+        groupHotkeysCallStore.cancel()
 
         executeCancellable(
-            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
+            wrapper: groupHotkeyOperationFactory.createInfoWrapper(
+                coldkey: selectedAccount.accountId,
+                hotkeys: hotkeys,
+                netuid: netuid
+            ),
             inOperationQueue: operationQueue,
-            backingCallIn: holdsCallStore,
+            backingCallIn: groupHotkeysCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(holds):
-                self?.presenter?.didReceiveRootHolds(holds)
+            case let .success(info):
+                self?.presenter?.didReceiveGroupHotkeys(info)
             case let .failure(error):
-                self?.logger.warning("Subtensor root holds unavailable for the unstake: \(error)")
-            }
-        }
-    }
-
-    func loadCostBasis(for netuid: UInt16) {
-        costBasisCallStore.cancel()
-
-        executeCancellable(
-            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: costBasisCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(costBasis):
-                self?.presenter?.didReceiveCostBasis(costBasis)
-            case let .failure(error):
-                self?.logger.warning("Subtensor cost basis unavailable for the sale on netuid \(netuid): \(error)")
-                self?.presenter?.didReceiveCostBasis(nil)
+                self?.logger.warning("Subtensor unstake group hotkeys unavailable: \(error)")
             }
         }
     }

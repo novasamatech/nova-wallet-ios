@@ -1,0 +1,87 @@
+import Foundation
+import BigInt
+import SubstrateSdk
+
+extension SubtensorPallet {
+    static var stakeAddedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "StakeAdded")
+    }
+
+    static var stakeRemovedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "StakeRemoved")
+    }
+
+    static var rootClaimedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "RootClaimed")
+    }
+
+    static var basketClaimedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "BasketClaimed")
+    }
+
+    struct StakeAddedEvent: Decodable {
+        let coldkey: AccountId
+        let hotkey: AccountId
+        let tao: Balance
+        let alpha: Balance
+        let netuid: UInt16
+        let fee: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            hotkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
+            alpha = try container.decode(StringScaleMapper<Balance>.self).value
+            netuid = try container.decode(StringScaleMapper<UInt16>.self).value
+            fee = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+
+    struct StakeRemovedEvent: Decodable {
+        let coldkey: AccountId
+        let hotkey: AccountId
+        let tao: Balance
+        let alpha: Balance
+        let netuid: UInt16
+        let fee: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            hotkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
+            alpha = try container.decode(StringScaleMapper<Balance>.self).value
+            netuid = try container.decode(StringScaleMapper<UInt16>.self).value
+            fee = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+
+    struct RootClaimedEvent: Decodable {
+        let coldkey: AccountId
+        let tao: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+
+    struct BasketClaimedEvent: Decodable {
+        let hotkey: AccountId
+        let coldkey: AccountId
+        let tao: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            hotkey = try container.decode(BytesCodable.self).wrappedValue
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+}

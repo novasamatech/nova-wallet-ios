@@ -4,11 +4,11 @@ import UIKit_iOS
 final class SubtensorResultSheetViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorResultSheetViewLayout
 
-    let presenter: SubtensorResultPresenterProtocol
+    let presenter: SubtensorOperationResultPresenterProtocol
 
     private var actions: [SubtensorResultAction] = []
 
-    init(presenter: SubtensorResultPresenterProtocol) {
+    init(presenter: SubtensorOperationResultPresenterProtocol) {
         self.presenter = presenter
 
         super.init(nibName: nil, bundle: nil)
@@ -58,7 +58,7 @@ private extension SubtensorResultSheetViewController {
     }
 }
 
-extension SubtensorResultSheetViewController: SubtensorResultViewProtocol {
+extension SubtensorResultSheetViewController: SubtensorOperationResultViewProtocol {
     func didReceive(viewModel: SubtensorOperationResultViewModel) {
         guard case let .sheet(sheetViewModel) = viewModel else {
             return
@@ -97,9 +97,9 @@ extension ModalSheetPresentationConfiguration {
             preferredHeight: 20.0,
             backgroundColor: R.color.colorBottomSheetBackground()!,
             cornerRadius: 16.0,
-            indicatorVerticalOffset: 4.0,
-            indicatorSize: CGSize(width: 32.0, height: 3.0),
-            indicatorColor: .clear
+            indicatorVerticalOffset: 8.0,
+            indicatorSize: CGSize(width: 36.0, height: 4.0),
+            indicatorColor: R.color.colorPullIndicator()!
         )
 
         let style = ModalSheetPresentationStyle(

@@ -3,42 +3,40 @@ import Foundation_iOS
 
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
-    let wireframe: SubtensorClaimRewardsWireframeProtocol
-    let interactor: SubtensorClaimInteractorInputProtocol
+    let wireframe: SubtensorConfirmWireframeProtocol
+    let interactor: SubtensorBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorClaimRewardsModel
     let signing: SubtensorOperationGate.Verdict
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
-    let viewModelFactory: SubtensorClaimViewModelFactoryProtocol
-    let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
+    let viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol
+    let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
 
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
-    var positionsState: Multistaking.SubtensorStakingState?
+    var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
-    var claimable: SubtensorRootClaimable?
-    var preflight: SubtensorStakingPreflight?
+    var claimable: [SubtensorRootClaimPreview]?
+    var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
     private(set) var shownPreview: SubtensorRootClaimPreview
-    private(set) var minimumClaim: Balance
     private(set) var isNothingToClaim = false
-    private(set) var isVerifyingAtTap = false
     private(set) var isHandingOff = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorClaimInteractorInputProtocol,
-        wireframe: SubtensorClaimRewardsWireframeProtocol,
+        interactor: SubtensorBaseInteractorInputProtocol,
+        wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,
-        viewModelFactory: SubtensorClaimViewModelFactoryProtocol,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol,
+        dataValidationFactory: SubtensorValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -52,7 +50,6 @@ final class SubtensorClaimRewardsPresenter {
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
         shownPreview = model.shownPreview
-        minimumClaim = model.minimumClaim
 
         self.localizationManager = localizationManager
     }
@@ -81,9 +78,9 @@ extension SubtensorClaimRewardsPresenter {
     func provideViewModel() {
         let input = SubtensorClaimRewardsViewModelInput(
             preview: shownPreview,
-            validatorName: validatorName,
+            validatorName: model.validator.name,
             rootStake: isPositionsSyncFailed || positionsState == nil ? nil : rootGroup?.totalAlpha ?? 0,
-            unlockInterval: preflight?.rootStakeUnlockInterval,
+            unlockTime: preflight.map { TimeInterval($0.rootStakeUnlockInterval) * $0.blockTime.timeInterval },
             otherClaimableCount: claimable.map {
                 SubtensorRootClaimRule.otherClaimableCount(in: $0, target: hotkey)
             } ?? 0,
@@ -101,49 +98,17 @@ extension SubtensorClaimRewardsPresenter {
     }
 
     func refreshPreflight() {
-        interactor.refreshPreflight(for: hotkey, netuid: SubtensorStakingPallet.rootNetuid)
+        interactor.refreshPreflight(for: hotkey, netuid: SubtensorPallet.rootNetuid)
     }
 
-    func handleClaimSnapshot(_ claimable: SubtensorRootClaimable) {
-        self.claimable = claimable
-
-        guard isVerifyingAtTap else {
-            applySilently(claimable)
-            provideViewModel()
+    func applySilently(_ claimable: [SubtensorRootClaimPreview]) {
+        guard
+            let preview = claimable.first(where: { $0.hotkey == hotkey }),
+            SubtensorRootClaimRule.isClaimable(preview) else {
             return
         }
 
-        isVerifyingAtTap = false
-
-        switch SubtensorClaimTapRule.verdict(shown: shownPreview, fresh: claimable) {
-        case .nothingToClaim:
-            isNothingToClaim = true
-            view?.didStopLoading()
-            provideViewModel()
-            presentNothingToClaim(minimum: claimable.minimumClaim ?? minimumClaim)
-        case let .changed(preview):
-            accept(preview, from: claimable)
-            view?.didStopLoading()
-            provideViewModel()
-            presentAmountChanged()
-        case let .proceed(preview):
-            accept(preview, from: claimable)
-            provideViewModel()
-            handOff(with: preview)
-        }
-    }
-
-    func handleClaimSnapshotFailure() {
-        guard isVerifyingAtTap else {
-            return
-        }
-
-        isVerifyingAtTap = false
-        view?.didStopLoading()
-
-        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.confirm()
-        }
+        shownPreview = preview
     }
 
     func finishHandOff() {
@@ -153,42 +118,16 @@ extension SubtensorClaimRewardsPresenter {
 }
 
 private extension SubtensorClaimRewardsPresenter {
-    var validatorName: String {
-        let display = model.validator.display
-
-        return display.username.isEmpty ? display.address.truncated : display.username
-    }
-
     var rootGroup: SubtensorPortfolioGroup? {
         positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).root }
     }
 
-    func applySilently(_ claimable: SubtensorRootClaimable) {
-        guard
-            let minimumClaim = claimable.minimumClaim,
-            let preview = claimable.previews.first(where: { $0.hotkey == hotkey }),
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim) else {
-            return
-        }
-
-        accept(preview, from: claimable)
-    }
-
-    func accept(_ preview: SubtensorRootClaimPreview, from claimable: SubtensorRootClaimable) {
-        shownPreview = preview
-        minimumClaim = claimable.minimumClaim ?? minimumClaim
-    }
-
-    func presentNothingToClaim(minimum: Balance) {
+    func presentNothingToClaim() {
         guard let view else {
             return
         }
 
-        wireframe.presentNothingToClaim(
-            view,
-            minimum: viewModelFactory.createMinimumClaim(minimum, locale: selectedLocale),
-            locale: selectedLocale
-        )
+        wireframe.presentNothingToClaim(view, locale: selectedLocale)
     }
 
     func presentAmountChanged() {
@@ -208,11 +147,14 @@ private extension SubtensorClaimRewardsPresenter {
             claimable: claimable
         ).contains(hotkey)
 
-        let feePayingBalance = existentialDeposit.flatMap { deposit in
-            balance.map { $0.transferable.subtractOrZero(deposit) }
-        }
-
         var validations: [DataValidating] = [
+            dataValidationFactory.positionsAreFresh(
+                syncFailed: isPositionsSyncFailed || positionsState?.isRootRedeemableStale == true,
+                locale: locale,
+                onRetry: { [weak self] in
+                    self?.interactor.refreshPositions()
+                }
+            ),
             dataValidationFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFee()
             }),
@@ -222,48 +164,78 @@ private extension SubtensorClaimRewardsPresenter {
         ]
 
         validations.append(
-            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
-                for: preflight,
-                dataValidationFactory: dataValidationFactory,
-                locale: locale
-            )
+            contentsOf: dataValidationFactory.createNetworkStateValidations(for: preflight, locale: locale)
         )
 
-        validations.append(
-            SubtensorClaimValidations.claimNotPending(
-                isPending: isPending,
-                wireframe: wireframe,
-                view: view,
-                locale: locale
-            )
-        )
+        validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in
+            guard let view else {
+                return
+            }
+
+            wireframe.presentClaimPending(view, locale: locale)
+        }, preservesCondition: {
+            !isPending
+        }))
 
         validations.append(
-            dataValidationFactory.canPayFeeInPlank(
-                balance: feePayingBalance,
-                fee: fee,
-                asset: chainAsset.assetDisplayInfo,
-                locale: locale
-            )
+            contentsOf: [
+                dataValidationFactory.canPayFeeInPlank(
+                    balance: balance?.transferable,
+                    fee: fee,
+                    asset: chainAsset.assetDisplayInfo,
+                    locale: locale
+                ),
+                dataValidationFactory.notViolatingMinBalancePaying(
+                    fee: fee,
+                    total: balance?.transferable,
+                    minBalance: existentialDeposit,
+                    asset: chainAsset.assetDisplayInfo,
+                    locale: locale
+                )
+            ]
         )
 
         return validations
     }
 
     func verifyAtTap() {
-        guard !isVerifyingAtTap, !isHandingOff else {
+        guard let claimable else {
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.confirm()
+            }
             return
         }
 
-        isVerifyingAtTap = true
-        view?.didStartLoading()
+        switch SubtensorClaimTapRule.verdict(shown: shownPreview, fresh: claimable) {
+        case .nothingToClaim:
+            isNothingToClaim = true
+            provideViewModel()
+            presentNothingToClaim()
+        case let .changed(preview):
+            shownPreview = preview
+            provideViewModel()
+            presentAmountChanged()
+        case let .proceed(preview):
+            shownPreview = preview
+            provideViewModel()
+            handOffAfterProfitCheck(with: preview)
+        }
+    }
 
-        interactor.refreshClaimSnapshot()
+    func handOffAfterProfitCheck(with preview: SubtensorRootClaimPreview) {
+        let validation = dataValidationFactory.hasProfitAfterClaim(
+            rewards: preview.redeemable,
+            fee: fee,
+            locale: selectedLocale
+        )
+
+        DataValidationRunner(validators: [validation]).runValidation { [weak self] in
+            self?.handOff(with: preview)
+        }
     }
 
     func handOff(with preview: SubtensorRootClaimPreview) {
-        guard !isHandingOff, let fee else {
-            view?.didStopLoading()
+        guard !isHandingOff, let fee, let preflight else {
             return
         }
 
@@ -284,10 +256,12 @@ private extension SubtensorClaimRewardsPresenter {
             groupHotkeyCount: hotkeysAfterClaim.count,
             emptiesPosition: false,
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: nil),
-            costBasis: nil
+            costBasis: nil,
+            blockTime: preflight.blockTime
         )
 
         isHandingOff = true
+        view?.didStartLoading()
 
         wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
@@ -299,14 +273,14 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         refreshPreflight()
         refreshFee()
-        interactor.refreshClaimSnapshot()
     }
 
     func confirm() {
-        guard signing == .allowed, !isNothingToClaim, !isVerifyingAtTap, !isHandingOff else {
+        guard signing == .allowed, !isNothingToClaim, !isHandingOff else {
             return
         }
 
@@ -316,11 +290,11 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
     }
 
     func selectAccount() {
-        guard let address = model.account.chainAccount.toAddress() else {
+        guard let view, let address = model.account.chainAccount.toAddress() else {
             return
         }
 
-        wireframe.showSubtensorInfo(.account(address: address, chain: chainAsset.chain), from: view)
+        wireframe.presentAccountOptions(from: view, address: address, chain: chainAsset.chain, locale: selectedLocale)
     }
 
     func selectValidator() {

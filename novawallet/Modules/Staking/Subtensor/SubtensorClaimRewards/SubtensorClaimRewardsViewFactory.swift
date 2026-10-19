@@ -3,37 +3,26 @@ import Foundation_iOS
 
 enum SubtensorClaimRewardsViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         model: SubtensorClaimRewardsModel
     ) -> SubtensorClaimRewardsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
-            let services = SubtensorFlowServicesFactory.createServices(for: state),
+            let services = SubtensorFlowServicesFactory.createServices(for: state, observesBlocks: false),
             services.isFlowAccount(model.account) else {
             return nil
         }
 
-        let interactor = SubtensorClaimRewardsInteractor(
-            baseServices: services,
-            chainAsset: chainAsset,
-            claimableFetchFactory: SubtensorRootClaimableFetchFactory(
-                operationFactory: state.apiOperationFactory,
-                operationQueue: services.operationQueue
-            ),
-            catalogueService: state.earnServices.catalogueService,
-            costBasisService: state.earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            logger: Logger.shared
-        )
+        let interactor = SubtensorBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
-        let wireframe = SubtensorClaimRewardsWireframe(state: state)
+        let wireframe = SubtensorConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
 
-        let dataValidationFactory = SubtensorStakingValidationFactory(
+        let dataValidationFactory = SubtensorValidationFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
@@ -60,7 +49,7 @@ enum SubtensorClaimRewardsViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
         dataValidationFactory.view = view
 
         return view
