@@ -32,6 +32,10 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         state.stakingOption.chainAsset
     }
 
+    private var accountSubject: AccountAddress? {
+        try? account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat)
+    }
+
     init(
         state: SubtensorSharedStateProtocol,
         account: MetaChainAccountResponse,
@@ -88,9 +92,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
     }
 
     func loadHistories(for period: SubtensorPricePeriod) {
-        guard
-            let priceHistoryOperationFactory,
-            let accountSubject = try? account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat) else {
+        guard let priceHistoryOperationFactory, let accountSubject else {
             presenter?.didFailHistories(for: period)
             return
         }
@@ -226,6 +228,18 @@ extension SubtensorPortfolioInteractor: EventVisitorProtocol {
 
     func processChainAccountChanged(event _: ChainAccountChanged) {
         verifyBoundAccount()
+    }
+
+    func processSubtensorStakeChanged(event: SubtensorStakeChanged) {
+        guard
+            event.accountId == account.chainAccount.accountId,
+            event.chainAssetId == chainAsset.chainAssetId,
+            let accountSubject else {
+            return
+        }
+
+        priceHistoryOperationFactory?.dropPortfolioHistory(accountSubject: accountSubject)
+        presenter?.didChangeStake()
     }
 }
 

@@ -46,6 +46,8 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         period: BittensorApi.PortfolioHistoryPeriod
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>>
 
+    func dropPortfolioHistory(accountSubject: AccountAddress)
+
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>>
 

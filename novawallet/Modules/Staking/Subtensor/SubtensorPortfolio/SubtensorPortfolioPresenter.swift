@@ -192,7 +192,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
     }
 
     func didFailHistories(for period: SubtensorPricePeriod) {
-        guard period == state.period else {
+        guard period == state.period, state.histories == .loading else {
             return
         }
 
@@ -230,6 +230,14 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         isRootYieldsRequested = false
         isNetworkRootRateRequested = false
         requestRootRateIfNeeded()
+    }
+
+    func didChangeStake() {
+        guard historiesPeriod == state.period else {
+            return
+        }
+
+        interactor.loadHistories(for: state.period)
     }
 }
 

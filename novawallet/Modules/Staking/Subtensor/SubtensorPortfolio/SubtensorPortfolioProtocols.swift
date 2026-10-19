@@ -38,6 +38,7 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didChangeCurrency()
     func didReceiveAccountChange()
     func didBecomeActive()
+    func didChangeStake()
 }
 
 protocol SubtensorPortfolioWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorEarnInfoPresentable {

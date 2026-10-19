@@ -33,4 +33,8 @@ extension SubtensorPriceHistoryOperationFactory {
 
         return CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
     }
+
+    func dropPortfolioHistory(accountSubject: AccountAddress) {
+        apiOperationFactory.dropPortfolioHistory(accountSubject: accountSubject)
+    }
 }

@@ -18,4 +18,6 @@ protocol SubtensorPriceHistoryOperationFactoryProtocol: AnyObject {
         period: SubtensorPricePeriod,
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories>
+
+    func dropPortfolioHistory(accountSubject: AccountAddress)
 }

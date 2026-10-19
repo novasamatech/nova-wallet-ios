@@ -113,10 +113,16 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         period: BittensorApi.PortfolioHistoryPeriod
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
         createSearchWrapper(
-            path: "/portfolio/history/search",
+            path: Self.portfolioHistoryPath,
             accountSubject: accountSubject,
             page: nil,
             queryItems: [URLQueryItem(name: "period", value: period.rawValue)]
+        )
+    }
+
+    func dropPortfolioHistory(accountSubject: AccountAddress) {
+        cache.drop(
+            BittensorApiCacheDrop(path: Self.portfolioHistoryPath, queryItem: "accountSubject=\(accountSubject)")
         )
     }
 
@@ -143,6 +149,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
 
 private extension BittensorApiOperationFactory {
     static let operationsPath = "/operations/search"
+    static let portfolioHistoryPath = "/portfolio/history/search"
 
     func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
         path: String,
