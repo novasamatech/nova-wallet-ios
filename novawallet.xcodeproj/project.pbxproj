@@ -1813,6 +1813,8 @@
 		2D2B6AF62D6DCFB6002F8C77 /* BrowserNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
+		2D31D30B2EB3C10000A1B2C3 /* ModalCardPresentationController+Drag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D30A2EB3C10000A1B2C3 /* ModalCardPresentationController+Drag.swift */; };
+		2D31D30E2EB3C10000A1B2C3 /* ModalCardPresentationController+SourceTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D30D2EB3C10000A1B2C3 /* ModalCardPresentationController+SourceTransforms.swift */; };
 		2D322DCF2EB959500092006D /* GiftTransferSubmissionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D322DCE2EB959500092006D /* GiftTransferSubmissionResult.swift */; };
 		2D3286EE2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */; };
 		2D3286F02E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */; };
@@ -8590,6 +8592,8 @@
 		2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
+		2D31D30A2EB3C10000A1B2C3 /* ModalCardPresentationController+Drag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModalCardPresentationController+Drag.swift"; sourceTree = "<group>"; };
+		2D31D30D2EB3C10000A1B2C3 /* ModalCardPresentationController+SourceTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModalCardPresentationController+SourceTransforms.swift"; sourceTree = "<group>"; };
 		2D322DCE2EB959500092006D /* GiftTransferSubmissionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSubmissionResult.swift; sourceTree = "<group>"; };
 		2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncService.swift; sourceTree = "<group>"; };
 		2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncServiceFactory.swift; sourceTree = "<group>"; };
@@ -18558,6 +18562,8 @@
 			isa = PBXGroup;
 			children = (
 				2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */,
+				2D31D30A2EB3C10000A1B2C3 /* ModalCardPresentationController+Drag.swift */,
+				2D31D30D2EB3C10000A1B2C3 /* ModalCardPresentationController+SourceTransforms.swift */,
 				2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */,
 				2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */,
 				2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */,
@@ -37043,6 +37049,8 @@
 				25E4B008933E2EF7F2FAAA46 /* StakingMoreOptionsViewController.swift in Sources */,
 				20B1463FB1F2431A0C913DCE /* StakingMoreOptionsViewLayout.swift in Sources */,
 				2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */,
+				2D31D30B2EB3C10000A1B2C3 /* ModalCardPresentationController+Drag.swift in Sources */,
+				2D31D30E2EB3C10000A1B2C3 /* ModalCardPresentationController+SourceTransforms.swift in Sources */,
 				FF507CA7B1A33AD160DB59DE /* StakingMoreOptionsViewFactory.swift in Sources */,
 				07AB0BC861AA5F134DB9AC26 /* StartStakingInfoProtocols.swift in Sources */,
 				77F085A407EDCCF906FD6E22 /* StartStakingInfoWireframe.swift in Sources */,
