@@ -125,11 +125,11 @@ extension SubtensorStakeSetupViewModelFactory {
             return nil
         }
 
-        let reserve = formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale)
+        let retained = SubtensorAmountPolicy.retainedForFees(networkFee: input.fee?.amountForCurrentAccount ?? 0)
 
         return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiFeeReserveFormat(
-            reserve,
-            reserve
+            formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale),
+            formatAmount(retained, locale: locale)
         )
     }
 
