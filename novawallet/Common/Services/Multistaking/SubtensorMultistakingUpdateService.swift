@@ -72,7 +72,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         seedSubnetYields()
         cataloguePricing.seed()
 
-        stakeStateSubscription.subscribe()
+        stakeStateSubscription.subscribe(refreshing: true)
 
         performMaxApyFetch()
     }

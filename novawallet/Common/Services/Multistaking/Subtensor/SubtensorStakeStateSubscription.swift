@@ -36,10 +36,10 @@ final class SubtensorStakeStateSubscription {
         self.onUnchangedState = onUnchangedState
     }
 
-    func subscribe() {
+    func subscribe(refreshing: Bool = false) {
         isSubscribed = true
 
-        source.add(handler: self)
+        source.add(handler: self, refreshing: refreshing)
     }
 
     func unsubscribe() {

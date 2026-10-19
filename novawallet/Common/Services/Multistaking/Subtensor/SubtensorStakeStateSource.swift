@@ -57,7 +57,7 @@ final class SubtensorStakeStateSource {
         alphaTriggerSubscription?.unsubscribe()
     }
 
-    func add(handler: SubtensorStakeStateHandler) {
+    func add(handler: SubtensorStakeStateHandler, refreshing: Bool) {
         mutex.lock()
 
         defer {
@@ -69,7 +69,7 @@ final class SubtensorStakeStateSource {
         if !handlers.contains(where: { $0.target === handler }) {
             handlers.append(WeakWrapper(target: handler))
 
-            if let lastState {
+            if !refreshing, let lastState {
                 workingQueue.async {
                     handler.handleStakeState(lastState)
                 }
