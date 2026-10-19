@@ -47,7 +47,18 @@ public final class ModalCardPresentationController: UIPresentationController {
     override public func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
+        containerView?.autoresizesSubviews = false
         animateBackground(appearing: false)
+    }
+
+    override public func dismissalTransitionDidEnd(_ completed: Bool) {
+        super.dismissalTransitionDidEnd(completed)
+
+        containerView?.autoresizesSubviews = true
+
+        guard !completed else { return }
+
+        presentedView?.frame = frameOfPresentedViewInContainerView
     }
 
     override public var frameOfPresentedViewInContainerView: CGRect {
@@ -250,35 +261,9 @@ public extension ModalCardPresentationController {
         parentPresentationController?.applySourceAppearanceTransform()
     }
 
-    func performWithoutSourceTransforms(_ actions: () -> Void) {
-        guard let sourceView = presentingViewController.view else {
-            actions()
-            return
-        }
-
-        let transform = sourceView.transform
-        let height = sourceView.bounds.height
-
-        UIView.performWithoutAnimation { sourceView.transform = .identity }
-
-        if let parentPresentationController = presentingViewController.presentationController
-            as? ModalCardPresentationController {
-            parentPresentationController.performWithoutSourceTransforms(actions)
-        } else {
-            actions()
-        }
-
-        UIView.performWithoutAnimation { sourceView.transform = transform }
-
-        let topEdgeDrift = (sourceView.bounds.height - height) * (1 - transform.d) / 2
-
-        if topEdgeDrift != 0 {
-            sourceView.transform = transform.concatenating(CGAffineTransform(translationX: 0, y: -topEdgeDrift))
-        }
-    }
-
     func updateLayout() {
         guard
+            !presentedViewController.isBeingDismissed,
             let presentedView,
             let containerView
         else { return }
