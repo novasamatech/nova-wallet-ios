@@ -257,6 +257,7 @@ public extension ModalCardPresentationController {
         }
 
         let transform = sourceView.transform
+        let height = sourceView.bounds.height
 
         UIView.performWithoutAnimation { sourceView.transform = .identity }
 
@@ -268,6 +269,12 @@ public extension ModalCardPresentationController {
         }
 
         UIView.performWithoutAnimation { sourceView.transform = transform }
+
+        let topEdgeDrift = (sourceView.bounds.height - height) * (1 - transform.d) / 2
+
+        if topEdgeDrift != 0 {
+            sourceView.transform = transform.concatenating(CGAffineTransform(translationX: 0, y: -topEdgeDrift))
+        }
     }
 
     func updateLayout() {
