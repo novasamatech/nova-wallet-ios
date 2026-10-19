@@ -70,6 +70,9 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         case let .rate(text):
             trailingLabel.text = text
             trailingLabel.textColor = R.color.colorTextPositive()
+        case let .inactive(text):
+            trailingLabel.text = text
+            trailingLabel.textColor = R.color.colorTextSecondary()
         case .none:
             trailingLabel.text = nil
         }
@@ -83,6 +86,10 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         }
 
         iconView.isHidden = model.icon == nil
+
+        let contentAlpha = model.isSelectable ? 1 : Constants.inactiveAlpha
+        [radioView, iconView, titleStackView, subtitleLabel].forEach { $0.alpha = contentAlpha }
+        selectionStyle = model.isSelectable ? .default : .none
     }
 
     @objc private func actionInfo() {
@@ -135,6 +142,12 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         }
 
         trailingLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+}
+
+private extension SubtensorValidatorSelectCell {
+    enum Constants {
+        static let inactiveAlpha: CGFloat = 0.4
     }
 }
 

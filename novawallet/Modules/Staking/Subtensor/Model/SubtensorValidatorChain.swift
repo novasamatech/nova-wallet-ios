@@ -8,7 +8,6 @@ struct SubtensorHotkeySubnet: Hashable {
 
 struct SubtensorValidatorChainQuery: Equatable {
     let pairs: [SubtensorHotkeySubnet]
-    var takeHotkeys: [AccountId] = []
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
