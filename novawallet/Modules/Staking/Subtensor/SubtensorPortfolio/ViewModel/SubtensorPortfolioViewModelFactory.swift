@@ -62,8 +62,8 @@ private extension SubtensorPortfolioViewModelFactory {
 
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
         SubtensorPortfolioPeriodsViewModel(
-            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
-            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: state.period) ?? 0
+            titles: SubtensorPricePeriod.portfolioSelectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.portfolioSelectable.firstIndex(of: state.period) ?? 0
         )
     }
 
