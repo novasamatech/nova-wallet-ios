@@ -12,6 +12,7 @@ final class SubtensorCostBasisService {
     private let mutex = NSLock()
     private var seedBlockedUntil: [AccountId: TimeInterval] = [:]
     private var settleDeadlines: [AccountId: [UInt16: TimeInterval]] = [:]
+    private var accountSettleDeadlines: [AccountId: TimeInterval] = [:]
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
@@ -51,6 +52,10 @@ private extension SubtensorCostBasisService {
         }
 
         return true
+    }
+
+    func settleDeadline(for accountId: AccountId, netuid: UInt16) -> TimeInterval? {
+        [settleDeadlines[accountId]?[netuid], accountSettleDeadlines[accountId]].compactMap { $0 }.max()
     }
 }
 
@@ -99,14 +104,9 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
         mutex.lock()
         defer { mutex.unlock() }
 
-        guard let deadline = settleDeadlines[accountId]?[netuid] else {
-            return nil
-        }
-
         let now = timeProvider()
 
-        guard deadline > now else {
-            settleDeadlines[accountId]?[netuid] = nil
+        guard let deadline = settleDeadline(for: accountId, netuid: netuid), deadline > now else {
             return nil
         }
 
@@ -125,7 +125,7 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
 
         guard
             let blockedUntil = seedBlockedUntil[accountId], blockedUntil > now,
-            (settleDeadlines[accountId]?[netuid] ?? now) <= now,
+            (settleDeadline(for: accountId, netuid: netuid) ?? now) <= now,
             let accountSubject = try? accountId.toAddress(using: .defaultSubstrateFormat) else {
             return
         }
@@ -143,9 +143,17 @@ extension SubtensorCostBasisService: EventVisitorProtocol {
         apiOperationFactory.dropOperations(accountSubject: accountSubject)
 
         mutex.lock()
-        let deadline = timeProvider() + Self.ownTradeSettleTime
+        let now = timeProvider()
+        let deadline = now + Self.ownTradeSettleTime
         seedBlockedUntil[event.accountId] = deadline
-        event.netuids.forEach { settleDeadlines[event.accountId, default: [:]][$0] = deadline }
+        settleDeadlines[event.accountId] = settleDeadlines[event.accountId]?.filter { $0.value > now }
+
+        if let netuids = event.netuids {
+            netuids.forEach { settleDeadlines[event.accountId, default: [:]][$0] = deadline }
+        } else {
+            accountSettleDeadlines[event.accountId] = deadline
+        }
+
         mutex.unlock()
     }
 }

@@ -82,7 +82,7 @@ extension SubtensorPositionInteractor: EventVisitorProtocol {
     func processSubtensorStakeChanged(event: SubtensorStakeChanged) {
         guard
             event.chainAssetId == chainAsset.chainAssetId,
-            event.netuids.contains(netuid),
+            event.netuids?.contains(netuid) ?? true,
             event.accountId == state.selectedAccount?.chainAccount.accountId else {
             return
         }

@@ -45,10 +45,12 @@ extension SubtensorOperation {
         return hotkey
     }
 
-    var netuids: Set<UInt16> {
+    var netuids: Set<UInt16>? {
         switch self {
-        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
+        case .rootStake, .rootUnstake, .rootUnstakeGroup:
             [SubtensorPallet.rootNetuid]
+        case .rootClaim:
+            nil
         case let .subnetBuy(_, netuid, _, _, _),
              let .subnetSell(_, netuid, _, _, _, _),
              let .subnetSellGroup(_, _, netuid, _, _, _):

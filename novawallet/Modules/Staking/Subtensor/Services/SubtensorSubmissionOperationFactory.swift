@@ -206,7 +206,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
 private struct SubtensorSubmissionFinalizer {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
-    let netuids: Set<UInt16>
+    let netuids: Set<UInt16>?
     let novaFeeBeneficiary: AccountId?
     let signer: SubtensorRecordingSigner
     let eventCenter: EventCenterProtocol
