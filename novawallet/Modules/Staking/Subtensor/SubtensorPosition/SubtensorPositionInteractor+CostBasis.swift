@@ -32,12 +32,16 @@ extension SubtensorPositionInteractor {
 }
 
 private extension SubtensorPositionInteractor {
+    enum Constants {
+        static let settleMargin: TimeInterval = 0.01
+    }
+
     func scheduleOwnTradeSettle(after delay: TimeInterval) {
         let scheduler = ownTradeScheduler ?? Scheduler(with: self, callbackQueue: .main)
         ownTradeScheduler = scheduler
         isOwnTradeSettleDue = false
 
-        scheduler.notifyAfter(delay)
+        scheduler.notifyAfter(delay + Constants.settleMargin)
         presenter?.didReceiveOwnTradeSettling(true)
     }
 
