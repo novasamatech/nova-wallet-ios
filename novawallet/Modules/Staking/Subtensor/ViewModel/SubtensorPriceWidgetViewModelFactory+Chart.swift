@@ -70,12 +70,20 @@ extension SubtensorPriceWidgetViewModelFactory {
         case .failed:
             return .failed(title: strings.stakingSubtensorUiDetailHistoryFailed(), action: strings.commonTryAgain())
         case let .available(history):
+            let reference = params.avgBuyPrice.map { NSDecimalNumber(decimal: $0).doubleValue }
+
             guard let series = datedSeries(history: history, params: params),
                   let first = series.points.first,
                   let last = series.points.last,
-                  let data = SubtensorPriceChartDataFactory.create(series: .dated(series), availablePoints: 0) else {
+                  let data = SubtensorPriceChartDataFactory.create(
+                      series: .dated(series),
+                      reference: reference,
+                      availablePoints: 0
+                  ) else {
                 return createUnavailableChart(locale: locale)
             }
+
+            let change = displayChange(history: history, params: params)
 
             return .chart(SubtensorPriceChartViewModel(
                 series: .dated(series),
@@ -83,7 +91,15 @@ extension SubtensorPriceWidgetViewModelFactory {
                     formatAxis(data.yRange.upperBound, params: params, locale: locale),
                     formatAxis(data.yRange.lowerBound, params: params, locale: locale)
                 ],
-                isRising: displayChange(history: history, params: params).map { $0 >= 0 } ?? (last.value >= first.value)
+                isRising: change.map { $0 >= 0 } ?? (last.value >= first.value),
+                reference: reference.map { value in
+                    SubtensorPriceChartViewModel.Reference(
+                        value: value,
+                        label: strings.stakingSubtensorUiAvgBuyChartFormat(
+                            formatAxis(value, params: params, locale: locale)
+                        )
+                    )
+                }
             ))
         }
     }

@@ -34,7 +34,8 @@ private extension SubtensorPositionViewModelFactory {
             isFiat: false,
             taoPrice: nil,
             currencyId: nil,
-            chartEndDate: state.chartEndDate
+            chartEndDate: state.chartEndDate,
+            avgBuyPrice: state.costBasis.averagePrice
         )
     }
 
