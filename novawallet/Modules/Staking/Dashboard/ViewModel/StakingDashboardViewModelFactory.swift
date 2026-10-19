@@ -261,7 +261,8 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             chainAssetViewModel: loadableChainAsset,
             estimatedEarnings: estimatedEarnings,
             balance: .wrapped(balance, with: privacyModeEnabled),
-            stakingType: stakingType
+            stakingType: stakingType,
+            isNew: chainAsset.chain.newFeatures.contains(.staking)
         )
     }
 

@@ -21,6 +21,9 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 > {
     private enum Constants {
         static let iconSize = CGSize(width: 44, height: 44)
+        static let newBadgeTopOffset: CGFloat = 8
+        static let newBadgeLineHeight: CGFloat = 13
+        static let newBadgeKern: CGFloat = 0.6
     }
 
     var assetIconView: AssetIconView { titleView.fView }
@@ -30,6 +33,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     var balanceSecureLabel: DotsSecureView<UILabel> { titleView.sView.sView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
+
+    let newBadgeView: GenericBorderedView<UILabel> = .create { view in
+        view.contentView.apply(style: .semiboldCaps2Secondary)
+        view.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        view.isHidden = true
+    }
 
     var skeletonView: SkrullableView?
 
@@ -76,6 +85,13 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             viewModel.estimatedEarnings.satisfies { $0 != nil }
         setupStaticLocalization(for: locale, hasEstimatedRewards: hasEstimatedRewards)
 
+        newBadgeView.isHidden = !viewModel.isNew
+        newBadgeView.contentView.apply(
+            text: R.string(preferredLanguages: locale.rLanguages).localizable.commonNew().uppercased(with: locale),
+            lineHeight: Constants.newBadgeLineHeight,
+            kern: Constants.newBadgeKern
+        )
+
         loadingState = newLoadingState
 
         if loadingState != .none {
@@ -85,6 +101,8 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     func bindLoadingState() {
         stopLoadingIfNeeded()
+
+        newBadgeView.isHidden = true
 
         loadingState = .all
 
@@ -211,6 +229,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         valueView.detailsView.fView.setContentCompressionResistancePriority(.required, for: .horizontal)
         valueView.detailsView.sView.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        addSubview(newBadgeView)
+        newBadgeView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(-Constants.newBadgeTopOffset)
+            make.trailing.equalToSuperview()
+        }
     }
 }
 
