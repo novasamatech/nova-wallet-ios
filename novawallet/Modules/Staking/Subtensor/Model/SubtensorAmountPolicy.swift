@@ -13,8 +13,12 @@ struct SubtensorSellPlanInput {
 }
 
 enum SubtensorAmountPolicy {
+    static func retainedForFees(networkFee: Balance) -> Balance {
+        networkFee + SubtensorNovaFeeConstants.feeReserve
+    }
+
     static func maxBuyOrStake(transferable: Balance, networkFee: Balance) -> Balance {
-        let retained = networkFee + SubtensorNovaFeeConstants.feeReserve
+        let retained = retainedForFees(networkFee: networkFee)
 
         return transferable > retained ? transferable - retained : 0
     }
