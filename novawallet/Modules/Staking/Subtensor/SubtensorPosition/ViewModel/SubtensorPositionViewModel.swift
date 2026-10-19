@@ -20,6 +20,8 @@ struct SubtensorPositionState {
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false
     var yields: SubtensorAlphaYields?
+    var costBasis = SubtensorCostBasisState.loading
+    var isOwnTradeSettling = false
     var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []
@@ -70,6 +72,14 @@ struct SubtensorPositionState {
 
     var taoValue: Balance? {
         group.flatMap { prices?.taoValue(of: $0.totalAlpha, netuid: netuid) }
+    }
+
+    var worthNow: SubtensorSaleProceeds {
+        guard let group, let taoValue else {
+            return .unknown
+        }
+
+        return .quoted(alpha: group.totalAlpha, tao: taoValue)
     }
 
     var primaryHold: SubtensorRootHold? {
@@ -145,6 +155,7 @@ struct SubtensorPositionRowViewModel: Equatable {
     let title: String
     let value: SubtensorPositionValueViewModel
     let caption: String?
+    var tone = SubtensorValueTone.neutral
 }
 
 struct SubtensorPositionSummaryViewModel {
@@ -153,7 +164,7 @@ struct SubtensorPositionSummaryViewModel {
     let amount: String?
     let fiat: SubtensorRowState<String>
     let isActive: Bool?
-    let row: SubtensorPositionRowViewModel
+    let rows: [SubtensorPositionRowViewModel]
 }
 
 struct SubtensorPositionActionViewModel: Equatable {

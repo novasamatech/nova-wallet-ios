@@ -2265,6 +2265,7 @@ Do you want to continue?";
 "staking.subtensor.ui.avg.buy.price.per.format" = "per %@";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Not available";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "no purchases";
+"staking.subtensor.ui.avg.buy.chart.format" = "Avg buy %@";
 "staking.subtensor.ui.earned" = "Earned";
 "staking.subtensor.ui.you.will.earn" = "You will earn";
 "staking.subtensor.confirm.price.moved" = "Price moved — quote updated. Check the amounts before you confirm.";

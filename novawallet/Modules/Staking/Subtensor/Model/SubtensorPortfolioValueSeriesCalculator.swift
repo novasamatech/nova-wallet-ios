@@ -28,7 +28,7 @@ extension SubtensorPricePeriod {
             return .sevenDays
         case .month:
             return .thirtyDays
-        case .quarter:
+        case .quarter, .year, .all:
             return .ninetyDays
         }
     }
@@ -39,7 +39,7 @@ extension SubtensorPricePeriod {
             return .day
         case .week, .month:
             return .month
-        case .quarter:
+        case .quarter, .year, .all:
             return .allTime
         }
     }
@@ -50,7 +50,7 @@ extension SubtensorPricePeriod {
             return 5 * 60
         case .week, .month:
             return 60 * 60
-        case .quarter:
+        case .quarter, .year, .all:
             return 24 * 60 * 60
         }
     }
@@ -61,9 +61,9 @@ extension SubtensorPricePeriod {
 
     var isSlicedFromLongerSeries: Bool {
         switch self {
-        case .day, .month:
+        case .day, .month, .all:
             return false
-        case .week, .quarter:
+        case .week, .quarter, .year:
             return true
         }
     }
@@ -81,6 +81,10 @@ extension SubtensorPricePeriod {
             return calendar.date(byAdding: .day, value: -30, to: endDate)
         case .quarter:
             return calendar.date(byAdding: .day, value: -90, to: endDate)
+        case .year:
+            return calendar.date(byAdding: .year, value: -1, to: endDate)
+        case .all:
+            return nil
         }
     }
 }

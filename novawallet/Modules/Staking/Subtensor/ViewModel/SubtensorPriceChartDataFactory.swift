@@ -33,14 +33,28 @@ struct SubtensorPriceChartData {
 enum SubtensorPriceChartDataFactory {
     static func create(
         series: SubtensorPriceChartViewModel.Series,
+        reference: Double? = nil,
         availablePoints: Int
     ) -> SubtensorPriceChartData? {
+        let data: SubtensorPriceChartData?
+
         switch series {
         case let .indexed(values):
-            return createIndexed(values, availablePoints: availablePoints)
+            data = createIndexed(values, availablePoints: availablePoints)
         case let .dated(series):
-            return createDated(series, availablePoints: availablePoints)
+            data = createDated(series, availablePoints: availablePoints)
         }
+
+        guard let data, let reference, reference.isFinite else {
+            return data
+        }
+
+        return SubtensorPriceChartData(
+            entries: data.entries,
+            xRange: data.xRange,
+            yRange: min(data.yRange.lowerBound, reference) ... max(data.yRange.upperBound, reference),
+            coverageStart: data.coverageStart
+        )
     }
 }
 

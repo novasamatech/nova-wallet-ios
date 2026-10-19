@@ -8,6 +8,7 @@ struct SubtensorPriceWidgetParams {
     let taoPrice: PriceData?
     let currencyId: Int?
     let chartEndDate: Date
+    let avgBuyPrice: Decimal?
 }
 
 struct SubtensorPriceHeaderParams {
@@ -149,8 +150,8 @@ private extension SubtensorPriceWidgetViewModelFactory {
         locale: Locale
     ) -> SubtensorSubnetPeriodsViewModel {
         SubtensorSubnetPeriodsViewModel(
-            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
-            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
+            titles: SubtensorPricePeriod.subnetSelectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.subnetSelectable.firstIndex(of: params.period) ?? 0,
             isEnabled: params.history != .notListed && params.history != .loading
         )
     }
@@ -279,6 +280,10 @@ extension SubtensorPricePeriod {
             return strings.commonPeriod30d().uppercased(with: locale)
         case .quarter:
             return strings.commonPeriod90d().uppercased(with: locale)
+        case .year:
+            return strings.commonPeriod1y().uppercased(with: locale)
+        case .all:
+            return strings.commonPeriodAll().capitalized(with: locale)
         }
     }
 }
