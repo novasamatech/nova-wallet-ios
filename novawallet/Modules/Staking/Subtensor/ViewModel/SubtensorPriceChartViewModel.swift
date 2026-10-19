@@ -36,7 +36,13 @@ struct SubtensorPriceChartViewModel: Equatable {
         case dated(DatedSeries)
     }
 
+    struct Reference: Equatable {
+        let value: Double
+        let label: String
+    }
+
     let series: Series
     let axisLabels: [String]
     let isRising: Bool
+    let reference: Reference?
 }
