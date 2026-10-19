@@ -112,8 +112,8 @@ private extension SubtensorPositionInteractor {
                     loadPrices()
                 }
 
-                if !isRoot, lastGroup != nil, group?.positions != lastGroup?.positions, !costBasisStore.hasCall {
-                    loadCostBasis()
+                if !isRoot, lastGroup != nil, group?.positions != lastGroup?.positions {
+                    reloadCostBasisAfterPositionsChange()
                 }
 
                 lastGroup = group

@@ -29,6 +29,18 @@ extension SubtensorPositionInteractor {
             settleOwnTrade()
         }
     }
+
+    func reloadCostBasisAfterPositionsChange() {
+        guard let accountId = state.selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        if let remaining = costBasisService.remainingSettleTime(for: accountId, netuid: netuid) {
+            scheduleOwnTradeSettle(after: remaining)
+        } else if !costBasisStore.hasCall {
+            loadCostBasis()
+        }
+    }
 }
 
 private extension SubtensorPositionInteractor {
