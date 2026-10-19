@@ -204,7 +204,7 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func layoutReference() {
-        guard let reference = viewModel?.reference, chartData != nil else {
+        guard let reference = viewModel?.reference, chartData != nil, selection == nil else {
             referenceView.isHidden = true
             return
         }
