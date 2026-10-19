@@ -16,7 +16,7 @@ final class SubtensorValidatorSelectPresenterTests: XCTestCase {
         fixture.presenter.didReceive(verification: makeVerification(recommended: []))
 
         // then
-        XCTAssertEqual(fixture.view.loadedRows?.map(\.hotkey), [hotkeyA, hotkeyB])
+        XCTAssertEqual(fixture.view.loadedRows.map { Set($0.map(\.hotkey)) }, [hotkeyA, hotkeyB])
         XCTAssertEqual(fixture.view.isFilterActive, false)
     }
 

@@ -48,8 +48,24 @@ final class SubtensorValidatorSelectPresenter {
 private extension SubtensorValidatorSelectPresenter {
     var filters: SubtensorValidatorFilters { filterSession.applied(isRoot: target.isRoot) }
 
+    // the unusual apy filter keeps only recommended hotkeys; a gated subnet has none listed,
+    // so the filter would hide every validator and is not applied there
+    var isUnusualApyFilterApplicable: Bool {
+        guard let directory, let recommendedHotkeys else {
+            return true
+        }
+
+        return directory.items.contains { recommendedHotkeys.contains($0.hotkey) }
+    }
+
+    var effectiveFilters: SubtensorValidatorFilters {
+        var filters = filters
+        filters.hidesUnusualApy = filters.hidesUnusualApy && isUnusualApyFilterApplicable
+        return filters
+    }
+
     func provideState() {
-        let filters = filters
+        let filters = effectiveFilters
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
         view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
@@ -148,9 +164,19 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func showSortOptions() {
+        let shownFilters = effectiveFilters
+
         wireframe
-            .showFilters(from: view, applied: filters) { [weak self] filters in
+            .showFilters(from: view, applied: shownFilters) { [weak self] draft in
                 guard let self else { return }
+
+                var filters = draft
+
+                // the sheet showed the effective state; keep the shared preference unless the user toggled it
+                if draft.hidesUnusualApy == shownFilters.hidesUnusualApy {
+                    filters.hidesUnusualApy = self.filters.hidesUnusualApy
+                }
+
                 if filters.hidesUnusualApy != self.filters.hidesUnusualApy { keptHotkeys = [] }
                 filterSession.apply(filters, isRoot: target.isRoot)
                 provideState()
