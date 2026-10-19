@@ -29,6 +29,8 @@ final class SubtensorStakeStateSource {
     private var isAlphaTriggerPrimed = false
     private var fetchTriggerBlockHash: Data?
     private var isRefetchPending = false
+    private var isSyncingRequested = false
+    private var isFetchSignalled = false
     private let fetchCallStore = CancellableCallStore()
 
     init(
@@ -65,11 +67,19 @@ final class SubtensorStakeStateSource {
 
         handlers.clearEmptyItems()
 
-        guard !handlers.contains(where: { $0.target === handler }) else {
-            return
+        if !handlers.contains(where: { $0.target === handler }) {
+            handlers.append(WeakWrapper(target: handler))
+
+            if let lastState {
+                workingQueue.async {
+                    handler.handleStakeState(lastState)
+                }
+
+                return
+            }
         }
 
-        handlers.append(WeakWrapper(target: handler))
+        requestFetch()
     }
 
     func remove(handler: SubtensorStakeStateHandler) {
@@ -99,15 +109,21 @@ final class SubtensorStakeStateSource {
             return
         }
 
+        requestFetch()
+    }
+}
+
+private extension SubtensorStakeStateSource {
+    func requestFetch() {
+        isSyncingRequested = true
+
         if hotkeysSubscription == nil {
             subscribe()
         } else {
             trigger(at: nil)
         }
     }
-}
 
-private extension SubtensorStakeStateSource {
     func subscribe() {
         let connection: JSONRPCEngine
         let runtimeService: RuntimeCodingServiceProtocol
@@ -152,6 +168,8 @@ private extension SubtensorStakeStateSource {
         fetchCallStore.cancel()
         fetchTriggerBlockHash = nil
         isRefetchPending = false
+        isSyncingRequested = false
+        isFetchSignalled = false
 
         hotkeysSubscription = nil
         connection = nil
@@ -179,6 +197,8 @@ private extension SubtensorStakeStateSource {
 
     func fetch(triggeredAt blockHash: Data?) {
         fetchTriggerBlockHash = blockHash
+        isFetchSignalled = isSyncingRequested
+        isSyncingRequested = false
 
         executeCancellable(
             wrapper: stakeStateFetchOperationFactory.createStateWrapper(for: accountId),
@@ -190,18 +210,23 @@ private extension SubtensorStakeStateSource {
             self?.handle(fetchResult: result)
         }
 
-        notifyHandlers { $0.handleStakeStateFetching() }
+        if isFetchSignalled {
+            notifyHandlers { $0.handleStakeStateFetching() }
+        }
     }
 
     func handle(fetchResult: Result<Multistaking.SubtensorState, Error>) {
         switch fetchResult {
         case let .success(fetchedState):
             let state = fetchedState.byKeepingRootRedeemable(of: lastState)
+            let isChanged = state != lastState
             lastState = state
 
             updateAlphaTriggerSubscription(for: state)
 
-            notifyHandlers { $0.handleStakeState(state) }
+            if isChanged || isFetchSignalled {
+                notifyHandlers { $0.handleStakeState(state) }
+            }
         case let .failure(error):
             logger.error("State fetch error: \(error)")
 

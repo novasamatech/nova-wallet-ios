@@ -37,7 +37,6 @@ final class SubtensorStakeStateSubscription {
         isSubscribed = true
 
         source.add(handler: self)
-        source.refresh()
     }
 
     func unsubscribe() {
