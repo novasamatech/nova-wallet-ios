@@ -112,6 +112,10 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
 
         return deadline - now
     }
+
+    func settleTimeAfterOwnTrade(for accountId: AccountId, netuid: UInt16) -> TimeInterval {
+        remainingSettleTime(for: accountId, netuid: netuid) ?? Self.ownTradeSettleTime
+    }
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {

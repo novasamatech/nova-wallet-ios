@@ -81,9 +81,7 @@ extension SubtensorPositionInteractor: EventVisitorProtocol {
             return
         }
 
-        let remaining = costBasisService.remainingSettleTime(for: event.accountId, netuid: netuid)
-
-        scheduleOwnTradeSettle(after: remaining ?? SubtensorCostBasisService.ownTradeSettleTime)
+        scheduleOwnTradeSettle(after: costBasisService.settleTimeAfterOwnTrade(for: event.accountId, netuid: netuid))
     }
 }
 
