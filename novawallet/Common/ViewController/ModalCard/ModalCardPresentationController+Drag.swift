@@ -196,6 +196,11 @@ private extension ModalCardPresentationController {
 
         dragState.origin = nil
 
+        guard interactiveDismissal != nil || !presentedViewController.isBeingDismissed else {
+            dragState = ModalCardDragState()
+            return
+        }
+
         let velocity = panGestureRecognizer.velocity(in: view).y
         let shouldDismiss = panGestureRecognizer.state == .ended
             && reachesDismissal(offset: dragState.offset, velocity: velocity, height: view.bounds.height)
