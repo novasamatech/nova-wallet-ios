@@ -320,6 +320,7 @@ private extension SubtensorSubnetPriceChartView {
         }
 
         selection = newSelection
+        referenceView.isHidden = true
         delegate?.priceChartView(self, didSelect: newSelection)
     }
 
@@ -345,6 +346,7 @@ extension SubtensorSubnetPriceChartView {
         clearSelection()
 
         if hadSelection {
+            layoutReference()
             delegate?.priceChartViewDidEndSelection(self)
         }
     }
