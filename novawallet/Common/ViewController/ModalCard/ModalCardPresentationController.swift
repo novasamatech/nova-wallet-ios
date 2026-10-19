@@ -241,19 +241,6 @@ private extension ModalCardPresentationController {
 // MARK: Public
 
 public extension ModalCardPresentationController {
-    func applySourceDismissTransform() {
-        guard let sourceView = presentingViewController.view else { return }
-
-        let transform = transformFactory.createDismissingTransform(for: presentingViewController)
-
-        sourceView.transform = transform
-
-        let parentPresentationController = presentingViewController.presentationController
-            as? ModalCardPresentationController
-
-        parentPresentationController?.applySourceDismissTransform()
-    }
-
     func applySourceAppearanceTransform() {
         guard let sourceView = presentingViewController.view else { return }
 

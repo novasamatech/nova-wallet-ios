@@ -31,16 +31,15 @@ extension ModalCardPresentationController {
         }
     }
 
+    func applySourceDismissTransform() {
+        applySourceTransforms { depth, viewController in
+            depth == 0 ? .identity : transformFactory.createRestingTransform(for: viewController, depth: depth - 1)
+        }
+    }
+
     func applySourceRestingTransforms() {
-        let sourceViewControllers = sourceViewControllers
-
-        sourceViewControllers.forEach { $0.viewIfLoaded?.transform = .identity }
-
-        sourceViewControllers.enumerated().reversed().forEach { depth, viewController in
-            viewController.viewIfLoaded?.transform = transformFactory.createRestingTransform(
-                for: viewController,
-                depth: depth
-            )
+        applySourceTransforms { depth, viewController in
+            transformFactory.createRestingTransform(for: viewController, depth: depth)
         }
     }
 }
@@ -62,5 +61,28 @@ private extension ModalCardPresentationController {
 
     var sourceViews: [UIView] {
         sourceViewControllers.compactMap(\.viewIfLoaded)
+    }
+
+    func applySourceTransforms(_ createTransform: (Int, UIViewController) -> CGAffineTransform) {
+        let sourceViewControllers = sourceViewControllers
+        let currentTransforms = sourceViewControllers.map { $0.viewIfLoaded?.transform ?? .identity }
+
+        UIView.performWithoutAnimation {
+            sourceViewControllers.forEach { $0.viewIfLoaded?.transform = .identity }
+        }
+
+        let transforms = sourceViewControllers.enumerated().map { depth, viewController in
+            createTransform(depth, viewController)
+        }
+
+        UIView.performWithoutAnimation {
+            zip(sourceViewControllers, currentTransforms).forEach { viewController, transform in
+                viewController.viewIfLoaded?.transform = transform
+            }
+        }
+
+        zip(sourceViewControllers, transforms).forEach { viewController, transform in
+            viewController.viewIfLoaded?.transform = transform
+        }
     }
 }
