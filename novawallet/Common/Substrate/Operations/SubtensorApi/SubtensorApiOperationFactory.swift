@@ -22,9 +22,10 @@ protocol SubtensorApiOperationFactoryProtocol {
 
     func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorPallet.DynamicInfo?>
 
-    func createDelegatesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]>
+    func createDelegateWrapper(
+        for hotkey: AccountId,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<SubtensorPallet.DelegateInfo?>
 
     func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorPallet.SubnetPrice]>
 
@@ -255,13 +256,14 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         )
     }
 
-    func createDelegatesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorPallet.DelegateInfo]> {
+    func createDelegateWrapper(
+        for hotkey: AccountId,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<SubtensorPallet.DelegateInfo?> {
         createWrapper(
-            path: SubtensorPallet.delegatesApi,
+            path: SubtensorPallet.delegateApi,
             blockHash: blockHash,
-            paramsClosure: nil
+            paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: hotkey))
         )
     }
 

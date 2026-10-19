@@ -24,20 +24,19 @@ final class SubtensorValidatorCoverageOperationFactory: SubtensorValidatorCovera
         let hash = apiFactory.createBestBlockHashWrapper()
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let blockHash = try hash.targetOperation.extractNoCancellableResultData()
-            let delegates = self.apiFactory.createDelegatesWrapper(at: blockHash)
+            let delegate = self.apiFactory.createDelegateWrapper(for: hotkey, blockHash: blockHash)
             let catalogue = self.catalogueOperationFactory.createCatalogueWrapper()
             let merge = ClosureOperation<SubtensorValidatorCoverage?> {
                 let netuids = try catalogue.targetOperation.extractNoCancellableResultData().subnets.map(\.netuid)
                 return try SubtensorValidatorCoverage.make(
-                    hotkey: hotkey,
-                    delegates: delegates.targetOperation.extractNoCancellableResultData(),
+                    delegate: delegate.targetOperation.extractNoCancellableResultData(),
                     catalogueNetuids: Set(netuids)
                 )
             }
-            merge.addDependency(delegates.targetOperation)
+            merge.addDependency(delegate.targetOperation)
             merge.addDependency(catalogue.targetOperation)
             return CompoundOperationWrapper(
-                targetOperation: merge, dependencies: delegates.allOperations + catalogue.allOperations
+                targetOperation: merge, dependencies: delegate.allOperations + catalogue.allOperations
             )
         }
         wrapper.addDependency(wrapper: hash)
