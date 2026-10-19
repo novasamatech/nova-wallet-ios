@@ -121,6 +121,7 @@ private extension NovaMainAppContainerViewController {
                     .layerMaxXMaxYCorner
                 ]
                 self?.updateDefaultModalsLayoutIfNeeded()
+                self?.layoutKeepingCardTransforms()
             }
         )
     }
@@ -140,6 +141,7 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.updateDefaultModalsLayoutIfNeeded()
+                self?.layoutKeepingCardTransforms()
             }
         )
     }
@@ -175,13 +177,44 @@ private extension NovaMainAppContainerViewController {
     }
 
     func updateCardModalsLayoutIfNeeded() {
+        let cardPresentationControllers = presentedCardPresentationControllers()
+
+        performWithoutTransforms(of: cardPresentationControllers) {
+            rootView.layoutIfNeeded()
+            cardPresentationControllers.forEach { $0.updateLayout() }
+        }
+    }
+
+    func layoutKeepingCardTransforms() {
+        performWithoutTransforms(of: presentedCardPresentationControllers()) {
+            rootView.layoutIfNeeded()
+        }
+    }
+
+    func performWithoutTransforms(
+        of cardPresentationControllers: [ModalCardPresentationController],
+        _ actions: () -> Void
+    ) {
+        if let topCardPresentationController = cardPresentationControllers.last {
+            topCardPresentationController.performWithoutSourceTransforms(actions)
+        } else {
+            actions()
+        }
+    }
+
+    func presentedCardPresentationControllers() -> [ModalCardPresentationController] {
+        var presentationControllers: [ModalCardPresentationController] = []
         var presentedViewController = tabBar?.presentedController()
 
-        while presentedViewController != nil {
-            let presentationController = presentedViewController?.presentationController as? ModalCardPresentationController
-            presentationController?.updateLayout()
-            presentedViewController = presentedViewController?.presentedViewController
+        while let viewController = presentedViewController {
+            if let presentationController = viewController.presentationController as? ModalCardPresentationController {
+                presentationControllers.append(presentationController)
+            }
+
+            presentedViewController = viewController.presentedViewController
         }
+
+        return presentationControllers
     }
 
     func makeTransition(
