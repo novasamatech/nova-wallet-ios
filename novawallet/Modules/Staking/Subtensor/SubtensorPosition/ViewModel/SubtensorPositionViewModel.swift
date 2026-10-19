@@ -73,6 +73,14 @@ struct SubtensorPositionState {
         group.flatMap { prices?.taoValue(of: $0.totalAlpha, netuid: netuid) }
     }
 
+    var worthNow: SubtensorSaleProceeds {
+        guard let group, let taoValue else {
+            return .unknown
+        }
+
+        return .quoted(alpha: group.totalAlpha, tao: taoValue)
+    }
+
     var primaryHold: SubtensorRootHold? {
         group.flatMap { holds[$0.primaryHotkey] }
     }
@@ -146,6 +154,7 @@ struct SubtensorPositionRowViewModel: Equatable {
     let title: String
     let value: SubtensorPositionValueViewModel
     let caption: String?
+    var tone = SubtensorValueTone.neutral
 }
 
 struct SubtensorPositionSummaryViewModel {

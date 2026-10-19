@@ -169,6 +169,26 @@ private extension SubtensorPositionViewModelFactory {
         )
     }
 
+    func createEarnedRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel? {
+        guard state.costBasis != .resolved(.noPurchases) else {
+            return nil
+        }
+
+        let isLoading = state.costBasis == .loading || state.price == .loading || !state.isCatalogueResolved
+
+        return createCostBasisRow(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiEarned(),
+            value: isLoading
+                ? .loading
+                : costBasisViewModelFactory.createEarned(
+                    for: state.costBasis,
+                    proceeds: state.worthNow,
+                    taoPrice: state.price.value,
+                    locale: locale
+                )
+        )
+    }
+
     func createCostBasisRow(
         title: String,
         value: SubtensorRowState<SubtensorCostBasisValueViewModel>
@@ -182,7 +202,8 @@ private extension SubtensorPositionViewModelFactory {
             return SubtensorPositionRowViewModel(
                 title: title,
                 value: .loaded(value: viewModel.amount, detail: viewModel.detail),
-                caption: nil
+                caption: nil,
+                tone: viewModel.tone
             )
         }
     }
@@ -214,8 +235,11 @@ private extension SubtensorPositionViewModelFactory {
             amount: isResolved ? state.group.map { formatAlpha($0.totalAlpha, state: state, locale: locale) } : nil,
             fiat: .hidden,
             isActive: isResolved ? isActive : nil,
-            rows: [createAvgBuyPriceRow(for: state, locale: locale), createWorthRow(for: state, locale: locale)]
-                .compactMap { $0 }
+            rows: [
+                createAvgBuyPriceRow(for: state, locale: locale),
+                createWorthRow(for: state, locale: locale),
+                createEarnedRow(for: state, locale: locale)
+            ].compactMap { $0 }
         )
     }
 

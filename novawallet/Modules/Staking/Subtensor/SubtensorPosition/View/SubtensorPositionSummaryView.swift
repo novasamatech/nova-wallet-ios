@@ -221,6 +221,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
             skeletonView.setLoading(true)
         case let .loaded(value, detail):
             valueLabel.text = value
+            valueLabel.textColor = viewModel.tone.textColor
             detailLabel.text = detail
             detailLabel.isHidden = detail == nil
             skeletonView.setLoading(false)
