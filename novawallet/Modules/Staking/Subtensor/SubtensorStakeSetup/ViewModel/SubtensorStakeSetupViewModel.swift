@@ -149,6 +149,7 @@ struct SubtensorStakeSetupViewModelInput {
     var selectionFailed = false
     var presetError: Error?
     var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
+    var isLockedValidatorPending = false
 
     // A reused netuid can still have metadata cached for its previous registration.
     var matchingCatalogue: SubtensorSubnetCatalogue? {
@@ -180,6 +181,7 @@ struct SubtensorStakeSetupViewModelInput {
             amountState == .sufficient,
             let amount, amount > 0,
             validator.validator != nil,
+            !isLockedValidatorPending,
             fee != nil,
             target != nil else {
             return false
