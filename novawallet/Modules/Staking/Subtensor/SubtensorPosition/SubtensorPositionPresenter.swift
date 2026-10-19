@@ -11,13 +11,13 @@ final class SubtensorPositionPresenter {
     let account: MetaChainAccountResponse?
     let chainAsset: ChainAsset
 
-    private var state: SubtensorPositionState
-    private var target: SubtensorStakeTarget?
-    private var validatorRequest: ValidatorRequest?
+    var state: SubtensorPositionState
+    var target: SubtensorStakeTarget?
+    var validatorRequest: ValidatorRequest?
     private var historyRequest: HistoryRequest?
-    private var isSubnetsRefreshForced = false
-    private var isSubnetsInfoUnavailable = false
-    private var isClosed = false
+    var isSubnetsRefreshForced = false
+    var isSubnetsInfoUnavailable = false
+    var isClosed = false
 
     init(
         group: SubtensorPortfolioGroup,
@@ -45,7 +45,7 @@ final class SubtensorPositionPresenter {
     }
 }
 
-private extension SubtensorPositionPresenter {
+extension SubtensorPositionPresenter {
     struct HistoryRequest: Equatable {
         let subnet: SubtensorSubnetRef
         let period: SubtensorPricePeriod
@@ -247,150 +247,6 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
             view?.didReceive(priceHeader: header)
         }
-    }
-}
-
-extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol {
-    func didReceive(group: SubtensorPortfolioGroup?) {
-        guard let group else {
-            guard !isClosed else {
-                return
-            }
-
-            isClosed = true
-            wireframe.popToPortfolio(from: view)
-            return
-        }
-
-        apply(group: group)
-        provideViewModel()
-    }
-
-    func didReceiveSyncFailure(_ isFailed: Bool) {
-        state.isSyncFailed = isFailed
-        provideViewModel()
-    }
-
-    func didReceivePositionsSyncing(_ isSyncing: Bool) {
-        if !isSyncing {
-            view?.didCompleteRefreshing()
-        }
-    }
-
-    func didReceive(price: PriceData?) {
-        state.price = .loaded(price)
-        provideViewModel()
-    }
-
-    func didChangeCurrency() {
-        state.price = .loading
-        provideViewModel()
-    }
-
-    func didReceive(prices: SubtensorAlphaPrices) {
-        state.prices = prices
-        resolveCatalogue()
-    }
-
-    func didFailPrices() {
-        resolveCatalogue()
-    }
-
-    func didReceive(subnetsInfo: SubtensorSubnetsInfo?) {
-        guard
-            let subnet = subnetsInfo?.subnets.first(where: { $0.netuid == state.netuid }),
-            let price = subnetsInfo?.prices[state.netuid] else {
-            if isSubnetsRefreshForced {
-                isSubnetsInfoUnavailable = true
-            } else {
-                isSubnetsRefreshForced = true
-                interactor.loadSubnetsInfo()
-            }
-
-            return
-        }
-
-        target = .subnet(info: subnet, price: price)
-    }
-
-    func didReceive(subnetLogos: SubtensorSubnetLogos?) {
-        state.subnetLogos = subnetLogos
-        provideViewModel()
-    }
-
-    func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId) {
-        guard hotkey == state.group?.primaryHotkey else {
-            return
-        }
-
-        state.validatorHotkey = hotkey
-        state.validator = validator
-        provideViewModel()
-    }
-
-    func didFailValidator(for hotkey: AccountId) {
-        guard hotkey == validatorRequest?.hotkey else {
-            return
-        }
-
-        validatorRequest = nil
-    }
-
-    func didReceive(yields: SubtensorAlphaYields?) {
-        state.isRateResolved = true
-        state.yields = yields
-        provideViewModel()
-    }
-
-    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
-        state.claimable = claimable
-        state.isClaimableFailed = isFailed
-        provideViewModel()
-    }
-
-    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
-        guard pendingClaimHotkeys != state.pendingClaimHotkeys else {
-            return
-        }
-
-        state.pendingClaimHotkeys = pendingClaimHotkeys
-        provideViewModel()
-    }
-
-    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
-        state.holds = holds
-        state.blockTime = blockTime
-        provideViewModel()
-    }
-
-    func didReceive(blockNumber: BlockNumber) {
-        state.blockNumber = blockNumber
-        provideViewModel()
-    }
-
-    func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
-        guard period == state.period else {
-            return
-        }
-
-        state.chartEndDate = Date()
-        state.history = history.map { .available($0) } ?? .notListed
-        state.hasResolvedHistory = true
-        provideViewModel()
-    }
-
-    func didFailHistory(for period: SubtensorPricePeriod) {
-        guard period == state.period, state.history == .loading else {
-            return
-        }
-
-        state.history = .failed
-        state.hasResolvedHistory = true
-        provideViewModel()
-    }
-
-    func didBecomeActive() {
-        loadValidatorIfNeeded()
     }
 }
 
