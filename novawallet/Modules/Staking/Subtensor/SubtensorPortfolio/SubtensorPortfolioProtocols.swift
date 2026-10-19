@@ -3,6 +3,7 @@ import Foundation
 protocol SubtensorPortfolioViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel)
     func didReceive(header: SubtensorPortfolioHeaderViewModel)
+    func didCompleteRefreshing()
 }
 
 protocol SubtensorPortfolioPresenterProtocol: AnyObject {
@@ -11,12 +12,14 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func selectPosition(at index: Int)
     func addPosition()
     func retry()
+    func refresh()
     func selectChartPoint(at index: Int?)
 }
 
 protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func refreshAll()
     func loadHistories(for period: SubtensorPricePeriod)
     func loadWeeklyChanges(for subnets: [SubtensorSubnetRef])
     func loadRootYields()
@@ -35,6 +38,7 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didFailWeeklyChanges()
     func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()
     func didBecomeActive()

@@ -82,6 +82,14 @@ private extension SubtensorPortfolioPresenter {
         state.histories = .loading
         interactor.loadHistories(for: state.period)
     }
+
+    func refetchLoadedHistories() {
+        guard historiesPeriod == state.period else {
+            return
+        }
+
+        interactor.loadHistories(for: state.period)
+    }
 }
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
@@ -128,6 +136,18 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         isNetworkRootRateRequested = false
         interactor.refresh()
         requestRootRateIfNeeded()
+    }
+
+    func refresh() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
+        weeklyChangesRequest = nil
+
+        interactor.refreshAll()
+        requestRootRateIfNeeded()
+        refetchLoadedHistories()
+        requestPriceDataIfNeeded()
+        provideViewModel()
     }
 
     func selectChartPoint(at index: Int?) {
@@ -219,6 +239,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         provideViewModel()
     }
 
+    func didReceivePositionsSyncing(_ isSyncing: Bool) {
+        if !isSyncing {
+            view?.didCompleteRefreshing()
+        }
+    }
+
     func didChangeCurrency() {
         state.price = .loading
         state.histories = .loading
@@ -238,11 +264,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
     }
 
     func didChangeStake() {
-        guard historiesPeriod == state.period else {
-            return
-        }
-
-        interactor.loadHistories(for: state.period)
+        refetchLoadedHistories()
     }
 }
 

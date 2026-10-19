@@ -8,6 +8,7 @@ final class SubtensorPortfolioViewLayout: UIView {
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 24, right: 16)
         view.stackView.alignment = .fill
+        view.scrollView.refreshControl = UIRefreshControl()
     }
 
     let headerView = SubtensorPortfolioHeaderView()

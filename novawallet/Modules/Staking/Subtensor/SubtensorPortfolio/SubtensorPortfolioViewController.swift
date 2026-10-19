@@ -54,6 +54,11 @@ private extension SubtensorPortfolioViewController {
         )
         rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.headerView.chartView.delegate = self
+        rootView.containerView.scrollView.refreshControl?.addTarget(
+            self,
+            action: #selector(actionRefresh),
+            for: .valueChanged
+        )
 
         rootView.onSelectPosition = { [weak self] index in
             self?.presenter.selectPosition(at: index)
@@ -92,6 +97,10 @@ private extension SubtensorPortfolioViewController {
         presenter.retry()
     }
 
+    @objc func actionRefresh() {
+        presenter.refresh()
+    }
+
     @objc func actionPeriod() {
         periodControlHapticPlayer.play()
         presenter.selectPeriod(at: rootView.headerView.periodControl.selectedSegmentIndex)
@@ -105,6 +114,10 @@ extension SubtensorPortfolioViewController: SubtensorPortfolioViewProtocol {
 
     func didReceive(header: SubtensorPortfolioHeaderViewModel) {
         rootView.headerView.bind(viewModel: header)
+    }
+
+    func didCompleteRefreshing() {
+        rootView.containerView.scrollView.refreshControl?.endRefreshing()
     }
 }
 
