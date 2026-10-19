@@ -7,12 +7,14 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         }
 
         if let lockedHotkey = mode.lockedHotkey {
+            isLockedValidatorPending = false
+
             if let validator, validator.hotkey == lockedHotkey {
                 validatorState = .selected(SubtensorStakeSetupValidator(hotkey: lockedHotkey, name: validator.name))
                 validatorItem = validator
-                provideViewModel()
             }
 
+            provideViewModel()
             return
         }
 
