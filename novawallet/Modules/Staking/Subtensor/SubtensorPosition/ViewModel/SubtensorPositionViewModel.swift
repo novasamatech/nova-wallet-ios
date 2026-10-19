@@ -77,13 +77,18 @@ struct SubtensorPositionState {
     }
 
     var holdRemainingBlocks: UInt64? {
-        guard isRoot, let hold = primaryHold, hold.interval > 0, let blockNumber else {
+        guard isRoot, let group, let blockNumber else {
             return nil
         }
 
-        let remaining = hold.remainingBlocks(at: UInt64(blockNumber))
+        let head = UInt64(blockNumber)
+        let remaining = group.positions.map { holds[$0.hotkey]?.remainingBlocks(at: head) ?? 0 }
 
-        return remaining > 0 ? remaining : nil
+        guard let earliest = remaining.min(), earliest > 0 else {
+            return nil
+        }
+
+        return earliest
     }
 
     var claimTarget: SubtensorRootClaimPreview? {
