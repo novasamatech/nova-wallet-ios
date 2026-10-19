@@ -73,6 +73,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
 
         blockNumberSubscription?.unsubscribe()
         state.positionsSyncService?.remove(observer: self)
+        state.positionsSyncService?.unsubscribeSyncState(self)
     }
 }
 
@@ -116,6 +117,10 @@ private extension SubtensorPositionInteractor {
                 self?.presenter?.didReceiveSyncFailure(isFailed)
             }
         )
+
+        state.positionsSyncService?.subscribeSyncState(self, queue: .main) { [weak self] _, isSyncing in
+            self?.presenter?.didReceivePositionsSyncing(isSyncing)
+        }
     }
 
     func subscribeBlockNumber() {
@@ -217,6 +222,25 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         if !isRoot {
             loadPrices()
+        }
+    }
+
+    func refreshAll() {
+        priceProvider?.refresh()
+        providePendingClaims()
+        loadYields()
+
+        if !isRoot {
+            loadSubnetLogos()
+            loadSubnetsInfo()
+        } else if isBlockFeedDown {
+            rearmBlockFeed()
+        }
+
+        refreshPositions()
+
+        if state.positionsSyncService == nil {
+            presenter?.didReceivePositionsSyncing(false)
         }
     }
 

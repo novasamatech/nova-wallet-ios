@@ -11,6 +11,7 @@ final class SubtensorPositionViewLayout: UIView {
         view.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 24, right: 16)
         view.stackView.alignment = .fill
         view.stackView.spacing = 16
+        view.scrollView.refreshControl = UIRefreshControl()
     }
 
     let summaryView = SubtensorPositionSummaryView()

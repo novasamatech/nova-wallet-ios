@@ -224,6 +224,21 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         provideViewModel()
     }
 
+    func refresh() {
+        validatorRequest = nil
+        interactor.refreshAll()
+
+        if let group = state.group {
+            apply(group: group)
+        }
+
+        if state.history == .failed {
+            retryHistory()
+        } else if let historyRequest {
+            interactor.loadHistory(for: historyRequest.subnet, period: historyRequest.period)
+        }
+    }
+
     func selectChart(_ selection: SubtensorPriceChartSelection?) {
         state.chartSelection = selection
 
@@ -252,6 +267,12 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
     func didReceiveSyncFailure(_ isFailed: Bool) {
         state.isSyncFailed = isFailed
         provideViewModel()
+    }
+
+    func didReceivePositionsSyncing(_ isSyncing: Bool) {
+        if !isSyncing {
+            view?.didCompleteRefreshing()
+        }
     }
 
     func didReceive(price: PriceData?) {
@@ -357,7 +378,7 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
     }
 
     func didFailHistory(for period: SubtensorPricePeriod) {
-        guard period == state.period else {
+        guard period == state.period, state.history == .loading else {
             return
         }
 
