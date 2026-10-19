@@ -58,6 +58,11 @@ private extension SubtensorPositionInteractor {
     }
 
     func settleOwnTrade() {
+        guard state.selectedAccount != nil else {
+            presenter?.didReceiveOwnTradeSettling(false)
+            return
+        }
+
         isOwnTradeSettleDue = true
         loadCostBasis()
     }
