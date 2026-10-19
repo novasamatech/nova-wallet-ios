@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol {
+extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -63,6 +63,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorBaseInteractorOutputProtocol 
         logger.error("Error: \(error)")
 
         presentBaseRetry(for: error)
+    }
+
+    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
+        self.pendingClaimHotkeys = pendingClaimHotkeys
     }
 }
 

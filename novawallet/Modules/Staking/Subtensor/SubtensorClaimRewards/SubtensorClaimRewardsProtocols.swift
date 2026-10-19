@@ -8,3 +8,11 @@ protocol SubtensorClaimRewardsViewProtocol: StakingGenericRewardsViewProtocol {
 protocol SubtensorClaimRewardsPresenterProtocol: StakingGenericRewardsPresenterProtocol {
     func selectValidator()
 }
+
+protocol SubtensorClaimRewardsInteractorInputProtocol: SubtensorBaseInteractorInputProtocol {
+    func refreshPendingClaims(for claimable: [SubtensorRootClaimPreview]?)
+}
+
+protocol SubtensorClaimRewardsInteractorOutputProtocol: SubtensorBaseInteractorOutputProtocol {
+    func didReceive(pendingClaimHotkeys: Set<AccountId>)
+}
