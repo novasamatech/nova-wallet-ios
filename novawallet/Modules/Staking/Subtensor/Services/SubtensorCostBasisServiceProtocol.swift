@@ -12,6 +12,8 @@ protocol SubtensorCostBasisServiceProtocol: AnyObject {
     func remainingSettleTime(for accountId: AccountId, netuid: UInt16) -> TimeInterval?
 
     func settleTimeAfterOwnTrade(for accountId: AccountId, netuid: UInt16) -> TimeInterval
+
+    func dropSettledOperations(for accountId: AccountId, netuid: UInt16)
 }
 
 extension SubtensorLoadDelivering {

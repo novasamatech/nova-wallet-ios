@@ -116,6 +116,22 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
     func settleTimeAfterOwnTrade(for accountId: AccountId, netuid: UInt16) -> TimeInterval {
         remainingSettleTime(for: accountId, netuid: netuid) ?? Self.ownTradeSettleTime
     }
+
+    func dropSettledOperations(for accountId: AccountId, netuid: UInt16) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        let now = timeProvider()
+
+        guard
+            let blockedUntil = seedBlockedUntil[accountId], blockedUntil > now,
+            (settleDeadlines[accountId]?[netuid] ?? now) <= now,
+            let accountSubject = try? accountId.toAddress(using: .defaultSubstrateFormat) else {
+            return
+        }
+
+        apiOperationFactory.dropOperations(accountSubject: accountSubject)
+    }
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {
