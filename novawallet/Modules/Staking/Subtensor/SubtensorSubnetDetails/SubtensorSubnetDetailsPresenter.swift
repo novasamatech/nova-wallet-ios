@@ -73,13 +73,11 @@ private extension SubtensorSubnetDetailsPresenter {
         case .loading:
             return true
         case let .available(history):
-            guard
-                let lastDate = history.points.last?.date,
-                let windowStart = history.period.startDate(endingAt: lastDate) else {
+            guard let firstDate = history.points.first?.date, let lastDate = history.points.last?.date else {
                 return false
             }
 
-            return registrationDate > windowStart
+            return registrationDate > (history.period.startDate(endingAt: lastDate) ?? firstDate)
         case .notListed, .failed:
             return false
         }
