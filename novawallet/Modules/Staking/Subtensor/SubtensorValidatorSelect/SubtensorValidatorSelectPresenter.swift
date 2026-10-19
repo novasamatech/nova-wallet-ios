@@ -148,13 +148,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func showSortOptions() {
-        wireframe
-            .showFilters(from: view, applied: filters) { [weak self] filters in
-                guard let self else { return }
-                if filters.hidesUnusualApy != self.filters.hidesUnusualApy { keptHotkeys = [] }
-                filterSession.apply(filters, isRoot: target.isRoot)
-                provideState()
-            }
+        wireframe.showFilters(from: view, applied: filters, delegate: self)
     }
 
     func select(hotkey: AccountId) {
@@ -185,8 +179,15 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
             return
         }
 
-        delegate?.didSelectValidator(handedOut(item), for: target)
-        wireframe.complete(from: view)
+        let validator = handedOut(item)
+        let target = target
+        let delegate = delegate
+
+        delegate?.didSelectValidator(validator, for: target)
+
+        wireframe.complete(from: view) { [weak delegate] in
+            delegate?.didCompleteValidatorSelection(validator, for: target)
+        }
     }
 }
 
@@ -237,6 +238,17 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
     func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
         verificationError = error
+        provideState()
+    }
+}
+
+extension SubtensorValidatorSelectPresenter: SubtensorValidatorFiltersDelegate {
+    func didReceiveValidator(filters newFilters: SubtensorValidatorFilters) {
+        if newFilters.hidesUnusualApy != filters.hidesUnusualApy {
+            keptHotkeys = []
+        }
+
+        filterSession.apply(newFilters, isRoot: target.isRoot)
         provideState()
     }
 }

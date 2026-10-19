@@ -317,8 +317,10 @@ extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
         guard target == input.target else { return }
         state.validator = .selected(validator)
         provideViewModel()
+    }
 
-        guard isUsePending else {
+    func didCompleteValidatorSelection(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        guard target == input.target, isUsePending else {
             return
         }
 

@@ -81,43 +81,6 @@ struct SubtensorGetTaoViewModel: Equatable {
     let action: String
 }
 
-struct SubtensorSetupActionViewModel: Equatable {
-    let title: String
-    let isEnabled: Bool
-}
-
-enum SubtensorRowState<Value> {
-    case hidden
-    case loading
-    case value(Value)
-}
-
-extension SubtensorRowState: Equatable where Value: Equatable {}
-
-extension SubtensorRowState where Value == String {
-    static func trade(_ value: String?, isPending: Bool, locale: Locale) -> SubtensorRowState<String> {
-        if let value {
-            return .value(SubtensorSubnetNaming.isolatedLeftToRight(value))
-        }
-
-        return isPending ? .loading : .value(.subtensorUnknown(for: locale))
-    }
-}
-
-enum SubtensorSetupValidatorViewModel {
-    case loading
-    case unselected(title: String)
-    case selected(DisplayAddressViewModel)
-
-    var isLoading: Bool {
-        if case .loading = self {
-            return true
-        }
-
-        return false
-    }
-}
-
 struct SubtensorStakeSetupValidator: Equatable {
     let hotkey: AccountId
     let name: String?
