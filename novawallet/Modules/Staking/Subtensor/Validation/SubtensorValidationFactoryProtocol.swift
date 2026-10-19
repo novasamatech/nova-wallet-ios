@@ -81,7 +81,7 @@ protocol SubtensorValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
         stakedAmount: Balance?,
         minStake: Balance?,
         quotedSwapFee: Balance?,
-        includesNovaFee: Bool,
+        novaFeeRate: BigRational?,
         locale: Locale
     ) -> DataValidating
 

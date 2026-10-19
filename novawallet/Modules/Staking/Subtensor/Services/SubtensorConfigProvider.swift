@@ -3,14 +3,12 @@ import Operation_iOS
 
 final class SubtensorConfigProvider: BaseFetchOperationFactory {
     let url: URL
-    let novaFeeRateStore: SubtensorNovaFeeRateStore
 
     @Atomic(defaultValue: nil)
     private var config: SubtensorConfig?
 
-    init(url: URL, novaFeeRateStore: SubtensorNovaFeeRateStore = .shared) {
+    init(url: URL) {
         self.url = url
-        self.novaFeeRateStore = novaFeeRateStore
     }
 }
 
@@ -55,7 +53,6 @@ private extension SubtensorConfigProvider {
 
         return CompoundOperationWrapper(targetOperation: fetchOperation).mapped { config in
             self.config = config
-            self.novaFeeRateStore.apply(config)
             return config
         }
     }

@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 
 enum SubtensorInfoSheet: Equatable {
-    case swapRate(SubtensorTradeDirection, subnetName: String)
+    case swapRate(SubtensorTradeDirection, subnetName: String, novaFeeRate: BigRational)
     case slippage(BigRational, canEdit: Bool)
     case validator
     case networkFee(SubtensorTradeDirection)
@@ -44,9 +44,9 @@ extension SubtensorInfoSheet {
             let percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
 
             switch self {
-            case let .swapRate(direction, subnetName):
+            case let .swapRate(direction, subnetName, novaFeeRate):
                 let feeRate = SwapBaseViewModelFactory.commissionPercent(
-                    rate: SubtensorNovaFeeRateStore.shared.rate,
+                    rate: novaFeeRate,
                     percentFormatter: percentFormatter,
                     locale: locale
                 )

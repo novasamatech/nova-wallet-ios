@@ -189,13 +189,20 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterPr
 
         switch row {
         case .swapRate:
+            guard let novaFeeRate = request.quote?.novaFeeRate else {
+                return
+            }
+
             let subnetName = SubtensorSubnetNaming.titleWithSymbol(
                 for: request.target.netuid,
                 in: catalogue,
                 locale: selectedLocale
             )
 
-            wireframe.showSubtensorInfo(.swapRate(direction, subnetName: subnetName), from: view)
+            wireframe.showSubtensorInfo(
+                .swapRate(direction, subnetName: subnetName, novaFeeRate: novaFeeRate),
+                from: view
+            )
         case .costBasis:
             wireframe.showSubtensorInfo(costBasisInfo(for: direction), from: view)
         case .slippage:

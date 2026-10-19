@@ -119,15 +119,21 @@ private extension SubtensorTradeQuoteOperationFactory {
         return quoteWrapper.insertingHead(operations: blockHashWrapper.allOperations)
     }
 
+    static func stakedTao(grossTao: Balance, novaFee: SubtensorNovaFee?) -> Balance {
+        let feeAmount = novaFee?.amount ?? 0
+
+        return grossTao > feeAmount ? grossTao - feeAmount : 0
+    }
+
     static func makeBuyQuote(
         from quote: SubtensorQuote,
         grossTao: Balance,
-        stakedTao: Balance,
         novaFee: SubtensorNovaFee?,
+        novaFeeRate: BigRational,
         tolerance: BigRational
     ) throws -> SubtensorTradeQuote {
         let limitPrice = try SubtensorLimitPriceCalculator.buyLimit(spot: quote.spotPrice, tolerance: tolerance)
-        let swappedTao = netOfPoolFee(stakedTao, feeRate: quote.feeRate)
+        let swappedTao = netOfPoolFee(stakedTao(grossTao: grossTao, novaFee: novaFee), feeRate: quote.feeRate)
         let minimumAlphaOut = swappedTao * SubtensorPallet.alphaPriceScale / limitPrice
 
         try SubtensorPallet.ensureU64Amount(minimumAlphaOut)
@@ -136,6 +142,7 @@ private extension SubtensorTradeQuoteOperationFactory {
             quote: quote,
             amountIn: grossTao,
             novaFee: novaFee,
+            novaFeeRate: novaFeeRate,
             expectedOut: quote.expectedOut,
             swapMinimumOut: minimumAlphaOut,
             minimumOut: minimumAlphaOut,
@@ -147,7 +154,8 @@ private extension SubtensorTradeQuoteOperationFactory {
         from quote: SubtensorQuote,
         alpha: Balance,
         tolerance: BigRational,
-        novaFee: SubtensorNovaFee?
+        novaFee: SubtensorNovaFee?,
+        novaFeeRate: BigRational
     ) throws -> SubtensorTradeQuote {
         let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(spot: quote.spotPrice, tolerance: tolerance)
         let feeAmount = novaFee?.amount ?? 0
@@ -157,6 +165,7 @@ private extension SubtensorTradeQuoteOperationFactory {
             quote: quote,
             amountIn: alpha,
             novaFee: novaFee,
+            novaFeeRate: novaFeeRate,
             expectedOut: quote.expectedOut > feeAmount ? quote.expectedOut - feeAmount : 0,
             swapMinimumOut: minimumTaoOut,
             minimumOut: minimumTaoOut > feeAmount ? minimumTaoOut - feeAmount : 0,
@@ -189,8 +198,7 @@ private extension SubtensorTradeQuoteOperationFactory {
 
             let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
             let novaFee = try feeCalculator.fee(basis: grossTao, rate: rate)
-            let feeAmount = novaFee?.amount ?? 0
-            let stakedTao = grossTao > feeAmount ? grossTao - feeAmount : 0
+            let stakedTao = Self.stakedTao(grossTao: grossTao, novaFee: novaFee)
 
             return createQuoteWrapper(
                 for: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: stakedTao))
@@ -198,8 +206,8 @@ private extension SubtensorTradeQuoteOperationFactory {
                 try Self.makeBuyQuote(
                     from: quote,
                     grossTao: grossTao,
-                    stakedTao: stakedTao,
                     novaFee: novaFee,
+                    novaFeeRate: rate,
                     tolerance: tolerance
                 )
             }
@@ -236,7 +244,8 @@ private extension SubtensorTradeQuoteOperationFactory {
                 from: quote,
                 alpha: alpha,
                 tolerance: tolerance,
-                novaFee: feeCalculator.fee(basis: quote.sim.taoAmount, rate: rate)
+                novaFee: feeCalculator.fee(basis: quote.sim.taoAmount, rate: rate),
+                novaFeeRate: rate
             )
         }
 

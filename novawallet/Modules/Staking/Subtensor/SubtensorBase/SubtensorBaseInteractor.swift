@@ -14,7 +14,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let configProvider: SubtensorConfigProviding
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
@@ -32,6 +32,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private let validatingQuoteCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
+    private let novaFeeRateCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
     private var rootHoldsHotkeys: [AccountId] = []
@@ -50,7 +51,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
         catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         costBasisService = state.earnServices.costBasisService
         rootHoldOperationFactory = state.earnServices.rootHoldOperationFactory
-        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        configProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
         blockNumberSubscription = flowServices.blockNumberSubscription
@@ -68,6 +69,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
         validatingQuoteCallStore.cancel()
         catalogueCallStore.cancel()
         logosCallStore.cancel()
+        novaFeeRateCallStore.cancel()
         costBasisCallStore.cancel()
         holdsCallStore.cancel()
 
@@ -262,8 +264,20 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     func loadSubnetLogos() {
         logosCallStore.cancel()
 
-        load(subnetLogosProvider.createLogosWrapper(), in: logosCallStore, label: "subnet logos") { [weak self] in
+        load(configProvider.createLogosWrapper(), in: logosCallStore, label: "subnet logos") { [weak self] in
             self?.basePresenter?.didReceiveSubnetLogos($0)
+        }
+    }
+
+    func loadNovaFeeRate() {
+        novaFeeRateCallStore.cancel()
+
+        load(
+            configProvider.createNovaFeeRateWrapper(),
+            in: novaFeeRateCallStore,
+            label: "nova fee rate"
+        ) { [weak self] in
+            self?.basePresenter?.didReceiveNovaFeeRate($0)
         }
     }
 

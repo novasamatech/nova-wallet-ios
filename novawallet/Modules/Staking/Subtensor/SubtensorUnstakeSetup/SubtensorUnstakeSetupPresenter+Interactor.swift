@@ -90,6 +90,10 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         provideAssetViewModel()
     }
 
+    func didReceiveNovaFeeRate(_ rate: BigRational?) {
+        novaFeeRate = rate
+    }
+
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId) {
         guard hotkey == group?.primaryHotkey else {
             return

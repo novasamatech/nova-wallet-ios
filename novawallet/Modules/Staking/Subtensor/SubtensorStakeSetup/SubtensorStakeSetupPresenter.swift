@@ -46,6 +46,7 @@ final class SubtensorStakeSetupPresenter {
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
+    var novaFeeRate: BigRational?
     var isConfirmationShown = false
 
     init(
@@ -314,6 +315,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
 
         interactor.setup()
         interactor.loadBlockTime()
+        interactor.loadNovaFeeRate()
 
         startMode()
     }

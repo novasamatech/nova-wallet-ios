@@ -23,7 +23,7 @@ protocol SubtensorQuoteViewModelFactoryProtocol {
         locale: Locale
     ) -> String?
 
-    func novaFeeDisclosure(locale: Locale) -> String
+    func novaFeeDisclosure(rate: BigRational, locale: Locale) -> String
 }
 
 final class SubtensorQuoteViewModelFactory {
@@ -153,9 +153,9 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         return formatter.stringFromDecimal(tolerance.decimalOrZeroValue)
     }
 
-    func novaFeeDisclosure(locale: Locale) -> String {
+    func novaFeeDisclosure(rate: BigRational, locale: Locale) -> String {
         let percent = SwapBaseViewModelFactory.commissionPercent(
-            rate: SubtensorNovaFeeRateStore.shared.rate,
+            rate: rate,
             percentFormatter: NumberFormatter.percentSingleHalfEven.localizableResource(),
             locale: locale
         )
