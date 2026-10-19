@@ -223,19 +223,29 @@ private extension FeatureSupportChecker {
         }
     }
 
-    func checkSubtensorStakingByWalletTypeSupported(
-        _ wallet: MetaAccountModel
+    static func checkSubtensorStakingByWalletTypeSupported(
+        _ walletType: MetaAccountModelType
     ) -> FeatureSupportCheckResult {
-        switch wallet.type {
+        switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .watchOnly:
             .commonResult(.available)
         case .ledger, .genericLedger:
             .commonResult(.ledgerNotSupported)
         case .proxied:
-            .commonResult(.noSubtensorStakingSupport(wallet))
+            .commonResult(.noSubtensorStakingSupport(walletType))
         case .multisig:
             .delayedExecutionCheckRequired
         }
+    }
+}
+
+extension FeatureSupportChecker {
+    static func refusesSubtensorStakingSigning(for walletType: MetaAccountModelType) -> Bool {
+        guard case let .commonResult(result) = checkSubtensorStakingByWalletTypeSupported(walletType) else {
+            return false
+        }
+
+        return !result.isAvailable
     }
 }
 
@@ -334,7 +344,7 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
         chain: ChainModel,
         completion: @escaping FeatureSupportCheckerClosure
     ) {
-        let checkResult = checkSubtensorStakingByWalletTypeSupported(wallet)
+        let checkResult = Self.checkSubtensorStakingByWalletTypeSupported(wallet.type)
 
         switch checkResult {
         case let .commonResult(result):
@@ -346,7 +356,7 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
             ) { hasSupport in
                 let result: OperationCheckCommonResult = hasSupport
                     ? .available
-                    : .noSubtensorStakingSupport(wallet)
+                    : .noSubtensorStakingSupport(wallet.type)
 
                 completion(result)
             }
