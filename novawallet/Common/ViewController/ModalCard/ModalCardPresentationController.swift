@@ -250,6 +250,26 @@ public extension ModalCardPresentationController {
         parentPresentationController?.applySourceAppearanceTransform()
     }
 
+    func performWithoutSourceTransforms(_ actions: () -> Void) {
+        guard let sourceView = presentingViewController.view else {
+            actions()
+            return
+        }
+
+        let transform = sourceView.transform
+
+        UIView.performWithoutAnimation { sourceView.transform = .identity }
+
+        if let parentPresentationController = presentingViewController.presentationController
+            as? ModalCardPresentationController {
+            parentPresentationController.performWithoutSourceTransforms(actions)
+        } else {
+            actions()
+        }
+
+        UIView.performWithoutAnimation { sourceView.transform = transform }
+    }
+
     func updateLayout() {
         guard
             let presentedView,
