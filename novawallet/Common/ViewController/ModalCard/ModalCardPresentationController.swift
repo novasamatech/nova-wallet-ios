@@ -2,11 +2,11 @@ import UIKit
 import UIKit_iOS
 
 public final class ModalCardPresentationController: UIPresentationController {
-    private weak var observedScrollView: UIScrollView?
+    weak var observedScrollView: UIScrollView?
     private var backgroundView: UIView?
 
     private let contextRootViewController: UIViewController
-    private let configuration: ModalCardPresentationConfiguration
+    let configuration: ModalCardPresentationConfiguration
     private let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
     weak var presentationDelegate: ModalCardPresentationControllerDelegate? {
@@ -14,7 +14,7 @@ public final class ModalCardPresentationController: UIPresentationController {
     }
 
     var interactiveDismissal: ModalCardInteractiveDismissal?
-    var initialTranslation: CGPoint = .zero
+    var dragState = ModalCardDragState()
 
     init(
         presentedViewController: UIViewController,
@@ -124,130 +124,6 @@ private extension ModalCardPresentationController {
             with: { self.presentedViewController.dismiss(animated: animated, completion: nil) },
             cancelClosure: nil
         )
-    }
-
-    func stopPullToDismiss(finished: Bool, velocity: CGFloat) {
-        guard let interactiveDismissal else { return }
-
-        self.interactiveDismissal = nil
-
-        if finished {
-            finishPresentation(
-                with: { interactiveDismissal.finish(velocity: velocity) },
-                cancelClosure: { interactiveDismissal.cancel(velocity: velocity) }
-            )
-        } else {
-            interactiveDismissal.cancel(velocity: velocity)
-        }
-    }
-
-    func finishPresentation(
-        with finishClosure: () -> Void,
-        cancelClosure: (() -> Void)?
-    ) {
-        if let presentationDelegate {
-            if presentationDelegate.presentationControllerShouldDismiss(self) {
-                finishClosure()
-            } else {
-                cancelClosure?()
-                presentationDelegate.presentationControllerDidAttemptToDismiss(self)
-            }
-        } else {
-            finishClosure()
-        }
-    }
-
-    func canDrag(
-        basedOn scrollView: UIScrollView?,
-        with panGesture: UIPanGestureRecognizer
-    ) -> Bool {
-        guard let scrollView else { return true }
-        guard let presentedView, !containsActiveLongPress(scrollView) else { return false }
-
-        let touchPoint = panGesture.location(in: presentedView)
-
-        if let tableView = scrollView as? UITableView, tableView.isEditing {
-            return !tableView.frame.contains(touchPoint)
-        }
-
-        let contentOffsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
-        let hitView = presentedView.hitTest(touchPoint, with: nil)
-        let shouldDrag = contentOffsetY <= 0
-            || !(hitView?.isDescendant(of: scrollView) ?? true)
-
-        return shouldDrag
-    }
-
-    func containsActiveLongPress(_ scrollView: UIScrollView?) -> Bool {
-        guard let recognizers = scrollView?.gestureRecognizers else { return false }
-
-        return recognizers.contains { recognizer in
-            if let longPress = recognizer as? UILongPressGestureRecognizer {
-                let state = longPress.state
-
-                return state == .began ||
-                    state == .changed
-            }
-            return false
-        }
-    }
-
-    // MARK: Interactive dismissal
-
-    func handlePan(from panGestureRecognizer: UIPanGestureRecognizer, on view: UIView) {
-        let translation = panGestureRecognizer.translation(in: view)
-        let velocity = panGestureRecognizer.velocity(in: view)
-
-        switch panGestureRecognizer.state {
-        case .began, .changed:
-            let scrollProgress = max(0.0, (translation.y - initialTranslation.y) / max(1.0, view.bounds.size.height))
-            let progress = min(1.0, scrollProgress)
-            let scrolledFromTop = translation.y <= 0 && scrollProgress == 0
-
-            guard canDrag(basedOn: observedScrollView, with: panGestureRecognizer) else {
-                observedScrollView?.isScrollEnabled = true
-
-                return
-            }
-
-            observedScrollView?.isScrollEnabled = scrolledFromTop
-
-            if let interactiveDismissal {
-                interactiveDismissal.update(progress)
-            } else {
-                interactiveDismissal = ModalCardInteractiveDismissal(
-                    distance: view.bounds.height
-                )
-                initialTranslation = translation
-                presentedViewController.dismiss(animated: true)
-                interactiveDismissal?.update(progress)
-            }
-        case .cancelled, .ended:
-            observedScrollView?.isScrollEnabled = true
-
-            if let interactiveDismissal = interactiveDismissal {
-                let progress = (translation.y - initialTranslation.y) / max(1.0, view.bounds.height)
-                let thresholdReached = progress >= configuration.dismissPercentThreshold
-                let shouldDismiss = (thresholdReached && velocity.y >= 0) ||
-                    (velocity.y >= configuration.dismissVelocityThreshold &&
-                        translation.y >= configuration.dismissMinimumOffset)
-                stopPullToDismiss(
-                    finished: panGestureRecognizer.state != .cancelled && shouldDismiss,
-                    velocity: velocity.y
-                )
-            }
-        default:
-            break
-        }
-    }
-
-    // MARK: Action
-
-    @objc func didPan(sender: Any?) {
-        guard let panGestureRecognizer = sender as? UIPanGestureRecognizer else { return }
-        guard let view = panGestureRecognizer.view else { return }
-
-        handlePan(from: panGestureRecognizer, on: view)
     }
 }
 
