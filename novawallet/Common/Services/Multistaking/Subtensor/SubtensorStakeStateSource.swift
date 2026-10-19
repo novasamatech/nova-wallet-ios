@@ -29,6 +29,7 @@ final class SubtensorStakeStateSource {
     private var isAlphaTriggerPrimed = false
     private var fetchTriggerBlockHash: Data?
     private var isRefetchPending = false
+    private var isSyncingRequested = false
     private let fetchCallStore = CancellableCallStore()
 
     init(
@@ -56,7 +57,7 @@ final class SubtensorStakeStateSource {
         alphaTriggerSubscription?.unsubscribe()
     }
 
-    func add(handler: SubtensorStakeStateHandler) {
+    func add(handler: SubtensorStakeStateHandler, refreshing: Bool) {
         mutex.lock()
 
         defer {
@@ -65,11 +66,19 @@ final class SubtensorStakeStateSource {
 
         handlers.clearEmptyItems()
 
-        guard !handlers.contains(where: { $0.target === handler }) else {
-            return
+        if !handlers.contains(where: { $0.target === handler }) {
+            handlers.append(WeakWrapper(target: handler))
+
+            if !refreshing, let lastState {
+                workingQueue.async {
+                    handler.handleStakeState(lastState)
+                }
+
+                return
+            }
         }
 
-        handlers.append(WeakWrapper(target: handler))
+        requestFetch()
     }
 
     func remove(handler: SubtensorStakeStateHandler) {
@@ -99,15 +108,21 @@ final class SubtensorStakeStateSource {
             return
         }
 
+        requestFetch()
+    }
+}
+
+private extension SubtensorStakeStateSource {
+    func requestFetch() {
+        isSyncingRequested = true
+
         if hotkeysSubscription == nil {
             subscribe()
         } else {
             trigger(at: nil)
         }
     }
-}
 
-private extension SubtensorStakeStateSource {
     func subscribe() {
         let connection: JSONRPCEngine
         let runtimeService: RuntimeCodingServiceProtocol
@@ -152,6 +167,7 @@ private extension SubtensorStakeStateSource {
         fetchCallStore.cancel()
         fetchTriggerBlockHash = nil
         isRefetchPending = false
+        isSyncingRequested = false
 
         hotkeysSubscription = nil
         connection = nil
@@ -179,6 +195,8 @@ private extension SubtensorStakeStateSource {
 
     func fetch(triggeredAt blockHash: Data?) {
         fetchTriggerBlockHash = blockHash
+        let isSignalled = isSyncingRequested
+        isSyncingRequested = false
 
         executeCancellable(
             wrapper: stakeStateFetchOperationFactory.createStateWrapper(for: accountId),
@@ -190,7 +208,9 @@ private extension SubtensorStakeStateSource {
             self?.handle(fetchResult: result)
         }
 
-        notifyHandlers { $0.handleStakeStateFetching() }
+        if isSignalled {
+            notifyHandlers { $0.handleStakeStateFetching() }
+        }
     }
 
     func handle(fetchResult: Result<Multistaking.SubtensorState, Error>) {

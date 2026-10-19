@@ -9,6 +9,7 @@ final class SubtensorStakeStateSubscription {
     let onSyncing: () -> Void
     let onState: (Multistaking.SubtensorState) -> Void
     let onFailure: (Error) -> Void
+    let onUnchangedState: (Multistaking.SubtensorState) -> Void
 
     private(set) var lastState: Multistaking.SubtensorState?
     private(set) var isFetching = false
@@ -22,7 +23,8 @@ final class SubtensorStakeStateSubscription {
         workingQueue: DispatchQueue,
         onSyncing: @escaping () -> Void,
         onState: @escaping (Multistaking.SubtensorState) -> Void,
-        onFailure: @escaping (Error) -> Void
+        onFailure: @escaping (Error) -> Void,
+        onUnchangedState: @escaping (Multistaking.SubtensorState) -> Void = { _ in }
     ) {
         self.source = source
         self.mutex = mutex
@@ -31,13 +33,17 @@ final class SubtensorStakeStateSubscription {
         self.onSyncing = onSyncing
         self.onState = onState
         self.onFailure = onFailure
+        self.onUnchangedState = onUnchangedState
     }
 
-    func subscribe() {
+    func subscribe(refreshing: Bool = false) {
+        if !isSubscribed {
+            lastState = nil
+        }
+
         isSubscribed = true
 
-        source.add(handler: self)
-        source.refresh()
+        source.add(handler: self, refreshing: refreshing)
     }
 
     func unsubscribe() {
@@ -104,7 +110,14 @@ extension SubtensorStakeStateSubscription: SubtensorStakeStateHandler {
             return
         }
 
+        let isRequested = isFetching
         isFetching = false
+
+        guard isRequested || state != lastState else {
+            onUnchangedState(state)
+            return
+        }
+
         lastState = state
 
         onState(state)
