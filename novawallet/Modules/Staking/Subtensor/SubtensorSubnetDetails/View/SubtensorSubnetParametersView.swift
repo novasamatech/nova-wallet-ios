@@ -73,12 +73,21 @@ final class SubtensorParameterRowView: UIView {
     let detailLabel: UILabel = .create { $0.apply(style: .caption1Secondary); $0.textAlignment = .right }
     let dividerView: UIView = .create { $0.backgroundColor = R.color.colorDivider() }
     let loadingView = SubtensorSkeletonView(cornerRadius: 6)
+    private let tapRecognizer = UITapGestureRecognizer()
+
+    /// Set for link rows: the value turns accent and the whole row becomes tappable.
+    var onTap: (() -> Void)? {
+        didSet { tapRecognizer.isEnabled = onTap != nil }
+    }
 
     init(style: Style) {
         self.style = style
         super.init(frame: .zero)
         titleLabel.apply(style: style.title)
         valueLabel.apply(style: style.value)
+        tapRecognizer.addTarget(self, action: #selector(actionTap))
+        tapRecognizer.isEnabled = false
+        addGestureRecognizer(tapRecognizer)
         let values = UIView.vStack(
             alignment: .trailing,
             margins: UIEdgeInsets(top: style.valuesTopInset, left: 0, bottom: 0, right: 0),
@@ -108,9 +117,15 @@ final class SubtensorParameterRowView: UIView {
 
     func bind(_ model: SubtensorParameterRowViewModel) {
         titleLabel.apply(text: model.title, lineHeight: style.titleLineHeight)
+        valueLabel.apply(style: model.link != nil ? .footnoteAccentText : style.value)
+        valueLabel.accessibilityTraits = model.link != nil ? .link : .staticText
         valueLabel.apply(text: model.value ?? "", lineHeight: Constants.valueLineHeight)
         detailLabel.apply(text: model.detail ?? "", lineHeight: Constants.detailLineHeight)
         detailLabel.isHidden = model.detail == nil
         loadingView.setLoading(model.value == nil)
+    }
+
+    @objc private func actionTap() {
+        onTap?()
     }
 }

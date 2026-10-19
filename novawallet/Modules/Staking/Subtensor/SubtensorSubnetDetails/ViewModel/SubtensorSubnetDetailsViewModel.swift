@@ -51,6 +51,14 @@ struct SubtensorParameterRowViewModel {
     let title: String
     let value: String?
     let detail: String?
+    let link: URL?
+
+    init(title: String, value: String?, detail: String?, link: URL? = nil) {
+        self.title = title
+        self.value = value
+        self.detail = detail
+        self.link = link
+    }
 }
 
 struct SubtensorSubnetParametersViewModel {

@@ -60,7 +60,28 @@ extension SubtensorSubnetDetailsViewModelFactory {
                 state: state,
                 locale: locale
             )
-        ]
+        ] + createLinkRows(locale: locale)
+    }
+
+    func createLinkRows(locale: Locale) -> [SubtensorParameterRowViewModel] {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let website = subnet.links.website.map {
+            SubtensorParameterRowViewModel(
+                title: strings.stakingSubtensorV22Website(),
+                value: SubtensorSubnetLinkNormalizer.websiteDisplayText($0),
+                detail: nil,
+                link: $0
+            )
+        }
+        let github = subnet.links.github.map {
+            SubtensorParameterRowViewModel(
+                title: strings.stakingSubtensorV22Github(),
+                value: SubtensorSubnetLinkNormalizer.githubDisplayText($0),
+                detail: nil,
+                link: $0
+            )
+        }
+        return [website, github].compactMap { $0 }
     }
 }
 
