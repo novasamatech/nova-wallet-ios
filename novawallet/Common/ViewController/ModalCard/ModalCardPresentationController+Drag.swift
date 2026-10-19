@@ -100,6 +100,20 @@ extension ModalCardPresentationController {
         return shouldDrag
     }
 
+    func rebaseDrag(toRestHeight height: CGFloat) -> Bool {
+        guard interactiveDismissal == nil, let restFrame = dragState.restFrame, let presentedView else {
+            return false
+        }
+
+        let newRestFrame = CGRect(origin: restFrame.origin, size: CGSize(width: restFrame.width, height: height))
+        let displacement = dragState.settleAnimator == nil ? dragState.displacement : 0
+
+        dragState.restFrame = newRestFrame
+        presentedView.frame = displacedFrame(newRestFrame, by: displacement)
+
+        return true
+    }
+
     func containsActiveLongPress(_ scrollView: UIScrollView?) -> Bool {
         guard let recognizers = scrollView?.gestureRecognizers else { return false }
 
@@ -248,7 +262,11 @@ private extension ModalCardPresentationController {
         dragState.restFrame = restFrame
         dragState.displacement = displacement
 
-        presentedView.frame = CGRect(
+        presentedView.frame = displacedFrame(restFrame, by: displacement)
+    }
+
+    func displacedFrame(_ restFrame: CGRect, by displacement: CGFloat) -> CGRect {
+        CGRect(
             x: restFrame.minX,
             y: restFrame.minY + displacement,
             width: restFrame.width,

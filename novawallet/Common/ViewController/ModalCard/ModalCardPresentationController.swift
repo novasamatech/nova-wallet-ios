@@ -258,6 +258,11 @@ public extension ModalCardPresentationController {
 
         let presentedViewHeight = presentedView.bounds.height
         let topOffset = containerView.safeAreaInsets.top + Constants.topOffset
+
+        guard !rebaseDrag(toRestHeight: contextRootViewController.view.bounds.height - topOffset) else {
+            return
+        }
+
         let presenetedViewHeightDelta = contextRootViewController.view.bounds.height - presentedViewHeight - topOffset
 
         let height = presentedView.frame.height + presenetedViewHeightDelta
