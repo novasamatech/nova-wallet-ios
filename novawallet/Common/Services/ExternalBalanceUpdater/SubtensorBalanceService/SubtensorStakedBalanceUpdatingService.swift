@@ -64,6 +64,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
             return
         }
 
+        cataloguePricing.cancel()
         refreshPricing { _ in true }
     }
 
@@ -72,9 +73,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
             return
         }
 
-        refreshPricing { [weak self] didChange in
-            didChange || self?.stakeStateSubscription.lastState != state
-        }
+        refreshPricing { $0 }
     }
 
     private func refreshPricing(persistingWhen shouldPersist: @escaping (Bool) -> Bool) {
