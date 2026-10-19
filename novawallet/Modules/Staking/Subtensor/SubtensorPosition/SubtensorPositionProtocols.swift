@@ -43,6 +43,7 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didFailValidator(for hotkey: AccountId)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(costBasis: SubtensorCostBasis?)
+    func didReceiveOwnTradeSettling(_ isSettling: Bool)
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(pendingClaimHotkeys: Set<AccountId>)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)

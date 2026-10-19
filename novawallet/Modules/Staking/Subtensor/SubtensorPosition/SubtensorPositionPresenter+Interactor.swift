@@ -97,6 +97,11 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
+    func didReceiveOwnTradeSettling(_ isSettling: Bool) {
+        state.isOwnTradeSettling = isSettling
+        provideViewModel()
+    }
+
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
         state.isClaimableFailed = isFailed
