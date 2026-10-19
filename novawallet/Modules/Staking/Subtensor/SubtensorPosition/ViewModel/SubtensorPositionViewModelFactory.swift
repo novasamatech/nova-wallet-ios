@@ -11,7 +11,8 @@ final class SubtensorPositionViewModelFactory {
     let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
-    let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
     init(
@@ -20,9 +21,16 @@ final class SubtensorPositionViewModelFactory {
     ) {
         self.chainAsset = chainAsset
 
-        balanceViewModelFactory = BalanceViewModelFactory(
+        let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        self.balanceViewModelFactory = balanceViewModelFactory
+
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: balanceViewModelFactory
         )
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
@@ -146,6 +154,39 @@ private extension SubtensorPositionViewModelFactory {
         )
     }
 
+    func createAvgBuyPriceRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel? {
+        let value = state.isCatalogueResolved
+            ? costBasisViewModelFactory.createAvgBuyPrice(
+                for: state.costBasis,
+                alphaSymbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue),
+                locale: locale
+            )
+            : .loading
+
+        return createCostBasisRow(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiAvgBuyPrice(),
+            value: value
+        )
+    }
+
+    func createCostBasisRow(
+        title: String,
+        value: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    ) -> SubtensorPositionRowViewModel? {
+        switch value {
+        case .hidden:
+            return nil
+        case .loading:
+            return SubtensorPositionRowViewModel(title: title, value: .loading, caption: nil)
+        case let .value(viewModel):
+            return SubtensorPositionRowViewModel(
+                title: title,
+                value: .loaded(value: viewModel.amount, detail: viewModel.detail),
+                caption: nil
+            )
+        }
+    }
+
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
         let isActive = state.primaryPosition?.isRegistered ?? true
 
@@ -157,7 +198,7 @@ private extension SubtensorPositionViewModelFactory {
                 amount: state.group.map { formatTao($0.totalAlpha, locale: locale) },
                 fiat: createFiat(for: state, locale: locale),
                 isActive: state.primaryPosition.map(\.isRegistered),
-                row: createRewardsRow(for: state, locale: locale)
+                rows: [createRewardsRow(for: state, locale: locale)]
             )
         }
 
@@ -173,7 +214,8 @@ private extension SubtensorPositionViewModelFactory {
             amount: isResolved ? state.group.map { formatAlpha($0.totalAlpha, state: state, locale: locale) } : nil,
             fiat: .hidden,
             isActive: isResolved ? isActive : nil,
-            row: createWorthRow(for: state, locale: locale)
+            rows: [createAvgBuyPriceRow(for: state, locale: locale), createWorthRow(for: state, locale: locale)]
+                .compactMap { $0 }
         )
     }
 
