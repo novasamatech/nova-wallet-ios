@@ -64,6 +64,17 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
                     successRouteClosure: successClosure
                 )
             }
+        case let .subtensorStaking(chain):
+            featureSupportChecker.checkSubtensorStakingSupport(
+                for: metaAccountModel,
+                chain: chain
+            ) { [weak self] result in
+                self?.presentOperationCompletion(
+                    on: sheetPresentingView,
+                    by: result,
+                    successRouteClosure: successClosure
+                )
+            }
         }
     }
 }

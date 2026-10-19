@@ -16,6 +16,12 @@ extension MessageSheetPresentable {
                 type: .ledger,
                 completion: {}
             )
+        case let .signerNotSupported(type):
+            presentSignerNotSupportedView(
+                from: view,
+                type: type,
+                completion: {}
+            )
         case let .noCardSupport(wallet):
             presentFeatureUnsupportedView(
                 from: view,

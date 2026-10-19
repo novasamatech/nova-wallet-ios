@@ -79,7 +79,11 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             return
         }
 
-        subtensorWireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+        subtensorWireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
+            for: wallet,
+            sheetPresentingView: view
+        ) { [weak self] in
             self?.proceedStaking(continuation: continuation)
         }
     }

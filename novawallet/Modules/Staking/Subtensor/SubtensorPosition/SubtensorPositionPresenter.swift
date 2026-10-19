@@ -179,7 +179,11 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+        wireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
+            for: wallet,
+            sheetPresentingView: view
+        ) { [weak self] in
             self?.perform(action, account: account)
         }
     }

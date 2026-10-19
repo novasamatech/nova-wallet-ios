@@ -27,10 +27,10 @@ protocol FeatureSupportCheckerProtocol {
         completion: @escaping FeatureSupportCheckerClosure
     )
 
-    func checkImmediateExecutionSupport(
+    func checkSubtensorStakingSupport(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping FeatureSupportCheckerClosure
     )
 }
 
@@ -222,6 +222,19 @@ private extension FeatureSupportChecker {
             .commonResult(.noGiftSupport(wallet))
         }
     }
+
+    func checkSubtensorStakingByWalletTypeSupported(
+        _ wallet: MetaAccountModel
+    ) -> FeatureSupportCheckResult {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .watchOnly:
+            .commonResult(.available)
+        case .ledger, .genericLedger:
+            .commonResult(.ledgerNotSupported)
+        case .multisig, .proxied:
+            .delayedExecutionCheckRequired
+        }
+    }
 }
 
 // MARK: - FeatureSupportCheckerProtocol
@@ -314,12 +327,29 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
         }
     }
 
-    func checkImmediateExecutionSupport(
+    func checkSubtensorStakingSupport(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping FeatureSupportCheckerClosure
     ) {
-        executeAccountExistenceAndDelay(wallet: wallet, chain: chain, completion: completion)
+        let checkResult = checkSubtensorStakingByWalletTypeSupported(wallet)
+
+        switch checkResult {
+        case let .commonResult(result):
+            completion(result)
+        case .delayedExecutionCheckRequired:
+            executeAccountExistenceAndDelay(
+                wallet: wallet,
+                chain: chain
+            ) { hasSupport in
+                guard hasSupport else {
+                    completion(.signerNotSupported(.multisig))
+                    return
+                }
+
+                completion(wallet.type == .proxied ? .signerNotSupported(.proxy) : .available)
+            }
+        }
     }
 }
 

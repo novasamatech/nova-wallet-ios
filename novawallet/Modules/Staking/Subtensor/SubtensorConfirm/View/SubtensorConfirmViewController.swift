@@ -38,12 +38,6 @@ final class SubtensorConfirmViewController: UIViewController, ViewHolder {
 
         presenter.setup()
     }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        presenter.didAppear()
-    }
 }
 
 private extension SubtensorConfirmViewController {

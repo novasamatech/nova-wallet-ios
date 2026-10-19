@@ -104,8 +104,8 @@ extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimRewardsViewModelF
             ),
             stakeAfter: createStakeAfter(for: input, locale: locale),
             notice: createNotice(for: input, locale: locale),
-            signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil,
-            isActionEnabled: input.signing == .allowed && !input.isNothingToClaim
+            signingHint: input.isWatchOnly ? strings.accountManagementWatchOnlyHint() : nil,
+            isActionEnabled: !input.isWatchOnly && !input.isNothingToClaim
         )
     }
 }

@@ -8,7 +8,7 @@ final class SubtensorClaimRewardsPresenter {
 
     let chainAsset: ChainAsset
     let model: SubtensorClaimRewardsModel
-    let signing: SubtensorOperationGate.Verdict
+    let isWatchOnly: Bool
     let viewModelFactory: SubtensorClaimRewardsViewModelFactoryProtocol
     let dataValidationFactory: SubtensorValidationFactoryProtocol
     let logger: LoggerProtocol
@@ -43,7 +43,7 @@ final class SubtensorClaimRewardsPresenter {
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.model = model
-        signing = SubtensorOperationGate.verdict(for: model.account.chainAccount.type)
+        isWatchOnly = model.account.chainAccount.type == .watchOnly
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
@@ -84,7 +84,7 @@ extension SubtensorClaimRewardsPresenter {
             } ?? 0,
             price: price,
             fee: fee,
-            signing: signing,
+            isWatchOnly: isWatchOnly,
             isNothingToClaim: isNothingToClaim
         )
 
@@ -273,7 +273,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
     }
 
     func confirm() {
-        guard signing == .allowed, !isNothingToClaim, !isHandingOff else {
+        guard !isWatchOnly, !isNothingToClaim, !isHandingOff else {
             return
         }
 
