@@ -94,7 +94,7 @@ protocol SubtensorValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresen
     func showFilters(
         from view: SubtensorValidatorSelectViewProtocol?,
         applied: SubtensorValidatorFilters,
-        onApply: @escaping (SubtensorValidatorFilters) -> Void
+        delegate: SubtensorValidatorFiltersDelegate
     )
     func complete(from view: SubtensorValidatorSelectViewProtocol?)
 }

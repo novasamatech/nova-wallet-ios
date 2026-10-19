@@ -2,21 +2,20 @@ import Foundation
 
 final class SubtensorValidatorFiltersPresenter: SubtensorValidatorFiltersPresenterProtocol {
     weak var view: SubtensorValidatorFiltersViewProtocol?
+    weak var delegate: SubtensorValidatorFiltersDelegate?
     private let applied: SubtensorValidatorFilters
     private var draft: SubtensorValidatorFilters
     private let wireframe: SubtensorValidatorFiltersWireframeProtocol
-    private let onApply: (SubtensorValidatorFilters) -> Void
-    private var hasApplied = false
 
     init(
         applied: SubtensorValidatorFilters,
         wireframe: SubtensorValidatorFiltersWireframeProtocol,
-        onApply: @escaping (SubtensorValidatorFilters) -> Void
+        delegate: SubtensorValidatorFiltersDelegate
     ) {
         self.applied = applied
         draft = applied
         self.wireframe = wireframe
-        self.onApply = onApply
+        self.delegate = delegate
     }
 
     func setup() { provideViewModel() }
@@ -37,9 +36,8 @@ final class SubtensorValidatorFiltersPresenter: SubtensorValidatorFiltersPresent
     }
 
     func apply() {
-        guard draft != applied, !hasApplied else { return }
-        hasApplied = true
-        onApply(draft)
+        guard draft != applied else { return }
+        delegate?.didReceiveValidator(filters: draft)
         wireframe.complete(from: view)
     }
 
@@ -48,7 +46,7 @@ final class SubtensorValidatorFiltersPresenter: SubtensorValidatorFiltersPresent
             selectedSort: draft.sort,
             hidesUnusualApy: draft.hidesUnusualApy,
             canReset: draft != SubtensorValidatorFilters(),
-            canApply: draft != applied && !hasApplied
+            canApply: draft != applied
         ))
     }
 }

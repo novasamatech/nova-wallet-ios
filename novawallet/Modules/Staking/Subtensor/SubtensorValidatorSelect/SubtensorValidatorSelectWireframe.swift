@@ -10,9 +10,9 @@ final class SubtensorValidatorSelectWireframe: SubtensorValidatorSelectWireframe
     func showFilters(
         from view: SubtensorValidatorSelectViewProtocol?,
         applied: SubtensorValidatorFilters,
-        onApply: @escaping (SubtensorValidatorFilters) -> Void
+        delegate: SubtensorValidatorFiltersDelegate
     ) {
-        let filters = SubtensorValidatorFiltersViewFactory.createView(applied: applied, onApply: onApply)
+        let filters = SubtensorValidatorFiltersViewFactory.createView(applied: applied, delegate: delegate)
         view?.controller.navigationController?.pushViewController(filters.controller, animated: true)
     }
 
