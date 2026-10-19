@@ -92,6 +92,11 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
+    func didReceive(costBasis: SubtensorCostBasis?) {
+        state.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
+        provideViewModel()
+    }
+
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
         state.isClaimableFailed = isFailed
