@@ -13,7 +13,7 @@ public final class ModalCardPresentationController: UIPresentationController {
         presentedViewController as? ModalCardPresentationControllerDelegate
     }
 
-    var interactiveDismissal: UIPercentDrivenInteractiveTransition?
+    var interactiveDismissal: ModalCardInteractiveDismissal?
     var initialTranslation: CGPoint = .zero
 
     init(
@@ -126,20 +126,18 @@ private extension ModalCardPresentationController {
         )
     }
 
-    func stopPullToDismiss(finished: Bool) {
+    func stopPullToDismiss(finished: Bool, velocity: CGFloat) {
         guard let interactiveDismissal else { return }
 
         self.interactiveDismissal = nil
 
         if finished {
-            interactiveDismissal.completionSpeed = configuration.dismissFinishSpeedFactor
             finishPresentation(
-                with: interactiveDismissal.finish,
-                cancelClosure: interactiveDismissal.cancel
+                with: { interactiveDismissal.finish(velocity: velocity) },
+                cancelClosure: { interactiveDismissal.cancel(velocity: velocity) }
             )
         } else {
-            interactiveDismissal.completionSpeed = configuration.dismissCancelSpeedFactor
-            interactiveDismissal.cancel()
+            interactiveDismissal.cancel(velocity: velocity)
         }
     }
 
@@ -217,7 +215,9 @@ private extension ModalCardPresentationController {
             if let interactiveDismissal {
                 interactiveDismissal.update(progress)
             } else {
-                interactiveDismissal = UIPercentDrivenInteractiveTransition()
+                interactiveDismissal = ModalCardInteractiveDismissal(
+                    distance: view.bounds.height
+                )
                 initialTranslation = translation
                 presentedViewController.dismiss(animated: true)
                 interactiveDismissal?.update(progress)
@@ -226,11 +226,15 @@ private extension ModalCardPresentationController {
             observedScrollView?.isScrollEnabled = true
 
             if let interactiveDismissal = interactiveDismissal {
-                let thresholdReached = interactiveDismissal.percentComplete >= configuration.dismissPercentThreshold
+                let progress = (translation.y - initialTranslation.y) / max(1.0, view.bounds.height)
+                let thresholdReached = progress >= configuration.dismissPercentThreshold
                 let shouldDismiss = (thresholdReached && velocity.y >= 0) ||
                     (velocity.y >= configuration.dismissVelocityThreshold &&
                         translation.y >= configuration.dismissMinimumOffset)
-                stopPullToDismiss(finished: panGestureRecognizer.state != .cancelled && shouldDismiss)
+                stopPullToDismiss(
+                    finished: panGestureRecognizer.state != .cancelled && shouldDismiss,
+                    velocity: velocity.y
+                )
             }
         default:
             break
