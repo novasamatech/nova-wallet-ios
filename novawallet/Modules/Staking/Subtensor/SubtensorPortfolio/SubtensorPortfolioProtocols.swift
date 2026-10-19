@@ -41,7 +41,8 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didChangeStake()
 }
 
-protocol SubtensorPortfolioWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorEarnInfoPresentable {
+protocol SubtensorPortfolioWireframeProtocol: AnyObject, FeatureSupportChecking, MessageSheetPresentable,
+    SubtensorEarnInfoPresentable {
     func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup)
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?)
     func close(from view: SubtensorPortfolioViewProtocol?)

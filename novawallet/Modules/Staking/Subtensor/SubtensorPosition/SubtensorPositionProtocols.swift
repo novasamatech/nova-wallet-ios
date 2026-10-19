@@ -47,7 +47,8 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorPositionWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorValidatorInfoPresentable {
+protocol SubtensorPositionWireframeProtocol: AnyObject, FeatureSupportChecking, MessageSheetPresentable,
+    SubtensorValidatorInfoPresentable {
     func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)

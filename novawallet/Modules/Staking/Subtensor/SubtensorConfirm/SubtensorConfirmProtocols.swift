@@ -10,7 +10,6 @@ protocol SubtensorConfirmViewProtocol: ControllerBackedProtocol, LoadableViewPro
 
 protocol SubtensorConfirmPresenterProtocol: AnyObject {
     func setup()
-    func didAppear()
     func confirm()
     func selectAccount()
     func selectValidator()

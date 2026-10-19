@@ -2027,6 +2027,8 @@ Do you want to continue?";
 "gift.reclaim.success.status" = "You’ve successfully reclaimed your gift";
 "feature.unsupported.sheet.title.gift" = "Gifting is not supported for %@ wallets";
 "feature.unsupported.sheet.message.gift" = "To create or manage gifts, please switch to a different type of wallet.";
+"feature.unsupported.sheet.title.subtensor.staking" = "Bittensor staking is not supported for %@ wallets";
+"feature.unsupported.sheet.message.subtensor.staking" = "To stake TAO, please switch to a different type of wallet.";
 "common.syncing" = "Syncing...";
 "welcome.watch.only.custom" = "Custom";
 "welcome.watch.only.demo" = "Demo";

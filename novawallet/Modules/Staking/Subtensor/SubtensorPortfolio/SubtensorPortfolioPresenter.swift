@@ -114,7 +114,11 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func addPosition() {
-        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+        wireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
+            for: wallet,
+            sheetPresentingView: view
+        ) { [weak self] in
             self?.wireframe.showAddPosition(from: self?.view)
         }
     }

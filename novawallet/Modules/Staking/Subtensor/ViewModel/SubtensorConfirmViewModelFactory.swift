@@ -257,9 +257,9 @@ extension SubtensorConfirmViewModelFactory {
             isPriceMoved: input.isPriceMoved,
             action: SubtensorSetupActionViewModel(
                 title: input.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),
-                isEnabled: input.signing == .allowed
+                isEnabled: !input.isWatchOnly
             ),
-            signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil
+            signingHint: input.isWatchOnly ? strings.accountManagementWatchOnlyHint() : nil
         )
     }
 

@@ -11,7 +11,7 @@ protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInte
 }
 
 protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframeProtocol,
-    SubtensorOperationGating {
+    FeatureSupportChecking, MessageSheetPresentable {
     func showAllOptions(from view: ControllerBackedProtocol?)
 
     func showRootDetails(from view: ControllerBackedProtocol?)

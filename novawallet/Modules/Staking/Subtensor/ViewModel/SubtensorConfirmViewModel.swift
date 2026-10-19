@@ -48,7 +48,7 @@ struct SubtensorConfirmViewModelInput {
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?
     let stakeChange: SubtensorConfirmStakeChange?
-    let signing: SubtensorOperationGate.Verdict
+    let isWatchOnly: Bool
     let costBasis: SubtensorCostBasisState?
 }
 
