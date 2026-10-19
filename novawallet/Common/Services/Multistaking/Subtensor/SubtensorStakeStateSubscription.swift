@@ -37,6 +37,10 @@ final class SubtensorStakeStateSubscription {
     }
 
     func subscribe(refreshing: Bool = false) {
+        if !isSubscribed {
+            lastState = nil
+        }
+
         isSubscribed = true
 
         source.add(handler: self, refreshing: refreshing)
@@ -45,7 +49,6 @@ final class SubtensorStakeStateSubscription {
     func unsubscribe() {
         isSubscribed = false
         isFetching = false
-        lastState = nil
 
         source.remove(handler: self)
     }
