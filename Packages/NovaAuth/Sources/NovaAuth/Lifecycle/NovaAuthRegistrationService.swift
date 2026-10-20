@@ -70,6 +70,7 @@ extension NovaAuth {
             clientID = dependencies.random.makeClientID()
             try NovaAuthValidation.clientID(clientID)
         } else { clientID = identity.clientID }
+        flight.irreversible = true
         flight.step = .keyGeneration
         run(dependencies.appAttest.createKeyWrapper(), flight: flight) { [self] result in
             let keyID = try result.get()
