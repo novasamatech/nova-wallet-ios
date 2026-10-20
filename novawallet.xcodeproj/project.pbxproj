@@ -6119,6 +6119,7 @@
 		8960EC452EA6E7E9105F4762 /* SwapConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */; };
 		89724EA9F732D0C967253597 /* ReferendumOnChainVotersViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF3C1CFECE4340E82837FC4 /* ReferendumOnChainVotersViewFactory.swift */; };
 		898ACE9B06704F8DAA7C28AE /* SubtensorValidatorDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 896439C94AAC468DAE4A64E7 /* SubtensorValidatorDirectory.swift */; };
+		89E36A7CF72F5D6323437E9A /* MLKEMNative in Frameworks */ = {isa = PBXBuildFile; productRef = 3BBD248A9A878004D5D70381 /* MLKEMNative */; };
 		89F2EB48AF00FF30488F8EBE /* AnalyticsChainAssetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CE9C7F5B6E8F9C301C2A75 /* AnalyticsChainAssetContent.swift */; };
 		8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139FB38E7D8D25A36726089 /* ParaStkStakeConfirmProtocols.swift */; };
 		8A1C0E522F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */; };
@@ -6544,6 +6545,7 @@
 		AF8193D9F818638254854232 /* StakingMainProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470B64C45E547C25FCCCFC33 /* StakingMainProtocols.swift */; };
 		AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */; };
 		AFFAC5B4085560356A9FDC7C /* SwapFeeDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA18C9D87DC9E878D101CB91 /* SwapFeeDetailsViewFactory.swift */; };
+		B00AA0B7D773877C0AF686BB /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E84295B42144BF7D7894A53 /* CryptoSwift */; };
 		B02EAF42C91E069FE6872EE0 /* SelectValidatorsConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0E02AA5D3EBA9B94950241 /* SelectValidatorsConfirmWireframe.swift */; };
 		B0420093B7E820C0CE2996F7 /* MythosStkUnstakeSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158ED3CDF4CCBE19616575FD /* MythosStkUnstakeSetupPresenter.swift */; };
 		B0466BF58B213F5D4A32176F /* SubtensorSubnetFiltersPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F799287947C34F61264D889 /* SubtensorSubnetFiltersPresenter.swift */; };
@@ -7179,6 +7181,7 @@
 		FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000C2 /* NovaAnalytics */; };
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
+		FEEFFC5E525297E967321422 /* MevShieldSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F276A5E6574038DD659AC9D5 /* MevShieldSealer.swift */; };
 		FF2E6053091276EBBA4D986C /* LedgerAccountConfirmationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902360B8577FAC9504F5854F /* LedgerAccountConfirmationPresenter.swift */; };
 		FF3E3B0F71CD8C7AE878D06E /* MythosStkUnstakeSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFE51495049A00C21E1CACB /* MythosStkUnstakeSetupProtocols.swift */; };
 		FF507CA7B1A33AD160DB59DE /* StakingMoreOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3157288B4033B2264628C866 /* StakingMoreOptionsViewFactory.swift */; };
@@ -13948,6 +13951,7 @@
 		F1A9B9D741BABBCE6C70BE45 /* LedgerDiscoverProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverProtocols.swift; sourceTree = "<group>"; };
 		F1EE07A02459EDE50188E49D /* DAppStakingDetectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppStakingDetectionTests.swift; sourceTree = "<group>"; };
 		F23EDFB699CAEEADC9263A0D /* DAppAuthSettingsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsViewFactory.swift; sourceTree = "<group>"; };
+		F276A5E6574038DD659AC9D5 /* MevShieldSealer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MevShieldSealer.swift; sourceTree = "<group>"; };
 		F28EDDF9277242505FDDECA1 /* CustomValidatorListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomValidatorListProtocols.swift; sourceTree = "<group>"; };
 		F2B438707EA6C81C48EAB4CE /* ParaStkYieldBoostStopViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopViewController.swift; sourceTree = "<group>"; };
 		F2B676982F60C55530BDD569 /* AccountManagementPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountManagementPresenter.swift; sourceTree = "<group>"; };
@@ -14187,6 +14191,8 @@
 				0C8FCE9F2E672B2200034ED3 /* Keystore-iOS in Frameworks */,
 				0C2BAA562E687BD0008157E7 /* HydraMathApi in Frameworks */,
 				0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */,
+				89E36A7CF72F5D6323437E9A /* MLKEMNative in Frameworks */,
+				B00AA0B7D773877C0AF686BB /* CryptoSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30481,6 +30487,7 @@
 				A314C22C8E6A129B8ADDEC21 /* SubtensorShieldInclusionTracker.swift */,
 				F48F83C1B12089068493481A /* SubtensorShieldInnerSearch.swift */,
 				0E267480E0CFE8C6AD88949C /* SubtensorShieldSubmissionFactory.swift */,
+				F276A5E6574038DD659AC9D5 /* MevShieldSealer.swift */,
 			);
 			path = MevShield;
 			sourceTree = "<group>";
@@ -32970,6 +32977,8 @@
 				2D16734F2EE9BCC0004ADA7F /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */,
 				2D16735E2EE9BD06004ADA7F /* XCRemoteSwiftPackageReference "Operation-iOS" */,
 				2D16736A2EE9BD2E004ADA7F /* XCRemoteSwiftPackageReference "Crypto-iOS" */,
+				9F1B54A0D2A98C9E3FDA112D /* XCRemoteSwiftPackageReference "mlkem-native-ios" */,
+				A13B15B52CCC0F93EB7647B0 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
@@ -39999,6 +40008,7 @@
 				39BABB5B8B90949C30E2B89E /* SubtensorSubmissionFinalizer.swift in Sources */,
 				8DAC39C3C8DC933194D794C5 /* SubtensorSubmissionOperationFactory+Shield.swift in Sources */,
 				31F7CB8AD20CD7DF2BDAA566 /* SubtensorConfirmPresenter+Shield.swift in Sources */,
+				FEEFFC5E525297E967321422 /* MevShieldSealer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41440,6 +41450,22 @@
 				version = 4.5.2;
 			};
 		};
+		9F1B54A0D2A98C9E3FDA112D /* XCRemoteSwiftPackageReference "mlkem-native-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/mlkem-native-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
+		A13B15B52CCC0F93EB7647B0 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.9.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -41677,6 +41703,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		3BBD248A9A878004D5D70381 /* MLKEMNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F1B54A0D2A98C9E3FDA112D /* XCRemoteSwiftPackageReference "mlkem-native-ios" */;
+			productName = MLKEMNative;
+		};
+		8E84295B42144BF7D7894A53 /* CryptoSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A13B15B52CCC0F93EB7647B0 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			productName = CryptoSwift;
 		};
 		FEEDAB0000000000000000A2 /* NovaAuth */ = {
 			isa = XCSwiftPackageProductDependency;
