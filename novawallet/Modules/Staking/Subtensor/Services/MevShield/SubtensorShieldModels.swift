@@ -5,6 +5,8 @@ enum SubtensorShieldConstants {
     static let eraPeriod: UInt64 = 8
 
     static let signaturesPerOrder = 2
+
+    static let confirmationWindowBlocks = 2 * eraPeriod + 1
 }
 
 struct SubtensorShieldQuote {
