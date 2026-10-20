@@ -69,7 +69,10 @@ extension SubtensorValidationFactoryProtocol {
                 priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale)
                     .reporting(.priceImpact, to: analytics)
             )
-            validations.append(passesRealtimeQuote(dependencies.quoteContext?.reporting(to: analytics), locale: locale))
+            validations.append(
+                passesRealtimeQuote(dependencies.quoteContext?.reporting(to: analytics), locale: locale)
+                    .reportingOutcome(to: analytics)
+            )
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)

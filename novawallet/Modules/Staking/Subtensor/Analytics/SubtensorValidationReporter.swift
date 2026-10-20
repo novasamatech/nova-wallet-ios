@@ -79,6 +79,14 @@ extension DataValidating {
         )
     }
 
+    func reportingOutcome(to reporter: SubtensorValidationReporter?) -> DataValidating {
+        guard let reporter else {
+            return self
+        }
+
+        return SubtensorReportingValidation(inner: self, reporter: reporter, onError: { _ in }, onWarning: { _ in })
+    }
+
     func reportingTradesUnavailable(to reporter: SubtensorValidationReporter?) -> DataValidating {
         guard let reporter else {
             return self

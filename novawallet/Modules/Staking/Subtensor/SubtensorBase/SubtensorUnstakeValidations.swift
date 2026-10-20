@@ -193,6 +193,7 @@ extension SubtensorValidationFactoryProtocol {
             )
             validations.append(
                 passesRealtimeQuote(dependencies.quoteContext?.reporting(to: dependencies.analytics), locale: locale)
+                    .reportingOutcome(to: dependencies.analytics)
             )
         }
 
