@@ -2770,6 +2770,7 @@
 		3201805BF8FA78BDF9DA6328 /* StakingTypePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76E1F9D7AD364D8AD4CC721 /* StakingTypePresenter.swift */; };
 		3218B290FDE5446C49B8A6A9 /* StakingRewardsNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A34373D4CBAE0648DCCB75A /* StakingRewardsNotificationsPresenter.swift */; };
 		3229E306230161AA99B14BDD /* StakingRewardPayoutsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336395FFC4B2104A9651A2DE /* StakingRewardPayoutsViewFactory.swift */; };
+		32399C8F7BD64D5489374618 /* MevShieldOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A293C7A2094C4B89937EE650 /* MevShieldOperationFactory.swift */; };
 		32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEEF1360E04CD27CCC13E472 /* ReferendumsFiltersPresenter.swift */; };
 		3250F2C0E12ED42A355853BE /* SelectValidatorsStartProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9939B17C4224C8E153F8A /* SelectValidatorsStartProtocols.swift */; };
 		3304CC958E3E41182176769D /* WalletConnectSessionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88128EFF39CA15ABB0F598FF /* WalletConnectSessionsInteractor.swift */; };
@@ -6253,10 +6254,12 @@
 		9CFA514776771FBBD64D18DB /* StakingRewardsNotificationsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577466C7C5FEA9D1A12CC400 /* StakingRewardsNotificationsProtocols.swift */; };
 		9D16EC7C162525087A0F86BD /* MythosStakingConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADC43550D6DE65A50C132E /* MythosStakingConfirmPresenter.swift */; };
 		9D48E705503741D0A140E4CA /* MetaAccountSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBC62079AD14007AEDF94A6 /* MetaAccountSettingsMapper.swift */; };
+		9D493268114217B00F6A9DB9 /* MevShieldPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451E676B63279EEF76955C1 /* MevShieldPallet.swift */; };
 		9D509AD640B01CAB872E0E71 /* NominationPoolSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AC3897EC736F5096949BBC /* NominationPoolSearchViewFactory.swift */; };
 		9D5926790B055C56FB74B282 /* AccountManagementProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5072E250B7277F605855B3 /* AccountManagementProtocols.swift */; };
 		9DE1757D047A4D1E97913774 /* GovernanceUnlockConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3FE2CE7F9F2836755DBA63 /* GovernanceUnlockConfirmProtocols.swift */; };
 		9DED20EB20A872E682CB402A /* ReferendumFullDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6DA24E0481A3678F2EF809 /* ReferendumFullDetailsProtocols.swift */; };
+		9DF76412DA48EAEE4995C637 /* MevShieldPallet+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD30013F7C67D7660372CF2 /* MevShieldPallet+Calls.swift */; };
 		9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E992CCDC1D581F7E9D3F1CA /* AccountConfirmInteractor.swift */; };
 		9E15912C35D50C6D738FD04C /* AccountConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5002B8FA2695F470587677D2 /* AccountConfirmProtocols.swift */; };
 		9E40464B7687006B1EE75C72 /* LocksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F9944B0577EFF25A0643FE /* LocksProtocols.swift */; };
@@ -9706,6 +9709,7 @@
 		33A3AA54AA204AE7A1D71881 /* CustomNetworkViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomNetworkViewController.swift; sourceTree = "<group>"; };
 		33DFAA0EEEA7F99C6D1CF4B1 /* ReferendumFullDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsPresenter.swift; sourceTree = "<group>"; };
 		340D78F99A4FCDC04C012ED3 /* StakingRebagConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRebagConfirmInteractor.swift; sourceTree = "<group>"; };
+		3451E676B63279EEF76955C1 /* MevShieldPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MevShieldPallet.swift; sourceTree = "<group>"; };
 		347D4FAB3A90F8E11A4FF007 /* SubtensorRowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRowState.swift; sourceTree = "<group>"; };
 		34939B8A2FE109E4214B8E66 /* SubtensorValidatorCoverageOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorCoverageOperationFactory.swift; sourceTree = "<group>"; };
 		34941959390B65981DC4B49F /* AppearanceSettingsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsProtocols.swift; sourceTree = "<group>"; };
@@ -9795,6 +9799,7 @@
 		3D2A26EC9537BD4275A03272 /* OperationDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsPresenter.swift; sourceTree = "<group>"; };
 		3D383344BEDAEDC76A6BE2CE /* DAppTxDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsProtocols.swift; sourceTree = "<group>"; };
 		3D7635ED1643441A64783F63 /* CommissionTestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommissionTestFixtures.swift; sourceTree = "<group>"; };
+		3DD30013F7C67D7660372CF2 /* MevShieldPallet+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MevShieldPallet+Calls.swift"; sourceTree = "<group>"; };
 		3E09466B1FD637D4649D7CED /* DelegateVotedReferendaInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegateVotedReferendaInteractor.swift; sourceTree = "<group>"; };
 		3E10B8C50958D0184D89E1BD /* GenericLedgerAccountSelectionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionWireframe.swift; sourceTree = "<group>"; };
 		3E5C11022E5E000300000001 /* SubtensorUnstakeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeModel.swift; sourceTree = "<group>"; };
@@ -13175,6 +13180,7 @@
 		A28FAB72B50D8C736AF67A39 /* StartStakingConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmProtocols.swift; sourceTree = "<group>"; };
 		A290E4089325F55F8D14B51B /* MythosStkYourCollatorsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkYourCollatorsWireframe.swift; sourceTree = "<group>"; };
 		A292CA074E494032AD1E6E94 /* SubtensorInfoSheetPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorInfoSheetPresentable.swift; sourceTree = "<group>"; };
+		A293C7A2094C4B89937EE650 /* MevShieldOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MevShieldOperationFactory.swift; sourceTree = "<group>"; };
 		A2AE82FB3A09A06A2CB1BF24 /* CloudBackupReviewChangesProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupReviewChangesProtocols.swift; sourceTree = "<group>"; };
 		A2BC4EFADD593325FF122765 /* StartStakingInfoBaseInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingInfoBaseInteractor.swift; sourceTree = "<group>"; };
 		A2E14458DEC3317602A17527 /* GovernanceUnlockSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -17634,6 +17640,14 @@
 			path = StakingRewardDetails;
 			sourceTree = "<group>";
 		};
+		1616B9DF53998E371A114CA6 /* MevShield */ = {
+			isa = PBXGroup;
+			children = (
+				3DD30013F7C67D7660372CF2 /* MevShieldPallet+Calls.swift */,
+			);
+			path = MevShield;
+			sourceTree = "<group>";
+		};
 		1673C6B5E37788C92D8E37D4 /* DAppAddFavorite */ = {
 			isa = PBXGroup;
 			children = (
@@ -19428,6 +19442,7 @@
 				73ED9DDB42574E8BAB793B97 /* SubtensorSubnetMarketsOperationFactory.swift */,
 				A4EDA26DAEE94841A959B939 /* SubtensorCostBasisService.swift */,
 				6C835D58E27F4F7B95023D01 /* SubtensorCostBasisServiceProtocol.swift */,
+				98C4D336C455220029F66B01 /* MevShield */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -21443,6 +21458,14 @@
 				4D103BE9AF69311F2E707853 /* MythosStakingRedeemViewFactory.swift */,
 			);
 			path = MythosStakingRedeem;
+			sourceTree = "<group>";
+		};
+		5817509227660447022AEC88 /* MevShield */ = {
+			isa = PBXGroup;
+			children = (
+				3451E676B63279EEF76955C1 /* MevShieldPallet.swift */,
+			);
+			path = MevShield;
 			sourceTree = "<group>";
 		};
 		58F5C296A0CFDD0BDACDB4D7 /* DAppSettings */ = {
@@ -23908,6 +23931,7 @@
 				847A25BC28D7C0E7006AC9F5 /* TokenTransferedEvent.swift */,
 				0CEBAD532D5F941E000EBA45 /* CallDispatchErrorDecoder.swift */,
 				0CB2E89A2E5EFE250067DE12 /* AccountIdKey.swift */,
+				5817509227660447022AEC88 /* MevShield */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -24586,6 +24610,7 @@
 				84EBFCEC285E82AB0006327E /* Xcm */,
 				8445CC252836654B003B26CD /* Common */,
 				8445CC2428366536003B26CD /* ParachainStaking */,
+				1616B9DF53998E371A114CA6 /* MevShield */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -30350,6 +30375,14 @@
 				BD74390E9ECB4AA298EAA529 /* SubtensorPortfolioEmptyView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		98C4D336C455220029F66B01 /* MevShield */ = {
+			isa = PBXGroup;
+			children = (
+				A293C7A2094C4B89937EE650 /* MevShieldOperationFactory.swift */,
+			);
+			path = MevShield;
 			sourceTree = "<group>";
 		};
 		9A6D2EA12E60000100000001 /* View */ = {
@@ -39828,6 +39861,9 @@
 				9C1BB0D279E91A64474E1104 /* SubtensorSubnetFiltersWireframe.swift in Sources */,
 				DAB82773FF20627A49D5E6EA /* SubtensorSubnetFiltersViewFactory.swift in Sources */,
 				339FEBC469EEE97E17435770 /* SubtensorSubnetFiltersViewModelFactory.swift in Sources */,
+				9D493268114217B00F6A9DB9 /* MevShieldPallet.swift in Sources */,
+				9DF76412DA48EAEE4995C637 /* MevShieldPallet+Calls.swift in Sources */,
+				32399C8F7BD64D5489374618 /* MevShieldOperationFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
