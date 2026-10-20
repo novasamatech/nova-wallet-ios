@@ -19,10 +19,13 @@ final class SubtensorWhereToStakeViewLayout: UIView {
 
     private(set) var currentPage = 0
 
+    private let horizontalDragLock = HorizontalDragLock()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
+        horizontalDragLock.install(on: collectionView)
         previousButton.addAction(UIAction { [weak self] _ in self?.scroll(by: -1) }, for: .touchUpInside)
         nextButton.addAction(UIAction { [weak self] _ in self?.scroll(by: 1) }, for: .touchUpInside)
     }
@@ -147,5 +150,28 @@ private extension SubtensorWhereToStakeViewLayout {
         static let arrowSize: CGFloat = 40
         static let arrowIconSize = CGSize(width: 20, height: 20)
         static let disabledArrowAlpha: CGFloat = 0.4
+    }
+}
+
+private final class HorizontalDragLock: NSObject, UIGestureRecognizerDelegate {
+    func install(on view: UIView) {
+        let recognizer = UIPanGestureRecognizer()
+        recognizer.cancelsTouchesInView = false
+        recognizer.delegate = self
+        view.addGestureRecognizer(recognizer)
+    }
+
+    func gestureRecognizerShouldBegin(_ recognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = recognizer as? UIPanGestureRecognizer else { return false }
+        let translation = pan.translation(in: pan.view)
+        return abs(translation.x) > abs(translation.y)
+    }
+
+    func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer) -> Bool {
+        true
+    }
+
+    func gestureRecognizer(_: UIGestureRecognizer, shouldBeRequiredToFailBy other: UIGestureRecognizer) -> Bool {
+        other.delegate is UIPresentationController
     }
 }
