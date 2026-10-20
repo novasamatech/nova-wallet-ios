@@ -60,6 +60,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
 
         dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.dataAnalytics.trackRetry(.chainRpc)
             self?.interactor.loadSubnet(netuid: position.netuid)
         }
     }

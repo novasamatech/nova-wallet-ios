@@ -144,6 +144,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func retry() {
+        dataAnalytics.trackRetry(.chainRpc)
         isRootYieldsRequested = false
         isNetworkRootRateRequested = false
         interactor.refresh()

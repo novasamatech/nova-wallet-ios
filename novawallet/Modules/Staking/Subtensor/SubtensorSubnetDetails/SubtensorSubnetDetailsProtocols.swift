@@ -29,7 +29,7 @@ protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
 protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(isFavorite: Bool)
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
-    func didFailHistory(for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error)
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters)
     func didFailParameters()
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)

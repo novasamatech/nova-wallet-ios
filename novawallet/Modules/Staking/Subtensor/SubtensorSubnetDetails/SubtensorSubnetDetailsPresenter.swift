@@ -13,6 +13,7 @@ final class SubtensorSubnetDetailsPresenter {
     let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
     let chainAsset: ChainAsset
     let abandonTracker: AnalyticsAbandonTracker
+    let dataAnalytics = SubtensorDataAnalytics(screen: .subnetDetails)
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
@@ -213,6 +214,8 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
             return
         }
 
+        dataAnalytics.trackRetry(.coingecko)
+
         loadHistory()
         provideViewModel()
     }
@@ -243,7 +246,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         provideViewModel()
     }
 
-    func didFailHistory(for period: SubtensorPricePeriod) {
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error) {
         guard period == state.period else {
             return
         }
@@ -251,6 +254,8 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         if case .available = state.history {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: .coingecko)
 
         state.history = .failed
         provideViewModel()

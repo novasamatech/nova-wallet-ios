@@ -149,8 +149,8 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
 
         load(wrapper, in: historyCallStore, label: "subnet price history") { [weak self] in
             self?.presenter?.didReceiveHistory($0, for: period)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistory(for: period)
+        } failWith: { [weak self] error in
+            self?.presenter?.didFailHistory(for: period, error: error)
         }
     }
 

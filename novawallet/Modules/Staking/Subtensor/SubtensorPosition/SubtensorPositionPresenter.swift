@@ -19,6 +19,7 @@ final class SubtensorPositionPresenter {
     var isSubnetsInfoUnavailable = false
     var isClosed = false
     var isOpenedTracked = false
+    let dataAnalytics = SubtensorDataAnalytics(screen: .position)
 
     init(
         group: SubtensorPortfolioGroup,
@@ -213,11 +214,13 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 
     func retrySync() {
+        dataAnalytics.trackRetry(.chainRpc)
         interactor.refreshPositions()
         loadValidatorIfNeeded()
     }
 
     func retryHistory() {
+        dataAnalytics.trackRetry(state.catalogue == nil ? .subnets : .coingecko)
         historyRequest = nil
 
         if state.catalogue == nil {

@@ -183,6 +183,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func retry() {
+        dataAnalytics.trackRetry(.subnets)
         entries = nil
         entriesError = nil
         provideList()

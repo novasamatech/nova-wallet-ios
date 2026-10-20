@@ -139,10 +139,12 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
-    func didFailHistory(for period: SubtensorPricePeriod) {
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error) {
         guard period == state.period, state.history == .loading else {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: .coingecko)
 
         state.history = .failed
         state.hasResolvedHistory = true

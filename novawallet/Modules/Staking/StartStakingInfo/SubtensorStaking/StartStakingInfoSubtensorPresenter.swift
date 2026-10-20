@@ -113,6 +113,7 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
         case let .maxApy(underlying):
             dataAnalytics.trackFailure(underlying, endpoint: .recommendations)
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(.recommendations)
                 self?.interactor.retryMaxApy()
             }
         }

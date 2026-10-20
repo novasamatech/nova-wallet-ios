@@ -324,6 +324,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
 
     func retry() {
         if presetError != nil {
+            dataAnalytics.trackRetry(.recommendations)
             retryPreset()
         } else {
             retryQuickPick()

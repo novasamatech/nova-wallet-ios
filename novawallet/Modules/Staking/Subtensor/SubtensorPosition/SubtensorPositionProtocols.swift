@@ -49,7 +49,7 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
-    func didFailHistory(for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error)
     func didBecomeActive()
 }
 

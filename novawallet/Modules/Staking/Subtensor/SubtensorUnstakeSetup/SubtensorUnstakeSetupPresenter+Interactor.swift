@@ -32,6 +32,7 @@ private extension SubtensorUnstakeSetupPresenter {
                 return
             }
 
+            dataAnalytics.trackRetry(.chainRpc)
             interactor.loadSubnetsInfo(for: netuid)
         }
     }

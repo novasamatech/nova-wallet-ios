@@ -32,13 +32,25 @@ final class SubtensorDataAnalytics: AnalyticsTracking {
 
     func trackFailure(_ error: SubtensorBaseError) {
         switch error {
-        case let .feeFailed(underlying), let .quoteFailed(underlying):
-            trackFailure(underlying, endpoint: error.isNovaFeeUnavailable ? .novaUtilsConfig : .chainRpc)
-        case let .preflightFailed(underlying),
+        case let .feeFailed(underlying),
+             let .quoteFailed(underlying),
+             let .preflightFailed(underlying),
              let .rootHoldsFailed(underlying),
              let .existentialDepositFailed(underlying):
-            trackFailure(underlying, endpoint: .chainRpc)
+            trackFailure(underlying, endpoint: error.analyticsEndpoint)
         }
+    }
+
+    func trackRetry(_ endpoint: BittensorDataEndpoint) {
+        reportedEndpoints.remove(endpoint)
+
+        trackAnalytics(.bittensorDataRetryTapped(endpoint: endpoint, screen: screen))
+    }
+}
+
+extension SubtensorBaseError {
+    var analyticsEndpoint: BittensorDataEndpoint {
+        isNovaFeeUnavailable ? .novaUtilsConfig : .chainRpc
     }
 }
 

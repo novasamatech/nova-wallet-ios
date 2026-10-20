@@ -147,6 +147,15 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func retry() {
+        let endpoint: BittensorDataEndpoint = if directoryError != nil {
+            .validators
+        } else if verificationError != nil {
+            .chainRpc
+        } else {
+            .recommendations
+        }
+
+        dataAnalytics.trackRetry(endpoint)
         directory = nil
         directoryError = nil
         yields = nil

@@ -351,8 +351,8 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         load(wrapper, in: historyStore, label: "position price history") { [weak self] in
             self?.presenter?.didReceive(history: $0, for: period)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistory(for: period)
+        } failWith: { [weak self] error in
+            self?.presenter?.didFailHistory(for: period, error: error)
         }
     }
 }

@@ -142,6 +142,7 @@ extension SubtensorConfirmPresenter: SubtensorOperationResultDelegate {
 }
 
 extension SubtensorConfirmPresenter: SubtensorBaseRetrying {
+    var dataAnalytics: SubtensorDataAnalytics { analytics.data }
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var retryInteractor: SubtensorBaseInteractorInputProtocol { interactor }
