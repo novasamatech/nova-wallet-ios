@@ -22,13 +22,14 @@ final class SubtensorConfirmAnalytics {
 
     func acknowledgePriceMove() {
         isPriceMoveAcknowledged = true
-        reporter.proceeded()
     }
 
     func takePriceMoveAcknowledgement() -> Bool {
         defer {
             isPriceMoveAcknowledged = false
         }
+
+        reporter.proceeded()
 
         return isPriceMoveAcknowledged
     }
