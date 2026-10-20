@@ -206,13 +206,13 @@ private extension NovaAuth {
     func hasAttestationBudget(_ attempt: NovaAuthRegistrationAttempt) throws -> Bool {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-        return now.bootID == attempt.startedAt.bootID && age >= 0 && age <= 40
+        return now.bootID == attempt.startedAt.bootID && age >= 0 && age <= 30
     }
 
     func validateAttemptAfterApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-        guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
+        guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 50 else {
             try dropKey(flight: flight, refusal: nextRefusal())
             throw NovaAuthError.keyUnavailable
         }
