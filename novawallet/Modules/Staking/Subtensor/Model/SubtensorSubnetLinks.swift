@@ -24,6 +24,10 @@ extension SubtensorSubnetLinks {
 enum SubtensorSubnetLinkNormalizer {
     private static let schemes = ["https", "http"]
     private static let githubHosts = ["github.com", "www.github.com"]
+    private static let githubNameCharacters = CharacterSet(
+        charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-"
+    )
+    private static let gitSuffix = ".git"
 
     /// Trims, prefixes `https://` when the owner left the scheme out, and keeps only http(s) URLs with a dotted host.
     static func website(from raw: String?) -> URL? {
@@ -49,16 +53,23 @@ enum SubtensorSubnetLinkNormalizer {
         return components.url
     }
 
-    /// Only `github.com/<owner>[/<repo>]` counts as a repository link; the result is canonical https
-    /// without a trailing slash.
+    /// Keeps `<owner>[/<repo>]` of a `github.com` link without a `.git` suffix, accepting only plain names checked
+    /// before percent-decoding; the result is canonical https without a trailing slash.
     static func github(from raw: String?) -> URL? {
-        guard let url = website(from: raw), isGithub(url) else {
+        guard
+            let url = website(from: raw),
+            isGithub(url),
+            let path = URLComponents(url: url, resolvingAgainstBaseURL: false)?.percentEncodedPath else {
             return nil
         }
 
-        let parts = pathParts(of: url)
+        var parts = path.split(separator: "/").prefix(2).map(String.init)
 
-        guard (1 ... 2).contains(parts.count) else {
+        if parts.count == 2, parts[1].hasSuffix(gitSuffix) {
+            parts[1].removeLast(gitSuffix.count)
+        }
+
+        guard !parts.isEmpty, parts.allSatisfy(isGithubName) else {
             return nil
         }
 
@@ -89,6 +100,10 @@ enum SubtensorSubnetLinkNormalizer {
 
     private static func pathParts(of url: URL) -> [String] {
         url.pathComponents.filter { $0 != "/" }
+    }
+
+    private static func isGithubName(_ name: String) -> Bool {
+        !["", ".", ".."].contains(name) && name.unicodeScalars.allSatisfy(githubNameCharacters.contains)
     }
 
     private static func cleaned(_ raw: String?) -> String? {
