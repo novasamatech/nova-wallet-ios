@@ -40,6 +40,8 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             applicationConfig: applicationConfig,
             logger: logger
         )
+
+        setupAbandonEvent()
     }
 
     override func setup() {
@@ -79,13 +81,17 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             return
         }
 
-        subtensorWireframe.checkingSupport(
-            of: .subtensorStaking(chain: chainAsset.chain),
+        subtensorWireframe.checkingSubtensorStakingSupport(
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.proceedStaking(continuation: continuation)
-        }
+            chain: chainAsset.chain,
+            sheetPresentingView: view,
+            onRefusal: { [weak self] reason in
+                self?.trackGateRefusal(reason, wallet: wallet)
+            },
+            successClosure: { [weak self] in
+                self?.proceedStaking(continuation: continuation)
+            }
+        )
     }
 
     private func proceedStaking(continuation: () -> Void) {

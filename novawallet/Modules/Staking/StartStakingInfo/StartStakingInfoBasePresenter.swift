@@ -15,7 +15,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let accountManagementFilter: AccountManagementFilterProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
 
-    private let abandonTracker = AnalyticsAbandonTracker {
+    let abandonTracker = AnalyticsAbandonTracker {
         AnalyticsEvent.stakingAbandoned(stage: .landing)
     }
 
