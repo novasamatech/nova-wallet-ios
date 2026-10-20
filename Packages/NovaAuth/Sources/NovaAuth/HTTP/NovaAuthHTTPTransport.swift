@@ -30,13 +30,14 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
         beforeSend: @escaping () throws -> Void,
         decode: @escaping (NovaAuthResponse) throws -> T
     ) -> CompoundOperationWrapper<T> {
+        let route: NovaAuthBootstrapRoute?
         do {
-            try Self.validate(request, kind: kind)
+            route = try Self.validate(request, kind: kind)
         } catch { return .createWithError(error) }
         var frozen = request
         frozen.cachePolicy = .reloadIgnoringLocalCacheData
         frozen.httpShouldHandleCookies = false
-        frozen.timeoutInterval = kind == .bootstrap && request.url?.path == NovaAuthPurpose.registration.path ? 100 : 20
+        frozen.timeoutInterval = route?.timeout ?? 20
         let watchdog = NovaAuthHTTPWatchdog<T>(timeout: watchdogTimeout)
         let operation = NetworkOperation(
             requestFactory: BlockNetworkRequestFactory {
@@ -70,7 +71,7 @@ private extension NovaAuthHTTPTransport {
         return NovaAuthResponse(response: response, body: data ?? Data())
     }
 
-    static func validate(_ request: URLRequest, kind: NovaAuthHTTPKind) throws {
+    static func validate(_ request: URLRequest, kind: NovaAuthHTTPKind) throws -> NovaAuthBootstrapRoute? {
         guard let url = request.url, let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               components.scheme == "https", let host = components.host, components.user == nil,
               components.password == nil, components.fragment == nil, request.httpBodyStream == nil else {
@@ -93,33 +94,30 @@ private extension NovaAuthHTTPTransport {
             return forbidden.contains(key) || key.hasPrefix("x-client-") || key.hasPrefix("x-attestation") ||
                 key.hasPrefix("x-app-attest") || key == "x-challenge" || key == "x-signature"
         }) else { throw NovaAuthError.invalidRequest }
-        if kind == .bootstrap {
-            try validateBootstrap(request, components: components)
-        } else {
-            guard let method = request.httpMethod.flatMap(NovaAuthMethod.init(rawValue:)),
-                  (kind == .businessRead && method != .post) || (kind == .businessPost && method == .post),
-                  let authorization = request.value(forHTTPHeaderField: "Authorization"),
-                  authorization.hasPrefix("Bearer ") else { throw NovaAuthError.invalidRequest }
-            try NovaAuthValidation.token(String(authorization.dropFirst(7)))
-            try NovaAuthRoute.validate(
-                method: method,
-                path: components.path,
-                body: request.httpBody,
-                contentType: request.value(forHTTPHeaderField: "Content-Type")
-            )
-        }
+        if kind == .bootstrap { return try validateBootstrap(request, components: components) }
+        guard let method = request.httpMethod.flatMap(NovaAuthMethod.init(rawValue:)),
+              (kind == .businessRead && method != .post) || (kind == .businessPost && method == .post),
+              let authorization = request.value(forHTTPHeaderField: HttpHeaderKey.authorization.rawValue),
+              authorization.hasPrefix("Bearer ") else { throw NovaAuthError.invalidRequest }
+        try NovaAuthValidation.token(String(authorization.dropFirst(7)))
+        try NovaAuthRoute.validate(
+            method: method,
+            path: components.path,
+            body: request.httpBody,
+            contentType: request.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
+        )
+        return nil
     }
 
-    static func validateBootstrap(_ request: URLRequest, components: URLComponents) throws {
-        let limits = ["/v1/attestation/profile-3/challenges": 1024,
-                      "/v1/attestation/profile-3/token-challenges": 1024,
-                      NovaAuthPurpose.registration.path: 98304, NovaAuthPurpose.token.path: 16384]
-        guard request.httpMethod == "POST", let limit = limits[components.percentEncodedPath],
-              components.percentEncodedQuery == nil, let body = request.httpBody, body.count <= limit,
-              request.value(forHTTPHeaderField: "Authorization") == nil,
+    static func validateBootstrap(_ request: URLRequest, components: URLComponents) throws -> NovaAuthBootstrapRoute {
+        guard request.httpMethod.flatMap(NovaAuthMethod.init(rawValue:)) == .post,
+              let route = NovaAuthBootstrapRoute(rawValue: components.percentEncodedPath),
+              components.percentEncodedQuery == nil, let body = request.httpBody, body.count <= route.bodyLimit,
+              request.value(forHTTPHeaderField: HttpHeaderKey.authorization.rawValue) == nil,
               request.value(forHTTPHeaderField: "Content-Length") == String(body.count),
-              let contentType = request.value(forHTTPHeaderField: "Content-Type")
+              let contentType = request.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
         else { throw NovaAuthError.invalidRequest }
         try NovaAuthValidation.contentType(contentType)
+        return route
     }
 }

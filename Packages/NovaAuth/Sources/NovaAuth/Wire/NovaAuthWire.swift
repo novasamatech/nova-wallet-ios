@@ -1,7 +1,8 @@
 import Foundation
+import Operation_iOS
 
 enum NovaAuthWire {
-    static let contentType = "application/json"
+    static let contentType = HttpContentType.json.rawValue
 
     static func challengeBody(clientID: String, purpose: NovaAuthPurpose) throws -> Data {
         try NovaAuthValidation.clientID(clientID)

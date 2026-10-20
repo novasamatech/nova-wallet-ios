@@ -96,7 +96,7 @@ extension NovaAuth {
                 clientID: identity.clientID,
                 origin: flight.context.origin,
                 purpose: .token,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 bodyDigest: digest
             )
             flight.irreversible = true
@@ -109,7 +109,7 @@ extension NovaAuth {
                     clientID: identity.clientID,
                     challenge: challenge.challenge,
                     assertion: assertion,
-                    contentType: "application/json"
+                    contentType: NovaAuthWire.contentType
                 )
                 let tokenWrapper = bootstrap.createTokenWrapper(
                     request,

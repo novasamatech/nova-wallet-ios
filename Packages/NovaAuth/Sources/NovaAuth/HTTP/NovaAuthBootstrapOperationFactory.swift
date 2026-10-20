@@ -18,7 +18,7 @@ final class NovaAuthBootstrapOperationFactory {
     ) -> CompoundOperationWrapper<NovaAuthChallenge> {
         createWrapper(
             origin: origin,
-            path: "/v1/attestation/profile-3/challenges",
+            route: .registrationChallenge,
             contentType: NovaAuthWire.contentType,
             body: { try NovaAuthWire.challengeBody(clientID: clientID, purpose: .registration) },
             beforeSend: beforeSend,
@@ -33,7 +33,7 @@ final class NovaAuthBootstrapOperationFactory {
     ) -> CompoundOperationWrapper<NovaAuthChallenge> {
         createWrapper(
             origin: origin,
-            path: "/v1/attestation/profile-3/token-challenges",
+            route: .tokenChallenge,
             contentType: NovaAuthWire.contentType,
             body: { try NovaAuthWire.challengeBody(clientID: clientID, purpose: .token) },
             beforeSend: beforeSend,
@@ -47,7 +47,7 @@ final class NovaAuthBootstrapOperationFactory {
     ) -> CompoundOperationWrapper<Void> {
         createWrapper(
             origin: request.origin,
-            path: NovaAuthPurpose.registration.path,
+            route: .registration,
             contentType: request.contentType,
             body: { try NovaAuthWire.registrationBody(request) },
             beforeSend: beforeSend,
@@ -61,7 +61,7 @@ final class NovaAuthBootstrapOperationFactory {
     ) -> CompoundOperationWrapper<NovaAuthTokenResponse> {
         createWrapper(
             origin: request.origin,
-            path: NovaAuthPurpose.token.path,
+            route: .token,
             contentType: request.contentType,
             body: { try NovaAuthWire.tokenBody(request) },
             beforeSend: beforeSend,
@@ -74,24 +74,20 @@ private extension NovaAuthBootstrapOperationFactory {
     // swiftlint:disable:next function_parameter_count
     func createWrapper<T>(
         origin: NovaAuthOrigin,
-        path: String,
+        route: NovaAuthBootstrapRoute,
         contentType: String,
         body: () throws -> Data,
         beforeSend: @escaping () throws -> Void,
         decode: @escaping (NovaAuthResponse) throws -> T
     ) -> CompoundOperationWrapper<T> {
         do {
-            guard let url = URL(string: origin.value + path) else { throw NovaAuthError.invalidRequest }
+            guard let url = URL(string: origin.value + route.path) else { throw NovaAuthError.invalidRequest }
             try NovaAuthValidation.contentType(contentType)
             let bytes = try body()
-            var request = URLRequest(
-                url: url,
-                cachePolicy: .reloadIgnoringLocalCacheData,
-                timeoutInterval: path == NovaAuthPurpose.registration.path ? 100 : 20
-            )
-            request.httpMethod = "POST"
+            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
+            request.httpMethod = HttpMethod.post.rawValue
             request.httpBody = bytes
-            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+            request.setValue(contentType, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
             request.setValue(String(bytes.count), forHTTPHeaderField: "Content-Length")
             let clock = clock
             return http.createResponseWrapper(for: request, kind: .bootstrap, beforeSend: {

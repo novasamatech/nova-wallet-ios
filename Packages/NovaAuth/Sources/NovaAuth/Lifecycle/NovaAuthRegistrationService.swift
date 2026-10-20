@@ -108,12 +108,12 @@ private extension NovaAuth {
                 clientID: identity.clientID,
                 origin: flight.context.origin,
                 purpose: .registration,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 bodyDigest: bodyDigest
             )
             let attempt = NovaAuthRegistrationAttempt(
                 challenge: challenge.challenge,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 clientDataHash: hash,
                 startedAt: start
             )
