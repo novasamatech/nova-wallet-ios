@@ -195,6 +195,10 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         provideViewModel()
     }
 
+    func didFailRootYields() {
+        isRootYieldsRequested = false
+    }
+
     func didReceive(networkRootRate: Decimal?) {
         state.networkRootRate = networkRootRate
         isNetworkRootRateRequested = networkRootRate != nil

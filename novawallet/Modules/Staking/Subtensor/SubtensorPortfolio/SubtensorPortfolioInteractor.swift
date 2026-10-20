@@ -135,6 +135,9 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
             label: "portfolio root yields",
             deliver: { [weak self] in
                 self?.presenter?.didReceive(rootYields: $0)
+            },
+            onRefetchFailure: { [weak self] in
+                self?.presenter?.didFailRootYields()
             }
         )
     }
