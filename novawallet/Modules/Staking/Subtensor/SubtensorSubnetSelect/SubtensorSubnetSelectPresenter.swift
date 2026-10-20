@@ -15,6 +15,8 @@ final class SubtensorSubnetSelectPresenter {
         AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetSelect, target: nil)
     }
 
+    let dataAnalytics = SubtensorDataAnalytics(screen: .subnetSelect)
+
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
@@ -226,6 +228,8 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectInteractorOutputP
         entries = nil
         entriesError = error
         provideList()
+
+        dataAnalytics.trackFailure(error, endpoint: .subnets)
     }
 }
 

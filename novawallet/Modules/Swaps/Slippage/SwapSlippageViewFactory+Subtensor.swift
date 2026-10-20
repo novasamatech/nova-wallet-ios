@@ -15,7 +15,10 @@ extension SwapSlippageViewFactory {
             initSlippage: percent,
             config: SlippageConfig.subtensorStaking,
             chainAsset: chainAsset,
-            completionHandler: completionHandler
+            completionHandler: { newValue in
+                SubtensorSlippageAnalytics(config: .subtensorStaking).trackChange(from: percent, to: newValue)
+                completionHandler(newValue)
+            }
         )
 
         let view = SubtensorSlippageViewController(

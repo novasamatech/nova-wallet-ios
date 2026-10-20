@@ -7165,6 +7165,10 @@
 		8B274B4CBA93332E841EA246 /* SubtensorOperationResultPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699C234CC45C17F27C20C6FA /* SubtensorOperationResultPresenter+Analytics.swift */; };
 		841098D0FE79B220084DC10A /* SubtensorUnstakeSetupPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF8F75A3D5C69AA72D03A5 /* SubtensorUnstakeSetupPresenter+Analytics.swift */; };
 		BA0BA3FA877B5E1411691C9D /* SubtensorClaimRewardsPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C983298DF9229BA56D95E1F /* SubtensorClaimRewardsPresenter+Analytics.swift */; };
+		3CB799BDF02771DCA2FE7047 /* SubtensorValidationReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7301905CF6B5AC3EC2D972 /* SubtensorValidationReporter.swift */; };
+		4FA0FFEB7C677C2C06392414 /* SubtensorDataAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */; };
+		3A27E835B98A131148A47BD8 /* SubtensorSlippageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */; };
+		7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BACC6C31E4055731195CB87 /* SubtensorPositionPresenter+Analytics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -14069,6 +14073,10 @@
 		699C234CC45C17F27C20C6FA /* SubtensorOperationResultPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorOperationResultPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		4CFF8F75A3D5C69AA72D03A5 /* SubtensorUnstakeSetupPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorUnstakeSetupPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		6C983298DF9229BA56D95E1F /* SubtensorClaimRewardsPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorClaimRewardsPresenter+Analytics.swift"; sourceTree = "<group>"; };
+		FA7301905CF6B5AC3EC2D972 /* SubtensorValidationReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidationReporter.swift; sourceTree = "<group>"; };
+		7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDataAnalytics.swift; sourceTree = "<group>"; };
+		8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSlippageAnalytics.swift; sourceTree = "<group>"; };
+		1BACC6C31E4055731195CB87 /* SubtensorPositionPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorPositionPresenter+Analytics.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30477,6 +30485,7 @@
 				E5462ED691A7284BA6D2FA4D /* SubtensorPositionWireframe.swift */,
 				51204F549A70470C8CDD2BD7 /* ViewModel */,
 				B580883402C742E18D67C7E7 /* View */,
+				1BACC6C31E4055731195CB87 /* SubtensorPositionPresenter+Analytics.swift */,
 			);
 			name = SubtensorPosition;
 			path = SubtensorPosition;
@@ -32699,6 +32708,9 @@
 				E3575196975D2BE9E0E8D7B7 /* SubtensorAnalyticsMapping.swift */,
 				BFA244F5FE1B070D978BB2D8 /* FeatureSupportChecking+Subtensor.swift */,
 				1B2B29EBBE9B87CD96718FAE /* SubtensorOperationAnalytics.swift */,
+				FA7301905CF6B5AC3EC2D972 /* SubtensorValidationReporter.swift */,
+				7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */,
+				8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -33541,6 +33553,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */,
+				3A27E835B98A131148A47BD8 /* SubtensorSlippageAnalytics.swift in Sources */,
+				4FA0FFEB7C677C2C06392414 /* SubtensorDataAnalytics.swift in Sources */,
+				3CB799BDF02771DCA2FE7047 /* SubtensorValidationReporter.swift in Sources */,
 				BA0BA3FA877B5E1411691C9D /* SubtensorClaimRewardsPresenter+Analytics.swift in Sources */,
 				841098D0FE79B220084DC10A /* SubtensorUnstakeSetupPresenter+Analytics.swift in Sources */,
 				8B274B4CBA93332E841EA246 /* SubtensorOperationResultPresenter+Analytics.swift in Sources */,

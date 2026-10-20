@@ -43,6 +43,8 @@ final class SubtensorUnstakeSetupPresenter {
     var costBasis: SubtensorCostBasisState = .loading
     var novaFeeRate: BigRational?
     var isConfirmationShown = false
+    var isBlockedTracked = false
+    let dataAnalytics = SubtensorDataAnalytics(screen: .unstakeSetup)
 
     private var feeShape: FeeShape?
 
@@ -378,6 +380,7 @@ extension SubtensorUnstakeSetupPresenter {
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+        trackBlockedIfNeeded()
     }
 }
 
@@ -387,14 +390,4 @@ extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
     var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var loadingView: LoadableViewProtocol? { view }
     var alphaDisplayInfo: AssetBalanceDisplayInfo { inputDisplayInfo }
-}
-
-extension SubtensorUnstakeSetupPresenter: Localizable {
-    func applyLocalization() {
-        if let view, view.isSetup {
-            provideAmountInputViewModel()
-            provideAssetViewModel()
-            provideViewModel()
-        }
-    }
 }

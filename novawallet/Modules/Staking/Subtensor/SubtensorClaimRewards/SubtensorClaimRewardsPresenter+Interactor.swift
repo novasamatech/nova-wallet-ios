@@ -67,6 +67,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
 
     func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Error: \(error)")
+        dataAnalytics.trackFailure(error)
 
         presentBaseRetry(for: error)
     }

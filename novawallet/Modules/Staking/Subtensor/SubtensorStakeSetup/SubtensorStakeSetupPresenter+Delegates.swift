@@ -59,7 +59,8 @@ extension SubtensorStakeSetupPresenter {
                 self?.refreshPreflight()
             },
             quoteContext: createQuoteContext(),
-            isValidatorInactive: validatorItem?.isInactive == true
+            isValidatorInactive: validatorItem?.isInactive == true,
+            analytics: createValidationReporter(for: target)
         )
     }
 

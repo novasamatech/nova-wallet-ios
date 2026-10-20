@@ -9,4 +9,15 @@ extension SubtensorPortfolioPresenter: AnalyticsTracking {
 
         trackAnalytics(event)
     }
+
+    func trackAddPositionRefusal(_ reason: StakingBlockedReason) {
+        trackAnalytics(
+            .subtensorStakingBlocked(
+                flow: .stake,
+                reason: reason,
+                walletType: wallet.type.analyticsWalletType,
+                target: nil
+            )
+        )
+    }
 }

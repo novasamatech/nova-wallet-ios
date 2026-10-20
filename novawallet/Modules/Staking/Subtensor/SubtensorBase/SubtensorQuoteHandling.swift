@@ -47,6 +47,7 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
     var quoteInteractor: SubtensorBaseInteractorInputProtocol { get }
     var loadingView: LoadableViewProtocol? { get }
     var alphaDisplayInfo: AssetBalanceDisplayInfo { get }
+    var dataAnalytics: SubtensorDataAnalytics { get }
 
     func inputAmount() -> Balance?
     func quoteRequest() -> SubtensorTradeQuoteRequest?
@@ -141,6 +142,7 @@ extension SubtensorQuoteHandling {
 
     func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Subtensor setup error: \(error)")
+        dataAnalytics.trackFailure(error)
 
         if error.isNovaFeeUnavailable {
             tradesUnavailable = true

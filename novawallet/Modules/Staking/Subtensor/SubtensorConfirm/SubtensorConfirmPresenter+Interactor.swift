@@ -87,6 +87,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
 
     func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Error: \(error)")
+        analytics.data.trackFailure(error)
 
         guard !error.isNovaFeeUnavailable else {
             tradesUnavailable = true

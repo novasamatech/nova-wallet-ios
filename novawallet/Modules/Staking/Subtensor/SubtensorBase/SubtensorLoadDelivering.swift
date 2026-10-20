@@ -23,6 +23,16 @@ extension SubtensorLoadDelivering {
         deliver: @escaping (T) -> Void,
         fail: @escaping () -> Void
     ) {
+        load(wrapper, in: callStore, label: label, deliver: deliver, failWith: { _ in fail() })
+    }
+
+    func load<T>(
+        _ wrapper: CompoundOperationWrapper<T>,
+        in callStore: CancellableCallStore,
+        label: String,
+        deliver: @escaping (T) -> Void,
+        failWith: @escaping (Error) -> Void
+    ) {
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -34,7 +44,7 @@ extension SubtensorLoadDelivering {
                 deliver(value)
             case let .failure(error):
                 self?.logger.warning("Subtensor \(label) unavailable: \(error)")
-                fail()
+                failWith(error)
             }
         }
     }

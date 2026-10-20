@@ -179,13 +179,17 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        wireframe.checkingSupport(
-            of: .subtensorStaking(chain: chainAsset.chain),
+        wireframe.checkingSubtensorStakingSupport(
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.perform(action, account: account)
-        }
+            chain: chainAsset.chain,
+            sheetPresentingView: view,
+            onRefusal: { [weak self] reason in
+                self?.trackActionRefusal(action, reason: reason, wallet: wallet)
+            },
+            successClosure: { [weak self] in
+                self?.perform(action, account: account)
+            }
+        )
     }
 
     func selectValidator() {

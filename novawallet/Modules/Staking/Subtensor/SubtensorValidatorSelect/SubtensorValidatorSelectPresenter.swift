@@ -11,6 +11,7 @@ final class SubtensorValidatorSelectPresenter {
     let wireframe: SubtensorValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
     let abandonTracker: AnalyticsAbandonTracker
+    let dataAnalytics = SubtensorDataAnalytics(screen: .validatorSelect)
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
@@ -237,6 +238,8 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
         directory = nil
         directoryError = error
         provideState()
+
+        dataAnalytics.trackFailure(error, endpoint: .validators)
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
@@ -268,12 +271,18 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
         }
 
         provideState()
+
+        if filters.hidesUnusualApy {
+            dataAnalytics.trackFailure(recommendedError, endpoint: .recommendations)
+        }
     }
 
     func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
         verificationError = error
         provideState()
+
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
     }
 }
 

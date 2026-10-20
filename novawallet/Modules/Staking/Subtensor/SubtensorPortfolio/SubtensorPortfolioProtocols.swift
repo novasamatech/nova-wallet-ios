@@ -34,7 +34,7 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(networkRootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)
-    func didFailHistories(for period: SubtensorPricePeriod)
+    func didFailHistories(for period: SubtensorPricePeriod, error: Error?)
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didFailWeeklyChanges()
     func didReceiveSyncFailure(_ isFailed: Bool)

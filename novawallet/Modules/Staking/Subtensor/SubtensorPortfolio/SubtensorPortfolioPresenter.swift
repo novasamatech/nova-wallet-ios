@@ -18,6 +18,7 @@ final class SubtensorPortfolioPresenter {
     private var isRootYieldsRequested = false
     private var isNetworkRootRateRequested = false
     private var chartSelection: SubtensorPortfolioChartSelection?
+    let dataAnalytics = SubtensorDataAnalytics(screen: .portfolio)
 
     init(
         interactor: SubtensorPortfolioInteractorInputProtocol,
@@ -122,14 +123,18 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func addPosition() {
-        wireframe.checkingSupport(
-            of: .subtensorStaking(chain: chainAsset.chain),
+        wireframe.checkingSubtensorStakingSupport(
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.trackAddPositionOpened()
-            self?.wireframe.showAddPosition(from: self?.view)
-        }
+            chain: chainAsset.chain,
+            sheetPresentingView: view,
+            onRefusal: { [weak self] reason in
+                self?.trackAddPositionRefusal(reason)
+            },
+            successClosure: { [weak self] in
+                self?.trackAddPositionOpened()
+                self?.wireframe.showAddPosition(from: self?.view)
+            }
+        )
     }
 
     func retry() {
@@ -216,10 +221,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         provideViewModel()
     }
 
-    func didFailHistories(for period: SubtensorPricePeriod) {
+    func didFailHistories(for period: SubtensorPricePeriod, error: Error?) {
         guard period == state.period, state.histories == .loading else {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: error is BittensorApiError ? .portfolioHistory : .coingecko)
 
         historiesPeriod = nil
         state.histories = .failed

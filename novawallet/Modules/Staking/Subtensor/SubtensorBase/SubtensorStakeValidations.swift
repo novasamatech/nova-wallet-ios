@@ -11,6 +11,7 @@ struct SubtensorStakeValidatingDependencies {
     let onPreflightRefresh: () -> Void
     var quoteContext: SubtensorQuoteValidatingContext?
     var isValidatorInactive = false
+    var analytics: SubtensorValidationReporter?
 
     var isSubnet: Bool {
         netuid != SubtensorPallet.rootNetuid
@@ -37,12 +38,14 @@ extension SubtensorValidationFactoryProtocol {
         locale: Locale,
         onSuccess: @escaping () -> Void
     ) {
+        let analytics = dependencies.analytics
+
         var validations: [DataValidating] = [
             has(
                 fee: dependencies.fee,
                 locale: locale,
                 onError: { dependencies.onFeeRefresh() }
-            ),
+            ).reporting(.feeInProgress, to: analytics),
 
             hasPreflight(
                 dependencies.preflight,
@@ -52,7 +55,9 @@ extension SubtensorValidationFactoryProtocol {
         ]
 
         if dependencies.isSubnet {
-            validations.append(contentsOf: createQuoteValidations(for: dependencies.quoteContext, locale: locale))
+            validations.append(
+                contentsOf: createQuoteValidations(for: dependencies.quoteContext, locale: locale, analytics: analytics)
+            )
         }
 
         validations.append(contentsOf: createStakeBalanceValidations(for: dependencies, locale: locale))
@@ -60,8 +65,11 @@ extension SubtensorValidationFactoryProtocol {
         validations.append(validatorIsActive(isInactive: dependencies.isValidatorInactive, locale: locale))
 
         if dependencies.isSubnet {
-            validations.append(priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale))
-            validations.append(passesRealtimeQuote(dependencies.quoteContext, locale: locale))
+            validations.append(
+                priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale)
+                    .reporting(.priceImpact, to: analytics)
+            )
+            validations.append(passesRealtimeQuote(dependencies.quoteContext?.reporting(to: analytics), locale: locale))
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
@@ -69,21 +77,22 @@ extension SubtensorValidationFactoryProtocol {
 
     func createQuoteValidations(
         for context: SubtensorQuoteValidatingContext?,
-        locale: Locale
+        locale: Locale,
+        analytics: SubtensorValidationReporter?
     ) -> [DataValidating] {
         [
             subnetTradesAvailable(
                 tradesUnavailable: context?.tradesUnavailable ?? false,
                 locale: locale
-            ),
+            ).reportingTradesUnavailable(to: analytics),
 
-            hasQuote(context?.latestQuote, locale: locale),
+            hasQuote(context?.latestQuote, locale: locale).reporting(.liquidity, to: analytics),
 
             orderWithinSlippageTolerance(
                 quote: context?.latestQuote,
                 limitPrice: context?.signingLimit,
                 locale: locale
-            )
+            ).reporting(.orderTooLarge, to: analytics)
         ]
     }
 
@@ -116,7 +125,7 @@ private extension SubtensorValidationFactoryProtocol {
                 spendingAmount: dependencies.amountDecimal,
                 asset: dependencies.assetDisplayInfo,
                 locale: locale
-            ),
+            ).reporting(.insufficientBalance, to: dependencies.analytics),
 
             canPayFeeSpendingAmountInPlank(
                 balance: dependencies.balance?.transferable,
@@ -124,14 +133,14 @@ private extension SubtensorValidationFactoryProtocol {
                 spendingAmount: dependencies.amountDecimal,
                 asset: dependencies.assetDisplayInfo,
                 locale: locale
-            ),
+            ).reporting(.insufficientBalance, to: dependencies.analytics),
 
             respectsFeeReserve(
                 amount: dependencies.amount,
                 transferable: dependencies.balance?.transferable,
                 networkFee: dependencies.fee?.amountForCurrentAccount,
                 locale: locale
-            ),
+            ).reporting(.feeReserve, to: dependencies.analytics),
 
             hasMinStakeAmount(
                 stakedAmount: dependencies.stakedAmount,
@@ -139,7 +148,7 @@ private extension SubtensorValidationFactoryProtocol {
                 quotedSwapFee: dependencies.quoteContext?.latestQuote?.quote.poolFee,
                 novaFeeRate: dependencies.isSubnet ? dependencies.quoteContext?.latestQuote?.novaFeeRate : nil,
                 locale: locale
-            )
+            ).reporting(.minStake, to: dependencies.analytics)
         ]
     }
 

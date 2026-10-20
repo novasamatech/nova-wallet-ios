@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
@@ -139,7 +140,8 @@ extension SubtensorUnstakeSetupPresenter {
                 self?.loadGroupHotkeys()
             },
             onUnstakeAll: createUnstakeAllOffer(),
-            quoteContext: createQuoteContext()
+            quoteContext: createQuoteContext(),
+            analytics: createValidationReporter()
         )
     }
 
@@ -181,5 +183,15 @@ extension SubtensorUnstakeSetupPresenter {
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
             hasLockedStake: hasLockedStake
         )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter: Localizable {
+    func applyLocalization() {
+        if let view, view.isSetup {
+            provideAmountInputViewModel()
+            provideAssetViewModel()
+            provideViewModel()
+        }
     }
 }

@@ -24,6 +24,7 @@ final class SubtensorClaimRewardsPresenter {
     var pendingClaimHotkeys: Set<AccountId> = []
     var isPriceResolved = false
     var isInitiatedTracked = false
+    let dataAnalytics = SubtensorDataAnalytics(screen: .claim)
     private(set) var shownPreview: SubtensorRootClaimPreview
     private(set) var isNothingToClaim = false
     private(set) var isHandingOff = false
@@ -141,6 +142,7 @@ private extension SubtensorClaimRewardsPresenter {
     func createValidations() -> [DataValidating] {
         let locale = selectedLocale
         let isPending = pendingClaimHotkeys.contains(hotkey)
+        let reporter = createValidationReporter()
 
         var validations: [DataValidating] = [
             dataValidationFactory.positionsAreFresh(
@@ -149,10 +151,10 @@ private extension SubtensorClaimRewardsPresenter {
                 onRetry: { [weak self] in
                     self?.interactor.refreshPositions()
                 }
-            ),
+            ).reporting(.staleData, to: reporter),
             dataValidationFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFee()
-            }),
+            }).reporting(.feeInProgress, to: reporter),
             dataValidationFactory.hasPreflight(preflight, locale: locale, onRetry: { [weak self] in
                 self?.refreshPreflight()
             })
@@ -162,7 +164,9 @@ private extension SubtensorClaimRewardsPresenter {
             contentsOf: dataValidationFactory.createNetworkStateValidations(for: preflight, locale: locale)
         )
 
-        validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in
+        validations.append(ErrorConditionViolation(onError: { [weak self, weak view, wireframe] in
+            self?.trackBlocked(.claimPending)
+
             guard let view else {
                 return
             }
@@ -179,14 +183,14 @@ private extension SubtensorClaimRewardsPresenter {
                     fee: fee,
                     asset: chainAsset.assetDisplayInfo,
                     locale: locale
-                ),
+                ).reporting(.insufficientBalance, to: reporter),
                 dataValidationFactory.notViolatingMinBalancePaying(
                     fee: fee,
                     total: balance?.transferable,
                     minBalance: existentialDeposit,
                     asset: chainAsset.assetDisplayInfo,
                     locale: locale
-                )
+                ).reporting(.insufficientBalance, to: reporter)
             ]
         )
 
@@ -204,6 +208,7 @@ private extension SubtensorClaimRewardsPresenter {
         switch SubtensorClaimTapRule.verdict(shown: shownPreview, fresh: claimable) {
         case .nothingToClaim:
             isNothingToClaim = true
+            trackBlocked(.claimBelowMinimum)
             provideViewModel()
             presentNothingToClaim()
         case let .changed(preview):
@@ -264,6 +269,7 @@ private extension SubtensorClaimRewardsPresenter {
 
 extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol {
     func setup() {
+        trackWatchOnlyIfNeeded()
         provideAccountViewModels()
         provideViewModel()
 

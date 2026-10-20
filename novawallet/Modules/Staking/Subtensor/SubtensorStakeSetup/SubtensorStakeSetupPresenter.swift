@@ -51,7 +51,9 @@ final class SubtensorStakeSetupPresenter {
     var isConfirmationShown = false
     var isLockedValidatorPending = false
     var isValidatorPicked = false
+    var isNoBalanceTracked = false
     let abandonTracker = AnalyticsAbandonTracker { nil }
+    let dataAnalytics = SubtensorDataAnalytics(screen: .setup)
 
     init(
         interactor: SubtensorStakeSetupInteractorInputProtocol,

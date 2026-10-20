@@ -25,4 +25,32 @@ extension SubtensorClaimRewardsPresenter: AnalyticsTracking {
             )
         )
     }
+
+    func createValidationReporter() -> SubtensorValidationReporter {
+        SubtensorValidationReporter(
+            flow: .claim,
+            stage: .confirm,
+            target: .root,
+            walletType: model.account.chainAccount.type.analyticsWalletType
+        )
+    }
+
+    func trackBlocked(_ reason: StakingBlockedReason) {
+        trackAnalytics(
+            .subtensorStakingBlocked(
+                flow: .claim,
+                reason: reason,
+                walletType: model.account.chainAccount.type.analyticsWalletType,
+                target: .root
+            )
+        )
+    }
+
+    func trackWatchOnlyIfNeeded() {
+        guard isWatchOnly else {
+            return
+        }
+
+        trackBlocked(.watchOnly)
+    }
 }

@@ -12,6 +12,42 @@ extension SubtensorUnstakeSetupPresenter: AnalyticsTracking {
             basis.positions.count < group.positions.count
     }
 
+    func createValidationReporter() -> SubtensorValidationReporter {
+        SubtensorValidationReporter(
+            flow: .unstake,
+            stage: .setup,
+            target: target?.analyticsTarget,
+            walletType: selectedAccount.chainAccount.type.analyticsWalletType
+        )
+    }
+
+    func trackBlockedIfNeeded() {
+        guard !isBlockedTracked, let basis, let group, !group.positions.isEmpty else {
+            return
+        }
+
+        let reason: StakingBlockedReason
+
+        if holdRemainingBlocks(for: nil) != nil {
+            reason = .rootHold
+        } else if basis.available == 0 {
+            reason = .allLocked
+        } else {
+            return
+        }
+
+        isBlockedTracked = true
+
+        trackAnalytics(
+            .subtensorStakingBlocked(
+                flow: .unstake,
+                reason: reason,
+                walletType: selectedAccount.chainAccount.type.analyticsWalletType,
+                target: target?.analyticsTarget
+            )
+        )
+    }
+
     func trackInitiated(for model: SubtensorConfirmModel) {
         guard
             case let .unstake(unstakeModel) = model.mode,

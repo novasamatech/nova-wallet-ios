@@ -73,6 +73,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveSubnetsInfoError(_ error: Error) {
         logger.error("Subtensor unstake subnets info failed: \(error)")
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
 
         presentSubnetRetry()
     }

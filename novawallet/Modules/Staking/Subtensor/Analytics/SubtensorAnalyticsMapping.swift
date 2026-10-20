@@ -40,3 +40,24 @@ extension SubtensorStakeTarget {
         .netuid(netuid)
     }
 }
+
+extension SubtensorAmountPolicy {
+    static func analyticsKind(for input: SubtensorSellPlanInput?) -> StakingValidationKind? {
+        guard let input else {
+            return .insufficientBalance
+        }
+
+        switch sellPlan(for: input) {
+        case .sellAll, .partial:
+            return nil
+        case .exceedsAvailable:
+            return .insufficientBalance
+        case .belowMinimumOut:
+            return .minStake
+        case .remainderWouldBeSwept:
+            return .dustRemainder
+        case .remainderWouldBeErased:
+            return .holdLocked
+        }
+    }
+}

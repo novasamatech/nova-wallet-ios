@@ -35,6 +35,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             return
         }
 
+        dataAnalytics.trackFailure(error, endpoint: .recommendations)
         presetError = error
         validatorState = .none
         provideViewModel()
@@ -57,6 +58,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             return
         }
 
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
             self?.interactor.loadSubnet(netuid: position.netuid)
         }
@@ -108,6 +110,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         isBalanceLoaded = true
 
         applyMaxChange()
+        trackNoBalanceIfNeeded()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {

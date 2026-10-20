@@ -24,6 +24,7 @@ struct SubtensorUnstakeValidatingDependencies {
     var onGroupHotkeysRefresh: (() -> Void)?
     var onUnstakeAll: (() -> Void)?
     var quoteContext: SubtensorQuoteValidatingContext?
+    var analytics: SubtensorValidationReporter?
 
     var isBatched: Bool {
         netuid != SubtensorPallet.rootNetuid || (plan?.isBatched ?? false)
@@ -186,8 +187,13 @@ extension SubtensorValidationFactoryProtocol {
         validations.append(contentsOf: createNetworkStateValidations(for: dependencies.preflight, locale: locale))
 
         if dependencies.isSubnet {
-            validations.append(priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale))
-            validations.append(passesRealtimeQuote(dependencies.quoteContext, locale: locale))
+            validations.append(
+                priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale)
+                    .reporting(.priceImpact, to: dependencies.analytics)
+            )
+            validations.append(
+                passesRealtimeQuote(dependencies.quoteContext?.reporting(to: dependencies.analytics), locale: locale)
+            )
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
@@ -204,13 +210,13 @@ private extension SubtensorValidationFactoryProtocol {
                 syncFailed: dependencies.syncFailed,
                 locale: locale,
                 onRetry: { dependencies.onPositionsRefresh() }
-            ),
+            ).reporting(.staleData, to: dependencies.analytics),
 
             has(
                 fee: dependencies.fee,
                 locale: locale,
                 onError: { dependencies.onFeeRefresh() }
-            ),
+            ).reporting(.feeInProgress, to: dependencies.analytics),
 
             hasPreflight(
                 dependencies.preflight,
@@ -226,7 +232,13 @@ private extension SubtensorValidationFactoryProtocol {
         }
 
         if dependencies.isSubnet {
-            validations.append(contentsOf: createQuoteValidations(for: dependencies.quoteContext, locale: locale))
+            validations.append(
+                contentsOf: createQuoteValidations(
+                    for: dependencies.quoteContext,
+                    locale: locale,
+                    analytics: dependencies.analytics
+                )
+            )
         }
 
         return validations
@@ -239,12 +251,18 @@ private extension SubtensorValidationFactoryProtocol {
         let inputs: [SubtensorSellPlanInput?] = dependencies.sellPlanInputs ?? [nil]
 
         return inputs.map { input in
-            sellPlanAllows(
+            let validation = sellPlanAllows(
                 input,
                 assetDisplayInfo: dependencies.assetDisplayInfo,
                 onUnstakeAll: dependencies.onUnstakeAll,
                 locale: locale
             )
+
+            guard let kind = SubtensorAmountPolicy.analyticsKind(for: input) else {
+                return validation
+            }
+
+            return validation.reporting(kind, to: dependencies.analytics)
         }
     }
 
@@ -259,7 +277,7 @@ private extension SubtensorValidationFactoryProtocol {
                 minBalance: dependencies.existentialDeposit,
                 asset: assetDisplayInfo,
                 locale: locale
-            )
+            ).reporting(.insufficientBalance, to: dependencies.analytics)
         }
 
         guard dependencies.paysFeeFromPosition else {
@@ -271,7 +289,7 @@ private extension SubtensorValidationFactoryProtocol {
             fee: dependencies.fee,
             asset: assetDisplayInfo,
             locale: locale
-        )
+        ).reporting(.insufficientBalance, to: dependencies.analytics)
     }
 
     func createRootHoldValidations(
@@ -290,7 +308,7 @@ private extension SubtensorValidationFactoryProtocol {
                     unlockInterval: preflight.rootStakeUnlockInterval,
                     blockTime: preflight.blockTime,
                     locale: locale
-                )
+                ).reporting(.holdLocked, to: dependencies.analytics)
             ]
         }
 
@@ -301,7 +319,7 @@ private extension SubtensorValidationFactoryProtocol {
                 unlockInterval: hold.interval,
                 blockTime: preflight.blockTime,
                 locale: locale
-            )
+            ).reporting(.holdLocked, to: dependencies.analytics)
         }
     }
 }

@@ -104,7 +104,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
 
     func loadHistories(for period: SubtensorPricePeriod) {
         guard let priceHistoryOperationFactory, let accountSubject else {
-            presenter?.didFailHistories(for: period)
+            presenter?.didFailHistories(for: period, error: nil)
             return
         }
 
@@ -118,8 +118,8 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
 
         load(wrapper, in: historiesStore, label: "portfolio chart") { [weak self] in
             self?.presenter?.didReceive(histories: $0)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistories(for: period)
+        } failWith: { [weak self] error in
+            self?.presenter?.didFailHistories(for: period, error: error)
         }
     }
 

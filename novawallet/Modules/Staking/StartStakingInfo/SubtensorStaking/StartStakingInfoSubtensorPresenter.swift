@@ -8,6 +8,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
+    let dataAnalytics = SubtensorDataAnalytics(screen: .landing)
 
     private var state = State() {
         didSet {
@@ -77,6 +78,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         guard let view, let wallet, let accountExistense else { return }
 
         guard case .assetBalance = accountExistense else {
+            trackGateRefusal(.noAccount, wallet: wallet)
             super.startStaking(continuation: continuation)
             return
         }
@@ -108,7 +110,8 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .maxApy:
+        case let .maxApy(underlying):
+            dataAnalytics.trackFailure(underlying, endpoint: .recommendations)
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryMaxApy()
             }

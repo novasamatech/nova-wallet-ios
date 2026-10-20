@@ -1,6 +1,5 @@
 import Foundation
 import Foundation_iOS
-import NovaAnalytics
 
 final class SubtensorConfirmPresenter {
     weak var view: SubtensorConfirmViewProtocol?
@@ -28,8 +27,7 @@ final class SubtensorConfirmPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var costBasis: SubtensorCostBasisState = .loading
-    var isPriceMoveAcknowledged = false
-    let abandonTracker = AnalyticsAbandonTracker { nil }
+    let analytics: SubtensorConfirmAnalytics
     private(set) var isHandingOff = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -53,6 +51,7 @@ final class SubtensorConfirmPresenter {
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
+        analytics = SubtensorConfirmAnalytics(model: model)
 
         if case let .subnet(info, _) = model.target {
             let tolerance = model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
@@ -207,6 +206,7 @@ extension SubtensorConfirmPresenter {
         }
 
         state.raisePriceMoved()
+        analytics.reporter.shown(.priceMoved)
         quoteState = state
 
         provideViewModel()
@@ -218,7 +218,7 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
-            isPriceMoveAcknowledged = true
+            analytics.acknowledgePriceMove()
             state.acknowledgeLatest()
             quoteState = state
 
@@ -229,6 +229,7 @@ extension SubtensorConfirmPresenter {
         }
 
         guard !state.raisePriceMovedIfCrossed() else {
+            analytics.reporter.shown(.priceMoved)
             quoteState = state
             provideViewModel()
             return false
@@ -323,6 +324,7 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
         }
 
         guard !tradesUnavailable else {
+            analytics.reporter.tradesUnavailable()
             if let view {
                 wireframe.presentSubnetTradesUnavailable(view, locale: selectedLocale)
             }

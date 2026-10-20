@@ -13,6 +13,8 @@ struct SubtensorQuoteValidatingContext {
     let onQuoteUpdate: (SubtensorTradeQuote) -> Void
     var onPriceMoved: ((SubtensorTradeQuote) -> Void)?
     var onQuoteVerified: ((SubtensorTradeQuote) -> Void)?
+    var onRateUpdateShown: (() -> Void)?
+    var onLiquidityShown: (() -> Void)?
 
     var signingLimit: Balance? {
         guard let latestQuote, let acknowledgedLimit else {

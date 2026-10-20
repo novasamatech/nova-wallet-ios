@@ -29,6 +29,32 @@ extension SubtensorStakeSetupPresenter: AnalyticsTracking {
         }
     }
 
+    func createValidationReporter(for target: SubtensorStakeTarget) -> SubtensorValidationReporter {
+        SubtensorValidationReporter(
+            flow: .stake,
+            stage: .setup,
+            target: target.analyticsTarget,
+            walletType: selectedAccount.chainAccount.type.analyticsWalletType
+        )
+    }
+
+    func trackNoBalanceIfNeeded() {
+        guard !isNoBalanceTracked, !mode.isLocked, transferable == 0 else {
+            return
+        }
+
+        isNoBalanceTracked = true
+
+        trackAnalytics(
+            .subtensorStakingBlocked(
+                flow: .stake,
+                reason: .noBalance,
+                walletType: selectedAccount.chainAccount.type.analyticsWalletType,
+                target: target?.analyticsTarget
+            )
+        )
+    }
+
     func trackInitiated(for model: SubtensorConfirmModel) {
         abandonTracker.markProceeded()
 
