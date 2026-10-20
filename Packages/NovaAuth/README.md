@@ -50,7 +50,7 @@ A failed authentication attempt fails the caller's operation. NovaAuth schedules
 owns no interaction or presentation policy. Every independently created later operation has
 the same permission to try again after the short protocol cooldown. Concurrent demands join
 one issuance flight, which attempts at most one new key generation. Retirement fails that
-flight, except that an older stored key found invalid at attestation, or a key found invalid at
+flight, except that a key created on an earlier boot found invalid at attestation, or a key found invalid at
 assertion time (for example after a backup restore), is replaced by one fresh UUID/key within the
 same flight. Bearer replay preserves its original client binding and cannot turn the same business
 operation into identity replacement.
@@ -59,8 +59,9 @@ Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: scree
 retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
 background syncs). A registration refused with any code-bearing 4xx other than 409 keeps the
 client UUID, drops only the key and saves a refusal delay. An Apple-side attestation failure
-(a failed, timed-out or late answer, or invalid key for a key made in this flight or deferred on
-this boot) drops the key and saves the same delay.
+(a failed, timed-out or late answer, or invalid key for a key created on this boot) drops the
+key and saves the same delay. The key's creation time is saved with it; a record without one counts
+as an earlier boot.
 User-driven demands may re-register at once with a fresh key and challenge; background demands fail
 with `cooldown` until the delay passes: 1 hour, then 6 hours, then 24 hours per consecutive refusal.
 The delay is persisted, resets on an app version change or context replacement, and like every
@@ -78,8 +79,8 @@ other wait ends with a boot discontinuity.
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 30-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
 | Interrupted attestation | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
-| Failed or timed-out attestation; stale or malformed attestation object; platform invalid key for a key made in this flight or deferred on this boot | Drop the key, keep the client UUID, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
-| Platform invalid key for an older stored key at attestation, or at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
+| Failed or timed-out attestation; stale or malformed attestation object; platform invalid key for a key created on this boot | Drop the key, keep the client UUID, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
+| Platform invalid key at attestation for a key created on an earlier boot (backup restore, device migration), or at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
 | Registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state | Loaded as is; the next demand replaces UUID/key and keeps the refusal counter. Legacy `policyRefused` keeps the client UUID and attests a fresh key under the refusal rules. |
 
@@ -113,7 +114,7 @@ actual business send checks origin protection. No timer automatically retries a 
 
 Installation storage keeps its current key/version and validates surviving security fields.
 Removed optional legacy policy fields are ignored, even if malformed; the next existing write
-encodes only context, identity/registration, refusal delay and token-removal debt. Pending start/cooldown and
+encodes only context, identity/registration, key creation time, refusal delay and token-removal debt. Pending start/cooldown and
 saved attestation inputs remain exact. Corrupt/reset repair replaces the context and cannot
 adopt an old bearer. The active memory fence advances before I/O and survives a failed save;
 staged writes and owed bearer deletion retry at host activation and on the next demand, blocking

@@ -128,10 +128,10 @@ flowchart TB
   D -- "Budget expired: same key, fresh challenge" --> U
   A -- "Valid attestation; persist before send" --> P["registrationPending"]
   P -- "Register 204 or successful bearer installation" --> R["registered"]
-  A -- "Invalid key for an older stored key" --> X["retired"]
+  A -- "Invalid key for a key created on an earlier boot" --> X["retired"]
   A -- "Interrupted attestation" --> G["key dropped; UUID kept"]
   G --> U
-  A -- "Failed, timed-out or stale attestation; invalid key for a key made in this flight or deferred on this boot" --> F["key dropped; UUID kept; refusal delay saved"]
+  A -- "Failed, timed-out or stale attestation; invalid key for a key created on this boot" --> F["key dropped; UUID kept; refusal delay saved"]
   P -- "Confirmed absence or 409" --> X
   P -- "Any other code-bearing 4xx verdict" --> F["key dropped; UUID kept; refusal delay saved"]
   F -- "User-driven demand, or background demand past the delay" --> U
@@ -144,7 +144,7 @@ flowchart TB
   R -- "403 binding_not_allowed: refusal delay saved, key kept" --> R
 ```
 
-Retirement fails the current caller operation, except that an older stored key found invalid at attestation or
+Retirement fails the current caller operation, except that a key created on an earlier boot found invalid at attestation or
 assertion time is replaced by one fresh UUID/key within the same flight; no proof is resent and a flight never generates a
 second key. Otherwise a later independently created demand may replace after short backoff. Concurrency joins one
 issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
@@ -258,7 +258,7 @@ flowchart TB
   O -- "Yes" --> D["Eligible context; later demand may authenticate"]
 ```
 
-Settings keeps the current installation storage key/version, context, UUID/key/registration, exact
+Settings keeps the current installation storage key/version, context, UUID/key/registration, key creation time, exact
 saved attestation attempt, pending start/cooldown and token-removal debt. Removed optional legacy
 fields are ignored even when malformed; surviving security fields remain validated. The next
 existing write encodes the reduced schema. A saved refusal delay survives relaunch and resets on an app
