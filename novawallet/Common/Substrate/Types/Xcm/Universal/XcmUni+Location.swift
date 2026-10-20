@@ -28,6 +28,27 @@ extension XcmUni.RelativeLocation {
 }
 
 extension XcmUni.AbsoluteLocation {
+    enum RawPathKey: String, CaseIterable {
+        case globalConsensus
+        case parachainId
+        case palletInstance
+        case generalKey
+        case generalIndex
+        case accountKey20
+    }
+
+    enum RawPathError: Error {
+        case unsupportedKeys(Set<String>)
+        case invalidValue(key: RawPathKey, value: JSON)
+        case conflictingKeys(RawPathKey, RawPathKey)
+        case unsupportedConsensus(JSON)
+        case invalidAccountKey20Length(Int)
+    }
+
+    enum PointOfViewError: Error {
+        case foreignConsensusViewer(XcmUni.AbsoluteLocation)
+    }
+
     init(paraId: ParaId?) {
         if let paraId {
             items = [.parachain(paraId)]
@@ -36,31 +57,24 @@ extension XcmUni.AbsoluteLocation {
         }
     }
 
+    var isForeignConsensus: Bool {
+        if case .globalConsensus = items.first {
+            return true
+        }
+
+        return false
+    }
+
     static func createWithRawPath(_ path: JSON) throws -> XcmUni.AbsoluteLocation {
-        var junctions: [XcmUni.Junction] = []
+        let fields = try RawPathFields(path)
 
-        if let parachainId = path.parachainId?.unsignedIntValue {
-            let networkJunction = XcmUni.Junction.parachain(ParaId(parachainId))
-            junctions.append(networkJunction)
-        }
-
-        if let palletInstance = path.palletInstance?.unsignedIntValue {
-            junctions.append(.palletInstance(UInt8(palletInstance)))
-        }
-
-        if let generalKeyString = path.generalKey?.stringValue {
-            let generalKey = try Data(hexString: generalKeyString)
-
-            let model = XcmUni.GeneralKeyValue(data: generalKey)
-
-            junctions.append(.generalKey(model))
-        } else if let generalIndexString = path.generalIndex?.stringValue {
-            guard let generalIndex = BigUInt(generalIndexString) else {
-                throw CommonError.dataCorruption
-            }
-
-            junctions.append(.generalIndex(generalIndex))
-        }
+        let junctions = try [
+            fields.globalConsensus(),
+            fields.parachain(),
+            fields.palletInstance(),
+            fields.generalKeyOrIndex(),
+            fields.accountKey20()
+        ].compactMap { $0 }
 
         return XcmUni.AbsoluteLocation(items: junctions)
     }
@@ -82,7 +96,23 @@ extension XcmUni.AbsoluteLocation {
         return appending(components: [accountIdJunction])
     }
 
-    func fromPointOfView(location: XcmUni.AbsoluteLocation) -> XcmUni.RelativeLocation {
+    func fromPointOfView(location: XcmUni.AbsoluteLocation) throws -> XcmUni.RelativeLocation {
+        guard !location.isForeignConsensus else {
+            throw PointOfViewError.foreignConsensusViewer(location)
+        }
+
+        return fromLocalPointOfView(location)
+    }
+
+    func fromChainPointOfView(_ paraId: ParaId?) -> XcmUni.RelativeLocation {
+        fromLocalPointOfView(XcmUni.AbsoluteLocation(paraId: paraId))
+    }
+
+    private func fromLocalPointOfView(_ location: XcmUni.AbsoluteLocation) -> XcmUni.RelativeLocation {
+        if isForeignConsensus {
+            return XcmUni.RelativeLocation(parents: UInt8(location.items.count + 1), interior: self)
+        }
+
         let commonPrefixLength = zip(items, location.items).prefix { $0 == $1 }.count
 
         let parents = location.items.count - commonPrefixLength
@@ -92,12 +122,6 @@ extension XcmUni.AbsoluteLocation {
             parents: UInt8(parents),
             interior: XcmUni.Junctions(items: Array(items))
         )
-    }
-
-    func fromChainPointOfView(_ paraId: ParaId?) -> XcmUni.RelativeLocation {
-        let location = XcmUni.AbsoluteLocation(paraId: paraId)
-
-        return fromPointOfView(location: location)
     }
 }
 
@@ -144,5 +168,100 @@ extension XcmUni.RelativeLocation: XcmUniCodable {
 
         parents = try container.decode(StringScaleMapper<UInt8>.self, forKey: .parents).value
         interior = try container.decode(XcmUni.Junctions.self, forKey: .interior, configuration: configuration)
+    }
+}
+
+private extension XcmUni.AbsoluteLocation {
+    struct RawPathFields {
+        let fields: [String: JSON]
+
+        init(_ path: JSON) throws {
+            guard let fields = path.dictValue else {
+                throw RawPathError.invalidValue(key: .parachainId, value: path)
+            }
+
+            let unsupportedKeys = Set(fields.keys).subtracting(RawPathKey.allCases.map(\.rawValue))
+
+            guard unsupportedKeys.isEmpty else {
+                throw RawPathError.unsupportedKeys(unsupportedKeys)
+            }
+
+            self.fields = fields
+        }
+
+        func globalConsensus() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.globalConsensus.rawValue] else {
+                return nil
+            }
+
+            return .globalConsensus(try XcmUni.NetworkId.createWithRawPath(value))
+        }
+
+        func parachain() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.parachainId.rawValue] else {
+                return nil
+            }
+
+            guard let rawId = value.unsignedIntValue, let paraId = ParaId(exactly: rawId) else {
+                throw RawPathError.invalidValue(key: .parachainId, value: value)
+            }
+
+            return .parachain(paraId)
+        }
+
+        func palletInstance() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.palletInstance.rawValue] else {
+                return nil
+            }
+
+            guard let rawIndex = value.unsignedIntValue, let index = UInt8(exactly: rawIndex) else {
+                throw RawPathError.invalidValue(key: .palletInstance, value: value)
+            }
+
+            return .palletInstance(index)
+        }
+
+        func generalKeyOrIndex() throws -> XcmUni.Junction? {
+            let keyValue = fields[RawPathKey.generalKey.rawValue]
+            let indexValue = fields[RawPathKey.generalIndex.rawValue]
+
+            if keyValue != nil, indexValue != nil {
+                throw RawPathError.conflictingKeys(.generalKey, .generalIndex)
+            }
+
+            if let keyValue {
+                guard let keyString = keyValue.stringValue, let generalKey = try? Data(hexString: keyString) else {
+                    throw RawPathError.invalidValue(key: .generalKey, value: keyValue)
+                }
+
+                return .generalKey(XcmUni.GeneralKeyValue(data: generalKey))
+            }
+
+            if let indexValue {
+                guard let indexString = indexValue.stringValue, let generalIndex = BigUInt(indexString) else {
+                    throw RawPathError.invalidValue(key: .generalIndex, value: indexValue)
+                }
+
+                return .generalIndex(generalIndex)
+            }
+
+            return nil
+        }
+
+        func accountKey20() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.accountKey20.rawValue] else {
+                return nil
+            }
+
+            guard let keyString = value.stringValue, let accountKey = try? Data(hexString: keyString) else {
+                throw RawPathError.invalidValue(key: .accountKey20, value: value)
+            }
+
+            guard accountKey.count == XcmUni.AccountId20.keySize else {
+                throw RawPathError.invalidAccountKey20Length(accountKey.count)
+            }
+
+            return .accountKey20(XcmUni.AccountId20(network: .any, accountId: accountKey))
+        }
     }
 }

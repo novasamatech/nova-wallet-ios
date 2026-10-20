@@ -18,9 +18,9 @@ extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
         let childNavigationClosure = dependencies.childNavigation
 
         dependencies.blockAnimator.animate {
-            containerView?.layoutIfNeeded()
-
             layoutAnimatables?()
+
+            containerView?.layoutIfNeeded()
         } completionBlock: { _ in
             childNavigationClosure?() {}
         }
