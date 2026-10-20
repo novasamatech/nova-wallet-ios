@@ -1,17 +1,17 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaAppAttest
 import NovaOperationSupport
 
 public enum AnalyticsUploadAbort: Error {
     case consentWithdrawn
 }
 
-// peek → sign → POST → drop, repeated while the destination keeps accepting batches.
+// peek → authorize → POST → drop, repeated while the destination keeps accepting batches.
 public final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
+    private let isConsentEnabled: () -> Bool
     private let gatewayResolver: AnalyticsGatewayResolving
     private let operationQueue: OperationQueue
     private let appVersion: String
@@ -21,6 +21,7 @@ public final class AnalyticsUploader {
     init(
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
+        isConsentEnabled: @escaping () -> Bool,
         gatewayResolver: AnalyticsGatewayResolving,
         operationQueue: OperationQueue,
         appVersion: String,
@@ -29,6 +30,7 @@ public final class AnalyticsUploader {
     ) {
         self.queue = queue
         self.identity = identity
+        self.isConsentEnabled = isConsentEnabled
         self.gatewayResolver = gatewayResolver
         self.operationQueue = operationQueue
         self.appVersion = appVersion
@@ -120,7 +122,7 @@ private extension AnalyticsUploader {
             do {
                 rows = try peekWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                logger.error("Analytics queue is unreadable, clearing it: \(error)")
+                logger.error("Analytics queue is unreadable, clearing it")
 
                 return createClearWrapper()
             }
@@ -149,31 +151,12 @@ private extension AnalyticsUploader {
     func createSendWrapper(batch: Batch, gateway: AnalyticsGateway) throws -> CompoundOperationWrapper<BatchOutcome> {
         let body = batch.body
         let epoch = batch.epoch
-        let target = try gateway.uploadFactory.eventsTarget()
-
         let consentGate: () throws -> Void = { [weak self] in
-            guard let self, identity.consentEpoch == epoch else {
+            guard let self, isConsentEnabled(), identity.consentEpoch == epoch else {
                 throw AnalyticsUploadAbort.consentWithdrawn
             }
         }
-
-        let headersWrapper = gateway.attestation.createSignedHeadersWrapper(target: target) {
-            try consentGate()
-
-            return body
-        }
-
-        let uploadOperation = gateway.uploadFactory.createUploadOperation(
-            target: target,
-            bodyClosure: {
-                try consentGate()
-
-                return body
-            },
-            headersClosure: { try headersWrapper.targetOperation.extractNoCancellableResultData() }
-        )
-
-        uploadOperation.addDependency(headersWrapper.targetOperation)
+        let exchangeWrapper = gateway.uploadFactory.createUploadWrapper(body: body, beforeSend: consentGate)
 
         let outcomeWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -183,41 +166,23 @@ private extension AnalyticsUploader {
             }
 
             do {
-                try uploadOperation.extractNoCancellableResultData()
+                try exchangeWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                let signedClientId = try? headersWrapper.targetOperation
-                    .extractNoCancellableResultData()?[.clientId]
-
-                return createFailureWrapper(error, batch: batch, signedClientId: signedClientId, gateway: gateway)
+                return createFailureWrapper(error, batch: batch)
             }
 
             return createDropWrapper(batch: batch)
         }
 
-        outcomeWrapper.addDependency(operations: [uploadOperation])
+        outcomeWrapper.addDependency(wrapper: exchangeWrapper)
 
-        return outcomeWrapper.insertingHead(
-            operations: headersWrapper.allOperations + [uploadOperation]
-        )
+        return outcomeWrapper.insertingHead(operations: exchangeWrapper.allOperations)
     }
 
     // Keep batches for identity errors; discard only permanently rejected payloads.
-    func createFailureWrapper(
-        _ error: Error,
-        batch: Batch,
-        signedClientId: String?,
-        gateway: AnalyticsGateway
-    ) -> CompoundOperationWrapper<BatchOutcome> {
+    func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
-            case .rejected:
-                logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
-
-                if let signedClientId {
-                    gateway.attestation.markUnattested(ifCurrentClientId: signedClientId)
-                }
-
-                return .createWithResult(.failed(transportError))
             case .clientError:
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 
@@ -233,19 +198,13 @@ private extension AnalyticsUploader {
             }
         }
 
-        if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
-            logger.warning("Gateway refused registration, retaining the batch")
-
-            return .createWithResult(.failed(attestationError))
-        }
-
         if error is AnalyticsUploadAbort {
             logger.debug("Analytics batch abandoned in flight")
 
             return .createWithResult(.stop)
         }
 
-        logger.debug("Analytics upload retained for a later flush: \(error)")
+        logger.debug("Analytics upload retained for a later flush")
 
         return .createWithResult(.failed(error))
     }

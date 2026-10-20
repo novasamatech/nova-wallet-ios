@@ -125,6 +125,36 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
         }
     }
 
+    func testETHSnowbridgeAssetHubHydra() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.polkadotAssetHub,
+                originAssetSymbol: "ETH-Snowbridge",
+                destinationChainId: KnowChainId.hydra,
+                destinationAssetSymbol: "ETH-Snowbridge"
+            )
+
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testETHSnowbridgeHydraAssetHub() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.hydra,
+                originAssetSymbol: "ETH-Snowbridge",
+                destinationChainId: KnowChainId.polkadotAssetHub,
+                destinationAssetSymbol: "ETH-Snowbridge"
+            )
+
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func testUSDTAssetHubHydra() throws {
         do {
             let fee = try calculateFee(

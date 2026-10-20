@@ -64,7 +64,7 @@ final class CoingeckoOperationFactory {
         let method = PriceAPI.priceHistory(for: tokenId)
 
         guard var components = URLComponents(
-            url: PriceAPI.proxyBaseURL.appendingPathComponent(method),
+            url: PriceAPI.baseURL.appendingPathComponent(method),
             resolvingAgainstBaseURL: false
         ) else { return nil }
 

@@ -4,17 +4,14 @@ import Operation_iOS
 
 final class AnalyticsUploaderTests: XCTestCase {
     private let queue = AnalyticsEventQueueStub()
-    private let attestation = BackendAttestationProviderSpy()
     private let uploadFactory = AnalyticsUploadOperationFactorySpy()
 
     private func flush(maxBatches: Int = 10) throws {
         let uploader = AnalyticsUploader(
             queue: queue,
             identity: AnalyticsIdentityStub(),
-            gatewayResolver: AnalyticsGatewayResolverStub(
-                attestation: attestation,
-                uploadFactory: uploadFactory
-            ),
+            isConsentEnabled: { true },
+            gatewayResolver: AnalyticsGatewayResolverStub(uploadFactory: uploadFactory),
             operationQueue: OperationQueue(),
             appVersion: "10.9.0",
             logger: SilentLogger()
@@ -39,13 +36,13 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
     }
 
-    func testSendsSignedBody() throws {
+    func testSendsOneImmutableBody() throws {
         seed(count: 1)
 
         try flush()
 
-        XCTAssertEqual(attestation.signedBodies.count, 1)
-        XCTAssertEqual(attestation.signedBodies, uploadFactory.sentBodies)
+        XCTAssertEqual(uploadFactory.sentBodies.count, 1)
+        XCTAssertFalse(uploadFactory.sentBodies[0].isEmpty)
     }
 
     func testSuccessfulUploadDropsBatch() throws {
@@ -70,13 +67,12 @@ final class AnalyticsUploaderTests: XCTestCase {
     func testRejectedUploadRetainsBatch() {
         seed(count: 1)
         let events = queue.events
-        uploadFactory.uploadResult = .failure(AnalyticsTransportError.rejected(statusCode: 403))
+        uploadFactory.uploadResult = .failure(AnalyticsTransportError.proofRefused(statusCode: 403))
 
         XCTAssertThrowsError(try flush()) { error in
-            XCTAssertEqual(error as? AnalyticsTransportError, .rejected(statusCode: 403))
+            XCTAssertEqual(error as? AnalyticsTransportError, .proofRefused(statusCode: 403))
         }
 
         XCTAssertEqual(queue.events, events)
-        XCTAssertEqual(attestation.markedUnattestedClientIds, ["cid"])
     }
 }
