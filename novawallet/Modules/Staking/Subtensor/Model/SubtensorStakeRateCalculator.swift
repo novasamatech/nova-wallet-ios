@@ -26,11 +26,7 @@ enum SubtensorStakeRateCalculator {
 
 private extension SubtensorStakeRateCalculator {
     static func annualRate(for position: SubtensorPosition, in yields: SubtensorAlphaYields?) -> Decimal? {
-        guard let yields, yields.stamp.freshness == .fresh else {
-            return nil
-        }
-
-        return yields.yields[position.hotkey]?.annualRate
+        yields?.yields[position.hotkey]?.annualRate
     }
 
     static func stakeWeightedRate(
