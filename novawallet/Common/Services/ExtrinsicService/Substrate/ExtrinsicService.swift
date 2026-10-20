@@ -239,7 +239,8 @@ final class ExtrinsicService {
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         extensions: [TransactionExtending],
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil
     ) {
         operationFactory = ExtrinsicOperationFactory(
             chain: chain,
@@ -250,6 +251,7 @@ final class ExtrinsicService {
             metadataHashOperationFactory: metadataHashOperationFactory,
             nonceOperationFactory: nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            eraOperationFactory: eraOperationFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
         )
