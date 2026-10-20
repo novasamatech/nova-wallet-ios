@@ -6,8 +6,6 @@ enum SubtensorYieldOperationFactoryError: Error {
 }
 
 final class SubtensorYieldOperationFactory {
-    static let alphaYieldPageLimit = 3
-
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -26,49 +24,59 @@ final class SubtensorYieldOperationFactory {
 extension SubtensorYieldOperationFactory {
     static func makeAlphaYields(
         netuid: UInt16,
-        pages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>],
+        result: BittensorApiResult<BittensorApi.AlphaYieldCollection>,
         logger: LoggerProtocol
-    ) throws -> SubtensorAlphaYields {
-        let pageStamps = pages.map { page in
-            SubtensorBackendStamp(
-                component: page.value.meta.components.alphaYield,
-                isFromExpiredCache: page.isFromExpiredCache
-            )
-        }
-
-        guard let aggregateStamp = SubtensorBackendStamp.aggregate(pageStamps) else {
-            throw SubtensorYieldOperationFactoryError.missingYieldPage
-        }
+    ) -> SubtensorAlphaYields {
+        let stamp = SubtensorBackendStamp(
+            component: result.value.meta.components.alphaYield,
+            isFromExpiredCache: result.isFromExpiredCache
+        )
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
         var skippedRows = 0
 
-        for (page, pageStamp) in zip(pages, pageStamps) {
-            for item in page.value.items {
-                guard
-                    item.netuid == netuid,
-                    let hotkey = try? item.hotkey.toAccountId(
-                        using: .substrate(SubstrateConstants.genericAddressPrefix)
-                    ) else {
-                    skippedRows += 1
-                    continue
-                }
-
-                if yields[hotkey] == nil {
-                    yields[hotkey] = SubtensorReportedYield(reportedRate: item.reportedRate, stamp: pageStamp)
-                }
+        for item in result.value.items {
+            guard
+                item.netuid == netuid,
+                let hotkey = try? item.hotkey.toAccountId(
+                    using: .substrate(SubstrateConstants.genericAddressPrefix)
+                ) else {
+                skippedRows += 1
+                continue
             }
+
+            guard yields[hotkey] == nil else {
+                continue
+            }
+
+            yields[hotkey] = SubtensorReportedYield(
+                reportedRate: item.reportedRate,
+                stamp: stamp,
+                isReliable: item.rateReliability != .unreliable
+            )
         }
 
         if skippedRows > 0 {
             logger.warning("Skipped \(skippedRows) alpha yield rows of netuid \(netuid)")
         }
 
-        return SubtensorAlphaYields(
-            netuid: netuid,
-            yields: yields,
-            stamp: aggregateStamp
-        )
+        return SubtensorAlphaYields(netuid: netuid, yields: yields, stamp: stamp)
+    }
+
+    static func logFetchedAlphaYields(
+        netuid: UInt16,
+        collection: BittensorApi.AlphaYieldCollection,
+        logger: LoggerProtocol
+    ) {
+        let count = collection.items.filter { $0.netuid == netuid && $0.rateReliability == nil }.count
+
+        if count > 0 {
+            logger.warning("\(count) alpha yield rows of netuid \(netuid) carry no rate verdict; rates trusted")
+        }
+
+        if collection.pageInfo.nextPage != nil {
+            logger.warning("Alpha yields of netuid \(netuid) list \(collection.pageInfo.total) rows; first page kept")
+        }
     }
 
     static func makeRootYields(
@@ -136,19 +144,9 @@ extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol
             }
         }
 
-        let apiOperationFactory = apiOperationFactory
-
-        let pagesWrapper = BittensorApiPagination.createPagesWrapper(
-            maxPages: Self.alphaYieldPageLimit,
-            operationQueue: operationQueue,
-            nextPage: { $0.pageInfo.nextPage },
-            pageWrapper: { page in
-                apiOperationFactory.createAlphaYieldWrapper(netuid: netuid, page: page)
-            }
-        )
-
-        return pagesWrapper.mapped { pages in
-            try Self.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
+        return apiOperationFactory.createAlphaYieldWrapper(netuid: netuid).mapped { result in
+            Self.logFetchedAlphaYields(netuid: netuid, collection: result.value, logger: logger)
+            return Self.makeAlphaYields(netuid: netuid, result: result, logger: logger)
         }
     }
 
@@ -157,15 +155,9 @@ extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol
             return apiOperationFactory.peekRootValidators().map { try Self.makeRootYields(from: $0, logger: logger) }
         }
 
-        let pagesPeek = BittensorApiPagination.peekPages(
-            maxPages: Self.alphaYieldPageLimit,
-            nextPage: { $0.pageInfo.nextPage },
-            peekPage: { page in
-                apiOperationFactory.peekAlphaYield(netuid: netuid, page: page)
-            }
-        )
-
-        return pagesPeek.map { try Self.makeAlphaYields(netuid: netuid, pages: $0, logger: logger) }
+        return apiOperationFactory.peekAlphaYield(netuid: netuid).map {
+            Self.makeAlphaYields(netuid: netuid, result: $0, logger: logger)
+        }
     }
 
     func createNetworkRootRateWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {

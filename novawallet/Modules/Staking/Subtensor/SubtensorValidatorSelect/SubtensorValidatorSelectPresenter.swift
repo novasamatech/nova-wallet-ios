@@ -75,7 +75,8 @@ private extension SubtensorValidatorSelectPresenter {
             selectedHotkey: selectedHotkey,
             preselectedHotkey: preselectedHotkey,
             keptHotkeys: keptHotkeys,
-            recommendedHotkeys: filters.hidesUnusualApy ? recommendedHotkeys : nil
+            recommendedHotkeys: filters.hidesUnusualApy ? recommendedHotkeys : nil,
+            showsUnreliableRates: !filters.hidesUnusualApy
         )
 
         view?.didReceive(state: .loaded(listFactory.createListViewModel(for: input, locale: selectedLocale)))

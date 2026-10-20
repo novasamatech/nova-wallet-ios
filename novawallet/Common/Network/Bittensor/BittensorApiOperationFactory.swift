@@ -53,21 +53,17 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func createAlphaYieldWrapper(
-        netuid: UInt16,
-        page: Int
+        netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
         guard netuid != 0 else {
             return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
-        return createPagedWrapper(path: "/subnets/\(netuid)/yields/alpha", page: page)
+        return createWrapper(path: "/subnets/\(netuid)/yields/alpha")
     }
 
-    func peekAlphaYield(
-        netuid: UInt16,
-        page: Int
-    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
+    func peekAlphaYield(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
         guard netuid != 0 else { return .miss }
-        return peekPage(path: "/subnets/\(netuid)/yields/alpha", page: page)
+        return peek(path: "/subnets/\(netuid)/yields/alpha")
     }
 
     func createRootValidatorsWrapper()
@@ -151,25 +147,6 @@ private extension BittensorApiOperationFactory {
     static let operationsPath = "/operations/search"
     static let portfolioHistoryPath = "/portfolio/history/search"
 
-    func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
-        path: String,
-        page: Int
-    ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
-        guard Self.pageRange.contains(page) else {
-            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
-        }
-
-        return createWrapper(path: path, queryItems: Self.pagedQueryItems(page: page))
-    }
-
-    func peekPage<T>(path: String, page: Int) -> HTTPCachePeek<BittensorApiResult<T>> {
-        guard Self.pageRange.contains(page) else {
-            return .miss
-        }
-
-        return peek(path: path, queryItems: Self.pagedQueryItems(page: page))
-    }
-
     func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
         let cached = cache.peek(Self.cacheKey(path: path, queryItems: queryItems))
 
@@ -217,13 +194,6 @@ private extension BittensorApiOperationFactory {
         )
 
         return cache.createWrapper(for: job).mapped { try Self.makeResult(from: $0, isFromExpiredCache: false) }
-    }
-
-    static func pagedQueryItems(page: Int) -> [URLQueryItem] {
-        [
-            URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "pageSize", value: String(pageSize))
-        ]
     }
 
     static func cacheKey(path: String, queryItems: [URLQueryItem]) -> BittensorApiCacheKey {

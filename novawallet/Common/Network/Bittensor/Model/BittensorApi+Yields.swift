@@ -16,12 +16,18 @@ extension BittensorApi {
         let pageInfo: PageInfo
     }
 
+    enum RateReliability: String, Decodable, Equatable {
+        case reliable = "RELIABLE"
+        case unreliable = "UNRELIABLE"
+    }
+
     struct AlphaYield: Decodable, Equatable {
         let metricKind: String
         let netuid: UInt16
         let hotkey: String
         let reportedRate: String
         let sourceTimestamp: String
+        let rateReliability: RateReliability?
     }
 
     struct RootValidatorCollection: Decodable, Equatable {

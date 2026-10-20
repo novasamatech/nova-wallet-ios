@@ -14,6 +14,7 @@ struct SubtensorValidatorListInput {
     let preselectedHotkey: AccountId?
     let keptHotkeys: Set<AccountId>
     let recommendedHotkeys: Set<AccountId>?
+    let showsUnreliableRates: Bool
 }
 
 final class SubtensorValidatorListFactory {
@@ -179,7 +180,11 @@ private extension SubtensorValidatorListFactory {
                 item: item,
                 title: item.name ?? address?.mediumTruncated ?? unknown,
                 address: address,
-                rate: SubtensorAlphaApyFormatter.annualRate(for: item.hotkey, in: input.yields)
+                rate: SubtensorAlphaApyFormatter.annualRate(
+                    for: item.hotkey,
+                    in: input.yields,
+                    includesUnreliable: input.showsUnreliableRates
+                )
             )
         }
     }
