@@ -13,7 +13,6 @@ extension BittensorApi {
 
         let items: [AlphaYield]
         let meta: Meta
-        let pageInfo: PageInfo
     }
 
     enum RateReliability: String, Decodable, Equatable {
