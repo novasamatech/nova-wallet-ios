@@ -3,7 +3,7 @@ import NovaAnalytics
 
 extension SubtensorSubnetSelectPresenter: AnalyticsTracking {
     func trackRootSelected() {
-        abandonTracker.markProceeded()
+        abandonTracker?.markProceeded()
 
         let target = SubtensorStakeTarget.root
 

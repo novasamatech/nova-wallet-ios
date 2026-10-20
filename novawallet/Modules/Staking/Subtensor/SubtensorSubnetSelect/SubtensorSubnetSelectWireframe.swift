@@ -10,6 +10,7 @@ final class SubtensorSubnetSelectWireframe: SubtensorSubnetSelectWireframeProtoc
     func showDetails(
         from view: SubtensorSubnetSelectViewProtocol?,
         item: SubtensorSubnetListItem,
+        abandonTracker: SubtensorBrowseAbandonTracker?,
         delegate: SubtensorSubnetSelectDelegate
     ) {
         let input = SubtensorSubnetDetailsInput(subnet: item.subnet, target: item.target, validator: nil)
@@ -18,6 +19,7 @@ final class SubtensorSubnetSelectWireframe: SubtensorSubnetSelectWireframeProtoc
             for: state,
             input: input,
             host: .picker,
+            abandonTracker: abandonTracker,
             delegate: delegate
         ) else {
             return

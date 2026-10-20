@@ -10,7 +10,7 @@ final class SubtensorValidatorSelectPresenter {
     let interactor: SubtensorValidatorSelectInteractorInputProtocol
     let wireframe: SubtensorValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
-    let abandonTracker: AnalyticsAbandonTracker
+    let analytics: SubtensorValidatorSelectAnalytics
     let dataAnalytics = SubtensorDataAnalytics(screen: .validatorSelect)
 
     private var directory: SubtensorValidatorDirectory?
@@ -25,13 +25,12 @@ final class SubtensorValidatorSelectPresenter {
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
-    private let recommendedHotkey: AccountId?
     private var keptHotkeys: Set<AccountId> = []
 
     init(
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
-        recommendedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         interactor: SubtensorValidatorSelectInteractorInputProtocol,
         wireframe: SubtensorValidatorSelectWireframeProtocol,
         listFactory: SubtensorValidatorListFactory,
@@ -42,18 +41,13 @@ final class SubtensorValidatorSelectPresenter {
         self.target = target
         self.selectedHotkey = selectedHotkey
         preselectedHotkey = selectedHotkey
-        self.recommendedHotkey = recommendedHotkey
+        self.analytics = analytics
         self.interactor = interactor
         self.wireframe = wireframe
         self.listFactory = listFactory
         self.delegate = delegate
         self.filterSession = filterSession
         filters = filterSession.applied(isRoot: target.isRoot)
-
-        let analyticsTarget = target.analyticsTarget
-        abandonTracker = AnalyticsAbandonTracker {
-            AnalyticsEvent.subtensorStakingAbandoned(stage: .validatorSelect, target: analyticsTarget)
-        }
 
         self.localizationManager = localizationManager
     }
@@ -145,6 +139,7 @@ private extension SubtensorValidatorSelectPresenter {
 
 extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterProtocol {
     func setup() {
+        analytics.abandonTracker?.enter(.validatorSelect, target: target.analyticsTarget)
         provideState()
         interactor.setup()
     }
@@ -225,9 +220,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
         let target = target
         let delegate = delegate
 
-        abandonTracker.markProceeded()
-
-        if item.hotkey != preselectedHotkey, item.hotkey != recommendedHotkey {
+        if item.hotkey != preselectedHotkey, item.hotkey != analytics.recommendedHotkey {
             trackValidatorChanged(source: query.isEmpty ? .list : .search, unusualApyFilter: filters.hidesUnusualApy)
         }
 

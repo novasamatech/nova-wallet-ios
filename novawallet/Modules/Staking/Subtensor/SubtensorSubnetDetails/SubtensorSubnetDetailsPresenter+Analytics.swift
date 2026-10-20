@@ -3,7 +3,7 @@ import NovaAnalytics
 
 extension SubtensorSubnetDetailsPresenter: AnalyticsTracking {
     func trackSubnetSelected() {
-        abandonTracker.markProceeded()
+        abandonTracker?.markProceeded()
 
         let event = chainAsset.subtensorAnalyticsSubject(for: input.target).map { subject in
             AnalyticsEvent.subtensorTypeSelected(

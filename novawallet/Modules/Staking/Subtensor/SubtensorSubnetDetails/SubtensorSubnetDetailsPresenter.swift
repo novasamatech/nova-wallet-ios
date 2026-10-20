@@ -12,7 +12,7 @@ final class SubtensorSubnetDetailsPresenter {
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
     let chainAsset: ChainAsset
-    let abandonTracker: AnalyticsAbandonTracker
+    let abandonTracker: SubtensorBrowseAbandonTracker?
     let dataAnalytics = SubtensorDataAnalytics(screen: .subnetDetails)
 
     private var state: SubtensorSubnetDetailsState
@@ -33,6 +33,7 @@ final class SubtensorSubnetDetailsPresenter {
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
         chainAsset: ChainAsset,
+        abandonTracker: SubtensorBrowseAbandonTracker?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -47,11 +48,7 @@ final class SubtensorSubnetDetailsPresenter {
             validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
         )
         recommendedHotkey = input.recommendedHotkey
-
-        let target = input.target.analyticsTarget
-        abandonTracker = AnalyticsAbandonTracker {
-            AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetDetails, target: target)
-        }
+        self.abandonTracker = abandonTracker
 
         self.localizationManager = localizationManager
     }
@@ -151,7 +148,10 @@ private extension SubtensorSubnetDetailsPresenter {
             from: view,
             target: input.target,
             selectedHotkey: state.validator.item?.hotkey,
-            recommendedHotkey: recommendedHotkey,
+            analytics: SubtensorValidatorSelectAnalytics(
+                recommendedHotkey: recommendedHotkey,
+                abandonTracker: abandonTracker
+            ),
             delegate: self
         )
     }
@@ -159,6 +159,7 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
+        becomeActive()
         trackOpened(period: nil)
         provideTitle()
         provideViewModel()
@@ -220,6 +221,10 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         }
 
         wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
+
+    func becomeActive() {
+        abandonTracker?.enter(.subnetDetails, target: input.target.analyticsTarget)
     }
 
     func retryHistory() {

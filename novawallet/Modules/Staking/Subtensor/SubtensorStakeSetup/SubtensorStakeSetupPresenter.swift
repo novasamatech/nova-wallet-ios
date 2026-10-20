@@ -347,7 +347,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
             from: view,
             target: target,
             selectedHotkey: validatorState.validator?.hotkey,
-            recommendedHotkey: recommendedHotkey,
+            analytics: SubtensorValidatorSelectAnalytics(recommendedHotkey: recommendedHotkey, abandonTracker: nil),
             delegate: self
         )
     }

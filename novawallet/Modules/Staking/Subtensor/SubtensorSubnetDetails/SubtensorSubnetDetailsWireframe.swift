@@ -13,14 +13,14 @@ extension SubtensorSubnetDetailsWireframe: SubtensorSubnetDetailsWireframeProtoc
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
-        recommendedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         delegate: SubtensorValidatorSelectDelegate
     ) {
         guard let validatorsView = SubtensorValidatorSelectViewFactory.createView(
             for: state,
             target: target,
             selectedHotkey: selectedHotkey,
-            recommendedHotkey: recommendedHotkey,
+            analytics: analytics,
             delegate: delegate
         ) else {
             return
