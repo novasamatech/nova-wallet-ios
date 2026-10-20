@@ -23,7 +23,7 @@ extension SubtensorSubnetLinks {
 
 enum SubtensorSubnetLinkNormalizer {
     private static let schemes = ["https", "http"]
-    private static let githubHosts = ["github.com", "www.github.com"]
+    private static let githubHosts = ["github.com", "www.github.com", "m.github.com"]
     private static let githubNameCharacters = CharacterSet(
         charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-"
     )
@@ -78,7 +78,11 @@ enum SubtensorSubnetLinkNormalizer {
     }
 
     static func isGithub(_ url: URL) -> Bool {
-        url.host.map { githubHosts.contains($0.lowercased()) } ?? false
+        guard let host = url.host?.lowercased() else {
+            return false
+        }
+
+        return githubHosts.contains(host.hasSuffix(".") ? String(host.dropLast()) : host)
     }
 
     static func websiteDisplayText(_ url: URL) -> String {
