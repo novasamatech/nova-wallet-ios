@@ -142,12 +142,12 @@ extension ExtrinsicServiceFactoryProtocol {
 }
 
 final class ExtrinsicServiceFactory {
-    private let runtimeRegistry: RuntimeProviderProtocol
-    private let engine: JSONRPCEngine
-    private let operationQueue: OperationQueue
-    private let userStorageFacade: StorageFacadeProtocol
-    private let substrateStorageFacade: StorageFacadeProtocol
-    private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    let runtimeRegistry: RuntimeProviderProtocol
+    let engine: JSONRPCEngine
+    let operationQueue: OperationQueue
+    let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     private let nonceOperationFactory = TransactionNonceOperationFactory()
     private let logger: LoggerProtocol
 
