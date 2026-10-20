@@ -31,6 +31,7 @@ final class SubtensorPositionsSyncService: ObservableSyncService {
 
     private var stateObservable: Observable<Multistaking.SubtensorState?> = .init(state: nil)
     private var failureObservable: Observable<SubtensorPositionsSyncFailure?> = .init(state: nil)
+    private var failureSequence: UInt = 0
 
     init(
         stakeStateSource: SubtensorStakeStateSource,
@@ -68,7 +69,8 @@ private extension SubtensorPositionsSyncService {
     }
 
     func markFailed(_ error: Error) {
-        failureObservable.state = SubtensorPositionsSyncFailure(error: error)
+        failureSequence &+= 1
+        failureObservable.state = SubtensorPositionsSyncFailure(error: error, sequence: failureSequence)
 
         completeImmediate(error)
     }
@@ -123,11 +125,9 @@ extension SubtensorPositionsSyncService: SubtensorPositionsSyncServiceProtocol {
 
 struct SubtensorPositionsSyncFailure: Equatable {
     let error: Error
+    let sequence: UInt
 
     static func == (lhs: Self, rhs: Self) -> Bool {
-        let lhsError = lhs.error as NSError
-        let rhsError = rhs.error as NSError
-
-        return lhsError.domain == rhsError.domain && lhsError.code == rhsError.code
+        lhs.sequence == rhs.sequence
     }
 }
