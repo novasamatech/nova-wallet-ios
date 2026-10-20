@@ -1,7 +1,7 @@
 # Architecture Overview
 
 Nova Wallet iOS is a non-custodial multi-chain wallet for the Polkadot/Kusama ecosystem plus EVM
-chains. It is a single Xcode project plus three local SPM packages under `Packages/`, with one app
+chains. It is a single Xcode project plus three local SPM packages (NovaAuth, NovaAnalytics, NovaOperationSupport) under `Packages/`, with one app
 target, one notification service extension, and two test targets.
 
 ## Stack

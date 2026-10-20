@@ -2,7 +2,7 @@ import Foundation
 
 enum AnalyticsCrossRateFactory {
     static func createProvider() -> AnalyticsCrossRateProviding {
-        guard !isUnitTesting else {
+        guard !EnviromentVariables.isUnitTesting else {
             return AnalyticsIdentityCrossRateProvider()
         }
 
@@ -10,19 +10,12 @@ enum AnalyticsCrossRateFactory {
     }
 
     static func createUpdater() -> AnalyticsCrossRateUpdating? {
-        guard !isUnitTesting else {
+        guard !EnviromentVariables.isUnitTesting else {
             return nil
         }
 
         return sharedStore
     }
-
-    private enum Constants {
-        static let unitTestArgument = "-UNITTEST"
-    }
-
-    private static let isUnitTesting = ProcessInfo.processInfo.arguments
-        .contains(Constants.unitTestArgument)
 
     private static let sharedStore = AnalyticsCrossRateStore()
 }

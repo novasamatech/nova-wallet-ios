@@ -1,13 +1,15 @@
 import Foundation
-import Operation_iOS
-import NovaAppAttest
 @testable import NovaAnalytics
+import NovaAuth
+import Operation_iOS
 
 final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     private(set) var events: [AnalyticsEvent] = []
     private(set) var flushReasons: [AnalyticsFlushReason] = []
 
-    var eventNames: [String] { events.map(\.name.rawValue) }
+    var eventNames: [String] {
+        events.map(\.name.rawValue)
+    }
 
     func track(_ event: AnalyticsEvent) {
         events.append(event)
@@ -27,7 +29,9 @@ final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
 final class AnalyticsUploadingSpy: AnalyticsUploading {
     private let recordedMaxBatches = Locked<[Int]>([])
 
-    var maxBatchesCalls: [Int] { recordedMaxBatches.value }
+    var maxBatchesCalls: [Int] {
+        recordedMaxBatches.value
+    }
 
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
         recordedMaxBatches.update { $0.append(maxBatches) }
@@ -38,67 +42,51 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
 
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
     var uploadResult: Result<Void, Error> = .success(())
-
     private let recordedBodies = Locked<[Data]>([])
-
-    var sentBodies: [Data] { recordedBodies.value }
-
-    func eventsTarget() throws -> AttestationRequestTarget {
-        try AttestationRequestTarget(
-            url: URL(string: "https://gateway.example/v1/analytics/events")!,
-            method: "post",
-            contentType: "application/json"
-        )
+    var sentBodies: [Data] {
+        recordedBodies.value
     }
 
-    func createUploadOperation(
-        target _: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        headersClosure _: @escaping () throws -> [AttestationHeaderKey: String]?
-    ) -> BaseOperation<Void> {
-        let result = uploadResult
-        let bodies = recordedBodies
-
-        return ClosureOperation {
-            let body = try bodyClosure()
-            bodies.update { $0.append(body) }
-
-            try result.get()
-        }
+    func createUploadWrapper(body: Data, beforeSend: @escaping () throws -> Void) -> CompoundOperationWrapper<Void> {
+        CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
+            try beforeSend()
+            recordedBodies.update { $0.append(body) }
+            try uploadResult.get()
+        })
     }
 }
 
-final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
-    private let recordedBodies = Locked<[Data]>([])
-    private let recordedMarkUnattested = Locked<[String]>([])
-
-    var signedBodies: [Data] { recordedBodies.value }
-
-    var markedUnattestedClientIds: [String] { recordedMarkUnattested.value }
-
-    func createSignedHeadersWrapper(
-        target _: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data
-    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let bodies = recordedBodies
-
-        return CompoundOperationWrapper(
-            targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {
-                let body = try bodyClosure()
-                bodies.update { $0.append(body) }
-
-                return [.profile: "2", .clientId: "cid", .challenge: "chal", .appAttestAssertion: "assertion"]
-            }
-        )
+final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
+    let isSupported = true
+    private let recordedRequests = Locked<[NovaAuthRequest]>([])
+    var requests: [NovaAuthRequest] {
+        recordedRequests.value
     }
 
-    func markUnattested(ifCurrentClientId clientId: String) {
-        recordedMarkUnattested.update { $0.append(clientId) }
+    func createAdmissionWrapper(in _: NovaAuthContext) -> CompoundOperationWrapper<Void> {
+        .createWithResult(())
     }
 
-    func forgetClient() {}
+    func createResponseWrapper(
+        for request: NovaAuthRequest,
+        beforeSend: @escaping () throws -> Void
+    ) -> CompoundOperationWrapper<NovaAuthResponse> {
+        CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
+            try beforeSend()
+            recordedRequests.update { $0.append(request) }
+            let url = request.context.origin.url.appendingPathComponent(request.path)
+            let response = HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil)!
+            return NovaAuthResponse(response: response, body: Data())
+        })
+    }
+}
 
-    func allowClient() {}
+func analyticsTestAuth(_ client: NovaAuthClientProtocol) -> AnalyticsAuth {
+    let context = try! JSONDecoder().decode(
+        NovaAuthContext.self,
+        from: Data(#"{"origin":"https://gateway.example","generation":1}"#.utf8)
+    )
+    return AnalyticsAuth(context: context, client: client)
 }
 
 final class AnalyticsAvailabilityStub: AnalyticsAvailabilityProviderProtocol {
@@ -118,8 +106,14 @@ final class AnalyticsConsentStub: AnalyticsConsentManagerProtocol {
         self.isEnabled = isEnabled
     }
 
-    func setEnabled(_ enabled: Bool) { isEnabled = enabled }
-    func setErasureOwed(_ owed: Bool) { isErasureOwed = owed }
+    func setEnabled(_ enabled: Bool) {
+        isEnabled = enabled
+    }
+
+    func setErasureOwed(_ owed: Bool) {
+        isErasureOwed = owed
+    }
+
     func markPromptSeen() {}
     func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool, Bool) -> Void) {}
     func removeObserver(by _: AnyObject) {}
@@ -131,34 +125,36 @@ final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
     let sessionId = "66666666-7777-8888-9999-000000000000"
     let consentEpoch = 0
 
-    func installId() -> String? { "11111111-2222-3333-4444-555555555555" }
-    func existingInstallId() -> String? { nil }
+    func installId() -> String? {
+        "11111111-2222-3333-4444-555555555555"
+    }
+
+    func existingInstallId() -> String? {
+        nil
+    }
+
     func forgetInstallId() {}
     func allowCreation() {}
 }
 
 final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
-    private let gateway: AnalyticsGateway
-
-    private(set) var forgetCount: Int = 0
-    private(set) var allowCount: Int = 0
-
-    init(
-        attestation: BackendAttestationProviderProtocol,
-        uploadFactory: AnalyticsUploadOperationFactoryProtocol
-    ) {
-        gateway = AnalyticsGateway(attestation: attestation, uploadFactory: uploadFactory)
+    private let factory: AnalyticsUploadOperationFactoryProtocol
+    init(uploadFactory: AnalyticsUploadOperationFactoryProtocol) {
+        factory = uploadFactory
     }
 
     func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
-        .createWithResult(gateway)
+        .createWithResult(AnalyticsGateway(uploadFactory: factory))
+    }
+}
+
+final class AnalyticsAuthSourceStub: AnalyticsAuthProvidingProtocol {
+    let auth: AnalyticsAuth
+    init(auth: AnalyticsAuth) {
+        self.auth = auth
     }
 
-    func forgetClient() {
-        forgetCount += 1
-    }
-
-    func allowClient() {
-        allowCount += 1
+    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {
+        .createWithResult(auth)
     }
 }

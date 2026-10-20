@@ -65,5 +65,25 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let novaAuthOwnerQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "nova.auth.owner"
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
+
+    static let novaAuthBootstrapQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "nova.auth.bootstrap"
+        queue.maxConcurrentOperationCount = 4
+        return queue
+    }()
+
+    static let novaAuthRequestQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "nova.auth.requests"
+        return queue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }
