@@ -64,6 +64,7 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.actionButton.addTarget(self, action: #selector(actionUseSubnet), for: .touchUpInside)
 
         rootView.moreDetailsView.delegate = self
+        rootView.moreDetailsView.linkHandler = { [weak self] in self?.presenter.selectLink($0) }
     }
 
     func setupLocalization() {
