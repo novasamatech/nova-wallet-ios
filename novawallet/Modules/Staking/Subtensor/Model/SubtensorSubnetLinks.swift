@@ -3,8 +3,6 @@ import Foundation
 struct SubtensorSubnetLinks: Equatable {
     let website: URL?
     let github: URL?
-
-    static let empty = SubtensorSubnetLinks(website: nil, github: nil)
 }
 
 extension SubtensorSubnetLinks {

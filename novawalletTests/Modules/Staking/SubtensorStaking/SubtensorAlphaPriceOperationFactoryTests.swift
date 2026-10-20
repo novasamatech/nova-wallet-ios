@@ -79,7 +79,7 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
                 taoPerAlpha: price,
                 metadataStamp: stamp,
                 pricesStamp: stamp,
-                links: .empty
+                links: SubtensorSubnetLinks(subnetUrl: nil, subnetWebsite: nil, githubRepo: nil)
             )
         })
     }

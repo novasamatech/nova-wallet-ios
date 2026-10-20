@@ -44,7 +44,7 @@ final class SubtensorSubnetCatalogueOperationFactoryTests: XCTestCase {
             taoPerAlpha: 54_961_234,
             metadataStamp: SubtensorBackendStamp(asOf: try date("2026-09-24T09:25:00Z"), freshness: .fresh),
             pricesStamp: SubtensorBackendStamp(asOf: try date("2026-09-24T09:29:30Z"), freshness: .fresh),
-            links: .empty
+            links: SubtensorSubnetLinks(subnetUrl: nil, subnetWebsite: nil, githubRepo: nil)
         ))
     }
 
