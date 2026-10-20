@@ -7,7 +7,7 @@ final class SubtensorYieldOperationFactoryTests: XCTestCase {
     private let unreliableHotkey = Data(repeating: 0x22, count: 32)
     private let unverdictedHotkey = Data(repeating: 0x23, count: 32)
 
-    func testOnlyReliableOrUnverdictedRowsAreKept() throws {
+    func testOnlyReliableOrUnverdictedRatesAreTrusted() throws {
         let page = try decodePage(items: [
             try item(reliableHotkey, rate: "79.56", verdict: "\"RELIABLE\""),
             try item(unreliableHotkey, rate: "669990.45", verdict: "\"UNRELIABLE\""),
@@ -21,7 +21,7 @@ final class SubtensorYieldOperationFactoryTests: XCTestCase {
         )
 
         XCTAssertEqual(yields.yields[reliableHotkey]?.annualRate, Decimal(string: "0.7956"))
-        XCTAssertNil(yields.yields[unreliableHotkey])
+        XCTAssertNil(yields.yields[unreliableHotkey]?.annualRate)
         XCTAssertEqual(yields.yields[unverdictedHotkey]?.annualRate, Decimal(string: "0.521"))
     }
 
