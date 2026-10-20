@@ -173,7 +173,7 @@ private extension ModalCardPresentationController {
             completeTransitionAnimation(for: coveredContextView)
         }
 
-        presentingViewController
+        presentedViewController
             .transitionCoordinator?
             .animate(
                 alongsideTransition: animationBlock,
