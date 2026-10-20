@@ -53,6 +53,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
 
     func didReceiveNovaFeeRate(_: BigRational?) {}
 
+    func didReceiveShieldQuote(_: SubtensorShieldQuote?) {}
+
     func didReceiveCostBasis(_: SubtensorCostBasis?) {}
 
     func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
