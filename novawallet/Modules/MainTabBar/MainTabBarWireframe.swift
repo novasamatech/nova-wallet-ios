@@ -55,6 +55,15 @@ private extension MainTabBarWireframe {
         }
     }
 
+    func cancelStakingOpening(in view: MainTabBarViewProtocol?) {
+        let tabBarController = view?.controller as? UITabBarController
+        let stakingController = tabBarController?.viewControllers?[MainTabBarIndex.staking]
+        let navigationController = stakingController as? UINavigationController
+        let stakingView = navigationController?.viewControllers.first as? StakingDashboardViewProtocol
+
+        stakingView?.cancelStakingOpening()
+    }
+
     func openCardScreen(
         in view: MainTabBarViewProtocol?,
         cardNavigation: PayCardNavigation?
@@ -396,6 +405,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         screen: UrlHandlingScreen,
         locale: Locale
     ) {
+        cancelStakingOpening(in: view)
+
         if case let .dApp(model) = screen {
             openBrowser(with: model)
         } else {

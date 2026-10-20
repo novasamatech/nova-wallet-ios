@@ -18,6 +18,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
     private var pendingChainAssetId: ChainAssetId?
+    private let pendingNavigationTimeout = Debouncer(delay: 10)
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -43,39 +44,38 @@ final class StakingDashboardPresenter: AnalyticsTracking {
 // MARK: - Private
 
 private extension StakingDashboardPresenter {
-    /// Opens the deep-linked staking once the dashboard lists the asset. An inactive item is
-    /// awaited until its sync settles: before that an existing stake is still reported as inactive.
-    func processPendingNavigationIfNeeded() {
+    func processPendingNavigation(waitingForSync: Bool) {
         guard let chainAssetId = pendingChainAssetId, let model = lastResult?.model else {
             return
         }
 
         if let item = model.active.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
-            pendingChainAssetId = nil
+            clearPendingNavigation()
 
             wireframe.showStakingDetails(from: view, option: item.stakingOption)
-        } else if let item = model.inactive.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
-            guard !item.hasAnySync else {
-                return
-            }
-
-            pendingChainAssetId = nil
-
-            showStartStaking(for: item.chainAsset, source: .deepLink)
-        } else if let item = model.more.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
-            guard !item.hasAnySync else {
-                return
-            }
-
-            pendingChainAssetId = nil
-
-            switch item {
-            case let .concrete(concrete) where concrete.hasStaking:
-                wireframe.showStakingDetails(from: view, option: concrete.stakingOption)
-            case .concrete, .combined:
-                showStartStaking(for: item.chainAsset, source: .deepLink)
-            }
+            return
         }
+
+        let startStakingItems: [StakingDashboardItemModelCommonProtocol] = model.inactive + model.more
+
+        guard
+            let item = startStakingItems.first(where: { $0.chainAsset.chainAssetId == chainAssetId }),
+            !waitingForSync || !item.isOnchainSync
+        else { return }
+
+        clearPendingNavigation()
+
+        showStartStaking(for: item.chainAsset, source: .deepLink)
+    }
+
+    func completePendingNavigation() {
+        processPendingNavigation(waitingForSync: false)
+        clearPendingNavigation()
+    }
+
+    func clearPendingNavigation() {
+        pendingChainAssetId = nil
+        pendingNavigationTimeout.cancel()
     }
 
     func showStartStaking(for chainAsset: ChainAsset, source: StakingFlowSource) {
@@ -150,6 +150,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectActiveStaking(at index: Int) {
+        clearPendingNavigation()
+
         guard let option = lastResult?.model.active[index].stakingOption else {
             return
         }
@@ -158,6 +160,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectInactiveStaking(at index: Int) {
+        clearPendingNavigation()
+
         guard let item = lastResult?.model.inactive[index] else {
             return
         }
@@ -168,14 +172,26 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func openStaking(for chainAssetId: ChainAssetId) {
         pendingChainAssetId = chainAssetId
 
-        processPendingNavigationIfNeeded()
+        pendingNavigationTimeout.debounce { [weak self] in
+            self?.completePendingNavigation()
+        }
+
+        processPendingNavigation(waitingForSync: true)
+    }
+
+    func cancelStakingOpening() {
+        clearPendingNavigation()
     }
 
     func selectMoreOptions() {
+        clearPendingNavigation()
+
         wireframe.showMoreOptions(from: view)
     }
 
     func selectAnnouncementLink(at index: Int) {
+        clearPendingNavigation()
+
         let viewModels = announcementViewModelFactory.createGeneralViewModels(
             from: announcements,
             locale: selectedLocale
@@ -187,6 +203,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func switchWallet() {
+        clearPendingNavigation()
+
         wireframe.showWalletSwitch(from: view)
     }
 
@@ -203,6 +221,10 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
+        if let currentWallet = self.wallet, currentWallet.metaId != wallet.metaId {
+            clearPendingNavigation()
+        }
+
         self.wallet = wallet
         lastResult = StakingDashboardBuilderResult(
             walletId: wallet.metaId,
@@ -222,7 +244,7 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
         lastResult = result
 
         updateStakingsView()
-        processPendingNavigationIfNeeded()
+        processPendingNavigation(waitingForSync: true)
     }
 
     func didReceive(error: StakingDashboardInteractorError) {
