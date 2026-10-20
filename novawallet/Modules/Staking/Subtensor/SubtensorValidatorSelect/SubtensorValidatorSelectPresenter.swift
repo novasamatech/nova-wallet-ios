@@ -139,9 +139,13 @@ private extension SubtensorValidatorSelectPresenter {
 
 extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterProtocol {
     func setup() {
-        analytics.abandonTracker?.enter(.validatorSelect, target: target.analyticsTarget)
+        becomeActive()
         provideState()
         interactor.setup()
+    }
+
+    func becomeActive() {
+        analytics.abandonTracker?.enter(.validatorSelect, target: target.analyticsTarget)
     }
 
     func retry() {

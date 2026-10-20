@@ -86,6 +86,7 @@ protocol SubtensorValidatorSelectPresenterProtocol: AnyObject {
     func showInfo(hotkey: AccountId)
     func confirm()
     func retry()
+    func becomeActive()
 }
 
 protocol SubtensorValidatorSelectInteractorInputProtocol: AnyObject {
