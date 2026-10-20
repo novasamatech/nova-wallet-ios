@@ -35,7 +35,8 @@ enum SubtensorSubnetLinkNormalizer {
             return nil
         }
 
-        let hasScheme = URLComponents(string: text)?.scheme != nil
+        let parsedScheme = URLComponents(string: text)?.scheme
+        let hasScheme = parsedScheme.map { text.dropFirst($0.count).hasPrefix("://") } ?? false
         let withScheme = hasScheme ? text : "https://" + text
 
         guard
