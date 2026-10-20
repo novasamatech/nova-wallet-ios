@@ -25,11 +25,13 @@ final class SubtensorValidatorSelectPresenter {
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
+    private let recommendedHotkey: AccountId?
     private var keptHotkeys: Set<AccountId> = []
 
     init(
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         interactor: SubtensorValidatorSelectInteractorInputProtocol,
         wireframe: SubtensorValidatorSelectWireframeProtocol,
         listFactory: SubtensorValidatorListFactory,
@@ -40,6 +42,7 @@ final class SubtensorValidatorSelectPresenter {
         self.target = target
         self.selectedHotkey = selectedHotkey
         preselectedHotkey = selectedHotkey
+        self.recommendedHotkey = recommendedHotkey
         self.interactor = interactor
         self.wireframe = wireframe
         self.listFactory = listFactory
@@ -224,7 +227,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
 
         abandonTracker.markProceeded()
 
-        if item.hotkey != preselectedHotkey {
+        if item.hotkey != preselectedHotkey, item.hotkey != recommendedHotkey {
             trackValidatorChanged(source: query.isEmpty ? .list : .search, unusualApyFilter: filters.hidesUnusualApy)
         }
 

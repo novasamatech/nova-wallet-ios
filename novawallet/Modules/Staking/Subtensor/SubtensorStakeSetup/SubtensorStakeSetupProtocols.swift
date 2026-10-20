@@ -66,6 +66,7 @@ protocol SubtensorStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentabl
         from view: SubtensorStakeSetupViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
     )
 

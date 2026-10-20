@@ -43,19 +43,13 @@ protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorSubnetDetailsWireframeProtocol: WebPresentable {
+protocol SubtensorSubnetDetailsWireframeProtocol: WebPresentable, SubtensorSubnetPickerCompleting,
+    SubtensorCallerPopping {
     func showValidators(
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
-    )
-
-    func complete(
-        from view: SubtensorSubnetDetailsViewProtocol?,
-        host: SubtensorSubnetDetailsHost,
-        target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?,
-        delegate: SubtensorSubnetSelectDelegate?
     )
 }

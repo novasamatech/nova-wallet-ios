@@ -125,11 +125,20 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
 }
 
 extension StartStakingInfoSubtensorPresenter: SubtensorSubnetSelectDelegate {
-    func didSelectStakeTarget(_ target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?) {
+    func didSelectStakeTarget(
+        _ target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
+    ) {
         if target.isRoot {
             subtensorWireframe.showRootDetails(from: view)
         } else {
-            subtensorWireframe.showSubnetSetup(from: view, target: target, validator: validator)
+            subtensorWireframe.showSubnetSetup(
+                from: view,
+                target: target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey
+            )
         }
     }
 }

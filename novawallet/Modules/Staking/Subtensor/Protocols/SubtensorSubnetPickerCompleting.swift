@@ -5,6 +5,7 @@ protocol SubtensorSubnetPickerCompleting {
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorSubnetSelectDelegate?
     )
 }
@@ -14,10 +15,11 @@ extension SubtensorSubnetPickerCompleting {
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorSubnetSelectDelegate?
     ) {
         let deliver: () -> Void = {
-            delegate?.didSelectStakeTarget(target, validator: validator)
+            delegate?.didSelectStakeTarget(target, validator: validator, recommendedHotkey: recommendedHotkey)
         }
 
         guard let presenting = view?.controller.navigationController?.presentingViewController else {

@@ -169,7 +169,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
 
     func selectRoot() {
         trackRootSelected()
-        wireframe.complete(from: view, target: .root, validator: nil, delegate: delegate)
+        wireframe.complete(from: view, target: .root, validator: nil, recommendedHotkey: nil, delegate: delegate)
     }
 
     func showSort() {

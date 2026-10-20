@@ -6,6 +6,7 @@ enum SubtensorValidatorSelectViewFactory {
         for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
     ) -> SubtensorValidatorSelectViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -25,6 +26,7 @@ enum SubtensorValidatorSelectViewFactory {
         let presenter = SubtensorValidatorSelectPresenter(
             target: target,
             selectedHotkey: selectedHotkey,
+            recommendedHotkey: recommendedHotkey,
             interactor: interactor,
             wireframe: SubtensorValidatorSelectWireframe(state: state),
             listFactory: listFactory,

@@ -13,33 +13,19 @@ extension SubtensorSubnetDetailsWireframe: SubtensorSubnetDetailsWireframeProtoc
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
     ) {
         guard let validatorsView = SubtensorValidatorSelectViewFactory.createView(
             for: state,
             target: target,
             selectedHotkey: selectedHotkey,
+            recommendedHotkey: recommendedHotkey,
             delegate: delegate
         ) else {
             return
         }
 
         view?.controller.navigationController?.pushViewController(validatorsView.controller, animated: true)
-    }
-
-    func complete(
-        from view: SubtensorSubnetDetailsViewProtocol?,
-        host: SubtensorSubnetDetailsHost,
-        target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?,
-        delegate: SubtensorSubnetSelectDelegate?
-    ) {
-        switch host {
-        case .picker:
-            complete(from: view, target: target, validator: validator, delegate: delegate)
-        case .pushed:
-            popToCaller(from: view)
-            delegate?.didSelectStakeTarget(target, validator: validator)
-        }
     }
 }

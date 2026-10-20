@@ -49,12 +49,14 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     func showSubnetSetup(
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
     ) {
         guard let setupView = SubtensorStakeSetupViewFactory.createSubnetView(
             for: state,
             target: target,
             validator: validator,
+            recommendedHotkey: recommendedHotkey,
             browseState: browseState
         ) else {
             return

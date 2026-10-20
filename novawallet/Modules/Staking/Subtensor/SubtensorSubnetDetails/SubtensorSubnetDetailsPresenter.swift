@@ -23,6 +23,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var isParametersRequested = false
     private var isPresetRequested = false
     private var isUsePending = false
+    private var recommendedHotkey: AccountId?
 
     init(
         input: SubtensorSubnetDetailsInput,
@@ -45,6 +46,7 @@ final class SubtensorSubnetDetailsPresenter {
         state = SubtensorSubnetDetailsState(
             validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
         )
+        recommendedHotkey = input.recommendedHotkey
 
         let target = input.target.analyticsTarget
         abandonTracker = AnalyticsAbandonTracker {
@@ -123,13 +125,23 @@ private extension SubtensorSubnetDetailsPresenter {
     func complete(with validator: SubtensorValidatorDirectoryItem) {
         trackSubnetSelected()
 
-        wireframe.complete(
-            from: view,
-            host: host,
-            target: input.target,
-            validator: validator,
-            delegate: selectionDelegate
-        )
+        switch host {
+        case .picker:
+            wireframe.complete(
+                from: view,
+                target: input.target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey,
+                delegate: selectionDelegate
+            )
+        case .pushed:
+            wireframe.popToCaller(from: view)
+            selectionDelegate?.didSelectStakeTarget(
+                input.target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey
+            )
+        }
     }
 
     func showValidators(completesOnSelection: Bool) {
@@ -139,6 +151,7 @@ private extension SubtensorSubnetDetailsPresenter {
             from: view,
             target: input.target,
             selectedHotkey: state.validator.item?.hotkey,
+            recommendedHotkey: recommendedHotkey,
             delegate: self
         )
     }
@@ -283,6 +296,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
             return
         }
 
+        recommendedHotkey = validator?.hotkey
         state.validator = validator.map { .selected($0) } ?? .unselected
         provideViewModel()
     }

@@ -50,7 +50,7 @@ final class SubtensorStakeSetupPresenter {
     var novaFeeRate: BigRational?
     var isConfirmationShown = false
     var isLockedValidatorPending = false
-    var isValidatorPicked = false
+    var recommendedHotkey: AccountId?
     var isNoBalanceTracked = false
     let abandonTracker = AnalyticsAbandonTracker { nil }
     let dataAnalytics = SubtensorDataAnalytics(screen: .setup)
@@ -69,9 +69,11 @@ final class SubtensorStakeSetupPresenter {
         logger: LoggerProtocol,
         browseState: SubtensorSubnetBrowseState,
         quickPickVisit: SubtensorQuickPickVisit? = nil,
-        rootEntryPresentation: SubtensorRootEntryPresentation = .standard
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard,
+        recommendedHotkey: AccountId? = nil
     ) {
         self.rootEntryPresentation = rootEntryPresentation
+        self.recommendedHotkey = recommendedHotkey
         self.browseState = browseState
         self.quickPickVisit = quickPickVisit
         self.interactor = interactor
@@ -345,6 +347,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
             from: view,
             target: target,
             selectedHotkey: validatorState.validator?.hotkey,
+            recommendedHotkey: recommendedHotkey,
             delegate: self
         )
     }

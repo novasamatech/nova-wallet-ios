@@ -1,10 +1,16 @@
 import Foundation
 
 extension SubtensorStakeSetupPresenter: SubtensorSubnetSelectDelegate {
-    func didSelectStakeTarget(_ target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?) {
+    func didSelectStakeTarget(
+        _ target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
+    ) {
         guard !mode.isLocked else {
             return
         }
+
+        self.recommendedHotkey = recommendedHotkey
 
         quickPickVisit?.replaceManually()
         interactor.cancelQuickPickSnapshot()
@@ -26,7 +32,6 @@ extension SubtensorStakeSetupPresenter: SubtensorValidatorSelectDelegate {
             return
         }
 
-        isValidatorPicked = true
         applyValidator(validator)
     }
 }

@@ -19,8 +19,6 @@ extension SubtensorStakeSetupPresenter: AnalyticsTracking {
     }
 
     func resetAnalytics() {
-        isValidatorPicked = false
-
         let isNewPosition = mode.origin == .newPosition
         let analyticsTarget = target?.analyticsTarget
 
@@ -98,7 +96,7 @@ private extension SubtensorStakeSetupPresenter {
             return .existingHotkey
         }
 
-        return isValidatorPicked ? .manual : .recommended
+        return model.validator.hotkey == recommendedHotkey ? .recommended : .manual
     }
 }
 

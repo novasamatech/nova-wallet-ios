@@ -14,13 +14,19 @@ enum SubtensorStakeSetupViewFactory {
         for state: SubtensorSharedStateProtocol,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?,
         browseState: SubtensorSubnetBrowseState
     ) -> SubtensorStakeSetupViewProtocol? {
         guard !target.isRoot else {
             return nil
         }
 
-        return createView(for: state, mode: .subnetPick(target: target, validator: validator), browseState: browseState)
+        return createView(
+            for: state,
+            mode: .subnetPick(target: target, validator: validator),
+            browseState: browseState,
+            recommendedHotkey: recommendedHotkey
+        )
     }
 
     static func createQuickPickView(
@@ -65,7 +71,8 @@ private extension SubtensorStakeSetupViewFactory {
         mode: SubtensorStakeSetupMode,
         browseState: SubtensorSubnetBrowseState = .init(),
         quickPickVisit: SubtensorQuickPickVisit? = nil,
-        rootEntryPresentation: SubtensorRootEntryPresentation = .standard
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard,
+        recommendedHotkey: AccountId? = nil
     ) -> SubtensorStakeSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
@@ -114,7 +121,8 @@ private extension SubtensorStakeSetupViewFactory {
             logger: Logger.shared,
             browseState: browseState,
             quickPickVisit: quickPickVisit,
-            rootEntryPresentation: rootEntryPresentation
+            rootEntryPresentation: rootEntryPresentation,
+            recommendedHotkey: recommendedHotkey
         )
 
         let view = SubtensorStakeSetupViewController(presenter: presenter, localizationManager: localizationManager)

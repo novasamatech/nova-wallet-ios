@@ -41,12 +41,14 @@ final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
         from view: SubtensorStakeSetupViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        recommendedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
     ) {
         guard let selectView = SubtensorValidatorSelectViewFactory.createView(
             for: state,
             target: target,
             selectedHotkey: selectedHotkey,
+            recommendedHotkey: recommendedHotkey,
             delegate: delegate
         ) else {
             return

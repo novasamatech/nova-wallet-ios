@@ -19,7 +19,8 @@ protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframePr
     func showSubnetSetup(
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
     )
 
     func close(from view: ControllerBackedProtocol?)

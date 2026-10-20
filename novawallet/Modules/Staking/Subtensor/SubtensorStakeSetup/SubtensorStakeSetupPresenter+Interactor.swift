@@ -23,6 +23,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         }
 
         if let validator {
+            recommendedHotkey = validator.hotkey
             applyValidator(validator)
         } else {
             validatorState = .none

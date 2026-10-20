@@ -130,7 +130,12 @@ extension SubtensorStakeSetupPresenter {
 
         wireframe.showSubnetDetails(
             from: view,
-            input: SubtensorSubnetDetailsInput(subnet: subnet, target: target, validator: validatorItem),
+            input: SubtensorSubnetDetailsInput(
+                subnet: subnet,
+                target: target,
+                validator: validatorItem,
+                recommendedHotkey: recommendedHotkey
+            ),
             delegate: self
         )
     }
