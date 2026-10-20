@@ -251,6 +251,13 @@ extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let primaryWrapper = createFeeWrapper(for: request, minimumSendAmount: Self.minimumSendAmount)
 
+        let primaryAmount = ensureSafeAmountToSend(for: request, minimumSendAmount: Self.minimumSendAmount).amount
+        let fallbackAmount = ensureSafeAmountToSend(for: request, minimumSendAmount: Self.fallbackSendAmount).amount
+
+        guard fallbackAmount != primaryAmount else {
+            return primaryWrapper
+        }
+
         let fallbackWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
         fallbackWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -258,7 +265,7 @@ extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
             do {
                 let fee = try primaryWrapper.targetOperation.extractNoCancellableResultData()
                 return .createWithResult(fee)
-            } catch {
+            } catch let error as DryRun.DryRunError<JSON> {
                 self.logger.warning(
                     "Fee dry run with \(Self.minimumSendAmount) \(request.origin.chainAsset.asset.symbol) failed, " +
                         "retrying with \(Self.fallbackSendAmount): \(error)"
