@@ -12,11 +12,25 @@ extension SubtensorConfirmPresenter {
         return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
     }
 
+    var activeShieldQuote: SubtensorShieldQuote? {
+        isShieldOn ? eligibleShieldQuote : nil
+    }
+
     var networkFee: ExtrinsicFeeProtocol? {
         guard isShieldQuoteResolved else {
             return nil
         }
 
-        return eligibleShieldQuote?.totalFee ?? fee
+        return activeShieldQuote?.totalFee ?? fee
+    }
+
+    func provideShieldState() {
+        view?.didReceiveShield(isOn: eligibleShieldQuote != nil ? isShieldOn : nil)
+    }
+
+    func toggleShield() {
+        isShieldOn.toggle()
+
+        provideViewModel()
     }
 }
