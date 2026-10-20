@@ -199,16 +199,23 @@ private extension SettingsTests {
     func makeConsent(settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
         AnalyticsConsentManager(
             settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(isAuthSupported: true)
+            availabilityProvider: AnalyticsAvailabilityProvider()
         )
     }
 
     func makeUnattestableConsent(optedIn: Bool, settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
         makeConsent(settings: settings).setEnabled(optedIn)
 
+        let availability = MockAnalyticsAvailabilityProviderProtocol()
+
+        stub(availability) { stub in
+            when(stub.isAvailable.get).thenReturn(false)
+            when(stub.addObserver(with: any(), queue: any(), closure: any())).thenDoNothing()
+        }
+
         return AnalyticsConsentManager(
             settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(isAuthSupported: false)
+            availabilityProvider: availability
         )
     }
 

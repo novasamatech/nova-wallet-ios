@@ -96,7 +96,7 @@ extension NovaAuth {
                 clientID: identity.clientID,
                 origin: flight.context.origin,
                 purpose: .token,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 bodyDigest: digest
             )
             flight.irreversible = true
@@ -109,7 +109,7 @@ extension NovaAuth {
                     clientID: identity.clientID,
                     challenge: challenge.challenge,
                     assertion: assertion,
-                    contentType: "application/json"
+                    contentType: NovaAuthWire.contentType
                 )
                 let tokenWrapper = bootstrap.createTokenWrapper(
                     request,
@@ -222,6 +222,7 @@ private extension NovaAuth {
     func beginEarlyRefresh(context: NovaAuthContext, now: NovaAuthTime) {
         do {
             guard case .registered = state?.identity?.registration else { return }
+            try state?.identity?.refusal?.check(now: now, appVersion: dependencies.appIdentity.version)
             try originCooldown.check(now: now)
             try issuanceCooldown.check(now: now)
             try prepareIdentity(context: context)
@@ -237,7 +238,9 @@ private extension NovaAuth {
             flight.waiters.removeValue(forKey: waiterID)
             if flight.waiters.isEmpty, !flight.sponsored, !flight.irreversible {
                 self.flight = nil
-                flight.cancelChild?()
+                let cancelChild = flight.cancelChild
+                flight.cancelChild = nil
+                cancelChild?()
             }
         }
     }

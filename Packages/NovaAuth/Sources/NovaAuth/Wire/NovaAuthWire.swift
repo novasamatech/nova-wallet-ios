@@ -1,7 +1,8 @@
 import Foundation
+import Operation_iOS
 
 enum NovaAuthWire {
-    static let contentType = "application/json"
+    static let contentType = HttpContentType.json.rawValue
 
     static func challengeBody(clientID: String, purpose: NovaAuthPurpose) throws -> Data {
         try NovaAuthValidation.clientID(clientID)
@@ -81,6 +82,11 @@ enum NovaAuthWire {
             requestID: requestID(response.response),
             retryAfter: retryAfter(response.response)
         )
+    }
+
+    static func isGatewayRequestDefect(_ response: NovaAuthResponse) -> Bool {
+        guard response.response.statusCode == 400, let code = errorCode(from: response.body) else { return false }
+        return ["invalid_request", "invalid_target", "unsupported_profile"].contains(code)
     }
 
     static func requestID(_ response: HTTPURLResponse) -> String? {

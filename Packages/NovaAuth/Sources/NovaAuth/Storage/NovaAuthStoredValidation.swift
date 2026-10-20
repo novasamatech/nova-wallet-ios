@@ -14,6 +14,7 @@ enum NovaAuthStoredValidation {
         try NovaAuthValidation.clientID(identity.clientID)
         if let keyID = identity.keyID { try NovaAuthValidation.keyID(keyID) }
         if let refusal = identity.refusal { try validateRefusal(refusal) }
+        if let keyCreatedAt = identity.keyCreatedAt { try time(keyCreatedAt) }
         try registration(identity)
     }
 

@@ -56,6 +56,7 @@ public struct NovaAuthResponse {
 
     public var requestID: String? { NovaAuthWire.requestID(response) }
     public var serverError: NovaAuthServerError { NovaAuthWire.serverError(self) }
+    public var isGatewayRequestDefect: Bool { NovaAuthWire.isGatewayRequestDefect(self) }
 }
 
 public protocol NovaAuthClientProtocol: AnyObject {

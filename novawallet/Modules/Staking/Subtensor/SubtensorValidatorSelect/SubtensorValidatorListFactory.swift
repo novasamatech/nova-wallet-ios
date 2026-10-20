@@ -129,7 +129,7 @@ private extension SubtensorValidatorListFactory {
     }
 
     static func ratesShown(yields: SubtensorAlphaYields?) -> Bool {
-        yields?.stamp.freshness == .fresh
+        yields != nil
     }
 
     static func compareStakes(_ lhs: BigRational?, _ rhs: BigRational?) -> ComparisonResult {

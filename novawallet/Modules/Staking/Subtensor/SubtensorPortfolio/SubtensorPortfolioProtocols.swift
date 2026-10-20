@@ -33,6 +33,7 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(rootYields: SubtensorAlphaYields?)
+    func didFailRootYields()
     func didReceive(networkRootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)

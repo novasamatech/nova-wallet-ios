@@ -13,7 +13,6 @@ struct SubtensorReportedYield: Equatable {
 
     var annualRateIgnoringReliability: Decimal? {
         guard
-            stamp.freshness == .fresh,
             let reportedValue = try? BittensorApiDecimal.decimal(reportedRate),
             reportedValue >= 0 else {
             return nil

@@ -28,9 +28,7 @@ final class XcmLegacyModelFactory {
         ).appendingAccountId(
             destination.accountId,
             isEthereumBase: destination.chain.isEthereumBased
-        ).fromPointOfView(
-            location: XcmUni.AbsoluteLocation(paraId: origin.parachainId)
-        )
+        ).fromChainPointOfView(origin.parachainId)
     }
 
     func createMultilocation(
@@ -39,11 +37,7 @@ final class XcmLegacyModelFactory {
     ) -> XcmUni.RelativeLocation {
         XcmUni.AbsoluteLocation(
             paraId: reserve.parachainId
-        ).fromPointOfView(
-            location: XcmUni.AbsoluteLocation(
-                paraId: origin.parachainId
-            )
-        )
+        ).fromChainPointOfView(origin.parachainId)
     }
 }
 

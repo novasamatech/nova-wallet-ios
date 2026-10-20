@@ -2,7 +2,7 @@ import Foundation
 import SDKLogger
 
 enum NovaAuthDiagnostics {
-    private static let queue = DispatchQueue(label: "io.novawallet.novaauth.diagnostics")
+    private static let queue = DispatchQueue(label: "novaauth.diagnostics")
 
     static func failure(_ error: NovaAuthError, step: BootstrapStep, logger: SDKLoggerProtocol?) {
         let category: String

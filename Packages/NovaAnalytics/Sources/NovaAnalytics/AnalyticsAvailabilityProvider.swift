@@ -9,20 +9,17 @@ public final class AnalyticsAvailabilityProvider {
     }
 
     private let mutex = NSLock()
-    private let isAuthSupported: Bool
 
     private var observers: [ObserverWrapper] = []
 
-    public init(isAuthSupported: Bool) {
-        self.isAuthSupported = isAuthSupported
-    }
+    public init() {}
 }
 
 // MARK: - AnalyticsAvailabilityProviderProtocol
 
 extension AnalyticsAvailabilityProvider: AnalyticsAvailabilityProviderProtocol {
     public var isAvailable: Bool {
-        isAuthSupported
+        true
     }
 
     public func addObserver(

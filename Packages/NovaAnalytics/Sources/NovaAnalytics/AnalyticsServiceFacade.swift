@@ -44,7 +44,7 @@ public final class AnalyticsServiceFacade {
             repository: storageFacade.createEventRepository()
         )
 
-        let availability = AnalyticsAvailabilityProvider(isAuthSupported: configuration.isAuthSupported)
+        let availability = AnalyticsAvailabilityProvider()
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,

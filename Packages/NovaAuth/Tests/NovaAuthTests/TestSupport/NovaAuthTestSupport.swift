@@ -16,7 +16,7 @@ final class AuthHarness {
 
     init() throws {
         origin = try NovaAuthOrigin("https://auth.example.com")
-        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development, version: "1")
+        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.com.example.app", environment: .development, version: "1")
         ownerQueue.maxConcurrentOperationCount = 1
     }
 
@@ -41,15 +41,15 @@ final class AuthHarness {
         return auth
     }
 
-    func request(_ context: NovaAuthContext, analytics: Bool = false) throws -> NovaAuthRequest {
+    func request(_ context: NovaAuthContext, background: Bool = false) throws -> NovaAuthRequest {
         try NovaAuthRequest(
             context: context,
-            method: analytics ? .post : .get,
-            path: analytics ? "/v1/analytics/events" : "/v1/example",
+            method: background ? .post : .get,
+            path: background ? "/v1/example/upload" : "/v1/example",
             queryItems: [],
-            body: analytics ? Data("{}".utf8) : nil,
-            contentType: analytics ? "application/json" : nil,
-            intent: analytics ? .background : .userDriven
+            body: background ? Data("{}".utf8) : nil,
+            contentType: background ? "application/json" : nil,
+            intent: background ? .background : .userDriven
         )
     }
 }

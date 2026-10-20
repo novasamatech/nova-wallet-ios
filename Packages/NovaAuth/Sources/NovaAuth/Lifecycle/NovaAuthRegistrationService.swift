@@ -68,6 +68,7 @@ extension NovaAuth {
             clientID = dependencies.random.makeClientID()
             try NovaAuthValidation.clientID(clientID)
         } else { clientID = identity.clientID }
+        flight.irreversible = true
         flight.step = .keyGeneration
         run(dependencies.appAttest.createKeyWrapper(), flight: flight) { [self] result in
             let keyID = try result.get()
@@ -76,7 +77,8 @@ extension NovaAuth {
                 clientID: clientID,
                 keyID: keyID,
                 registration: .unregistered,
-                refusal: identity.refusal
+                refusal: identity.refusal,
+                keyCreatedAt: dependencies.clock.now()
             ), context: flight.context)
             try challenge(flight: flight)
         }
@@ -105,12 +107,12 @@ private extension NovaAuth {
                 clientID: identity.clientID,
                 origin: flight.context.origin,
                 purpose: .registration,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 bodyDigest: bodyDigest
             )
             let attempt = NovaAuthRegistrationAttempt(
                 challenge: challenge.challenge,
-                contentType: "application/json",
+                contentType: NovaAuthWire.contentType,
                 clientDataHash: hash,
                 startedAt: start
             )
@@ -135,7 +137,7 @@ private extension NovaAuth {
             }
         )
         run(wrapper, flight: flight) { [self] result in
-            let object = try attestation(from: result, attempt: attempt, flight: flight)
+            guard let object = try attestation(from: result, attempt: attempt, flight: flight) else { return }
             try validateAttemptAfterApple(attempt, flight: flight)
             let now = try dependencies.clock.now()
             try validateAttestationObject(object, flight: flight)
@@ -171,24 +173,26 @@ private extension NovaAuth {
         from result: Result<Data, Error>,
         attempt: NovaAuthRegistrationAttempt,
         flight: NovaAuthIssuanceFlight
-    ) throws -> Data {
+    ) throws -> Data? {
+        let currentBootKey = try state?.identity?.keyCreatedAt?.bootID == dependencies.clock.now().bootID
         do {
             return try result.get()
         } catch NovaAuthAppAttestError.serverUnavailable {
             try setRegistration(.appleDeferred(attempt), flight: flight)
             throw NovaAuthAppAttestError.serverUnavailable
-        } catch NovaAuthAppAttestError.invalidKey {
+        } catch NovaAuthAppAttestError.invalidKey where !currentBootKey {
             try retire(.lostKey, flight: flight)
-            throw NovaAuthAppAttestError.invalidKey
+            try createKey(flight: flight)
+            return nil
         } catch {
-            try dropKey(flight: flight)
+            try dropKey(flight: flight, refusal: nextRefusal())
             throw error
         }
     }
 
     func validateAttestationObject(_ object: Data, flight: NovaAuthIssuanceFlight) throws {
         guard !object.isEmpty, object.count <= 49152 else {
-            try dropKey(flight: flight)
+            try dropKey(flight: flight, refusal: nextRefusal())
             throw NovaAuthError.invalidResponse
         }
     }
@@ -203,14 +207,14 @@ private extension NovaAuth {
     func hasAttestationBudget(_ attempt: NovaAuthRegistrationAttempt) throws -> Bool {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-        return now.bootID == attempt.startedAt.bootID && age >= 0 && age <= 40
+        return now.bootID == attempt.startedAt.bootID && age >= 0 && age <= 30
     }
 
     func validateAttemptAfterApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-        guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
-            try dropKey(flight: flight)
+        guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 50 else {
+            try dropKey(flight: flight, refusal: nextRefusal())
             throw NovaAuthError.keyUnavailable
         }
     }

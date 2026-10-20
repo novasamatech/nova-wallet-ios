@@ -3,17 +3,14 @@ import SubstrateSdk
 import BigInt
 
 extension XcmUni {
-    enum NetworkId: Equatable {
-        case any
-        case other(RawName, RawValue)
-    }
-
     struct AccountId32: Equatable {
         let network: NetworkId
         let accountId: AccountId
     }
 
     struct AccountId20: Equatable {
+        static let keySize = 20
+
         let network: NetworkId
         let accountId: AccountId
     }
@@ -25,6 +22,7 @@ extension XcmUni {
         case palletInstance(_ index: UInt8)
         case generalIndex(_ index: BigUInt)
         case generalKey(_ key: GeneralKeyValue)
+        case globalConsensus(NetworkId)
         case other(XcmUni.RawName, XcmUni.RawValue)
     }
 
@@ -64,52 +62,6 @@ extension XcmUni.Junctions {
         let remaningItems = Array(items.dropLast())
 
         return (XcmUni.Junctions(items: remaningItems), XcmUni.Junctions(items: [lastJunction]))
-    }
-}
-
-extension XcmUni.NetworkId: XcmUniCodable {
-    init(from decoder: any Decoder, configuration _: Xcm.Version) throws {
-        let singleContainer = try decoder.singleValueContainer()
-
-        if singleContainer.decodeNil() {
-            self = .any
-            return
-        }
-
-        var unkeyedContainer = try decoder.unkeyedContainer()
-
-        let type = try unkeyedContainer.decode(String.self)
-
-        switch type {
-        case "Any":
-            self = .any
-        default:
-            let value = try unkeyedContainer.decode(XcmUni.RawValue.self)
-            self = .other(type, value)
-        }
-    }
-
-    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
-        switch self {
-        case .any:
-            try encodeAny(to: encoder, configuration: configuration)
-        case let .other(rawName, rawValue):
-            var unkeyedContainer = encoder.unkeyedContainer()
-            try unkeyedContainer.encode(rawName)
-            try unkeyedContainer.encode(rawValue)
-        }
-    }
-
-    func encodeAny(to encoder: any Encoder, configuration: Xcm.Version) throws {
-        switch configuration {
-        case .V0, .V1, .V2:
-            var container = encoder.unkeyedContainer()
-            try container.encode("Any")
-            try container.encode(JSON.null)
-        case .V3, .V4, .V5:
-            var container = encoder.singleValueContainer()
-            try container.encodeNil()
-        }
     }
 }
 
@@ -199,6 +151,7 @@ extension XcmUni.Junction: XcmUniCodable {
     static let palletInstanceField = "PalletInstance"
     static let generalIndexField = "GeneralIndex"
     static let generalKeyField = "GeneralKey"
+    static let globalConsensusField = "GlobalConsensus"
 
     init(from decoder: any Decoder, configuration: Xcm.Version) throws {
         var container = try decoder.unkeyedContainer()
@@ -228,6 +181,9 @@ extension XcmUni.Junction: XcmUniCodable {
             )
 
             self = .generalKey(key)
+        case Self.globalConsensusField:
+            let network = try container.decode(XcmUni.NetworkId.self, configuration: configuration)
+            self = .globalConsensus(network)
         default:
             let value = try container.decode(XcmUni.RawValue.self)
             self = .other(type, value)
@@ -256,6 +212,18 @@ extension XcmUni.Junction: XcmUniCodable {
         case let .generalKey(key):
             try container.encode(Self.generalKeyField)
             try container.encode(key, configuration: configuration)
+        case let .globalConsensus(network):
+            switch configuration {
+            case .V0, .V1, .V2:
+                throw XcmUni.NetworkId.unsupportedVersionError(
+                    configuration,
+                    entity: "GlobalConsensus",
+                    codingPath: encoder.codingPath
+                )
+            case .V3, .V4, .V5:
+                try container.encode(Self.globalConsensusField)
+                try container.encode(network, configuration: configuration)
+            }
         case let .other(rawName, rawValue):
             try container.encode(rawName)
             try container.encode(rawValue)

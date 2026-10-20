@@ -23,12 +23,12 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         let harness = try AuthHarness()
         let (auth, context) = try registered(harness)
         harness.server.business = { request in
-            request.url?.path == "/v1/analytics/events"
+            request.url?.path == "/v1/example/upload"
                 ? .init(status: 204)
                 : .init(status: 503, headers: ["Retry-After": "20"], body: FakeAuthServer.error("dataset_unavailable"))
         }
         try execute(auth.createResponseWrapper(for: harness.request(context), beforeSend: {}))
-        try execute(auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {}))
+        try execute(auth.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {}))
         let retry = try harness.request(context)
         try execute(auth.createResponseWrapper(for: retry, beforeSend: {}))
         XCTAssertEqual(harness.server.businessRequests.count, 3)
@@ -39,8 +39,8 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         let (auth, context) = try registered(harness)
         harness.server.business = { _ in .init(status: 429, headers: ["Retry-After": "20"]) }
         try execute(auth.createResponseWrapper(for: harness.request(context), beforeSend: {}))
-        let analytics = try harness.request(context, analytics: true)
-        assertError(.cooldown(retryAfter: 20), auth.createResponseWrapper(for: analytics, beforeSend: {}))
+        let background = try harness.request(context, background: true)
+        assertError(.cooldown(retryAfter: 20), auth.createResponseWrapper(for: background, beforeSend: {}))
         XCTAssertEqual(harness.server.businessRequests.count, 1)
     }
 

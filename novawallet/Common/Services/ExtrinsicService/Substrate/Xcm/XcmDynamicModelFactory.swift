@@ -13,12 +13,12 @@ extension XcmDynamicModelFactory: XcmModelFactoryProtocol {
 
         let assetReserveLocation = try XcmUni.AbsoluteLocation.createWithRawPath(params.metadata.reserve.path.path)
 
-        let benificiaryLocation = destinationLocation.appendingAccountId(
+        let benificiaryLocation = try destinationLocation.appendingAccountId(
             params.destination.accountId,
             isEthereumBase: params.destination.chain.isEthereumBased
         ).fromPointOfView(location: originChainLocation)
 
-        let assetLocation = assetReserveLocation.fromPointOfView(location: originChainLocation)
+        let assetLocation = try assetReserveLocation.fromPointOfView(location: originChainLocation)
 
         let asset = XcmUni.Asset(location: assetLocation, amount: params.amount)
 

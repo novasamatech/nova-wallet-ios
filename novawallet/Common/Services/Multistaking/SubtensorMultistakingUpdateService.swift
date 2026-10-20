@@ -172,9 +172,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private func seedRootYields() {
         guard
             rootYields == nil,
-            case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(
-                for: SubtensorPallet.rootNetuid
-            ) else {
+            let yields = yieldOperationFactory.cachedAlphaYields(for: SubtensorPallet.rootNetuid).value else {
             return
         }
 
@@ -229,7 +227,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         for netuid in lastState.heldSubnetNetuids where subnetYields[netuid] == nil {
-            guard case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(for: netuid) else {
+            guard let yields = yieldOperationFactory.cachedAlphaYields(for: netuid).value else {
                 continue
             }
 

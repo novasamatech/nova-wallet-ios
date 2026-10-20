@@ -33,10 +33,14 @@ final class XcmDynamicCrosschainFeeCalculator {
     static let minimumSendAmount: Decimal = 100
     static let minimumFundAmount: Decimal = minimumSendAmount * 2
 
+    static let fallbackSendAmount: Decimal = 1
+
     let chainRegistry: ChainRegistryProtocol
     let callDerivator: XcmCallDerivating
     let tokenMintingFactory: TokenBalanceMintingFactoryProtocol
     let dryRunner: XcmTransferDryRunning
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -46,6 +50,8 @@ final class XcmDynamicCrosschainFeeCalculator {
     ) {
         self.chainRegistry = chainRegistry
         self.callDerivator = callDerivator
+        self.operationQueue = operationQueue
+        self.logger = logger
 
         dryRunner = XcmTransferDryRunner(
             chainRegistry: chainRegistry,
@@ -66,8 +72,11 @@ final class XcmDynamicCrosschainFeeCalculator {
 }
 
 private extension XcmDynamicCrosschainFeeCalculator {
-    func ensureSafeAmountToSend(for request: XcmUnweightedTransferRequest) -> XcmUnweightedTransferRequest {
-        let minimumAmount = Self.minimumSendAmount.toSubstrateAmount(
+    func ensureSafeAmountToSend(
+        for request: XcmUnweightedTransferRequest,
+        minimumSendAmount: Decimal
+    ) -> XcmUnweightedTransferRequest {
+        let minimumAmount = minimumSendAmount.toSubstrateAmount(
             precision: request.origin.chainAsset.assetDisplayInfo.assetPrecision
         )
 
@@ -207,11 +216,12 @@ private extension XcmDynamicCrosschainFeeCalculator {
     }
 }
 
-extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
-    func crossChainFeeWrapper(
-        request: XcmUnweightedTransferRequest
+private extension XcmDynamicCrosschainFeeCalculator {
+    func createFeeWrapper(
+        for request: XcmUnweightedTransferRequest,
+        minimumSendAmount: Decimal
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        let updatedRequest = ensureSafeAmountToSend(for: request)
+        let updatedRequest = ensureSafeAmountToSend(for: request, minimumSendAmount: minimumSendAmount)
 
         let initialModelWrapper = createDryCallWrapper(for: updatedRequest)
         let dryRunWrapper = dryRunner.createDryRunWrapper(
@@ -229,5 +239,41 @@ extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
         dryRunWrapper.addDependency(wrapper: initialModelWrapper)
 
         return dryRunWrapper.insertingHead(operations: initialModelWrapper.allOperations)
+    }
+}
+
+extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
+    func crossChainFeeWrapper(
+        request: XcmUnweightedTransferRequest
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        let primaryWrapper = createFeeWrapper(for: request, minimumSendAmount: Self.minimumSendAmount)
+
+        let primaryAmount = ensureSafeAmountToSend(for: request, minimumSendAmount: Self.minimumSendAmount).amount
+        let fallbackAmount = ensureSafeAmountToSend(for: request, minimumSendAmount: Self.fallbackSendAmount).amount
+
+        guard fallbackAmount != primaryAmount else {
+            return primaryWrapper
+        }
+
+        let fallbackWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+        fallbackWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            do {
+                let fee = try primaryWrapper.targetOperation.extractNoCancellableResultData()
+                return .createWithResult(fee)
+            } catch let error as DryRun.DryRunError<JSON> {
+                self.logger.warning(
+                    "Fee dry run with \(Self.minimumSendAmount) \(request.origin.chainAsset.asset.symbol) failed, " +
+                        "retrying with \(Self.fallbackSendAmount): \(error)"
+                )
+
+                return self.createFeeWrapper(for: request, minimumSendAmount: Self.fallbackSendAmount)
+            }
+        }
+
+        fallbackWrapper.addDependency(wrapper: primaryWrapper)
+
+        return fallbackWrapper.insertingHead(operations: primaryWrapper.allOperations)
     }
 }

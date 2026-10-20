@@ -207,7 +207,7 @@ extension SubtensorStakeSetupInteractor: SubtensorStakeSetupInteractorInputProto
 
         load(
             yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
+            cached: { yieldOperationFactory.cachedAlphaYields(for: netuid).value },
             in: yieldsCallStore,
             label: "setup yields on netuid \(netuid)",
             deliver: { [weak self] in

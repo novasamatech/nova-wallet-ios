@@ -12,10 +12,11 @@ enum AnalyticsFacadeFactory {
             return NoOpAnalyticsServiceFacade.shared
         }
 
-        // Without an App ID prefix nothing this install attests can be accepted, so analytics
-        // stays off rather than registering under an identity the gateway will refuse.
+        // Without an App ID prefix or App Attest support nothing this install attests can be
+        // accepted, so analytics stays off rather than registering under an identity the gateway
+        // will refuse.
         guard let sharedFacade else {
-            Logger.shared.warning("No App ID prefix in this build; analytics stays disabled")
+            Logger.shared.warning("No App ID prefix or no App Attest support; analytics stays disabled")
 
             return NoOpAnalyticsServiceFacade.shared
         }
@@ -33,7 +34,6 @@ enum AnalyticsFacadeFactory {
         return AnalyticsServiceFacade(
             configuration: AnalyticsConfiguration(
                 authProvider: NovaAuthFacade.shared,
-                isAuthSupported: NovaAuthFacade.shared.isSupported,
                 // `ApplicationConfig.version` appends the build number, which the
                 // gateway does not expect.
                 appVersion: Bundle.main

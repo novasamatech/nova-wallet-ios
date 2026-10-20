@@ -135,8 +135,8 @@ module should call `EvmTransactionService`, not the RPC layer.
 has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
 provider. `BittensorApiResponseCache` is the app-owned max-age store: a fresh decoded body
 short-circuits before admission, an expired one stays only as a stale display seed, `no-store`
-bodies are never kept, and own trades drop the account's `operations/search` pages (a page fetched
-before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
+bodies are never kept, account `operations/search` pages (sent `private`) are kept like any other
+max-age body, and own trades drop those pages (a page fetched before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
 before the request. There is no request coalescing, negative availability TTL or client TTL.
 Older recommendation generations return `generationStale`, preserving a newer seed without refetch.
 Endpoint admissions carry the auth scope (origin + generation); the store keeps seeds per scope

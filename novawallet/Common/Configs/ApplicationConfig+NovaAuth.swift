@@ -2,6 +2,10 @@ import Foundation
 import NovaAuth
 
 extension ApplicationConfig {
+    var novaAuthKeychainService: String {
+        "io.novawallet.novaauth.profile3"
+    }
+
     var novaAuthAppIdentity: NovaAuthAppIdentity? {
         let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
         let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
