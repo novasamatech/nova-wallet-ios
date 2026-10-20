@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 struct XcmTransferDryRunParams {
     let callOrigin: RuntimeCallOrigin
@@ -50,6 +51,32 @@ final class XcmTransferDryRunner {
 }
 
 private extension XcmTransferDryRunner {
+    struct DispatchedAsEvent: Decodable {
+        let result: Substrate.Result<JSON, JSON>
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            result = try container.decode(Substrate.Result<JSON, JSON>.self)
+        }
+    }
+
+    func ensureDispatchedAsSucceeded(
+        in events: [Event],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws {
+        let dispatchedAsPath = EventCodingPath(moduleName: UtilityPallet.name, eventName: "DispatchedAs")
+        let context = codingFactory.createRuntimeJsonContext().toRawContext()
+
+        for event in events where codingFactory.metadata.eventMatches(event, path: dispatchedAsPath) {
+            guard let dispatchedAs = try? event.params.map(to: DispatchedAsEvent.self, with: context) else {
+                continue
+            }
+
+            try dispatchedAs.result.ensureOkOrError { DryRun.CallDryRunError.execution($0) }
+        }
+    }
+
     func createOriginIntermediateResult(
         for request: XcmUnweightedTransferRequest,
         dryRunResult: DryRun.CallResult,
@@ -57,6 +84,8 @@ private extension XcmTransferDryRunner {
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> IntermediateResult {
         let effects = try dryRunResult.ensureSuccessExecution()
+
+        try ensureDispatchedAsSucceeded(in: effects.emittedEvents, codingFactory: codingFactory)
 
         let deliveryFee = XcmDeliveryFeeMatcher(
             palletName: palletName,
