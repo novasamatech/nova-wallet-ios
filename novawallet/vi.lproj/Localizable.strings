@@ -2118,7 +2118,7 @@
 "staking.subtensor.info.validator" = "Validator thực hiện Stake token của bạn trên subnet và phân phối phần thưởng. Một validator được cài đặt sẵn cho bạn; hãy nhấn vào Validator trong chi tiết subnet để chọn validator khác.";
 "staking.subtensor.info.validator.take" = "Phần thưởng mà validator giữ lại để vận hành cơ sở hạ tầng của mình. Các số liệu APY bạn thấy đã được tính sau khi trừ phần này.";
 "staking.subtensor.info.you.will.earn" = "Phần chênh lệch giữa số tiền trung bình bạn đã trả để mua các token này và giá trị bạn nhận được khi bán chúng hiện tại, tính bằng TAO và trước phí mạng. Giá trung bình được tính dựa trên các lần mua của bạn.";
-"staking.subtensor.price.impact.warning.message" = "Lệnh này làm giá trong pool thay đổi %. Bạn sẽ nhận được ít hơn đáng kể so với giá trị giao ngay hiện tại. Bạn vẫn muốn tiếp tục?";
+"staking.subtensor.price.impact.warning.message" = "Lệnh này làm giá trong pool thay đổi %@. Bạn sẽ nhận được ít hơn đáng kể so với giá trị giao ngay hiện tại. Bạn vẫn muốn tiếp tục?";
 "staking.subtensor.price.impact.warning.title" = "Ảnh hưởng lớn đến giá";
 "staking.subtensor.quick.age.con.one" = "Tuổi đời không cho biết subnet đang hoạt động tích cực đến mức nào hôm nay";
 "staking.subtensor.quick.age.con.two" = "APY có thể thấp hơn so với các subnet mới hơn";

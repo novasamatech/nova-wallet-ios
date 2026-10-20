@@ -2176,7 +2176,7 @@
 "staking.subtensor.result.root.live.message" = "I rendimenti maturano ogni giorno. La tua posizione è attiva.";
 "staking.subtensor.result.root.locked.reason" = "RootStakeLocked — lo stake root è ancora bloccato dopo l'ultima modifica allo stake.";
 "staking.subtensor.result.root.stake.now.format" = "Il tuo stake root è ora %@. I rendimenti maturano ogni giorno. La tua posizione è attiva.";
-"staking.subtensor.result.root.stake.now.with.format" = "Il tuo stake root è ora %@ con %@. I rendimenti maturano ogni giorno. La tua posizione è attiva.";
+"staking.subtensor.result.root.stake.now.with.format" = "Il tuo stake root è ora %1$@ con %2$@. I rendimenti maturano ogni giorno. La tua posizione è attiva.";
 "staking.subtensor.result.root.staked.format" = "Hai messo in stake %@ verso root";
 "staking.subtensor.result.root.staked.more.format" = "Hai aggiunto %@ allo stake verso root";
 "staking.subtensor.result.root.staking.more.progress.format" = "Aggiunta di %@ allo stake verso root · di solito pochi secondi";

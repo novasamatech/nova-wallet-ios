@@ -2176,7 +2176,7 @@
 "staking.subtensor.result.root.live.message" = "Las recompensas se acumulan cada día. Tu posición está activa.";
 "staking.subtensor.result.root.locked.reason" = "RootStakeLocked — el Stake de root sigue bloqueado después del último cambio de Stake.";
 "staking.subtensor.result.root.stake.now.format" = "Tu Stake de root ahora es %@. Las recompensas se acumulan cada día. Tu posición está activa.";
-"staking.subtensor.result.root.stake.now.with.format" = "Tu Stake de root ahora es %@ con %2$@. Las recompensas se acumulan cada día. Tu posición está activa.";
+"staking.subtensor.result.root.stake.now.with.format" = "Tu Stake de root ahora es %1$@ con %2$@. Las recompensas se acumulan cada día. Tu posición está activa.";
 "staking.subtensor.result.root.staked.format" = "Hiciste Stake de %@ en root";
 "staking.subtensor.result.root.staked.more.format" = "Hiciste Stake de %@ adicional en root";
 "staking.subtensor.result.root.staking.more.progress.format" = "Haciendo Stake de %@ adicional en root · normalmente unos segundos";
@@ -2204,7 +2204,7 @@
 "staking.subtensor.subnet.select.title" = "Elegir una subred";
 "staking.subtensor.trades.unavailable.title" = "Operaciones de la subred no disponibles";
 "staking.subtensor.ui.add.stake.root.title" = "Añadir stake a root";
-"staking.subtensor.ui.adds.to.format" = "Añade a tu %@ staked con %2$@";
+"staking.subtensor.ui.adds.to.format" = "Añade a tu %1$@ staked con %2$@";
 "staking.subtensor.ui.avg.buy.chart.format" = "Compra media de %@";
 "staking.subtensor.ui.avg.buy.price" = "Precio medio de compra";
 "staking.subtensor.ui.avg.buy.price.falling" = "Bajando";

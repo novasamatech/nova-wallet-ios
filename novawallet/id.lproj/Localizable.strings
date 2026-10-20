@@ -2176,7 +2176,7 @@
 "staking.subtensor.result.root.live.message" = "Reward bertambah setiap hari. Posisi Anda aktif.";
 "staking.subtensor.result.root.locked.reason" = "RootStakeLocked — stake root masih terkunci setelah perubahan stake terakhir.";
 "staking.subtensor.result.root.stake.now.format" = "Stake root Anda sekarang %@. Reward bertambah setiap hari. Posisi Anda aktif.";
-"staking.subtensor.result.root.stake.now.with.format" = "Stake root Anda sekarang %@ dengan %2$@. Reward bertambah setiap hari. Posisi Anda aktif.";
+"staking.subtensor.result.root.stake.now.with.format" = "Stake root Anda sekarang %1$@ dengan %2$@. Reward bertambah setiap hari. Posisi Anda aktif.";
 "staking.subtensor.result.root.staked.format" = "Anda melakukan stake %@ ke root";
 "staking.subtensor.result.root.staked.more.format" = "Anda melakukan stake tambahan sebesar %@ ke root";
 "staking.subtensor.result.root.staking.more.progress.format" = "Melakukan stake tambahan sebesar %@ ke root · biasanya beberapa detik";
@@ -2338,7 +2338,7 @@
 "staking.subtensor.ui.your.subnet" = "SUBNET ANDA";
 "staking.subtensor.unstake.exceeds.available.message" = "Anda dapat melakukan unstake paling banyak %@ dari validator ini.";
 "staking.subtensor.unstake.locked.message" = "TAO yang baru di-stake dikunci oleh jaringan. Anda dapat melakukan unstake kira-kira dalam %@.";
-"staking.subtensor.unstake.locked.portion.hint" = "% dari staking Anda dikunci oleh jaringan dan belum dapat di-unstake";
+"staking.subtensor.unstake.locked.portion.hint" = "%@ dari staking Anda dikunci oleh jaringan dan belum dapat di-unstake";
 "staking.subtensor.unstake.locked.title" = "Staking terkunci";
 "staking.subtensor.unstake.nothing.available.hint" = "Seluruh posisi Anda pada validator ini dikunci oleh jaringan. Kunci dilepas secara bertahap — coba lagi nanti.";
 "staking.subtensor.unstake.nothing.available.title" = "Tidak ada yang dapat di-unstake";

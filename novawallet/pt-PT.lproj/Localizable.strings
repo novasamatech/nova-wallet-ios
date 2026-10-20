@@ -2113,8 +2113,8 @@
 "staking.subtensor.info.slippage.title" = "Tolerância à derrapagem";
 "staking.subtensor.info.staked.root" = "TAO em staking com este validador no staking raiz. Um stake maior geralmente significa um validador mais estabelecido.";
 "staking.subtensor.info.staked.subnet" = "Os tokens da subnet colocados em staking com este validador nesta subnet, avaliados em TAO pelo preço de hoje. Um stake maior geralmente significa um validador mais estabelecido.";
-"staking.subtensor.info.swap.rate.buy" = "Quantos %1$@ você recebe por 1 TAO agora. A taxa é definida pelo pool de liquidez da subnet e muda a cada negociação. Ela já inclui a taxa de %@ da Nova Wallet.";
-"staking.subtensor.info.swap.rate.sell" = "Quanto TAO você recebe por 1 %1$@ agora. A taxa é definida pelo pool de liquidez da subnet e muda a cada negociação. Ela já inclui a taxa de %@ da Nova Wallet.";
+"staking.subtensor.info.swap.rate.buy" = "Quantos %1$@ você recebe por 1 TAO agora. A taxa é definida pelo pool de liquidez da subnet e muda a cada negociação. Ela já inclui a taxa de %2$@ da Nova Wallet.";
+"staking.subtensor.info.swap.rate.sell" = "Quanto TAO você recebe por 1 %1$@ agora. A taxa é definida pelo pool de liquidez da subnet e muda a cada negociação. Ela já inclui a taxa de %2$@ da Nova Wallet.";
 "staking.subtensor.info.validator" = "O validador coloca seus tokens em staking na subnet e paga as recompensas. Um validador é predefinido para você; toque em Validador nos detalhes da subnet para escolher outro.";
 "staking.subtensor.info.validator.take" = "A parte das recompensas que o validador retém pela operação da infraestrutura. Os valores de APY exibidos já estão após essa retenção.";
 "staking.subtensor.info.you.will.earn" = "A diferença entre o que você pagou, em média, por esses tokens e o que recebe por eles agora, em TAO, antes da taxa de rede. O preço médio é calculado com base nas suas compras.";

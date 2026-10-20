@@ -2211,7 +2211,7 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%1$@-tól %2$@-onként";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "nincs vásárlás";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Nem érhető el";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%2$@-onként";
+"staking.subtensor.ui.avg.buy.price.per.format" = "%@-onként";
 "staking.subtensor.ui.avg.buy.price.rising" = "Emelkedő";
 "staking.subtensor.ui.buy.more.format" = "További %@ vásárlása";
 "staking.subtensor.ui.chart.unavailable" = "A grafikon nem érhető el";
@@ -2234,7 +2234,7 @@
 "staking.subtensor.ui.fee.reserve.format" = "Tarts meg %1$@ összeget a díjakra — %2$@ összeget félreteszünk.";
 "staking.subtensor.ui.freshness.updated.format" = "Frissítve: %@ ezelőtt";
 "staking.subtensor.ui.get.tao.action" = "Csere TAO-ra";
-"staking.subtensor.ui.get.tao.message" = "%A-val rendelkezel. Válts egy másik tokent TAO-ra, vagy vásárold meg egy partneren keresztül.";
+"staking.subtensor.ui.get.tao.message" = "%@-val rendelkezel. Válts egy másik tokent TAO-ra, vagy vásárold meg egy partneren keresztül.";
 "staking.subtensor.ui.get.tao.root.caption" = "Először szerezz TAO-t — a root staking kijelölve marad";
 "staking.subtensor.ui.get.tao.title" = "Először szerezz TAO-t";
 "staking.subtensor.ui.how.any.time.accent" = "bármikor";

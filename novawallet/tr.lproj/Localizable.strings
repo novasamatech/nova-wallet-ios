@@ -2211,14 +2211,14 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@ başına %1$@'dan itibaren";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "satın alma yok";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Mevcut değil";
-"staking.subtensor.ui.avg.buy.price.per.format" = "% @ başına";
+"staking.subtensor.ui.avg.buy.price.per.format" = "%@ başına";
 "staking.subtensor.ui.avg.buy.price.rising" = "Yükseliyor";
 "staking.subtensor.ui.buy.more.format" = "Daha fazla %@ satın al";
 "staking.subtensor.ui.chart.unavailable" = "Grafik kullanılamıyor";
 "staking.subtensor.ui.chip.deep.pool" = "derin likidite havuzu";
 "staking.subtensor.ui.chip.steady" = "30 gün boyunca istikrarlı";
 "staking.subtensor.ui.dashboard.estimated.format" = "%@ · tahmini";
-"staking.subtensor.ui.dashboard.max.apy.format" = "% @'a kadar";
+"staking.subtensor.ui.dashboard.max.apy.format" = "%@'a kadar";
 "staking.subtensor.ui.dashboard.root" = "Root";
 "staking.subtensor.ui.dashboard.subnets.title" = "Alt ağlar";
 "staking.subtensor.ui.detail.choose.validator" = "Bir doğrulayıcı seçin";
@@ -2270,7 +2270,7 @@
 "staking.subtensor.ui.picker.show" = "Subnet'leri göster";
 "staking.subtensor.ui.portfolio.add" = "Pozisyon ekle";
 "staking.subtensor.ui.portfolio.empty.caption" = "Bittensor · tahmini";
-"staking.subtensor.ui.portfolio.empty.root.subtitle.format" = "% @ APY, TAO olarak ödenir";
+"staking.subtensor.ui.portfolio.empty.root.subtitle.format" = "%@ APY, TAO olarak ödenir";
 "staking.subtensor.ui.portfolio.empty.root.title" = "Veya Root'a stake edin · sakin seçenek";
 "staking.subtensor.ui.portfolio.empty.subnet.subtitle" = "Ödüller subnet token'ları olarak gelir · değer piyasa ile birlikte değişir";
 "staking.subtensor.ui.portfolio.empty.subnet.title" = "TAO'yu bir subnet'te değerlendirin";

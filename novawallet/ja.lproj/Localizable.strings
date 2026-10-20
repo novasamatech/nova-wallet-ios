@@ -2176,7 +2176,7 @@
 "staking.subtensor.result.root.live.message" = "報酬は毎日蓄積されます。ポジションは有効です。";
 "staking.subtensor.result.root.locked.reason" = "RootStakeLocked — 前回のStake変更後もRoot stakeはロックされています。";
 "staking.subtensor.result.root.stake.now.format" = "現在のRoot stakeは %@ です。報酬は毎日蓄積されます。ポジションは有効です。";
-"staking.subtensor.result.root.stake.now.with.format" = "現在のRoot stakeは %@ で、%2$@ が含まれています。報酬は毎日蓄積されます。ポジションは有効です。";
+"staking.subtensor.result.root.stake.now.with.format" = "現在のRoot stakeは %1$@ で、%2$@ が含まれています。報酬は毎日蓄積されます。ポジションは有効です。";
 "staking.subtensor.result.root.staked.format" = "%@ をRootにStakedしました";
 "staking.subtensor.result.root.staked.more.format" = "さらに %@ をRootにStakedしました";
 "staking.subtensor.result.root.staking.more.progress.format" = "さらに %@ をRootにStaking中 · 通常数秒かかります";
