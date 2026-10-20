@@ -2,6 +2,10 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+enum SubtensorShieldInnerSearchError: Error {
+    case windowUnfinished(BlockNumber)
+}
+
 final class SubtensorShieldInnerSearch {
     struct Window {
         let deadline: BlockNumber
@@ -149,7 +153,7 @@ private extension SubtensorShieldInnerSearch {
 
     func waitForBlock(_ blockNumber: BlockNumber) {
         guard let pollInterval = consumePoll() else {
-            finish(with: .success(nil))
+            finish(with: .failure(SubtensorShieldInnerSearchError.windowUnfinished(blockNumber)))
             return
         }
 

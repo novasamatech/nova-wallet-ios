@@ -110,6 +110,36 @@ private extension SubtensorShieldSubmissionFactory {
         return statusWrapper.insertingTail(operation: mapOperation)
     }
 
+    func createRejectedResolutionWrapper(
+        for sealedInner: SubtensorSealedInner,
+        rejection: Error,
+        eraStart: BlockNumber,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
+        let nonceWrapper = extrinsicFactory.createNonceWrapper()
+
+        let resolutionWrapper = OperationCombiningService<SubtensorShieldedSubmission>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let nextNonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard nextNonce > sealedInner.carrierNonce else {
+                throw SubtensorShieldError.carrierRejected(rejection)
+            }
+
+            return self.createInnerResolutionWrapper(
+                for: sealedInner,
+                in: .carrierEraFrom(eraStart),
+                carrier: nil,
+                matchingEvents: matchingEvents
+            )
+        }
+
+        resolutionWrapper.addDependency(wrapper: nonceWrapper)
+
+        return resolutionWrapper.insertingHead(operations: nonceWrapper.allOperations)
+    }
+
     func createIncludedResolutionWrapper(
         for sealedInner: SubtensorSealedInner,
         carrier: ExtrinsicBuiltModel,
@@ -214,8 +244,10 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         ) {
             let sealedInner = try sealedWrapper.targetOperation.extractNoCancellableResultData()
             let carrier = try carrierWrapper.targetOperation.extractNoCancellableResultData()
+            let watchResult = try watchWrapper.targetOperation.extractNoCancellableResultData()
+            let eraStart = try eraStartWrapper.targetOperation.extractNoCancellableResultData()
 
-            switch try watchWrapper.targetOperation.extractNoCancellableResultData() {
+            switch watchResult {
             case let .included(blockHash):
                 return try self.createIncludedResolutionWrapper(
                     for: sealedInner,
@@ -224,11 +256,16 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
                     matchingEvents: matchingEvents
                 )
             case let .rejected(error):
-                throw SubtensorShieldError.carrierRejected(error)
+                return self.createRejectedResolutionWrapper(
+                    for: sealedInner,
+                    rejection: error,
+                    eraStart: eraStart,
+                    matchingEvents: matchingEvents
+                )
             case .lost:
                 return self.createInnerResolutionWrapper(
                     for: sealedInner,
-                    in: .carrierEraFrom(try eraStartWrapper.targetOperation.extractNoCancellableResultData()),
+                    in: .carrierEraFrom(eraStart),
                     carrier: nil,
                     matchingEvents: matchingEvents
                 )

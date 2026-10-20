@@ -96,7 +96,7 @@ private extension SubtensorShieldInclusionTracker {
             return headerWrapper.insertingTail(operation: startOperation)
         case let .carrierEraFrom(blockNumber):
             return .createWithResult(
-                SearchStart(blockNumber: blockNumber, blockHash: nil, deadline: blockNumber + eraPeriod - 1)
+                SearchStart(blockNumber: blockNumber, blockHash: nil, deadline: blockNumber + 2 * eraPeriod - 1)
             )
         }
     }

@@ -18,6 +18,8 @@ protocol SubtensorShieldExtrinsicFactoryProtocol {
         for sealedInner: SubtensorSealedInner,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<ExtrinsicBuiltModel>
+
+    func createNonceWrapper() -> CompoundOperationWrapper<UInt32>
 }
 
 final class SubtensorShieldExtrinsicFactory {
