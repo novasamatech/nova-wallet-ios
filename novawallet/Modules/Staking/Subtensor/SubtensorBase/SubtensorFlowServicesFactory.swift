@@ -52,13 +52,12 @@ enum SubtensorFlowServicesFactory {
             operationQueue: operationQueue
         )
 
-        let signer = createSigner(for: account)
-
         guard let submissionOperationFactory = try? state.createSubmissionOperationFactory(
             for: account.chainAccount.accountId,
             extrinsicService: extrinsicService,
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
-            signer: signer
+            signer: createSigner(for: account),
+            shield: createShieldServices(for: account, state: state, sealer: nil)
         ) else {
             return nil
         }
@@ -100,6 +99,93 @@ enum SubtensorFlowServicesFactory {
             runtimeProvider: runtimeProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+    }
+
+    static func createShieldServices(
+        for account: MetaChainAccountResponse,
+        state: SubtensorSharedStateProtocol,
+        sealer: MevShieldSealing?
+    ) -> SubtensorShieldServices? {
+        let chain = state.stakingOption.chainAsset.chain
+
+        guard
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        return createShieldServices(
+            for: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            sealer: sealer
+        )
+    }
+
+    static func createShieldServices(
+        for account: MetaChainAccountResponse,
+        chain: ChainModel,
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
+        sealer: MevShieldSealing?
+    ) -> SubtensorShieldServices? {
+        guard let sealer, SubtensorShieldEligibility.supports(walletType: account.chainAccount.type) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let statusService = ExtrinsicStatusService(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+
+        let extrinsicFactory = SubtensorShieldExtrinsicFactory(
+            account: account.chainAccount,
+            chain: chain,
+            connection: connection,
+            extrinsicServiceFactory: ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: UserDataStorageFacade.shared,
+                substrateStorageFacade: SubstrateDataStorageFacade.shared
+            ),
+            keyOperationFactory: MevShieldOperationFactory(
+                runtimeProvider: runtimeProvider,
+                connection: connection,
+                operationQueue: operationQueue
+            ),
+            sealer: sealer,
+            operationQueue: operationQueue
+        )
+
+        let inclusionTracker = SubtensorShieldInclusionTracker(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            statusService: statusService,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+            operationQueue: operationQueue
+        )
+
+        let submissionFactory = SubtensorShieldSubmissionFactory(
+            extrinsicFactory: extrinsicFactory,
+            inclusionTracker: inclusionTracker,
+            statusService: statusService,
+            signerFactory: {
+                SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
+                    for: account.metaId,
+                    accountResponse: account.chainAccount,
+                    signaturesPerAuthorization: SubtensorShieldConstants.signaturesPerOrder
+                )
+            },
+            operationQueue: operationQueue
+        )
+
+        return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
     }
 }
 

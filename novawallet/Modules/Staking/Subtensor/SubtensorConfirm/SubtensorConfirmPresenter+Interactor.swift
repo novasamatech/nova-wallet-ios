@@ -120,6 +120,13 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
 
     func didReceiveNovaFeeRate(_: BigRational?) {}
 
+    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
+        shieldQuote = quote
+        isShieldQuoteResolved = true
+
+        provideViewModel()
+    }
+
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
         self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
 

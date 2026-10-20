@@ -89,7 +89,7 @@ private extension SubtensorSubmissionError {
         case .amountTooLow:
             flow == .claim ? .belowMinimum : nil
         case .stakeUnavailable, .insufficientLiquidity, .temporarilyUnavailable, .notEnoughStakeToWithdraw,
-             .tooManyStakingHotkeys:
+             .tooManyStakingHotkeys, .shieldedNotExecuted:
             nil
         }
     }

@@ -244,6 +244,7 @@ private extension SubtensorClaimRewardsPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: .rootClaim(hotkey: preview.hotkey),
+            shielded: false,
             origin: .claim,
             account: model.account,
             target: .root,

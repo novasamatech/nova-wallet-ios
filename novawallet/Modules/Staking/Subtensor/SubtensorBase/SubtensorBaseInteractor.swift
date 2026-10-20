@@ -27,6 +27,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
     private let feeCallStore = CancellableCallStore()
+    private let shieldQuoteCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
     private let validatingQuoteCallStore = CancellableCallStore()
@@ -64,6 +65,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
 
     deinit {
         feeCallStore.cancel()
+        shieldQuoteCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
         validatingQuoteCallStore.cancel()
@@ -157,6 +159,25 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
                 case let .failure(error):
                     self?.basePresenter?.didReceiveBaseError(.feeFailed(error))
                 }
+            }
+        }
+    }
+
+    func estimateShieldQuote(for operation: SubtensorOperation) {
+        shieldQuoteCallStore.cancel()
+
+        executeCancellable(
+            wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
+            inOperationQueue: operationQueue,
+            backingCallIn: shieldQuoteCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(quote):
+                self?.basePresenter?.didReceiveShieldQuote(quote)
+            case let .failure(error):
+                self?.logger.warning("Shield quote unavailable: \(error)")
+                self?.basePresenter?.didReceiveShieldQuote(nil)
             }
         }
     }

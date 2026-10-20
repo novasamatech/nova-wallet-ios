@@ -143,6 +143,8 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         applyMaxChange()
     }
 
+    func didReceiveShieldQuote(_: SubtensorShieldQuote?) {}
+
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positionsState = state
 

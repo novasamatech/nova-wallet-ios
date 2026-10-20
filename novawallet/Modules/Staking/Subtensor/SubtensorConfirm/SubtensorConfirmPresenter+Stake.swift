@@ -23,6 +23,15 @@ extension SubtensorConfirmPresenter {
         )
     }
 
+    func createStakeChange() -> SubtensorConfirmStakeChange? {
+        switch model.mode {
+        case let .stake(amount):
+            return createStakeChange(adding: amount)
+        case let .unstake(unstakeModel):
+            return createStakeChange(removing: unstakeModel)
+        }
+    }
+
     func createStakeChange(adding amount: Balance) -> SubtensorConfirmStakeChange? {
         guard model.origin == .addStake, !isPositionsSyncFailed, positionsState != nil else {
             return nil
@@ -47,7 +56,7 @@ extension SubtensorConfirmPresenter {
         var dependencies = SubtensorStakeValidatingDependencies(
             amount: amount,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             preflight: preflight,
             netuid: model.target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
