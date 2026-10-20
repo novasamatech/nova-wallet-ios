@@ -148,27 +148,27 @@ final class XcmUniCodingTests: XCTestCase {
             ]
         )
 
-        let originAsset = XcmUni.Asset(
+        let originAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let reserveAsset = XcmUni.Asset(
+        let reserveAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: reserveAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let destAsset = XcmUni.Asset(
+        let destAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let beneficiary = destAbsoluteLocation.appendingAccountId(
+        let beneficiary = try destAbsoluteLocation.appendingAccountId(
             destinationAccount,
             isEthereumBase: false
         ).fromPointOfView(location: destAbsoluteLocation)
 
-        let instructions: [XcmUni.Instruction] = [
+        let instructions: [XcmUni.Instruction] = try [
             XcmUni.Instruction.withdrawAsset([originAsset]),
             XcmUni.Instruction.buyExecution(
                 XcmUni.BuyExecutionValue(
@@ -220,6 +220,53 @@ final class XcmUniCodingTests: XCTestCase {
                 )
             )
         }
+    }
+
+    func testEncodeDecodeEthereumConsensusLocation() throws {
+        for version in [Xcm.Version.V3, .V4, .V5] {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 2,
+                        items: [.globalConsensus(.ethereum(chainId: 1))]
+                    ),
+                    version: version
+                )
+            )
+
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 2,
+                        items: [
+                            .globalConsensus(.ethereum(chainId: 1)),
+                            .accountKey20(XcmUni.AccountId20(network: .any, accountId: Data.randomBytes(length: 20)!))
+                        ]
+                    ),
+                    version: version
+                )
+            )
+        }
+    }
+
+    func testEthereumConsensusLocationEncodedAsRuntimeExpects() throws {
+        let location = XcmUni.RelativeLocation(parents: 2, items: [.globalConsensus(.ethereum(chainId: 1))])
+        let encoded = try JSONEncoder().encode(location.versioned(.V4))
+        let json = try JSONDecoder().decode(JSON.self, from: encoded)
+
+        let interior = json.arrayValue?[1].dictValue?["interior"]
+        XCTAssertEqual(interior?.arrayValue?[0].stringValue, "X1")
+
+        let junction = interior?.arrayValue?[1].arrayValue?[0]
+        XCTAssertEqual(junction?.arrayValue?[0].stringValue, "GlobalConsensus")
+        XCTAssertEqual(junction?.arrayValue?[1].arrayValue?[0].stringValue, "Ethereum")
+        XCTAssertEqual(junction?.arrayValue?[1].arrayValue?[1].dictValue?["chainId"]?.stringValue, "1")
+    }
+
+    func testEthereumConsensusLocationRejectsPreV3() {
+        let location = XcmUni.RelativeLocation(parents: 2, items: [.globalConsensus(.ethereum(chainId: 1))])
+
+        XCTAssertThrowsError(try JSONEncoder().encode(location.versioned(.V2)))
     }
 
     private func performEncodeDecodeTest<T: Equatable & XcmUniCodable>(

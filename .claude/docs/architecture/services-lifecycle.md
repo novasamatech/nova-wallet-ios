@@ -190,8 +190,9 @@ already carries the current context. Failed adoption leaves no endpoint, and the
 adopts again.
 First activation with no prior installation does not itself invalidate a context.
 
-Each issuance flight attempts at most one new key generation. An unusable identity is retired
-and that flight fails; a later independent demand may replace it after short auth backoff.
+Each issuance flight attempts at most one new key generation. A lost key is retired and replaced
+by one fresh UUID/key within the same flight; any other unusable identity is retired and that
+flight fails, and a later independent demand may replace it after short auth backoff.
 Ordinary proof/policy refusal preserves an existing binding. Pending unknown-client probes keep
 the same UUID/key within the same-boot 120-second uncertainty window and persist send backoff.
 Only 429 and explicit 503 attestation_unavailable apply shared auth-origin protection; ordinary

@@ -5,8 +5,6 @@ import SDKLogger
 public struct AnalyticsConfiguration {
     public let authProvider: AnalyticsAuthProvidingProtocol
 
-    public let isAuthSupported: Bool
-
     public let appVersion: String
 
     public let storeDirectory: URL
@@ -22,7 +20,6 @@ public struct AnalyticsConfiguration {
 
     public init(
         authProvider: AnalyticsAuthProvidingProtocol,
-        isAuthSupported: Bool,
         appVersion: String,
         storeDirectory: URL,
         isFirstLaunch: @escaping () -> Bool,
@@ -32,7 +29,6 @@ public struct AnalyticsConfiguration {
         analyticsOperationQueue: OperationQueue
     ) {
         self.authProvider = authProvider
-        self.isAuthSupported = isAuthSupported
         self.appVersion = appVersion
         self.storeDirectory = storeDirectory
         self.isFirstLaunch = isFirstLaunch

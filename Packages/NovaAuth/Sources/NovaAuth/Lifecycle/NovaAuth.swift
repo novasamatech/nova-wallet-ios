@@ -21,7 +21,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         self.init(dependencies: NovaAuthDependencies(
             appAttest: NovaAuthDeviceCheckService(),
             identityStore: NovaAuthSettingsIdentityStore(settingsManager: configuration.settingsManager),
-            tokenStore: NovaAuthKeychainTokenStore(),
+            tokenStore: NovaAuthKeychainTokenStore(service: configuration.keychainService),
             clock: clock, random: NovaAuthSystemRandom(),
             http: http,
             ownerQueue: configuration.ownerQueue, bootstrapQueue: configuration.bootstrapQueue,
@@ -37,6 +37,11 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public var isSupported: Bool {
         dependencies.appAttest.isSupported
+    }
+
+    public static func removeLegacyBearer(keychainService: String) throws {
+        guard let namespace = Bundle.main.bundleIdentifier else { return }
+        try NovaAuthKeychainTokenStore.removeLegacyRecord(service: keychainService, namespace: namespace)
     }
 
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {
@@ -128,7 +133,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
             clientID: identity.clientID,
             keyID: identity.keyID,
             registration: registration,
-            refusal: registration == .registered ? nil : identity.refusal
+            refusal: registration == .registered ? nil : identity.refusal,
+            keyCreatedAt: identity.keyCreatedAt
         ), context: flight.context)
     }
 
@@ -246,7 +252,9 @@ private extension NovaAuth {
             let callbacks = Array(flight.waiters.values)
             flight.waiters.removeAll()
             self.flight = nil
-            if !flight.irreversible { flight.cancelChild?() }
+            let cancelChild = flight.cancelChild
+            flight.cancelChild = nil
+            if !flight.irreversible { cancelChild?() }
             enqueue { callbacks.forEach { $0(.failure(NovaAuthError.generationChanged)) } }
         }
         issuanceCooldown.clear()

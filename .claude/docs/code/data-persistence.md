@@ -129,9 +129,10 @@ the registered state is saved but before the Keychain write leaves a registered 
 bearer, and the next demand issues one on that binding.
 
 The app's default Keychain access group holds one fingerprint-tagged `current` record, cached
-by the owner under its gate; store creation deletes the record an earlier build kept under the
-App Group. The settings record also keeps the refusal delay (deadline, tier, app version)
-beside the installation identity. Conditional removal
+by the owner under its gate; a flagged one-shot launch migration deletes the record an earlier
+build kept under the App Group, together with the released NovaAppAttest settings keys. The
+settings record also keeps the refusal delay (deadline, tier, app version) beside the
+installation identity. Conditional removal
 matches the fingerprint atomically. Only the main writer under its gate may remove an untagged
 legacy record after conditional removal returns false and reload still equals that record.
 Corrupt reads remain nondestructive.

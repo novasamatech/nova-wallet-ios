@@ -106,7 +106,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         let context = try auth.activate(origin: harness.origin)
         assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context))
         harness.apple.attestationError = nil
-        harness.clock.advance(39)
+        harness.clock.advance(29)
         try execute(auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 1)
         XCTAssertEqual(harness.apple.attestations, 2)

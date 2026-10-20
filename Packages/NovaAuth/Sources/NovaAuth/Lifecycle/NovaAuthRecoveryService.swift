@@ -8,7 +8,8 @@ extension NovaAuth {
             clientID: identity.clientID,
             keyID: identity.keyID,
             registration: .retired(reason),
-            refusal: identity.refusal
+            refusal: identity.refusal,
+            keyCreatedAt: identity.keyCreatedAt
         ), context: flight.context)
     }
 
@@ -23,7 +24,8 @@ extension NovaAuth {
             clientID: identity.clientID,
             keyID: identity.keyID,
             registration: identity.registration,
-            refusal: nextRefusal()
+            refusal: nextRefusal(),
+            keyCreatedAt: identity.keyCreatedAt
         ), context: flight.context)
     }
 
@@ -35,7 +37,7 @@ extension NovaAuth {
         ), context: flight.context)
     }
 
-    private func nextRefusal() throws -> NovaAuthRefusal {
+    func nextRefusal() throws -> NovaAuthRefusal {
         try NovaAuthRefusal(
             now: dependencies.clock.now(),
             previous: state?.identity?.refusal,

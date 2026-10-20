@@ -42,6 +42,7 @@ struct NovaAuthInstallationIdentity: Codable, Equatable {
     let keyID: String?
     let registration: NovaAuthRegistrationState
     var refusal: NovaAuthRefusal?
+    var keyCreatedAt: NovaAuthTime?
 }
 
 struct NovaAuthRegistrationAttempt: Codable, Equatable {
@@ -88,12 +89,11 @@ struct NovaAuthTokenRecord: Codable, Equatable {
 
 enum NovaAuthPurpose {
     case registration, token
-    var path: String {
-        switch self {
-        case .registration: return "/v1/attestation/profile-3/register"
-        case .token: return "/v1/attestation/profile-3/tokens"
-        }
+    var route: NovaAuthBootstrapRoute {
+        self == .registration ? .registration : .token
     }
+
+    var path: String { route.path }
 
     var byte: UInt8 {
         self == .registration ? 1 : 3

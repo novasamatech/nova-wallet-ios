@@ -39,7 +39,7 @@ final class NovaAuthRefusalTests: XCTestCase {
         harness.clock.advance(2)
         try assertError(
             .cooldown(retryAfter: 3598),
-            auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            auth.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         try assertError(
             refusal(401, "attestation_failed"),
@@ -48,12 +48,12 @@ final class NovaAuthRefusalTests: XCTestCase {
         harness.clock.advance(3600)
         try assertError(
             .cooldown(retryAfter: 18000),
-            auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            auth.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         harness.clock.advance(18000)
         try assertError(
             refusal(401, "attestation_failed"),
-            auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            auth.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         XCTAssertEqual(harness.server.count("/register"), 3)
     }
@@ -68,7 +68,7 @@ final class NovaAuthRefusalTests: XCTestCase {
         let relaunched = try harness.relaunch(version: "2")
         try assertError(
             refusal(403, "binding_not_allowed"),
-            relaunched.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            relaunched.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         XCTAssertEqual(harness.server.count("/register"), 2)
     }
@@ -82,12 +82,12 @@ final class NovaAuthRefusalTests: XCTestCase {
         harness.clock.advance(2)
         try assertError(
             .cooldown(retryAfter: 3598),
-            harness.relaunch().createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            harness.relaunch().createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         harness.clock.reboot()
         try assertError(
             refusal(403, "app_not_allowed"),
-            harness.relaunch().createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            harness.relaunch().createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         XCTAssertEqual(harness.server.count("/register"), 2)
     }
@@ -115,7 +115,7 @@ final class NovaAuthRefusalTests: XCTestCase {
         harness.clock.advance(2)
         try assertError(
             .cooldown(retryAfter: 3598),
-            auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {})
+            auth.createResponseWrapper(for: harness.request(context, background: true), beforeSend: {})
         )
         try assertError(
             refusal(403, "binding_not_allowed"),
