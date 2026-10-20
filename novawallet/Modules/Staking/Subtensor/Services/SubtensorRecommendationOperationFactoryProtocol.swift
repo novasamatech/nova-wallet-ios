@@ -3,6 +3,7 @@ import Operation_iOS
 
 struct SubtensorValidatorListVerification {
     let takes: [AccountId: Decimal]
+    let statuses: [AccountId: SubtensorValidatorChainStatus]
     let recommended: Result<Set<AccountId>, Error>
 }
 

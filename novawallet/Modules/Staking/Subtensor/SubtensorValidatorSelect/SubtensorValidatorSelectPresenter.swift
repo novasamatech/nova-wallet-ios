@@ -18,6 +18,7 @@ final class SubtensorValidatorSelectPresenter {
     private var recommendedError: Error?
     private var verificationError: Error?
     private let filterSession: SubtensorValidatorFilterSession
+    private var filters: SubtensorValidatorFilters
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
@@ -41,15 +42,13 @@ final class SubtensorValidatorSelectPresenter {
         self.listFactory = listFactory
         self.delegate = delegate
         self.filterSession = filterSession
+        filters = filterSession.applied(isRoot: target.isRoot)
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorValidatorSelectPresenter {
-    var filters: SubtensorValidatorFilters { filterSession.applied(isRoot: target.isRoot) }
-
     func provideState() {
-        let filters = filters
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
         view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
@@ -105,6 +104,17 @@ private extension SubtensorValidatorSelectPresenter {
         preselectedHotkey = selectableItem(for: preselectedHotkey)?.hotkey
     }
 
+    func presentInactiveValidator() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        wireframe.present(
+            message: strings.stakingSubtensorUiValidatorInactiveMessage(),
+            title: strings.stakingSubtensorUiValidatorInactiveTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
+    }
+
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
         if let directory = snapshot.directory.value, accepts(directory) {
             self.directory = directory
@@ -151,8 +161,18 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
         wireframe.showFilters(from: view, applied: filters, delegate: self)
     }
 
+    func removeFilters() {
+        filters.hidesUnusualApy = false
+        provideState()
+    }
+
     func select(hotkey: AccountId) {
-        guard selectableItem(for: hotkey) != nil else {
+        guard let item = selectableItem(for: hotkey) else {
+            return
+        }
+
+        guard !item.isInactive else {
+            presentInactiveValidator()
             return
         }
 
@@ -175,7 +195,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func confirm() {
-        guard let item = selectableItem(for: selectedHotkey) else {
+        guard let item = selectableItem(for: selectedHotkey), !item.isInactive else {
             return
         }
 
@@ -220,8 +240,12 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
     }
 
     func didReceive(verification: SubtensorValidatorListVerification) {
-        directory = directory?.withTakes(verification.takes)
+        directory = directory?.withVerification(verification)
         verificationError = nil
+
+        if selectableItem(for: selectedHotkey)?.isInactive == true {
+            selectedHotkey = nil
+        }
 
         switch verification.recommended {
         case let .success(hotkeys):
@@ -248,6 +272,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorFiltersDelegate {
             keptHotkeys = []
         }
 
+        filters = newFilters
         filterSession.apply(newFilters, isRoot: target.isRoot)
         provideState()
     }

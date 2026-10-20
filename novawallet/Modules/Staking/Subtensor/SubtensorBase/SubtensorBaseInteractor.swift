@@ -282,20 +282,14 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func loadCostBasis(for netuid: UInt16) {
-        costBasisCallStore.cancel()
-
-        let costBasisService = costBasisService
-        let accountId = selectedAccount.accountId
-
-        load(
-            costBasisService.createCostBasisWrapper(for: accountId, netuid: netuid),
-            cached: { costBasisService.cachedCostBasis(for: accountId, netuid: netuid).value },
-            in: costBasisCallStore,
-            label: "cost basis on netuid \(netuid)",
-            deliver: { [weak self] in
-                self?.basePresenter?.didReceiveCostBasis($0)
-            }
-        )
+        loadCostBasis(
+            using: costBasisService,
+            accountId: selectedAccount.accountId,
+            netuid: netuid,
+            in: costBasisCallStore
+        ) { [weak self] in
+            self?.basePresenter?.didReceiveCostBasis($0)
+        }
     }
 
     func loadRootHolds(for hotkeys: [AccountId]) {

@@ -159,7 +159,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorPricePeriod.selectable
+        let periods = SubtensorPricePeriod.subnetSelectable
 
         guard periods.indices.contains(index), periods[index] != state.period else {
             return

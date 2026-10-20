@@ -43,7 +43,7 @@ private extension SubtensorValidatorChainOperationFactory {
         init(query: SubtensorValidatorChainQuery) {
             pairs = query.pairs.distinct()
             subnetNetuids = pairs.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid }.distinct()
-            hotkeys = (pairs.map(\.hotkey) + query.takeHotkeys).distinct()
+            hotkeys = pairs.map(\.hotkey).distinct()
         }
     }
 

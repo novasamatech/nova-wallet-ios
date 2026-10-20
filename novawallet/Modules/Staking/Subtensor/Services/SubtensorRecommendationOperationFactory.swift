@@ -181,8 +181,8 @@ extension SubtensorRecommendationOperationFactory: SubtensorRecommendationOperat
         let snapshotWrapper: CompoundOperationWrapper<SubtensorValidatorChainSnapshot> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 let candidates = try? candidatesOperation.extractNoCancellableResultData().get()
-                let pairs = (candidates?.recommended.validators ?? []).map { pair($0.hotkey) }
-                let query = SubtensorValidatorChainQuery(pairs: pairs, takeHotkeys: listedHotkeys)
+                let recommended = (candidates?.recommended.validators ?? []).map(\.hotkey)
+                let query = SubtensorValidatorChainQuery(pairs: (recommended + listedHotkeys).map(pair))
 
                 return chainOperationFactory.createChainSnapshotWrapper(for: query)
             }
@@ -195,6 +195,9 @@ extension SubtensorRecommendationOperationFactory: SubtensorRecommendationOperat
 
             return SubtensorValidatorListVerification(
                 takes: snapshot.takeFractions,
+                statuses: listedHotkeys.reduce(into: [:]) { statuses, hotkey in
+                    statuses[hotkey] = SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair(hotkey))
+                },
                 recommended: candidatesResult.map { candidates in
                     Set(candidates.recommended.validators.map(\.hotkey).filter { hotkey in
                         SubtensorRecommendationVerifier.passesGates(

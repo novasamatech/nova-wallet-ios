@@ -198,6 +198,11 @@ extension UILabel.Style {
         font: .semiBoldCaps1
     )
 
+    static let semiboldCaps1ChartLabel = UILabel.Style(
+        textColor: R.color.colorChartLabelText(),
+        font: .semiBoldCaps1
+    )
+
     static let semiboldCaps2Inactive = UILabel.Style(
         textColor: R.color.colorButtonTextInactive(),
         font: .semiBoldCaps2

@@ -43,6 +43,14 @@ extension SubtensorSaleProceeds {
 }
 
 extension SubtensorCostBasisState {
+    var averagePrice: Decimal? {
+        guard case let .resolved(.average(totals)) = self else {
+            return nil
+        }
+
+        return totals.averagePrice.decimalValue
+    }
+
     func earnedTao(from proceeds: SubtensorSaleProceeds) -> BigInt? {
         guard
             case let .resolved(.average(totals)) = self,

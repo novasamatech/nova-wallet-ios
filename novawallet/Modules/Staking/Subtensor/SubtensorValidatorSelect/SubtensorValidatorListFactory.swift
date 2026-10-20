@@ -45,6 +45,7 @@ extension SubtensorValidatorListFactory {
         let listed = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
         let pinned = input.preselectedHotkey
         let matching = listed.filter { matches($0, query: input.query) }.sorted {
+            if $0.item.isInactive != $1.item.isInactive { return $1.item.isInactive }
             if ($0.item.hotkey == pinned) != ($1.item.hotkey == pinned) { return $0.item.hotkey == pinned }
             return Self.isOrderedBefore($0, $1, sort: sort)
         }
@@ -68,7 +69,7 @@ extension SubtensorValidatorListFactory {
                 ratesShown: ratesShown,
                 locale: locale
             ),
-            emptyText: createEmptyText(
+            empty: createEmpty(
                 hasListed: !listed.isEmpty,
                 hasMatching: !matching.isEmpty,
                 input: input,
@@ -224,7 +225,9 @@ private extension SubtensorValidatorListFactory {
 
         let trailing: SubtensorValidatorRowViewModel.Trailing
 
-        if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
+        if entry.item.isInactive {
+            trailing = .inactive(strings.stakingNominatorStatusInactive())
+        } else if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
             trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .bare, locale: context.locale))
         } else {
             trailing = .none
@@ -236,7 +239,8 @@ private extension SubtensorValidatorListFactory {
             title: entry.title,
             subtitle: strings.stakingSubtensorUiValidatorRowSubtitleFormat(stakeText, takeText),
             trailing: trailing,
-            isSelected: entry.item.hotkey == context.input.selectedHotkey
+            isSelected: entry.item.hotkey == context.input.selectedHotkey,
+            isSelectable: !entry.item.isInactive
         )
     }
 
@@ -262,22 +266,29 @@ private extension SubtensorValidatorListFactory {
             : strings.stakingSubtensorUiValidatorHeaderSortFormat(sortTitle)
     }
 
-    func createEmptyText(
+    func createEmpty(
         hasListed: Bool,
         hasMatching: Bool,
         input: SubtensorValidatorListInput,
         locale: Locale
-    ) -> String? {
+    ) -> SubtensorValidatorListViewModel.Empty? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         guard hasListed else {
-            return strings.stakingSubtensorUiValidatorNoData()
+            guard input.recommendedHotkeys != nil, !input.directory.items.isEmpty else {
+                return .text(strings.stakingSubtensorUiValidatorNoData())
+            }
+
+            return .filtered(SubtensorValidatorFilteredEmptyViewModel(
+                message: strings.stakingSubtensorUiValidatorRecommendedEmpty(),
+                actionTitle: strings.stakingSubtensorUiValidatorRemoveFilters()
+            ))
         }
 
         guard hasMatching else {
             let query = input.query.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            return strings.stakingSubtensorUiValidatorSearchEmptyFormat(query)
+            return .text(strings.stakingSubtensorUiValidatorSearchEmptyFormat(query))
         }
 
         return nil

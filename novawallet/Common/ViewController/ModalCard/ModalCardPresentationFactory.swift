@@ -29,15 +29,12 @@ extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
         presenting _: UIViewController,
         source _: UIViewController
     ) -> UIViewControllerAnimatedTransitioning? {
-        ModalCardPresentationAppearanceAnimator(animator: configuration.contentAppearanceAnimator)
+        ModalCardPresentationAppearanceAnimator()
     }
 
     public func animationController(forDismissed _: UIViewController)
         -> UIViewControllerAnimatedTransitioning? {
-        ModalCardPresentationDismissAnimator(
-            animator: configuration.contentDissmisalAnimator,
-            finalPositionOffset: 0.0
-        )
+        presentation?.interactiveDismissal?.animator ?? ModalCardPresentationDismissAnimator()
     }
 
     public func presentationController(
@@ -65,102 +62,197 @@ extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
     }
 }
 
-public final class ModalCardPresentationAppearanceAnimator: NSObject {
-    let animator: BlockViewAnimatorProtocol
+enum ModalCardSpring {
+    static let duration: TimeInterval = 0.5
 
-    public init(animator: BlockViewAnimatorProtocol) {
-        self.animator = animator
-
-        super.init()
+    static func createAnimator(velocity: CGFloat = 0) -> UIViewPropertyAnimator {
+        UIViewPropertyAnimator(duration: duration, timingParameters: timing(velocity: velocity))
     }
+
+    static func timing(velocity: CGFloat) -> UISpringTimingParameters {
+        UISpringTimingParameters(
+            mass: 1,
+            stiffness: 350,
+            damping: 37.4,
+            initialVelocity: CGVector(dx: velocity, dy: velocity)
+        )
+    }
+}
+
+public final class ModalCardPresentationAppearanceAnimator: NSObject {
+    private var animator: UIViewPropertyAnimator?
 }
 
 // MARK: UIViewControllerAnimatedTransitioning
 
 extension ModalCardPresentationAppearanceAnimator: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
-        animator.duration
+        ModalCardSpring.duration
     }
 
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let presentedController = transitionContext.viewController(forKey: .to) else {
-            return
+        interruptibleAnimator(using: transitionContext).startAnimation()
+    }
+
+    public func interruptibleAnimator(
+        using transitionContext: UIViewControllerContextTransitioning
+    ) -> UIViewImplicitlyAnimating {
+        if let animator {
+            return animator
         }
 
-        let finalFrame = transitionContext.finalFrame(for: presentedController)
-        var initialFrame = finalFrame
-        initialFrame.origin.y += finalFrame.size.height
+        let animator = ModalCardSpring.createAnimator()
 
-        presentedController.view.frame = initialFrame
-        transitionContext.containerView.addSubview(presentedController.view)
+        if let presentedController = transitionContext.viewController(forKey: .to) {
+            let finalFrame = transitionContext.finalFrame(for: presentedController)
 
-        let animationBlock: () -> Void = {
-            presentedController.view.frame = finalFrame
+            presentedController.view.frame = finalFrame.offsetBy(dx: 0, dy: finalFrame.height)
+            transitionContext.containerView.addSubview(presentedController.view)
+
+            animator.addAnimations {
+                presentedController.view.frame = finalFrame
+            }
         }
 
-        let completionBlock: (Bool) -> Void = { finished in
-            transitionContext.completeTransition(finished)
+        animator.addCompletion { _ in
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
 
-        // TODO: Use spring-block animator after UIKit update
-        UIView.animate(
-            withDuration: 0.45,
-            delay: 0,
-            usingSpringWithDamping: 1,
-            initialSpringVelocity: 0.4,
-            options: .curveEaseIn,
-            animations: animationBlock,
-            completion: completionBlock
-        )
+        self.animator = animator
+
+        return animator
+    }
+
+    public func animationEnded(_: Bool) {
+        animator = nil
     }
 }
 
 public final class ModalCardPresentationDismissAnimator: NSObject {
-    let animator: BlockViewAnimatorProtocol
-    let finalPositionOffset: CGFloat
-
-    public init(
-        animator: BlockViewAnimatorProtocol,
-        finalPositionOffset: CGFloat
-    ) {
-        self.animator = animator
-        self.finalPositionOffset = finalPositionOffset
-
-        super.init()
-    }
+    private var animator: UIViewPropertyAnimator?
 }
 
 // MARK: UIViewControllerAnimatedTransitioning
 
 extension ModalCardPresentationDismissAnimator: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
-        animator.duration
+        ModalCardSpring.duration
     }
 
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let presentedController = transitionContext.viewController(forKey: .from) else {
-            return
+        interruptibleAnimator(using: transitionContext).startAnimation()
+    }
+
+    public func interruptibleAnimator(
+        using transitionContext: UIViewControllerContextTransitioning
+    ) -> UIViewImplicitlyAnimating {
+        if let animator {
+            return animator
         }
 
-        let initialFrame = presentedController.view.frame
-        var finalFrame = initialFrame
-        finalFrame.origin.y = transitionContext.containerView.frame.maxY + finalPositionOffset
+        let animator = ModalCardSpring.createAnimator()
+        let presentedController = transitionContext.viewController(forKey: .from)
 
-        let animationBlock: () -> Void = {
-            presentedController.view.frame = finalFrame
+        if let presentedView = presentedController?.view {
+            var finalFrame = presentedView.frame
+            finalFrame.origin.y = transitionContext.containerView.frame.maxY
+
+            animator.addAnimations {
+                presentedView.frame = finalFrame
+            }
         }
 
-        let completionBlock: (Bool) -> Void = { _ in
+        animator.addCompletion { _ in
             if !transitionContext.transitionWasCancelled {
-                presentedController.view.removeFromSuperview()
+                presentedController?.view.removeFromSuperview()
             }
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
 
-        animator.animate(
-            block: animationBlock,
-            completionBlock: completionBlock
+        self.animator = animator
+
+        return animator
+    }
+
+    public func animationEnded(_: Bool) {
+        animator = nil
+    }
+}
+
+final class ModalCardInteractiveDismissal: NSObject {
+    let animator = ModalCardPresentationDismissAnimator()
+    let distance: CGFloat
+
+    private var transitionContext: UIViewControllerContextTransitioning?
+    private var transitionAnimator: UIViewImplicitlyAnimating?
+    private var fraction: CGFloat = 0
+    private var pendingCompletion: (finished: Bool, velocity: CGFloat)?
+
+    init(distance: CGFloat) {
+        self.distance = max(distance, 1)
+
+        super.init()
+    }
+
+    func update(_ newFraction: CGFloat) {
+        fraction = min(max(newFraction, 0), 1)
+        transitionAnimator?.fractionComplete = fraction
+        transitionContext?.updateInteractiveTransition(fraction)
+    }
+
+    func finish(velocity: CGFloat) {
+        complete(finished: true, velocity: velocity)
+    }
+
+    func cancel(velocity: CGFloat) {
+        complete(finished: false, velocity: velocity)
+    }
+}
+
+private extension ModalCardInteractiveDismissal {
+    func complete(finished: Bool, velocity: CGFloat) {
+        guard let transitionContext, let transitionAnimator else {
+            pendingCompletion = (finished, velocity)
+            return
+        }
+
+        self.transitionContext = nil
+        self.transitionAnimator = nil
+
+        let remainingDistance = (finished ? 1 - fraction : fraction) * distance
+        let towardsTarget = finished ? velocity : -velocity
+        let relativeVelocity = remainingDistance > 1 ? towardsTarget / remainingDistance : 0
+
+        if finished {
+            transitionContext.finishInteractiveTransition()
+        } else {
+            transitionContext.cancelInteractiveTransition()
+            transitionAnimator.isReversed = true
+        }
+
+        transitionAnimator.continueAnimation?(
+            withTimingParameters: ModalCardSpring.timing(velocity: relativeVelocity),
+            durationFactor: 1
         )
+    }
+}
+
+// MARK: UIViewControllerInteractiveTransitioning
+
+extension ModalCardInteractiveDismissal: UIViewControllerInteractiveTransitioning {
+    func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+        let transitionAnimator = animator.interruptibleAnimator(using: transitionContext)
+
+        transitionAnimator.pauseAnimation()
+        transitionAnimator.fractionComplete = fraction
+
+        self.transitionContext = transitionContext
+        self.transitionAnimator = transitionAnimator
+
+        if let pendingCompletion {
+            self.pendingCompletion = nil
+            complete(finished: pendingCompletion.finished, velocity: pendingCompletion.velocity)
+        }
     }
 }

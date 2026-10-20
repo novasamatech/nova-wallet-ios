@@ -93,7 +93,9 @@ private extension SubtensorValidatorPresetOperationFactory {
             OperationCombiningService.compoundOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] in
-                if let item = try itemWrapper.targetOperation.extractNoCancellableResultData() {
+                let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
+
+                if let item, !item.isInactive {
                     return .createWithResult(item.named(item.name ?? winner.name))
                 }
 
@@ -170,7 +172,9 @@ private extension SubtensorValidatorPresetOperationFactory {
             OperationCombiningService.compoundOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] in
-                if let existing = try existingWrapper.targetOperation.extractNoCancellableResultData() {
+                let existing = try existingWrapper.targetOperation.extractNoCancellableResultData()
+
+                if let existing, !existing.isInactive {
                     return .createWithResult(existing)
                 }
 

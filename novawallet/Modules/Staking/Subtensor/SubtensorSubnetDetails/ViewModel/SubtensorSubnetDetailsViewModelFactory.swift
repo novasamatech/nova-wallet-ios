@@ -90,7 +90,8 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             isFiat: state.isFiat,
             taoPrice: state.taoPrice,
             currencyId: currencyManager.selectedCurrency.id,
-            chartEndDate: state.chartEndDate
+            chartEndDate: state.chartEndDate,
+            avgBuyPrice: nil
         )
     }
 
