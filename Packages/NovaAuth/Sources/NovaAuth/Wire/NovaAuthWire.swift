@@ -83,6 +83,11 @@ enum NovaAuthWire {
         )
     }
 
+    static func isGatewayRequestDefect(_ response: NovaAuthResponse) -> Bool {
+        guard response.response.statusCode == 400, let code = errorCode(from: response.body) else { return false }
+        return ["invalid_request", "invalid_target", "unsupported_profile"].contains(code)
+    }
+
     static func requestID(_ response: HTTPURLResponse) -> String? {
         guard let value = response.value(forHTTPHeaderField: "X-Request-ID"),
               (1 ... 128).contains(value.utf8.count), value.utf8.allSatisfy({

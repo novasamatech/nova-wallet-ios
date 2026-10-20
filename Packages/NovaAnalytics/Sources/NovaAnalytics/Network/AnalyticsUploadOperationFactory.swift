@@ -19,12 +19,6 @@ public final class AnalyticsUploadOperationFactory {
 extension AnalyticsUploadOperationFactory {
     enum Constants {
         static let eventsPath = "/v1/analytics/events"
-        static let timeout: TimeInterval = 15
-        static let gatewayCodes: Set<String> = [
-            "invalid_request", "unsupported_profile", "invalid_target", "unsupported_platform",
-            "unsupported_attestation_type", "unknown_client", "invalid_challenge", "invalid_proof",
-            "invalid_token", "insufficient_scope"
-        ]
     }
 
     static func deliveryError(for result: NovaAuthResponse) -> AnalyticsTransportError? {
@@ -37,9 +31,7 @@ extension AnalyticsUploadOperationFactory {
         case 408, 425, 429, 503:
             return .retryLater(statusCode: status, retryAfter: result.serverError.retryAfter)
         case 400:
-            return result.serverError.code.map(Constants.gatewayCodes.contains) == true
-                ? .proofRefused(statusCode: status)
-                : .clientError(statusCode: status)
+            return result.isGatewayRequestDefect ? .proofRefused(statusCode: status) : .clientError(statusCode: status)
         case 413, 415, 422:
             return .clientError(statusCode: status)
         default:
