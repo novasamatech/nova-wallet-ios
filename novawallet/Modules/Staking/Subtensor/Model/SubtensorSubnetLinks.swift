@@ -8,7 +8,6 @@ struct SubtensorSubnetLinks: Equatable {
 }
 
 extension SubtensorSubnetLinks {
-    /// The catalogue passes the owner's identity links through as raw text: no URI validation, empty strings allowed.
     init(subnetUrl: String?, subnetWebsite: String?, githubRepo: String?) {
         let websiteCandidates = [subnetUrl, subnetWebsite]
 
@@ -29,7 +28,6 @@ enum SubtensorSubnetLinkNormalizer {
     )
     private static let gitSuffix = ".git"
 
-    /// Trims, prefixes `https://` when the owner left the scheme out, and keeps only http(s) URLs with a dotted host.
     static func website(from raw: String?) -> URL? {
         guard let text = cleaned(raw) else {
             return nil
@@ -54,8 +52,6 @@ enum SubtensorSubnetLinkNormalizer {
         return components.url
     }
 
-    /// Keeps `<owner>[/<repo>]` of a `github.com` link without a `.git` suffix, accepting only plain names checked
-    /// before percent-decoding; the result is canonical https without a trailing slash.
     static func github(from raw: String?) -> URL? {
         guard
             let url = website(from: raw),

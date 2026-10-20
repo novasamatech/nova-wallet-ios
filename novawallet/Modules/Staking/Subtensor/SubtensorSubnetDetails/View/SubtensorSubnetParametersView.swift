@@ -75,7 +75,6 @@ final class SubtensorParameterRowView: UIView {
     let loadingView = SubtensorSkeletonView(cornerRadius: 6)
     private let tapRecognizer = UITapGestureRecognizer()
 
-    /// Set for link rows: the value turns accent and the whole row becomes tappable.
     var onTap: (() -> Void)? {
         didSet { tapRecognizer.isEnabled = onTap != nil }
     }
