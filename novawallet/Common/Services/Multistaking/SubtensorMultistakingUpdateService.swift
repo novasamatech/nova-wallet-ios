@@ -233,7 +233,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 continue
             }
 
-            subnetYields[netuid] = yields
+            subnetYields[netuid] = yields.droppingUnreliable()
         }
     }
 
@@ -256,7 +256,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         let mergeOperation = ClosureOperation<[UInt16: SubtensorAlphaYields]> {
             try yieldWrappers.reduce(into: [:]) { result, wrapper in
                 let yields = try wrapper.targetOperation.extractNoCancellableResultData()
-                result[yields.netuid] = yields
+                result[yields.netuid] = yields.droppingUnreliable()
             }
         }
 

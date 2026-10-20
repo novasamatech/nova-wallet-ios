@@ -33,7 +33,6 @@ extension SubtensorYieldOperationFactory {
         )
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
-        var seenHotkeys: Set<AccountId> = []
         var skippedRows = 0
 
         for item in result.value.items {
@@ -46,11 +45,15 @@ extension SubtensorYieldOperationFactory {
                 continue
             }
 
-            guard seenHotkeys.insert(hotkey).inserted, item.rateReliability != .unreliable else {
+            guard yields[hotkey] == nil else {
                 continue
             }
 
-            yields[hotkey] = SubtensorReportedYield(reportedRate: item.reportedRate, stamp: stamp)
+            yields[hotkey] = SubtensorReportedYield(
+                reportedRate: item.reportedRate,
+                stamp: stamp,
+                isReliable: item.rateReliability != .unreliable
+            )
         }
 
         if skippedRows > 0 {
