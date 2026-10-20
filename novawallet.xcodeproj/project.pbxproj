@@ -21,6 +21,7 @@
 		0075488169C69B97C0630EB8 /* AssetReceiveProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47042BBA5082B1EC1D017B56 /* AssetReceiveProtocols.swift */; };
 		0090AF084EEEA26E4018B1B3 /* NominationPoolSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 834314A1286CB91F8BB43F06 /* NominationPoolSearchViewController.swift */; };
 		00AE6FF475338CEF6C65F3B0 /* SwipeGovVotingConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38B946DC0085AE7F1360A21A /* SwipeGovVotingConfirmProtocols.swift */; };
+		00B3273060B75B8D57CA5AA3 /* MevShieldSealerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3496723425F117A7E577904 /* MevShieldSealerTests.swift */; };
 		00DAD1B398104EA384DB7BEB /* SubtensorSubnetFiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC29E285AC4912BFCDE896 /* SubtensorSubnetFiltersViewController.swift */; };
 		0119531FAE0D22EA9464F84D /* ParaStkYourCollatorsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128EA612020D98F3B0D0FA96 /* ParaStkYourCollatorsProtocols.swift */; };
 		012AE9F8BDA682C691B6F9FD /* PVWelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CF6E3E64F7608EF6C28399 /* PVWelcomeViewController.swift */; };
@@ -3003,6 +3004,7 @@
 		4CF8E76A925F4159A455A610 /* RemovedWalletAssetVisibilityCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCA9BF2349C44558B60BEA2 /* RemovedWalletAssetVisibilityCleaner.swift */; };
 		4D31116B94CB85E69432B848 /* TokensManageAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6ED849A247ACCC3FB1AC3 /* TokensManageAddViewController.swift */; };
 		4D44B178F1F57FD8607E8095 /* VotesViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8602E65CC4E81A7BE1727CE3 /* VotesViewLayout.swift */; };
+		4DA2B69DD11550E592BBD3C3 /* mev-shield-vector.json in Resources */ = {isa = PBXBuildFile; fileRef = C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */; };
 		4DBCCC36F7CD1876D6E77ECC /* DelegatedSignFeeValidationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807220BDBBF997C9240E3C0 /* DelegatedSignFeeValidationInteractor.swift */; };
 		4DC64D83DF31411FAF62C0F8 /* SubtensorSubnetIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6758E253C50844DA88793EA4 /* SubtensorSubnetIconViewModelFactory.swift */; };
 		4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE72F2B6612508D4783A507 /* DAppAuthSettingsProtocols.swift */; };
@@ -13632,6 +13634,7 @@
 		C46EE41C160648E3BECE0F71 /* SubtensorTradeQuoteOperationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorTradeQuoteOperationFactoryProtocol.swift; sourceTree = "<group>"; };
 		C4E807E9E12A130C50E8FFDF /* StakingDashboardViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingDashboardViewFactory.swift; sourceTree = "<group>"; };
 		C52D6675524DB913210F0459 /* DAppSettingsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSettingsPresenter.swift; sourceTree = "<group>"; };
+		C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mev-shield-vector.json"; sourceTree = "<group>"; };
 		C585109AC3A2580AB1253C31 /* SwapSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSetupInteractor.swift; sourceTree = "<group>"; };
 		C5BAAC7548C5632713607CC9 /* KnownNetworksListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewController.swift; sourceTree = "<group>"; };
 		C5E9D289393AA2CC1E34C2F4 /* AssetDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetDetailsWireframe.swift; sourceTree = "<group>"; };
@@ -13961,6 +13964,7 @@
 		F3028B090831D30549212FEF /* MythosStkUnstakeConfirmPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosStkUnstakeConfirmPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		F31A3D4E3894582CB49013F0 /* ParaStkYieldBoostStartViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStartViewLayout.swift; sourceTree = "<group>"; };
 		F32F1F0F6F985195CD19EDDB /* GovernanceEditDelegationTracksProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceEditDelegationTracksProtocols.swift; sourceTree = "<group>"; };
+		F3496723425F117A7E577904 /* MevShieldSealerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MevShieldSealerTests.swift; sourceTree = "<group>"; };
 		F349A77EF7D64A4F9331130B /* BittensorApi+Rankings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApi+Rankings.swift"; sourceTree = "<group>"; };
 		F3526D1FB18C2615BE28E15C /* GovernanceUnavailableTracksViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnavailableTracksViewLayout.swift; sourceTree = "<group>"; };
 		F35A1A031FD0131CB7F1B701 /* NetworkDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkDetailsPresenter.swift; sourceTree = "<group>"; };
@@ -24937,6 +24941,7 @@
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
 				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
+				F3496723425F117A7E577904 /* MevShieldSealerTests.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -29472,6 +29477,7 @@
 				2D7A550F2E5D000100000001 /* bittensor-v15-metadata */,
 				848DB992260638440055DDE7 /* rewardResponse.json */,
 				846B32A426DD07AF00250E89 /* rewardErrorResponse.json */,
+				C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -33092,6 +33098,7 @@
 				8467FD3E24EAD66F005D486C /* validEd25519Keystore.json in Resources */,
 				77CB33CE2A38780700B6709A /* structures_output.json in Resources */,
 				77EA2A2A2A333C1500B0670B /* weird_input.json in Resources */,
+				4DA2B69DD11550E592BBD3C3 /* mev-shield-vector.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40265,6 +40272,7 @@
 				3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceOperationFactoryTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
 				DB5DF5A18CE14F12AA059E4D /* ExtrinsicStatusTests.swift in Sources */,
+				00B3273060B75B8D57CA5AA3 /* MevShieldSealerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
