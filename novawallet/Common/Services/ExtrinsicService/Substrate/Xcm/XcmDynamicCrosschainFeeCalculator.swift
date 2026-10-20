@@ -33,9 +33,6 @@ final class XcmDynamicCrosschainFeeCalculator {
     static let minimumSendAmount: Decimal = 100
     static let minimumFundAmount: Decimal = minimumSendAmount * 2
 
-    /// Some chains cap a single outgoing transfer of an asset (e.g. Hydration's per-asset xcm rate limit),
-    /// so a dry run with `minimumSendAmount` can fail even though the direction works. The fee is then
-    /// re-estimated with this amount.
     static let fallbackSendAmount: Decimal = 1
 
     let chainRegistry: ChainRegistryProtocol

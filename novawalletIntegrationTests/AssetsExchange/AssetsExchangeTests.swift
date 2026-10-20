@@ -419,7 +419,6 @@ final class AssetsExchangeTests: XCTestCase {
             Logger.shared.info("Route: \(pathDescription)")
         }
 
-        // the cheapest candidate must bridge ETH to Hydration first instead of selling it on Asset Hub
         let bridgesEthFirst = paths.contains { path in
             guard let first = path.first else { return false }
 

@@ -13,13 +13,11 @@ extension XcmUni.NetworkId {
     static let anyField = "Any"
     static let ethereumField = "Ethereum"
 
-    /// Keys of a `globalConsensus` config object: `{"ethereum": {"chainId": 1}}`
     enum RawPathKey: String {
         case ethereum
         case chainId
     }
 
-    /// Only Ethereum is supported.
     static func createWithRawPath(_ path: JSON) throws -> XcmUni.NetworkId {
         guard
             let fields = path.dictValue,
@@ -41,8 +39,6 @@ extension XcmUni.NetworkId {
         throw XcmUni.AbsoluteLocation.RawPathError.unsupportedConsensus(path)
     }
 
-    /// Runtime `NetworkId::Ethereum { chain_id }`. Field names are camel-cased by the SDK's scale-info mapping,
-    /// so the JSON key is `chainId`.
     struct EthereumValue: Codable {
         let chainId: StringScaleMapper<UInt64>
     }

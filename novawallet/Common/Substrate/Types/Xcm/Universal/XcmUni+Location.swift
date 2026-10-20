@@ -28,7 +28,6 @@ extension XcmUni.RelativeLocation {
 }
 
 extension XcmUni.AbsoluteLocation {
-    /// Keys of a `multiLocation` object in the dynamic XCM config (nova-utils `assetsLocation`).
     enum RawPathKey: String, CaseIterable {
         case globalConsensus
         case parachainId
@@ -58,9 +57,6 @@ extension XcmUni.AbsoluteLocation {
         }
     }
 
-    /// A location whose path starts with GlobalConsensus is rooted outside the local consensus system
-    /// (e.g. Snowbridge assets live under GlobalConsensus(Ethereum)). Chains of the local consensus never
-    /// carry this junction in their absolute location.
     var isForeignConsensus: Bool {
         if case .globalConsensus = items.first {
             return true
@@ -69,8 +65,6 @@ extension XcmUni.AbsoluteLocation {
         return false
     }
 
-    /// Parses a `multiLocation` config object. Every present key must parse, and unknown keys are an error:
-    /// a silently dropped junction would turn the asset into a different one (e.g. the chain's native token).
     static func createWithRawPath(_ path: JSON) throws -> XcmUni.AbsoluteLocation {
         let fields = try RawPathFields(path)
 
@@ -116,7 +110,6 @@ extension XcmUni.AbsoluteLocation {
 
     private func fromLocalPointOfView(_ location: XcmUni.AbsoluteLocation) -> XcmUni.RelativeLocation {
         if isForeignConsensus {
-            // up to the relay (one hop per junction of the viewer) and one more hop to the universal level
             return XcmUni.RelativeLocation(parents: UInt8(location.items.count + 1), interior: self)
         }
 
@@ -179,7 +172,6 @@ extension XcmUni.RelativeLocation: XcmUniCodable {
 }
 
 private extension XcmUni.AbsoluteLocation {
-    /// Validated view over a `multiLocation` config object: one parser per supported key.
     struct RawPathFields {
         let fields: [String: JSON]
 
