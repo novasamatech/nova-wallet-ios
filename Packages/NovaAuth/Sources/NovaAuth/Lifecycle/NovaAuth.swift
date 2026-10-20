@@ -39,6 +39,11 @@ public final class NovaAuth: NovaAuthClientProtocol {
         dependencies.appAttest.isSupported
     }
 
+    public static func removeLegacyBearer() throws {
+        guard let namespace = Bundle.main.bundleIdentifier else { return }
+        try NovaAuthKeychainTokenStore.removeLegacyRecord(namespace: namespace)
+    }
+
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {
         try gate.novaAuthLocked {
             do {

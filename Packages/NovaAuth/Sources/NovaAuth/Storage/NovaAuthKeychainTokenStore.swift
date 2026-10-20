@@ -29,17 +29,17 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
     private let security: NovaAuthSecurityProtocol
     private let mutationLock = NSLock()
 
-    init(
-        security: NovaAuthSecurityProtocol = NovaAuthSecurity(),
-        legacyNamespace: String? = Bundle.main.bundleIdentifier
-    ) {
+    init(security: NovaAuthSecurityProtocol = NovaAuthSecurity()) {
         self.security = security
-        guard let legacyNamespace else { return }
-        _ = security.delete([
+    }
+
+    static func removeLegacyRecord(namespace: String) throws {
+        let status = NovaAuthSecurity().delete([
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: Self.service + "." + legacyNamespace,
+            kSecAttrService as String: service + "." + namespace,
             kSecAttrAccount as String: "current"
         ])
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw NovaAuthError.storageUnavailable }
     }
 
     func load() throws -> NovaAuthTokenRecord? { try loadRecord() }

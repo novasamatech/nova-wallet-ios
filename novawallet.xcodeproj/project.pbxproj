@@ -3265,6 +3265,7 @@
 		778215D62B959344006C7D13 /* SharedSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */; };
 		778215D82B9593C6006C7D13 /* UserDefaultMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215D72B9593C6006C7D13 /* UserDefaultMigrator.swift */; };
 		9F646A52B62041919D6BB4BE /* AssetVisibilitySeedMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB570692CA844621AD3131A8 /* AssetVisibilitySeedMigrator.swift */; };
+		0F7B99425D256C9F764C3F25 /* LegacyAttestationStorageMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CD98A5763A39612EE4BE8E /* LegacyAttestationStorageMigrator.swift */; };
 		778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215DC2B95AD8F006C7D13 /* NewReferendumHandler.swift */; };
 		778215E12B95B3D9006C7D13 /* ReferendumUpdatesHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215E02B95B3D9006C7D13 /* ReferendumUpdatesHandler.swift */; };
 		778215E32B95B8E1006C7D13 /* NewReleaseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215E22B95B8E1006C7D13 /* NewReleaseHandler.swift */; };
@@ -9730,6 +9731,7 @@
 		778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSettingsManager.swift; sourceTree = "<group>"; };
 		778215D72B9593C6006C7D13 /* UserDefaultMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultMigrator.swift; sourceTree = "<group>"; };
 		AB570692CA844621AD3131A8 /* AssetVisibilitySeedMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigrator.swift; sourceTree = "<group>"; };
+		B3CD98A5763A39612EE4BE8E /* LegacyAttestationStorageMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAttestationStorageMigrator.swift; sourceTree = "<group>"; };
 		778215DC2B95AD8F006C7D13 /* NewReferendumHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewReferendumHandler.swift; sourceTree = "<group>"; };
 		778215E02B95B3D9006C7D13 /* ReferendumUpdatesHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferendumUpdatesHandler.swift; sourceTree = "<group>"; };
 		778215E22B95B8E1006C7D13 /* NewReleaseHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewReleaseHandler.swift; sourceTree = "<group>"; };
@@ -30515,6 +30517,7 @@
 				7778FE382B907C220023E801 /* StorePathMigrator.swift */,
 				778215D72B9593C6006C7D13 /* UserDefaultMigrator.swift */,
 				AB570692CA844621AD3131A8 /* AssetVisibilitySeedMigrator.swift */,
+				B3CD98A5763A39612EE4BE8E /* LegacyAttestationStorageMigrator.swift */,
 			);
 			path = Migration;
 			sourceTree = "<group>";
@@ -33300,6 +33303,7 @@
 				0C12BC3A2CEA7ECB00AB919D /* AssetExchangePriceStore.swift in Sources */,
 				778215D82B9593C6006C7D13 /* UserDefaultMigrator.swift in Sources */,
 				9F646A52B62041919D6BB4BE /* AssetVisibilitySeedMigrator.swift in Sources */,
+				0F7B99425D256C9F764C3F25 /* LegacyAttestationStorageMigrator.swift in Sources */,
 				8497FC6026317783002FEAA7 /* AccountInfoViewModel.swift in Sources */,
 				2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */,
 				84DEE7042797FBF800B9A39E /* ExtrinsicSignedExtensionFactory.swift in Sources */,

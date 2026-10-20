@@ -21,6 +21,8 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             sharedSettingsManager: SharedSettingsManager()
         )
 
+        let legacyAttestationStorageMigrator = LegacyAttestationStorageMigrator(settingsManager: settings)
+
         let assetVisibilitySeedMigrator = AssetVisibilitySeedMigrator(
             settingsManager: settings,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
@@ -41,7 +43,8 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
                 sharedSettingsMigrator,
                 userDatabaseMigrator,
                 substrateDatabaseMigrator,
-                assetVisibilitySeedMigrator
+                assetVisibilitySeedMigrator,
+                legacyAttestationStorageMigrator
             ],
             logger: Logger.shared
         )
