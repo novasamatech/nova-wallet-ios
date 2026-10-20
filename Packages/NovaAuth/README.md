@@ -1,13 +1,13 @@
 # NovaAuth
 
 Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns one `NovaAuth`
-instance and injects its `NovaAuthClientProtocol` into analytics. One installation
+instance and injects its `NovaAuthClientProtocol` into each consumer. One installation
 and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
-GET and HEAD reads and analytics POSTs. Auth validates transport syntax
+GET and HEAD reads and POST requests. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
@@ -16,25 +16,27 @@ another request before sending permits one separate, bounded re-admission. Neith
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
 
-The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings and
-separate owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed
-host app in the app's default Keychain access group, with continuous-clock/boot metadata;
-preferences hold no bearer. Auth requires no App Group container, shared access group or
-Info.plist namespace; each signed app variant owns its own record, so Release and Staging can
-never read, overwrite or delete each other's bearer. All features within one host still share
-its single current record; origin, consumer and client UUID never select separate token pools.
+The main host supplies AppIdentifierPrefix + bundle identifier, the app version, the Keychain
+service name, settings and separate owner/bootstrap/business queues. Keychain holds one atomic
+bearer record per installed host app under that service in the app's default Keychain access
+group, with continuous-clock/boot metadata; preferences hold no bearer. Auth requires no shared
+container, shared access group or Info.plist namespace; each signed app variant owns its own
+record, so a release and a staging build can never read, overwrite or delete each other's
+bearer. All features within one host still share its single current record; origin, consumer
+and client UUID never select separate token pools.
 The owner caches a loaded record under its gate, so the Keychain is read again only while no
-record is cached or after a write or removal. `NovaAuth.removeLegacyBearer()` deletes the record
-an earlier build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle id>`;
-the host calls it from a flagged one-shot launch migration.
+record is cached or after a write or removal. `NovaAuth.removeLegacyBearer(keychainService:)`
+deletes the record an earlier build kept under the namespaced service
+`<keychain service>.<bundle id>`; the host calls it from a flagged one-shot launch migration.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
-A later ordinary demand, including consented Analytics, may initialize the installation.
+A later ordinary demand, including a background request, may initialize the installation.
 This local product policy replaces the profile-3 protocol's user-driven re-creation
 wording; it is an explicit eligibility change, not behavioral equivalence.
-The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
-reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
+The package has no explicit reset API. A consumer's own opt-out or data deletion and changes of
+the host's user account do not reset the shared identity. Requests carry a demand intent that
+only gates re-registration after a refusal.
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
@@ -42,7 +44,7 @@ must-revalidate`; POSTs and bootstrap use `no-store`.
 Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
-The host maps `infraUrl` to one endpoint per process and memoises it.
+The host maps its backend URL to one endpoint per process and memoises it.
 
 ## Recovery and admission
 
@@ -56,7 +58,7 @@ same flight. Bearer replay preserves its original client binding and cannot turn
 operation into identity replacement.
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
-retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
+retries, pull to refresh; admission is always user-driven) or `.background` (scheduled uploads,
 background syncs). A registration refused with any code-bearing 4xx other than 409 keeps the
 client UUID, drops only the key and saves a refusal delay. An Apple-side attestation failure
 (a failed, timed-out or late answer, or invalid key for a key created on this boot) drops the
@@ -129,8 +131,8 @@ record. Corrupt token reads do not delete unrelated data. Version-1 bearer recor
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
 
-Analytics retains batches silently for its normal later-flush policy; consent is checked before
-every send and replay.
+A consumer may silently keep a failed background request for its own later retry; a consumer
+precondition passed as `beforeSend` is checked before every send and replay.
 
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,

@@ -49,7 +49,8 @@ Nothing in a package may reference an app type — no `ApplicationConfig`, `Glob
 analytics; the package owns recovery, storage and DeviceCheck. The app owns
 configuration/context publication; `NovaAnalytics` owns
 consent and normal flush scheduling, retaining auth-failed batches silently for later flushes.
-Auth needs no store configuration: the bearer sits in the app's default Keychain access group,
+Auth's only store configuration is the host-supplied Keychain service: the bearer sits under it
+in the app's default Keychain access group,
 and a refused registration keeps the client ID while background demands wait out a persisted
 delay. Settings managers are injected
 through `NovaAuthConfiguration`; set/read-back provides no durable commit acknowledgement.
