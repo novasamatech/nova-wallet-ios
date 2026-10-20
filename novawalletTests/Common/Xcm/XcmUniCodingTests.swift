@@ -148,27 +148,27 @@ final class XcmUniCodingTests: XCTestCase {
             ]
         )
 
-        let originAsset = XcmUni.Asset(
+        let originAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let reserveAsset = XcmUni.Asset(
+        let reserveAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: reserveAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let destAsset = XcmUni.Asset(
+        let destAsset = try XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: amount
         )
 
-        let beneficiary = destAbsoluteLocation.appendingAccountId(
+        let beneficiary = try destAbsoluteLocation.appendingAccountId(
             destinationAccount,
             isEthereumBase: false
         ).fromPointOfView(location: destAbsoluteLocation)
 
-        let instructions: [XcmUni.Instruction] = [
+        let instructions: [XcmUni.Instruction] = try [
             XcmUni.Instruction.withdrawAsset([originAsset]),
             XcmUni.Instruction.buyExecution(
                 XcmUni.BuyExecutionValue(
