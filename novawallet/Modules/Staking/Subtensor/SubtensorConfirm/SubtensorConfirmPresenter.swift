@@ -18,6 +18,7 @@ final class SubtensorConfirmPresenter {
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
     var isShieldQuoteResolved = false
+    var isShieldOn = true
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
@@ -122,6 +123,7 @@ extension SubtensorConfirmPresenter {
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+        provideShieldState()
     }
 
     func createStakeChange() -> SubtensorConfirmStakeChange? {
@@ -263,7 +265,7 @@ extension SubtensorConfirmPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
-            shielded: eligibleShieldQuote != nil,
+            shielded: activeShieldQuote != nil,
             origin: model.origin,
             account: model.account,
             target: model.target,
