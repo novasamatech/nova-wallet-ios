@@ -24,8 +24,9 @@ Info.plist namespace; each signed app variant owns its own record, so Release an
 never read, overwrite or delete each other's bearer. All features within one host still share
 its single current record; origin, consumer and client UUID never select separate token pools.
 The owner caches a loaded record under its gate, so the Keychain is read again only while no
-record is cached or after a write or removal. Store creation deletes the record an earlier
-build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle id>`.
+record is cached or after a write or removal. `NovaAuth.removeLegacyBearer()` deletes the record
+an earlier build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle id>`;
+the host calls it from a flagged one-shot launch migration.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
@@ -49,14 +50,17 @@ A failed authentication attempt fails the caller's operation. NovaAuth schedules
 owns no interaction or presentation policy. Every independently created later operation has
 the same permission to try again after the short protocol cooldown. Concurrent demands join
 one issuance flight, which attempts at most one new key generation. Retirement fails that
-flight, except that a key found invalid at assertion time (for example after a backup restore)
-is replaced by one fresh UUID/key within the same flight. Bearer replay preserves its original
-client binding and cannot turn the same business operation into identity replacement.
+flight, except that an older stored key found invalid at attestation, or a key found invalid at
+assertion time (for example after a backup restore), is replaced by one fresh UUID/key within the
+same flight. Bearer replay preserves its original client binding and cannot turn the same business
+operation into identity replacement.
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
 retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
 background syncs). A registration refused with any code-bearing 4xx other than 409 keeps the
-client UUID, drops only the key and saves a refusal delay.
+client UUID, drops only the key and saves a refusal delay. An Apple-side attestation failure
+(a failed, timed-out or late answer, or invalid key for a key made in this flight or deferred on
+this boot) drops the key and saves the same delay.
 User-driven demands may re-register at once with a fresh key and challenge; background demands fail
 with `cooldown` until the delay passes: 1 hour, then 6 hours, then 24 hours per consecutive refusal.
 The delay is persisted, resets on an app version change or context replacement, and like every
@@ -72,19 +76,21 @@ other wait ends with a boot discontinuity.
 | Token challenge/issuance `403 binding_not_allowed` or `403 app_not_allowed` | Keep registered UUID/key/counter, save the refusal delay and fail. A user-driven demand obtains a fresh challenge on the same binding at once; a background demand waits for the delay. |
 | Any code-bearing registration 4xx except 409 and 429 (`401 attestation_failed`, `403 app_not_allowed`, `400 invalid_request`, `401 invalid_challenge`, …) | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
-| Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
-| Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
-| Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
-| Platform invalid key at attestation, registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Deferred attestation past its 30-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
+| Interrupted attestation | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
+| Failed or timed-out attestation; stale or malformed attestation object; platform invalid key for a key made in this flight or deferred on this boot | Drop the key, keep the client UUID, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
+| Platform invalid key for an older stored key at attestation, or at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
+| Registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state | Loaded as is; the next demand replaces UUID/key and keeps the refusal counter. Legacy `policyRefused` keeps the client UUID and attests a fresh key under the refusal rules. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
 `appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
 the current flight/context must match and the saved attempt must be on the same boot with
-age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. A deferred
-attempt past its budget keeps the key and takes a fresh challenge in the same flight; expiry after
-Apple's result drops the key, keeps the client UUID and fails the current operation. The 20-second
-margin cannot guarantee native completion.
+age in `0...30` seconds. After Apple's result, age must remain below 50 seconds, ten seconds
+inside the server's 60-second challenge lifetime. A deferred attempt past its budget keeps the key
+and takes a fresh challenge in the same flight; expiry after Apple's result drops the key, keeps
+the client UUID, saves the refusal delay and fails the current operation. The 20-second margin
+cannot guarantee native completion.
 
 The shared session bounds every call with a 20-second request timeout (100 seconds for
 registration) and a 100-second resource timeout and leaves authentication challenges to default

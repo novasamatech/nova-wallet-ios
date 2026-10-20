@@ -59,13 +59,13 @@ sequenceDiagram
   N->>H: POST challenges — purpose register
   H-->>N: challenge + timestamps
   N->>N: Build registration clientDataHash
-  N->>N: Check same boot and age 0...40 s
+  N->>N: Check same boot and age 0...30 s
   N->>S: Save appleInFlight + exact attempt
   N->>A: Acquire lease and run beforeAttest guard
-  A->>N: Recheck current flight, context and age 0...40 s
+  A->>N: Recheck current flight, context and age 0...30 s
   N->>A: attestKey(keyID, hash)
   A-->>N: attestation object
-  N->>N: Validate size, same boot, age below 60 s
+  N->>N: Validate size, same boot, age below 50 s
   N->>S: Save registrationPending before send
   N->>H: POST register — identity + attestation
   H-->>N: 204, empty body
@@ -88,9 +88,9 @@ The caller never gets a newly issued bearer before the Keychain write succeeds. 
 
 Apple attestation/assertion wrappers have a bounded timeout of up to 100 seconds. Once a native call begins, timeout/cancellation does not release its per-key lease: only Apple's actual callback does. A different key can proceed independently. Issuance checks `isBusy(keyID:)` before creating a token challenge, avoiding network traffic while the key is leased. The registration HTTP request allows 100 seconds; the other HTTP requests allow 20 seconds.
 
-Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 40`, choosing a minimum 20-second margin on the 60-second challenge. Exactly 40 seconds passes; at 40.001 a deferred attempt keeps its key and takes a fresh challenge in the same flight, while a fresh attempt falls back to unregistered with the same key and fails the current operation. After Apple's result, same boot and `0 <= age < 60` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
+Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 30`, choosing a minimum 20-second margin before the 50-second post-Apple limit, which itself stays ten seconds inside the 60-second challenge. Exactly 30 seconds passes; at 30.001 a deferred attempt keeps its key and takes a fresh challenge in the same flight, while a fresh attempt falls back to unregistered with the same key and fails the current operation. After Apple's result, same boot and `0 <= age < 50` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
 
-The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 40-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion drops the key of an age-expired current attempt once, keeping the client UUID; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
+The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 30-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion drops the key of an age-expired current attempt once, keeping the client UUID and saving the refusal delay; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
 
 Sources: [registration service](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [issuance and persistent installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [bootstrap endpoints](../../../Packages/NovaAuth/Sources/NovaAuth/HTTP/NovaAuthBootstrapOperationFactory.swift) · [response validation](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthWire.swift) · [Apple adapter](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift) · [early and post-Apple age checks](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [bearer installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [native execution guard](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [unused lease release and native invocation](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift)
 
@@ -124,18 +124,19 @@ Sources: [exact binary framing](../../../Packages/NovaAuth/Sources/NovaAuth/Wire
 flowchart TB
   U["unregistered"] --> A["appleInFlight"]
   A -- "serverUnavailable: exact saved attempt" --> D["appleDeferred"]
-  D -- "Same boot; age at most 40 s" --> A
+  D -- "Same boot; age at most 30 s" --> A
   D -- "Budget expired: same key, fresh challenge" --> U
   A -- "Valid attestation; persist before send" --> P["registrationPending"]
   P -- "Register 204 or successful bearer installation" --> R["registered"]
-  A -- "Invalid key" --> X["retired; current flight fails"]
-  A -- "Interrupted, failed or stale attestation" --> G["key dropped; UUID kept"]
+  A -- "Invalid key for an older stored key" --> X["retired"]
+  A -- "Interrupted attestation" --> G["key dropped; UUID kept"]
   G --> U
+  A -- "Failed, timed-out or stale attestation; invalid key for a key made in this flight or deferred on this boot" --> F["key dropped; UUID kept; refusal delay saved"]
   P -- "Confirmed absence or 409" --> X
   P -- "Any other code-bearing 4xx verdict" --> F["key dropped; UUID kept; refusal delay saved"]
   F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
-  X -- "Invalid key at assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
+  X -- "Invalid key at attestation or assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
   X -- "Later independent demand; short backoff" --> K
   K --> U
   P -- "Inconclusive failure / unknown within 120 s" --> P
@@ -143,11 +144,11 @@ flowchart TB
   R -- "403 binding_not_allowed: refusal delay saved, key kept" --> R
 ```
 
-Retirement fails the current caller operation, except that a key found invalid at assertion time is
-replaced by one fresh UUID/key within the same flight; no proof is resent and a flight never generates a
+Retirement fails the current caller operation, except that an older stored key found invalid at attestation or
+assertion time is replaced by one fresh UUID/key within the same flight; no proof is resent and a flight never generates a
 second key. Otherwise a later independently created demand may replace after short backoff. Concurrency joins one
 issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
-demands re-register at once after a refusal while background demands wait for the persisted
+demands re-register at once after a refusal or an Apple-side attestation failure while background demands wait for the persisted
 1 h / 6 h / 24 h delay, which resets on an app version or context change.
 
 Pending probes preserve UUID/key/start and reserve persisted backoff before sending. A same-boot
@@ -188,7 +189,7 @@ flowchart TB
   IC -- allowed --> START["Start one issuance flight"]
   JOIN --> DONE["Complete shared flight<br/>success: persisted token, then delivery<br/>failure: applicable backoff, then error"]
   START --> DONE
-  RETURN -. "Near expiry + no flight + registered" .-> EARLY["Start sponsored early refresh<br/>only if origin / issuance waits allow"]
+  RETURN -. "Near expiry + no flight + registered" .-> EARLY["Start sponsored early refresh<br/>only if refusal / origin / issuance waits allow"]
   EARLY --> DONE
 ```
 
@@ -208,7 +209,7 @@ Ordinary issuance Retry-After is in memory and restarting the owner loses that d
 | `nova.auth.requests` · default concurrency | Parallel protected business requests. |
 | Analytics persistence queue · serial | Event enqueue/trim/count and erasure; upload peek/drop execute on the configured general upload queue. |
 
-Cancelling a consumer removes only its waiter. The last waiter cancels an issuance child only when the flight is **neither sponsored nor irreversible**. Irreversibility begins before Apple attestation or assertion. A cancelled analytics upload therefore does not abort another consumer’s issuance. Origin replacement detaches the old flight immediately; its late callback cannot affect the new context. Platform calls already started cannot be cancelled at the Apple API level; wrappers settle once, but the same key stays reserved until the actual callback. If Apple never calls back, that key remains busy until process restart.
+Cancelling a consumer removes only its waiter. The last waiter cancels an issuance child only when the flight is **neither sponsored nor irreversible**. Irreversibility begins before key generation, Apple attestation or assertion. A cancelled analytics upload therefore does not abort another consumer’s issuance. Origin replacement detaches the old flight immediately; its late callback cannot affect the new context. Platform calls already started cannot be cancelled at the Apple API level; wrappers settle once, but the same key stays reserved until the actual callback. If Apple never calls back, that key remains busy until process restart.
 
 `issue()` fails locally on a busy key before creating the token-challenge wrapper. It does not release a lease on a timer or consume another native attempt while the first call remains active.
 
