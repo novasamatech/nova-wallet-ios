@@ -272,6 +272,7 @@ final class NovaAuthIssuanceFlight {
     var pendingProbeReserved = false
     var step: BootstrapStep = .registrationChallenge
     var generatedKey = false
+    var recentKey = false
     let sponsored: Bool
 
     init(context: NovaAuthContext, sponsored: Bool) {

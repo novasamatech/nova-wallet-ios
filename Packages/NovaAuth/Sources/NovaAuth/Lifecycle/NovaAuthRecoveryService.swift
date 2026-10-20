@@ -35,7 +35,7 @@ extension NovaAuth {
         ), context: flight.context)
     }
 
-    private func nextRefusal() throws -> NovaAuthRefusal {
+    func nextRefusal() throws -> NovaAuthRefusal {
         try NovaAuthRefusal(
             now: dependencies.clock.now(),
             previous: state?.identity?.refusal,
