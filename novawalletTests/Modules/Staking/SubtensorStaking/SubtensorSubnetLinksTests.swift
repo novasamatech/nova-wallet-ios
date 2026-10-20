@@ -36,12 +36,14 @@ final class SubtensorSubnetLinksTests: XCTestCase {
         )
         XCTAssertEqual(Normalizer.github(from: "github.com/macrocosm-os"), URL(string: "https://github.com/macrocosm-os"))
         XCTAssertEqual(Normalizer.github(from: "http://www.github.com/a/b"), URL(string: "https://github.com/a/b"))
+        XCTAssertEqual(
+            Normalizer.github(from: "https://github.com/a/b/tree/main"),
+            URL(string: "https://github.com/a/b")
+        )
     }
 
-    func testGithubRejectsOtherHostsAndDeepPaths() {
-        let junk: [String?] = [
-            nil, "", "https://gitlab.com/a/b", "https://github.com", "https://github.com/a/b/tree/main", "a/b"
-        ]
+    func testGithubRejectsOtherHostsAndMissingOwner() {
+        let junk: [String?] = [nil, "", "https://gitlab.com/a/b", "https://github.com", "a/b"]
 
         for raw in junk {
             XCTAssertNil(Normalizer.github(from: raw), raw ?? "nil")
