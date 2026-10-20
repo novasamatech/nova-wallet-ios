@@ -1446,10 +1446,12 @@
 		0CED71C72D9E95EC00F79C02 /* XcmUni+Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C62D9E95EC00F79C02 /* XcmUni+Location.swift */; };
 		0CED71C92D9E961B00F79C02 /* XcmUni+Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C82D9E961B00F79C02 /* XcmUni+Asset.swift */; };
 		0CED71CB2D9E96C000F79C02 /* XcmUni+Junction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71CA2D9E96C000F79C02 /* XcmUni+Junction.swift */; };
+		430C01CA4C56FE93511C285B /* XcmUni+NetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36D2EF562C0F861D47F1A076 /* XcmUni+NetworkId.swift */; };
 		0CED71CF2D9EC40200F79C02 /* XcmUni+Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */; };
 		0CED71D12D9EDB7800F79C02 /* XcmUni+Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */; };
 		0CED71D32D9EE07000F79C02 /* XcmUni+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */; };
 		0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */; };
+		7325015D1978CE6497546CB2 /* XcmUniLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0620D268111D4F674FDD3B55 /* XcmUniLocationTests.swift */; };
 		0CED71D92D9FF58600F79C02 /* XcmUni+WeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
@@ -2190,6 +2192,7 @@
 		2DA3AE902E5DB04200689F65 /* XcmUni.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C42D9E957400F79C02 /* XcmUni.swift */; };
 		2DA3AE912E5DB06200689F65 /* XcmUni+Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C62D9E95EC00F79C02 /* XcmUni+Location.swift */; };
 		2DA3AE922E5DB07300689F65 /* XcmUni+Junction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71CA2D9E96C000F79C02 /* XcmUni+Junction.swift */; };
+		0439D325FC2505BB0FF16351 /* XcmUni+NetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36D2EF562C0F861D47F1A076 /* XcmUni+NetworkId.swift */; };
 		2DA3AE932E5DB07E00689F65 /* XcmUni+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */; };
 		2DA3AE942E5DB0B100689F65 /* XcmUni+Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */; };
 		2DA3AE952E5DB0C200689F65 /* XcmUni+Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C82D9E961B00F79C02 /* XcmUni+Asset.swift */; };
@@ -8216,10 +8219,12 @@
 		0CED71C62D9E95EC00F79C02 /* XcmUni+Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Location.swift"; sourceTree = "<group>"; };
 		0CED71C82D9E961B00F79C02 /* XcmUni+Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Asset.swift"; sourceTree = "<group>"; };
 		0CED71CA2D9E96C000F79C02 /* XcmUni+Junction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Junction.swift"; sourceTree = "<group>"; };
+		36D2EF562C0F861D47F1A076 /* XcmUni+NetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+NetworkId.swift"; sourceTree = "<group>"; };
 		0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Instruction.swift"; sourceTree = "<group>"; };
 		0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Version.swift"; sourceTree = "<group>"; };
 		0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Coding.swift"; sourceTree = "<group>"; };
 		0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmUniCodingTests.swift; sourceTree = "<group>"; };
+		0620D268111D4F674FDD3B55 /* XcmUniLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmUniLocationTests.swift; sourceTree = "<group>"; };
 		0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+WeightLimit.swift"; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
@@ -16571,6 +16576,7 @@
 				0CED71C62D9E95EC00F79C02 /* XcmUni+Location.swift */,
 				0CED71C82D9E961B00F79C02 /* XcmUni+Asset.swift */,
 				0CED71CA2D9E96C000F79C02 /* XcmUni+Junction.swift */,
+				36D2EF562C0F861D47F1A076 /* XcmUni+NetworkId.swift */,
 				0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */,
 				0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */,
 				0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */,
@@ -16584,6 +16590,7 @@
 			isa = PBXGroup;
 			children = (
 				0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */,
+				0620D268111D4F674FDD3B55 /* XcmUniLocationTests.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -31431,6 +31438,7 @@
 				2DEDF01F2E4D1594008F07B2 /* ConvictionVotingForKey.swift in Sources */,
 				2DEDF03B2E4D161B008F07B2 /* DelegationResolutionNode.swift in Sources */,
 				2DA3AE922E5DB07300689F65 /* XcmUni+Junction.swift in Sources */,
+				0439D325FC2505BB0FF16351 /* XcmUni+NetworkId.swift in Sources */,
 				2DEDF0202E4D1594008F07B2 /* ConvictionVotingLocks.swift in Sources */,
 				2DEDF0212E4D1594008F07B2 /* ConvictionVoting+ConstantPath.swift in Sources */,
 				2DEDF0222E4D1594008F07B2 /* OnChainScheduler.swift in Sources */,
@@ -36412,6 +36420,7 @@
 				0C32729C2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift in Sources */,
 				84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */,
 				0CED71CB2D9E96C000F79C02 /* XcmUni+Junction.swift in Sources */,
+				430C01CA4C56FE93511C285B /* XcmUni+NetworkId.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
 				91A1286763617DE022BD495F /* LedgerInstructionsPresenter.swift in Sources */,
 				529B87AC9E500CC2A503A859 /* LedgerInstructionsViewController.swift in Sources */,
@@ -37922,6 +37931,7 @@
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
 				0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */,
 				0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */,
+				7325015D1978CE6497546CB2 /* XcmUniLocationTests.swift in Sources */,
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,
