@@ -238,7 +238,9 @@ private extension NovaAuth {
             flight.waiters.removeValue(forKey: waiterID)
             if flight.waiters.isEmpty, !flight.sponsored, !flight.irreversible {
                 self.flight = nil
-                flight.cancelChild?()
+                let cancelChild = flight.cancelChild
+                flight.cancelChild = nil
+                cancelChild?()
             }
         }
     }

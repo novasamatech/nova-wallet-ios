@@ -246,7 +246,9 @@ private extension NovaAuth {
             let callbacks = Array(flight.waiters.values)
             flight.waiters.removeAll()
             self.flight = nil
-            if !flight.irreversible { flight.cancelChild?() }
+            let cancelChild = flight.cancelChild
+            flight.cancelChild = nil
+            if !flight.irreversible { cancelChild?() }
             enqueue { callbacks.forEach { $0(.failure(NovaAuthError.generationChanged)) } }
         }
         issuanceCooldown.clear()
