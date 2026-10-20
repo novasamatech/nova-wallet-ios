@@ -122,6 +122,7 @@ extension SubtensorConfirmPresenter {
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+        analytics.syncPriceMoveBanner(isShown: input.isPriceMoved)
     }
 
     func createStakeChange() -> SubtensorConfirmStakeChange? {
@@ -206,7 +207,6 @@ extension SubtensorConfirmPresenter {
         }
 
         state.raisePriceMoved()
-        analytics.reporter.shown(.priceMoved)
         quoteState = state
 
         provideViewModel()
@@ -229,7 +229,6 @@ extension SubtensorConfirmPresenter {
         }
 
         guard !state.raisePriceMovedIfCrossed() else {
-            analytics.reporter.shown(.priceMoved)
             quoteState = state
             provideViewModel()
             return false

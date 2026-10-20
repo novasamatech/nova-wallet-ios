@@ -58,7 +58,7 @@ final class SubtensorValidationReporter: AnalyticsTracking {
         )
     }
 
-    private func report(_ kind: StakingValidationKind, outcome: StakingValidationOutcome) {
+    func report(_ kind: StakingValidationKind, outcome: StakingValidationOutcome) {
         trackAnalytics(
             .subtensorValidationShown(flow: flow, kind: kind, stage: stage, outcome: outcome, target: target)
         )

@@ -72,10 +72,6 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
         quoteState = state
         tradesUnavailable = false
 
-        if state.isPriceMoved {
-            analytics.reporter.shown(.priceMoved)
-        }
-
         if !hadAcknowledged {
             refreshFee()
         }

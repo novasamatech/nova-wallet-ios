@@ -2,10 +2,15 @@ import Foundation
 import NovaAnalytics
 
 final class SubtensorConfirmAnalytics {
+    enum PriceMoveBanner {
+        case shown
+        case acknowledged
+    }
+
     let abandonTracker = AnalyticsAbandonTracker { nil }
     let data = SubtensorDataAnalytics(screen: .confirm)
     let reporter: SubtensorValidationReporter
-    private(set) var isPriceMoveAcknowledged = false
+    private(set) var priceMoveBanner: PriceMoveBanner?
 
     init(model: SubtensorConfirmModel) {
         reporter = SubtensorValidationReporter(
@@ -16,22 +21,54 @@ final class SubtensorConfirmAnalytics {
         )
     }
 
+    deinit {
+        switch priceMoveBanner {
+        case .shown:
+            reporter.report(.priceMoved, outcome: .cancelled)
+        case .acknowledged:
+            reporter.report(.priceMoved, outcome: .blocked)
+        case .none:
+            break
+        }
+    }
+
     func beginTap() {
-        isPriceMoveAcknowledged = false
+        if priceMoveBanner == .acknowledged {
+            closePriceMoveBanner(.blocked)
+        }
+    }
+
+    func syncPriceMoveBanner(isShown: Bool) {
+        switch (priceMoveBanner, isShown) {
+        case (.none, true):
+            priceMoveBanner = .shown
+        case (.acknowledged, true):
+            closePriceMoveBanner(.blocked)
+            priceMoveBanner = .shown
+        case (.shown, false):
+            closePriceMoveBanner(.cancelled)
+        case (.shown, true), (.acknowledged, false), (.none, false):
+            break
+        }
     }
 
     func acknowledgePriceMove() {
-        isPriceMoveAcknowledged = true
+        priceMoveBanner = .acknowledged
     }
 
     func takePriceMoveAcknowledgement() -> Bool {
-        defer {
-            isPriceMoveAcknowledged = false
+        guard priceMoveBanner == .acknowledged else {
+            return false
         }
 
-        reporter.proceeded()
+        closePriceMoveBanner(.proceeded)
 
-        return isPriceMoveAcknowledged
+        return true
+    }
+
+    private func closePriceMoveBanner(_ outcome: StakingValidationOutcome) {
+        priceMoveBanner = nil
+        reporter.report(.priceMoved, outcome: outcome)
     }
 }
 
