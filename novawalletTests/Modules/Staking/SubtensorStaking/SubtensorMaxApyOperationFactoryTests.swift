@@ -25,7 +25,7 @@ final class SubtensorMaxApyOperationFactoryTests: XCTestCase {
         XCTAssertEqual(apy.values.max(), rate("0.312"))
     }
 
-    func testSubnetsWithoutFreshRecommendedPairYieldHaveNoValue() throws {
+    func testStaleYieldsKeepTheirValueWhileSubnetsWithoutRecommendedPairYieldHaveNone() throws {
         let yields: [UInt16: [AccountId: String]] = [
             0: [rootHotkey: "7.0"],
             64: [chutesOutsider: "152.4"],
@@ -34,7 +34,7 @@ final class SubtensorMaxApyOperationFactoryTests: XCTestCase {
 
         let apy = try run(createOperationFactory(yields: yields, stale: [3], failing: [120]).createMaxApyWrapper())
 
-        XCTAssertEqual(apy, [0: rate("0.07")])
+        XCTAssertEqual(apy, [0: rate("0.07"), 3: rate("0.312")])
     }
 
     func testDerivationFailsOnlyWhenEveryYieldPageFails() throws {
