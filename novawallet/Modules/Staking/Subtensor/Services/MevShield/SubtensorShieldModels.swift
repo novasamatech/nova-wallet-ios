@@ -1,0 +1,26 @@
+import Foundation
+
+enum SubtensorShieldConstants {
+    // MevShield rejects a carrier whose era is immortal or longer than 8 blocks as Stale at pool entry
+    static let eraPeriod: UInt64 = 8
+
+    static let signaturesPerOrder = 2
+}
+
+struct SubtensorSealedInner {
+    let carrierNonce: UInt32
+    let extrinsic: Data
+    let extrinsicHash: ExtrinsicHash
+    let ciphertext: Data
+}
+
+enum SubtensorShieldedSubmission {
+    case executed(inner: SubstrateExtrinsicStatus, carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case carrierFailed(SubstrateExtrinsicStatus.FailedExtrinsic)
+}
+
+enum SubtensorShieldError: Error {
+    case keyUnavailable
+    case ciphertextTooLong(Int)
+}

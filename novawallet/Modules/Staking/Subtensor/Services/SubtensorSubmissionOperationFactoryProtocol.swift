@@ -8,6 +8,7 @@ protocol SubtensorSubmissionOperationFactoryProtocol: AnyObject {
 
     func createSubmitWrapper(
         for operation: SubtensorOperation,
+        shielded: Bool,
         signedClosure: @escaping () -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome>
 }

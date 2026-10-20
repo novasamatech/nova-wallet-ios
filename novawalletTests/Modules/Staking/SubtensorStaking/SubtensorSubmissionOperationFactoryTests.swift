@@ -166,7 +166,7 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             quotedTaoOut: 4_145_000_000,
             novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: Data(repeating: 0xBB, count: 32))
         )
-        let wrapper = context.operationFactory.createSubmitWrapper(for: operation) {}
+        let wrapper = context.operationFactory.createSubmitWrapper(for: operation, shielded: false) {}
         let completed = expectation(description: "submission completed")
         wrapper.targetOperation.completionBlock = { DispatchQueue.main.async { completed.fulfill() } }
 

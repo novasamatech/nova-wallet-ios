@@ -260,6 +260,7 @@ extension SubtensorConfirmPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
+            shielded: false,
             origin: model.origin,
             account: model.account,
             target: model.target,
