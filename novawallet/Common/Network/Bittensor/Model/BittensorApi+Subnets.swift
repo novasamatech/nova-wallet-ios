@@ -25,5 +25,8 @@ extension BittensorApi {
         let alphaReserve: String
         let alphaOutstanding: String
         let taoPerAlpha: String
+        let subnetUrl: String?
+        let subnetWebsite: String?
+        let githubRepo: String?
     }
 }

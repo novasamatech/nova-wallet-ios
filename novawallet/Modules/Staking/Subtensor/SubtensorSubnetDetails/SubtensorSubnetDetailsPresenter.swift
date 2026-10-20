@@ -186,6 +186,14 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         }
     }
 
+    func selectLink(_ url: URL) {
+        guard let view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
+
     func retryHistory() {
         guard state.history == .failed else {
             return

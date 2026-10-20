@@ -12,6 +12,7 @@ struct SubtensorCatalogueSubnet: Equatable {
     let taoPerAlpha: Balance
     let metadataStamp: SubtensorBackendStamp
     let pricesStamp: SubtensorBackendStamp
+    let links: SubtensorSubnetLinks
 
     var ref: SubtensorSubnetRef {
         SubtensorSubnetRef(netuid: netuid, registeredAt: networkRegisteredAt)

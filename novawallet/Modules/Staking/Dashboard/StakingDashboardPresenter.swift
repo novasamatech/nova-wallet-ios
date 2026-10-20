@@ -17,6 +17,8 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
+    private var pendingChainAssetId: ChainAssetId?
+    private let pendingNavigationTimeout = Debouncer(delay: 10)
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -42,6 +44,50 @@ final class StakingDashboardPresenter: AnalyticsTracking {
 // MARK: - Private
 
 private extension StakingDashboardPresenter {
+    func processPendingNavigation(waitingForSync: Bool) {
+        guard let chainAssetId = pendingChainAssetId, let model = lastResult?.model else {
+            return
+        }
+
+        if let item = model.active.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
+            clearPendingNavigation()
+
+            wireframe.showStakingDetails(from: view, option: item.stakingOption)
+            return
+        }
+
+        let startStakingItems: [StakingDashboardItemModelCommonProtocol] = model.inactive + model.more
+
+        guard
+            let item = startStakingItems.first(where: { $0.chainAsset.chainAssetId == chainAssetId }),
+            !waitingForSync || !item.isOnchainSync
+        else { return }
+
+        clearPendingNavigation()
+
+        showStartStaking(for: item.chainAsset, source: .deepLink)
+    }
+
+    func completePendingNavigation() {
+        processPendingNavigation(waitingForSync: false)
+        clearPendingNavigation()
+    }
+
+    func clearPendingNavigation() {
+        pendingChainAssetId = nil
+        pendingNavigationTimeout.cancel()
+    }
+
+    func showStartStaking(for chainAsset: ChainAsset, source: StakingFlowSource) {
+        let event = chainAsset.chain.analyticsNetworkName.map { network in
+            AnalyticsEvent.stakingFlowOpened(network: network, source: source)
+        }
+
+        trackAnalytics(event)
+
+        wireframe.showStartStaking(from: view, chainAsset: chainAsset)
+    }
+
     func updateWalletView() {
         guard let wallet = wallet else {
             return
@@ -104,6 +150,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectActiveStaking(at index: Int) {
+        clearPendingNavigation()
+
         guard let option = lastResult?.model.active[index].stakingOption else {
             return
         }
@@ -112,24 +160,38 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func selectInactiveStaking(at index: Int) {
+        clearPendingNavigation()
+
         guard let item = lastResult?.model.inactive[index] else {
             return
         }
 
-        let event = item.chainAsset.chain.analyticsNetworkName.map { network in
-            AnalyticsEvent.stakingFlowOpened(network: network, source: .dashboard)
+        showStartStaking(for: item.chainAsset, source: .dashboard)
+    }
+
+    func openStaking(for chainAssetId: ChainAssetId) {
+        pendingChainAssetId = chainAssetId
+
+        pendingNavigationTimeout.debounce { [weak self] in
+            self?.completePendingNavigation()
         }
 
-        trackAnalytics(event)
+        processPendingNavigation(waitingForSync: true)
+    }
 
-        wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
+    func cancelStakingOpening() {
+        clearPendingNavigation()
     }
 
     func selectMoreOptions() {
+        clearPendingNavigation()
+
         wireframe.showMoreOptions(from: view)
     }
 
     func selectAnnouncementLink(at index: Int) {
+        clearPendingNavigation()
+
         let viewModels = announcementViewModelFactory.createGeneralViewModels(
             from: announcements,
             locale: selectedLocale
@@ -141,6 +203,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     }
 
     func switchWallet() {
+        clearPendingNavigation()
+
         wireframe.showWalletSwitch(from: view)
     }
 
@@ -157,6 +221,10 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
+        if let currentWallet = self.wallet, currentWallet.metaId != wallet.metaId {
+            clearPendingNavigation()
+        }
+
         self.wallet = wallet
         lastResult = StakingDashboardBuilderResult(
             walletId: wallet.metaId,
@@ -176,6 +244,7 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
         lastResult = result
 
         updateStakingsView()
+        processPendingNavigation(waitingForSync: true)
     }
 
     func didReceive(error: StakingDashboardInteractorError) {

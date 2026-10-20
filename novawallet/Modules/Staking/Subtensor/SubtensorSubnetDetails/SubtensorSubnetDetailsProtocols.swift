@@ -15,6 +15,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func useSubnet()
     func retryHistory()
     func selectChart(_ selection: SubtensorPriceChartSelection?)
+    func selectLink(_ url: URL)
 }
 
 protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
@@ -42,7 +43,7 @@ protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
+protocol SubtensorSubnetDetailsWireframeProtocol: WebPresentable {
     func showValidators(
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,

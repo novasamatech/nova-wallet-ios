@@ -13,6 +13,7 @@ final class SubtensorSubnetMoreDetailsView: UIView {
     private let rowsView = UIStackView()
     private var rowViews: [SubtensorParameterRowView] = []
     weak var delegate: CollapsableContainerViewDelegate?
+    var linkHandler: ((URL) -> Void)?
     private(set) var expanded = false
 
     override init(frame: CGRect) {
@@ -39,7 +40,9 @@ final class SubtensorSubnetMoreDetailsView: UIView {
         }
         for (index, row) in rowViews.enumerated() {
             row.isHidden = index >= rows.count
-            if index < rows.count { row.bind(rows[index]) }
+            guard index < rows.count else { continue }
+            row.bind(rows[index])
+            row.onTap = rows[index].link.map { url in { [weak self] in self?.linkHandler?(url) } }
         }
     }
 

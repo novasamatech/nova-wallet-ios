@@ -3,7 +3,7 @@ import BigInt
 import Keystore_iOS
 
 enum URLHandlingPendingLink: Codable {
-    case staking
+    case staking(chainAssetId: ChainAssetId?)
     case governance(Referenda.ReferendumIndex)
     case dApp(URL)
     case card(String?)

@@ -65,7 +65,12 @@ private extension SubtensorSubnetCatalogueOperationFactory {
             alphaOutstanding: BittensorApiDecimal.atomic(item.alphaOutstanding, scale: atomicScale),
             taoPerAlpha: BittensorApiDecimal.atomic(item.taoPerAlpha, scale: atomicScale),
             metadataStamp: metadataStamp,
-            pricesStamp: pricesStamp
+            pricesStamp: pricesStamp,
+            links: SubtensorSubnetLinks(
+                subnetUrl: item.subnetUrl,
+                subnetWebsite: item.subnetWebsite,
+                githubRepo: item.githubRepo
+            )
         )
     }
 }

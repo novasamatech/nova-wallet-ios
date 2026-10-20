@@ -1452,6 +1452,7 @@
 "proxy.fee.error.message" = "Delegated account %@ doesn\'t have enough balance to pay the network fee of %@. Available balance to pay fee: %@";
 "delegated.signing.checkmark.title" = "Automatically continue in the future";
 "deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
+"deeplink.error.staking.not.supported.message" = "Staking is not supported for this asset";
 "governance.referendum.not.found.message" = "Referendum is not found";
 "staking.alert.switch.to.stash.title" = "Select stash account to setup proxy";
 "staking.alert.switch.to.stash.message" = "Please switch your wallet to %@ to setup a proxy";
@@ -2352,6 +2353,8 @@ Do you want to continue?";
 "staking.subtensor.v22.alpha.pool" = "Alpha in pool";
 "staking.subtensor.v22.emission" = "Emission";
 "staking.subtensor.v22.uid" = "UID";
+"staking.subtensor.v22.website" = "Website";
+"staking.subtensor.v22.github" = "GitHub";
 "staking.subtensor.v22.validators.count" = "Validators";
 "staking.subtensor.v22.hide.unusual" = "Hide unusual APY";
 "staking.subtensor.v22.far.average" = "far from the subnet average";
