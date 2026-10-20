@@ -6,6 +6,11 @@ import BigInt
 protocol SubtensorShieldExtrinsicFactoryProtocol {
     func createKeyAvailabilityWrapper() -> CompoundOperationWrapper<Bool>
 
+    func createQuoteWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
+
     func createSealedInnerWrapper(
         for innerClosure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol
@@ -76,6 +81,57 @@ extension SubtensorShieldExtrinsicFactory {
 }
 
 private extension SubtensorShieldExtrinsicFactory {
+    func createQuoteWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping ExtrinsicBuilderClosure,
+        nonce: UInt32
+    ) throws -> CompoundOperationWrapper<SubtensorShieldQuote?> {
+        let innerOperationFactory = createOperationFactory(nonce: nonce + 1)
+        let shieldedInnerClosure = Self.shieldedClosure(innerClosure)
+
+        let innerWrapper = innerOperationFactory.buildExtrinsic(
+            shieldedInnerClosure,
+            signer: try DummySigner(cryptoType: account.cryptoType),
+            payingFeeIn: nil
+        )
+
+        let innerFeeWrapper = innerOperationFactory.estimateFeeOperation(shieldedInnerClosure)
+
+        let carrierFeeWrapper = OperationCombiningService<ExtrinsicFeeProtocol>.compoundWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let inner = try Data(hexString: innerWrapper.targetOperation.extractNoCancellableResultData().extrinsic)
+            let ciphertextLength = MevShieldPallet.ciphertextLength(forPlaintextLength: inner.count)
+
+            guard ciphertextLength <= MevShieldPallet.maxCiphertextLength else {
+                return nil
+            }
+
+            return self.createOperationFactory(nonce: nonce).estimateFeeOperation(
+                Self.carrierClosure(ciphertext: Data(count: ciphertextLength))
+            )
+        }
+
+        carrierFeeWrapper.addDependency(wrapper: innerWrapper)
+
+        let quoteOperation = ClosureOperation<SubtensorShieldQuote?> {
+            let innerFee = try innerFeeWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let carrierFee = try carrierFeeWrapper.targetOperation.extractNoCancellableResultData() else {
+                return nil
+            }
+
+            return SubtensorShieldQuote(operation: operation, innerFee: innerFee, carrierFee: carrierFee)
+        }
+
+        quoteOperation.addDependency(innerFeeWrapper.targetOperation)
+        quoteOperation.addDependency(carrierFeeWrapper.targetOperation)
+
+        return carrierFeeWrapper
+            .insertingHead(operations: innerWrapper.allOperations + innerFeeWrapper.allOperations)
+            .insertingTail(operation: quoteOperation)
+    }
+
     func createSealOperation(
         nonceWrapper: CompoundOperationWrapper<UInt32>,
         innerWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>,
@@ -117,6 +173,31 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
         availabilityOperation.addDependency(keyWrapper.targetOperation)
 
         return keyWrapper.insertingTail(operation: availabilityOperation)
+    }
+
+    func createQuoteWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
+        let keyWrapper = keyOperationFactory.createNextKeyWrapper()
+        let nonceWrapper = createNonceWrapper()
+
+        let quoteWrapper = OperationCombiningService<SubtensorShieldQuote>.compoundOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            guard try keyWrapper.targetOperation.extractNoCancellableResultData() != nil else {
+                return nil
+            }
+
+            let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try self.createQuoteWrapper(for: operation, innerClosure: innerClosure(), nonce: nonce)
+        }
+
+        quoteWrapper.addDependency(wrapper: keyWrapper)
+        quoteWrapper.addDependency(wrapper: nonceWrapper)
+
+        return quoteWrapper.insertingHead(operations: keyWrapper.allOperations + nonceWrapper.allOperations)
     }
 
     func createSealedInnerWrapper(

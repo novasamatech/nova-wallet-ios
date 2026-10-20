@@ -7,6 +7,20 @@ enum SubtensorShieldConstants {
     static let signaturesPerOrder = 2
 }
 
+struct SubtensorShieldQuote {
+    let operation: SubtensorOperation
+    let innerFee: ExtrinsicFeeProtocol
+    let carrierFee: ExtrinsicFeeProtocol
+
+    var totalFee: ExtrinsicFeeProtocol {
+        ExtrinsicFee(
+            amount: innerFee.amount + carrierFee.amount,
+            payer: nil,
+            weight: innerFee.weight + carrierFee.weight
+        )
+    }
+}
+
 struct SubtensorSealedInner {
     let carrierNonce: UInt32
     let extrinsic: Data

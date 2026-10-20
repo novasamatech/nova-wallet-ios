@@ -5,6 +5,11 @@ import SubstrateSdk
 protocol SubtensorShieldSubmissionFactoryProtocol {
     func createAvailabilityWrapper() -> CompoundOperationWrapper<Bool>
 
+    func createQuoteWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
+
     func createSigner() -> SigningWrapperProtocol?
 
     func createSubmissionWrapper(
@@ -94,6 +99,13 @@ private extension SubtensorShieldSubmissionFactory {
 extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProtocol {
     func createAvailabilityWrapper() -> CompoundOperationWrapper<Bool> {
         extrinsicFactory.createKeyAvailabilityWrapper()
+    }
+
+    func createQuoteWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
+        extrinsicFactory.createQuoteWrapper(for: operation, innerClosure: innerClosure)
     }
 
     func createSigner() -> SigningWrapperProtocol? {

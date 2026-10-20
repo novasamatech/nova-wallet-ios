@@ -63,6 +63,26 @@ private extension SubtensorSubmissionOperationFactory {
         )
     }
 
+    func createPricedOperationWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<SubtensorOperation> {
+        guard let basis = operation.novaFeeBasis, operation.novaFee == nil else {
+            return .createWithResult(operation)
+        }
+
+        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+
+        let pricingOperation = ClosureOperation<SubtensorOperation> { [feeCalculator] in
+            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try operation.pricing(novaFee: feeCalculator.fee(basis: basis, rate: rate))
+        }
+
+        pricingOperation.addDependency(rateWrapper.targetOperation)
+
+        return rateWrapper.insertingTail(operation: pricingOperation)
+    }
+
     func createEstimateOperation(
         resolving operationClosure: @escaping () throws -> SubtensorOperation
     ) -> BaseOperation<ExtrinsicFeeProtocol> {
@@ -169,21 +189,35 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
     func createFeeWrapper(
         for operation: SubtensorOperation
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        guard let basis = operation.novaFeeBasis, operation.novaFee == nil else {
-            return CompoundOperationWrapper(targetOperation: createEstimateOperation { operation })
+        let pricedWrapper = createPricedOperationWrapper(for: operation)
+
+        let estimateOperation = createEstimateOperation {
+            try pricedWrapper.targetOperation.extractNoCancellableResultData()
         }
 
-        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+        estimateOperation.addDependency(pricedWrapper.targetOperation)
 
-        let estimateOperation = createEstimateOperation { [feeCalculator] in
-            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+        return pricedWrapper.insertingTail(operation: estimateOperation)
+    }
 
-            return try operation.pricing(novaFee: feeCalculator.fee(basis: basis, rate: rate))
+    func createShieldQuoteWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
+        guard let shield, SubtensorShieldEligibility.supports(operation: operation) else {
+            return .createWithResult(nil)
         }
 
-        estimateOperation.addDependency(rateWrapper.targetOperation)
+        let pricedWrapper = createPricedOperationWrapper(for: operation)
 
-        return rateWrapper.insertingTail(operation: estimateOperation)
+        let quoteWrapper = shield.submissionFactory.createQuoteWrapper(for: operation) { [feeCalculator] in
+            try pricedWrapper.targetOperation.extractNoCancellableResultData().extrinsicBuilderClosure(
+                novaFeeBeneficiary: feeCalculator.beneficiary
+            )
+        }
+
+        quoteWrapper.addDependency(wrapper: pricedWrapper)
+
+        return quoteWrapper.insertingHead(operations: pricedWrapper.allOperations)
     }
 
     func createSubmitWrapper(
