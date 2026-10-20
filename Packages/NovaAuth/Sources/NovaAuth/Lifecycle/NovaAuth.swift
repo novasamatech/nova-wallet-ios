@@ -133,7 +133,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
             clientID: identity.clientID,
             keyID: identity.keyID,
             registration: registration,
-            refusal: registration == .registered ? nil : identity.refusal
+            refusal: registration == .registered ? nil : identity.refusal,
+            keyCreatedAt: identity.keyCreatedAt
         ), context: flight.context)
     }
 
@@ -279,7 +280,6 @@ final class NovaAuthIssuanceFlight {
     var pendingProbeReserved = false
     var step: BootstrapStep = .registrationChallenge
     var generatedKey = false
-    var recentKey = false
     let sponsored: Bool
 
     init(context: NovaAuthContext, sponsored: Bool) {

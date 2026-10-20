@@ -22,7 +22,6 @@ extension NovaAuth {
                     try createKey(flight: flight)
                 } else { try challenge(flight: flight) }
             case let .appleDeferred(attempt):
-                flight.recentKey = try attempt.startedAt.bootID == dependencies.clock.now().bootID
                 if try hasAttestationBudget(attempt) {
                     try attest(attempt: attempt, flight: flight)
                 } else {
@@ -63,7 +62,6 @@ extension NovaAuth {
     func createKey(flight: NovaAuthIssuanceFlight) throws {
         guard !flight.generatedKey else { throw NovaAuthError.keyUnavailable }
         flight.generatedKey = true
-        flight.recentKey = true
         guard let identity = state?.identity else { throw NovaAuthError.keyUnavailable }
         let clientID: String
         if case let .retired(reason) = identity.registration, reason != .policyRefused {
@@ -79,7 +77,8 @@ extension NovaAuth {
                 clientID: clientID,
                 keyID: keyID,
                 registration: .unregistered,
-                refusal: identity.refusal
+                refusal: identity.refusal,
+                keyCreatedAt: dependencies.clock.now()
             ), context: flight.context)
             try challenge(flight: flight)
         }
@@ -175,12 +174,13 @@ private extension NovaAuth {
         attempt: NovaAuthRegistrationAttempt,
         flight: NovaAuthIssuanceFlight
     ) throws -> Data? {
+        let currentBootKey = try state?.identity?.keyCreatedAt?.bootID == dependencies.clock.now().bootID
         do {
             return try result.get()
         } catch NovaAuthAppAttestError.serverUnavailable {
             try setRegistration(.appleDeferred(attempt), flight: flight)
             throw NovaAuthAppAttestError.serverUnavailable
-        } catch NovaAuthAppAttestError.invalidKey where !flight.recentKey {
+        } catch NovaAuthAppAttestError.invalidKey where !currentBootKey {
             try retire(.lostKey, flight: flight)
             try createKey(flight: flight)
             return nil
