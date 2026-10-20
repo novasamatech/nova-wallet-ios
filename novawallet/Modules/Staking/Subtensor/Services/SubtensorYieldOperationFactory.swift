@@ -55,7 +55,6 @@ extension SubtensorYieldOperationFactory {
                     continue
                 }
 
-                // A missing verdict is trusted so a backend that predates ADR-0045 keeps working.
                 guard seenHotkeys.insert(hotkey).inserted, item.rateReliability != .unreliable else {
                     continue
                 }
@@ -118,7 +117,6 @@ extension SubtensorYieldOperationFactory {
                 continue
             }
 
-            // Root yields carry no verdict: they are net 30-day basket yields, not compounded alpha dividends.
             yields[hotkey] = SubtensorReportedYield(reportedRate: d30.apy, stamp: stamp)
         }
 

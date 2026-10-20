@@ -10,7 +10,6 @@ final class SubtensorYieldOperationFactoryTests: XCTestCase {
     func testOnlyReliableOrUnverdictedRowsAreKept() throws {
         let page = try decodePage(items: [
             try item(reliableHotkey, rate: "79.56", verdict: "\"RELIABLE\""),
-            // A dust nominated stake compounded into 669,990 percent: the backend verdict hides it.
             try item(unreliableHotkey, rate: "669990.45", verdict: "\"UNRELIABLE\""),
             try item(unverdictedHotkey, rate: "52.1", verdict: nil)
         ])

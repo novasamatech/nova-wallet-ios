@@ -16,7 +16,6 @@ extension BittensorApi {
         let pageInfo: PageInfo
     }
 
-    /// The server's verdict on an alpha `reportedRate` (ADR-0045).
     enum RateReliability: String, Decodable, Equatable {
         case reliable = "RELIABLE"
         case unreliable = "UNRELIABLE"
@@ -28,7 +27,6 @@ extension BittensorApi {
         let hotkey: String
         let reportedRate: String
         let sourceTimestamp: String
-        /// Absent on a backend that predates ADR-0045.
         let rateReliability: RateReliability?
     }
 
