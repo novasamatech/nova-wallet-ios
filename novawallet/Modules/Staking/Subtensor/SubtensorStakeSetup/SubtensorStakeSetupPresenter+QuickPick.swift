@@ -27,7 +27,7 @@ extension SubtensorStakeSetupPresenter {
 
     func showAllSubnets() {
         guard !mode.isLocked else { return }
-        wireframe.showAllSubnets(from: view, browseState: browseState, delegate: self)
+        wireframe.showAllSubnets(from: view, browseState: browseState, delegate: self, source: subnetListSource)
     }
 }
 

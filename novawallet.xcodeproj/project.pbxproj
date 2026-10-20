@@ -7169,6 +7169,7 @@
 		4FA0FFEB7C677C2C06392414 /* SubtensorDataAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */; };
 		3A27E835B98A131148A47BD8 /* SubtensorSlippageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */; };
 		7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BACC6C31E4055731195CB87 /* SubtensorPositionPresenter+Analytics.swift */; };
+		42BB620F46E178A21A891BC1 /* SubtensorValidatorSelectPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC0506F7D0918429C4BA9D /* SubtensorValidatorSelectPresenter+Analytics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -14077,6 +14078,7 @@
 		7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDataAnalytics.swift; sourceTree = "<group>"; };
 		8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSlippageAnalytics.swift; sourceTree = "<group>"; };
 		1BACC6C31E4055731195CB87 /* SubtensorPositionPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorPositionPresenter+Analytics.swift"; sourceTree = "<group>"; };
+		35CC0506F7D0918429C4BA9D /* SubtensorValidatorSelectPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorValidatorSelectPresenter+Analytics.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -14283,6 +14285,7 @@
 				A10B00000000000000000008 /* SubtensorValidatorSelectWireframe.swift */,
 				1943F67610514F62A8E067C2 /* SubtensorValidatorListFactory.swift */,
 				BB579374C0C1476B8E5F2EBB /* SubtensorValidatorSelectCell.swift */,
+				35CC0506F7D0918429C4BA9D /* SubtensorValidatorSelectPresenter+Analytics.swift */,
 			);
 			path = SubtensorValidatorSelect;
 			sourceTree = "<group>";
@@ -33553,6 +33556,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42BB620F46E178A21A891BC1 /* SubtensorValidatorSelectPresenter+Analytics.swift in Sources */,
 				7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */,
 				3A27E835B98A131148A47BD8 /* SubtensorSlippageAnalytics.swift in Sources */,
 				4FA0FFEB7C677C2C06392414 /* SubtensorDataAnalytics.swift in Sources */,

@@ -145,6 +145,7 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
+        trackOpened(period: nil)
         provideTitle()
         provideViewModel()
 
@@ -175,6 +176,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         }
 
         state.period = periods[index]
+        trackOpened(period: periods[index])
         loadHistory()
         provideViewModel()
     }

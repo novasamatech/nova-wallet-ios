@@ -1,14 +1,16 @@
 import Foundation
 import Foundation_iOS
 import UIKit
+import NovaAnalytics
 
 enum SubtensorSubnetSelectViewFactory {
     static func createPicker(
         for state: SubtensorSharedStateProtocol,
         delegate: SubtensorSubnetSelectDelegate,
-        browseState: SubtensorSubnetBrowseState
+        browseState: SubtensorSubnetBrowseState,
+        source: SubnetListSource
     ) -> UIViewController? {
-        guard let view = createView(for: state, delegate: delegate, browseState: browseState) else {
+        guard let view = createView(for: state, delegate: delegate, browseState: browseState, source: source) else {
             return nil
         }
 
@@ -18,7 +20,8 @@ enum SubtensorSubnetSelectViewFactory {
     static func createView(
         for state: SubtensorSharedStateProtocol,
         delegate: SubtensorSubnetSelectDelegate,
-        browseState: SubtensorSubnetBrowseState
+        browseState: SubtensorSubnetBrowseState,
+        source: SubnetListSource
     ) -> SubtensorSubnetSelectViewProtocol? {
         let interactor = SubtensorSubnetSelectInteractor(
             state: state,
@@ -35,7 +38,8 @@ enum SubtensorSubnetSelectViewFactory {
             chainAsset: state.stakingOption.chainAsset,
             delegate: delegate,
             localizationManager: localizationManager,
-            browseState: browseState
+            browseState: browseState,
+            source: source
         )
 
         let view = SubtensorSubnetSelectViewController(

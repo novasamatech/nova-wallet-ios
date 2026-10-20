@@ -29,6 +29,14 @@ extension SubtensorStakeSetupPresenter: AnalyticsTracking {
         }
     }
 
+    var subnetListSource: SubnetListSource {
+        if case .rootDetails = mode, rootEntryPresentation == .standard {
+            return .seeAllSubnets
+        }
+
+        return .setupCard
+    }
+
     func createValidationReporter(for target: SubtensorStakeTarget) -> SubtensorValidationReporter {
         SubtensorValidationReporter(
             flow: .stake,

@@ -16,6 +16,8 @@ final class SubtensorSubnetSelectPresenter {
     }
 
     let dataAnalytics = SubtensorDataAnalytics(screen: .subnetSelect)
+    let source: SubnetListSource
+    var isSearchTracked = false
 
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
@@ -40,10 +42,12 @@ final class SubtensorSubnetSelectPresenter {
         chainAsset: ChainAsset,
         delegate: SubtensorSubnetSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
-        browseState: SubtensorSubnetBrowseState
+        browseState: SubtensorSubnetBrowseState,
+        source: SubnetListSource
     ) {
         self.browseState = browseState
         self.chainAsset = chainAsset
+        self.source = source
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -131,6 +135,7 @@ private extension SubtensorSubnetSelectPresenter {
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
+        trackListOpened()
         provideList()
         requestApyIfNeeded()
 
@@ -143,6 +148,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
 
     func search(query: String) {
         self.query = query
+        trackSearchIfNeeded(query)
 
         provideList()
     }
@@ -157,6 +163,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
+        trackInteraction(favourites.contains(subnetRef) ? .favoriteRemoved : .favoriteAdded)
         interactor.toggleFavorite(subnetRef)
     }
 
@@ -251,6 +258,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSortSheetDelegate {
             return
         }
 
+        trackInteraction(.sort(sorts[index].analyticsKey))
         applySort(sorts[index])
     }
 }
@@ -261,6 +269,10 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetFiltersDelegate {
     }
 
     func didReceiveSubnet(filters: SubtensorSubnetFilters) {
+        if filters.hideThinPools != browseState.filters.hideThinPools {
+            trackInteraction(.filterThinPools(filters.hideThinPools))
+        }
+
         browseState.filters = filters
 
         provideList()

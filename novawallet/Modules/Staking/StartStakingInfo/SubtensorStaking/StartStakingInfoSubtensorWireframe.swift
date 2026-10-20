@@ -1,4 +1,5 @@
 import UIKit
+import NovaAnalytics
 
 final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
@@ -23,7 +24,8 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
             let picker = SubtensorSubnetSelectViewFactory.createPicker(
                 for: state,
                 delegate: subnetSelectDelegate,
-                browseState: browseState
+                browseState: browseState,
+                source: .seeAllOptions
             ) else {
             return
         }

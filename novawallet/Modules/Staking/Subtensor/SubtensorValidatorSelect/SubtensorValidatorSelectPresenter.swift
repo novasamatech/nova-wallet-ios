@@ -215,6 +215,10 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
 
         abandonTracker.markProceeded()
 
+        if item.hotkey != preselectedHotkey {
+            trackValidatorChanged(source: query.isEmpty ? .list : .search, unusualApyFilter: filters.hidesUnusualApy)
+        }
+
         delegate?.didSelectValidator(validator, for: target)
 
         wireframe.complete(from: view) { [weak delegate] in

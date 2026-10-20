@@ -15,4 +15,27 @@ extension SubtensorSubnetDetailsPresenter: AnalyticsTracking {
 
         trackAnalytics(event)
     }
+
+    func trackOpened(period: SubtensorPricePeriod?) {
+        trackAnalytics(
+            .subnetDetailsOpened(
+                netuid: input.target.analyticsNetuid,
+                source: host == .picker ? .picker : .setup,
+                period: period?.analyticsPeriod
+            )
+        )
+    }
+}
+
+extension SubtensorPricePeriod {
+    var analyticsPeriod: AnalyticsPricePeriod {
+        switch self {
+        case .day: .day
+        case .week: .week
+        case .month: .month
+        case .quarter: .quarter
+        case .year: .year
+        case .all: .all
+        }
+    }
 }
