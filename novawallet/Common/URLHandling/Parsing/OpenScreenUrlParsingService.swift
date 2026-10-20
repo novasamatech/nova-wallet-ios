@@ -74,9 +74,9 @@ extension OpenScreenUrlParsingError.StakingScreenError {
         let languages = locale.rLanguages
 
         return switch self {
-        case .chainNotFound, .assetNotFound:
+        case .chainNotFound:
             R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
-        case .stakingNotSupported:
+        case .assetNotFound, .stakingNotSupported:
             R.string(preferredLanguages: languages).localizable.deeplinkErrorStakingNotSupportedMessage()
         }
     }
