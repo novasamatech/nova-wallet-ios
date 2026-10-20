@@ -16,6 +16,10 @@ final class SubtensorConfirmAnalytics {
         )
     }
 
+    func beginTap() {
+        isPriceMoveAcknowledged = false
+    }
+
     func acknowledgePriceMove() {
         isPriceMoveAcknowledged = true
         reporter.proceeded()

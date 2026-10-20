@@ -116,7 +116,7 @@ public extension AnalyticsEvent {
         network: AnalyticsContentValue,
         amount: AmountBucket?,
         duration: DurationBucket,
-        claimedZero: Bool
+        claimedZero: Bool?
     ) -> AnalyticsEvent {
         subtensorEvent(.rewardsClaimCompleted, subject: .claim(on: network), properties: [
             .amountBucket: amount,

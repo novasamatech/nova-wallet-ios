@@ -80,7 +80,7 @@ private extension SubtensorOperationResultPresenter {
     var unstakeShape: UnstakeAnalyticsShape {
         UnstakeAnalyticsShape(
             mode: request.emptiesPosition ? .full : .partial,
-            hotkeys: CountBucket(count: request.groupHotkeyCount),
+            hotkeys: request.groupHotkeyCount > 0 ? CountBucket(count: request.groupHotkeyCount) : nil,
             hasLocked: request.hasLockedStake,
             slippage: request.slippage?.analyticsSlippageBucket
         )
@@ -128,7 +128,7 @@ private extension SubtensorOperationResultPresenter {
                     network: subject.network,
                     amount: amount,
                     duration: duration,
-                    claimedZero: executed?.tao == 0
+                    claimedZero: executed.map { $0.tao == 0 }
                 )
             )
         case .claim:

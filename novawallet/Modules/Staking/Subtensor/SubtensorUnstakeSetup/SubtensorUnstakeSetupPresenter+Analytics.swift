@@ -58,7 +58,7 @@ extension SubtensorUnstakeSetupPresenter: AnalyticsTracking {
 
         let shape = UnstakeAnalyticsShape(
             mode: unstakeModel.plan.emptiesGroup(group) ? .full : .partial,
-            hotkeys: CountBucket(count: group.positions.count),
+            hotkeys: group.positions.isEmpty ? nil : CountBucket(count: group.positions.count),
             hasLocked: model.hasLockedStake,
             slippage: model.tolerance?.analyticsSlippageBucket
         )

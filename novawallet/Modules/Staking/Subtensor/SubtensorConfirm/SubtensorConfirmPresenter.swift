@@ -319,6 +319,8 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     }
 
     func confirm() {
+        analytics.beginTap()
+
         guard !isWatchOnly, !isHandingOff else {
             return
         }

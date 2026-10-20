@@ -24,11 +24,11 @@ public struct StakingFailureDetails: Equatable {
 
 public struct UnstakeAnalyticsShape: Equatable {
     public let mode: UnstakeMode
-    public let hotkeys: CountBucket
+    public let hotkeys: CountBucket?
     public let hasLocked: Bool
     public let slippage: SlippageBucket?
 
-    public init(mode: UnstakeMode, hotkeys: CountBucket, hasLocked: Bool, slippage: SlippageBucket?) {
+    public init(mode: UnstakeMode, hotkeys: CountBucket?, hasLocked: Bool, slippage: SlippageBucket?) {
         self.mode = mode
         self.hotkeys = hotkeys
         self.hasLocked = hasLocked
