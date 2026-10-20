@@ -38,6 +38,10 @@ public enum StakingStage: String, CaseIterable, AnalyticsPropertyConvertible {
     case setup
     case typeSelection = "type_selection"
     case confirm
+    case whereToStake = "where_to_stake"
+    case subnetSelect = "subnet_select"
+    case subnetDetails = "subnet_details"
+    case validatorSelect = "validator_select"
 }
 
 public enum SwapStage: String, CaseIterable, AnalyticsPropertyConvertible {
@@ -91,6 +95,7 @@ public enum StakingAnalyticsType: String, CaseIterable, AnalyticsPropertyConvert
     case direct
     case pool
     case mythos
+    case subtensor
     case unsupported
 }
 
@@ -98,6 +103,14 @@ public enum TransactionFailureReason: String, CaseIterable, AnalyticsPropertyCon
     case userCancelled = "user_cancelled"
     case networkError = "network_error"
     case unknown
+    case slippageExceeded = "slippage_exceeded"
+    case rootStakeLocked = "root_stake_locked"
+    case notSubmitted = "not_submitted"
+    case chainCondition = "chain_condition"
+    case dispatchOther = "dispatch_other"
+    case tooHeavy = "too_heavy"
+    case fundUnavailable = "fund_unavailable"
+    case belowMinimum = "below_minimum"
 }
 
 public enum SignFailureReason: String, CaseIterable, AnalyticsPropertyConvertible {
@@ -133,6 +146,8 @@ public enum StakingFlowSource: String, CaseIterable, AnalyticsPropertyConvertibl
     case dashboard
     case assetDetails = "asset_details"
     case deepLink = "deep_link"
+    case portfolioAddPosition = "portfolio_add_position"
+    case resultDiscover = "result_discover"
 }
 
 public enum AnalyticsBannerScreen: String, CaseIterable, AnalyticsPropertyConvertible {
