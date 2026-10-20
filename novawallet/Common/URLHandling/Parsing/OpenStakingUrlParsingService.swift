@@ -4,6 +4,7 @@ import Foundation
 /// `chainid` (and an optional `assetid`, default 0) it opens the staking flow for that asset.
 final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     private let chainRegistry: ChainRegistryProtocol
+    private var completed = false
 
     init(chainRegistry: ChainRegistryProtocol) {
         self.chainRegistry = chainRegistry
@@ -54,7 +55,7 @@ final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
             runningInQueue: .main,
             filterStrategy: .enabledChains
         ) { [weak self] changes in
-            guard let self else {
+            guard let self, !completed else {
                 return
             }
 
@@ -63,6 +64,7 @@ final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
                 return
             }
 
+            completed = true
             chainRegistry.chainsUnsubscribe(self)
 
             let chains: [ChainModel] = changes.allChangedItems()
