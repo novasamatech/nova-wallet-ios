@@ -75,8 +75,8 @@ private extension SubtensorSubnetDetailsInteractor {
             onState: { [weak self] state in
                 self?.presenter?.didReceivePositions(state)
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceivePositionsSyncFailed(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceivePositionsSyncFailed(error != nil)
             }
         )
     }

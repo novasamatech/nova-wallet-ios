@@ -16,8 +16,9 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
-    func didReceiveSyncFailure(_ isFailed: Bool) {
-        state.isSyncFailed = isFailed
+    func didReceiveSyncFailure(_ error: Error?) {
+        state.isSyncFailed = error != nil
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         provideViewModel()
     }
 
@@ -42,7 +43,12 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         resolveCatalogue()
     }
 
-    func didFailPrices() {
+    func didFailPrices(_ error: Error) {
+        guard state.prices == nil else {
+            return
+        }
+
+        dataAnalytics.trackFailure(error, endpoint: .subnets)
         resolveCatalogue()
     }
 

@@ -40,7 +40,7 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didFailHistories(for period: SubtensorPricePeriod, error: Error?)
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didFailWeeklyChanges()
-    func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceiveSyncFailure(_ error: Error?)
     func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()

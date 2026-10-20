@@ -128,8 +128,8 @@ private extension SubtensorPositionInteractor {
                     )
                 }
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceiveSyncFailure(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceiveSyncFailure(error)
             }
         )
 
@@ -277,9 +277,10 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             deliver: { [weak self] prices in
                 if let prices {
                     self?.presenter?.didReceive(prices: prices)
-                } else {
-                    self?.presenter?.didFailPrices()
                 }
+            },
+            fail: { [weak self] error in
+                self?.presenter?.didFailPrices(error)
             }
         )
     }

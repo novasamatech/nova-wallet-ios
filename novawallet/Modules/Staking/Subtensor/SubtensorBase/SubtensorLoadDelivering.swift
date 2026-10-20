@@ -45,7 +45,7 @@ extension SubtensorLoadDelivering {
         in callStore: CancellableCallStore,
         label: String,
         deliver: @escaping (T?) -> Void,
-        onRefetchFailure: ((Error) -> Void)? = nil
+        fail: ((Error) -> Void)? = nil
     ) {
         loadCached(cached, in: callStore, then: { [weak self] value in
             if let value {
@@ -55,9 +55,9 @@ extension SubtensorLoadDelivering {
             self?.load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: { error in
                 if value == nil {
                     deliver(nil)
-                } else {
-                    onRefetchFailure?(error)
                 }
+
+                fail?(error)
             })
         })
     }

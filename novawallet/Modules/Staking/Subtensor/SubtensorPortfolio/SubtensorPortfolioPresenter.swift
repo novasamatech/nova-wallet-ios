@@ -259,8 +259,9 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         weeklyChangesRequest = nil
     }
 
-    func didReceiveSyncFailure(_ isFailed: Bool) {
-        state.isSyncFailed = isFailed
+    func didReceiveSyncFailure(_ error: Error?) {
+        state.isSyncFailed = error != nil
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         provideViewModel()
     }
 

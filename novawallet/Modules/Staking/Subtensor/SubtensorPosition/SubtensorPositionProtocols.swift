@@ -31,12 +31,12 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
 
 protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(group: SubtensorPortfolioGroup?)
-    func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceiveSyncFailure(_ error: Error?)
     func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didReceive(price: PriceData?)
     func didChangeCurrency()
     func didReceive(prices: SubtensorAlphaPrices)
-    func didFailPrices()
+    func didFailPrices(_ error: Error)
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)

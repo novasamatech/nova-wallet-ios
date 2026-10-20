@@ -136,7 +136,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
             deliver: { [weak self] in
                 self?.presenter?.didReceive(rootYields: $0)
             },
-            onRefetchFailure: { [weak self] _ in
+            fail: { [weak self] _ in
                 self?.presenter?.didFailRootYields()
             }
         )
@@ -189,8 +189,8 @@ private extension SubtensorPortfolioInteractor {
                     providePrices(for: newState.heldSubnetNetuids)
                 }
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceiveSyncFailure(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceiveSyncFailure(error)
             }
         )
 
