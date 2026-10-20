@@ -14,6 +14,13 @@ enum OpenScreenUrlParsingError: Error {
     case openAHMScreen(AHMError)
     case cardScreen(CardError)
     case openGiftClaimScreen(GiftClaimError)
+    case openStakingScreen(StakingScreenError)
+
+    enum StakingScreenError: Error {
+        case chainNotFound
+        case assetNotFound
+        case stakingNotSupported
+    }
 
     enum GovScreenError: Error {
         case govTypeIsNotSpecified
@@ -54,8 +61,23 @@ enum OpenScreenUrlParsingError: Error {
             ahmError.message(locale: locale)
         case let .openGiftClaimScreen(giftError):
             giftError.message(locale: locale)
+        case let .openStakingScreen(stakingError):
+            stakingError.message(locale: locale)
         case .cardScreen:
             nil
+        }
+    }
+}
+
+extension OpenScreenUrlParsingError.StakingScreenError {
+    func message(locale: Locale) -> String? {
+        let languages = locale.rLanguages
+
+        return switch self {
+        case .chainNotFound:
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
+        case .assetNotFound, .stakingNotSupported:
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorStakingNotSupportedMessage()
         }
     }
 }

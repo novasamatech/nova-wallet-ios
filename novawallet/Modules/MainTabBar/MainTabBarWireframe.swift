@@ -37,6 +37,33 @@ private extension MainTabBarWireframe {
         }
     }
 
+    func openStakingScreen(
+        in controller: UITabBarController,
+        navigation: StakingNavigation?
+    ) {
+        controller.selectedIndex = MainTabBarIndex.staking
+
+        guard let navigation else {
+            return
+        }
+
+        let stakingViewController = controller.viewControllers?[MainTabBarIndex.staking]
+        (stakingViewController as? UINavigationController)?.popToRootViewController(animated: true)
+
+        if let stakingController: StakingDashboardViewProtocol = stakingViewController?.contentViewController() {
+            stakingController.openStaking(for: navigation.chainAssetId)
+        }
+    }
+
+    func cancelStakingOpening(in view: MainTabBarViewProtocol?) {
+        let tabBarController = view?.controller as? UITabBarController
+        let stakingController = tabBarController?.viewControllers?[MainTabBarIndex.staking]
+        let navigationController = stakingController as? UINavigationController
+        let stakingView = navigationController?.viewControllers.first as? StakingDashboardViewProtocol
+
+        stakingView?.cancelStakingOpening()
+    }
+
     func openCardScreen(
         in view: MainTabBarViewProtocol?,
         cardNavigation: PayCardNavigation?
@@ -378,6 +405,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         screen: UrlHandlingScreen,
         locale: Locale
     ) {
+        cancelStakingOpening(in: view)
+
         if case let .dApp(model) = screen {
             openBrowser(with: model)
         } else {
@@ -398,8 +427,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                         from: view
                     )
                 }
-            case .staking:
-                controller.selectedIndex = MainTabBarIndex.staking
+            case let .staking(navigation):
+                openStakingScreen(in: controller, navigation: navigation)
             case let .gov(rederendumIndex):
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
             case let .card(cardNavigation):
