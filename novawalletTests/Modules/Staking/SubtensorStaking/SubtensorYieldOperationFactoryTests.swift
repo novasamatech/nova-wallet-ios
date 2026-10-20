@@ -44,7 +44,6 @@ final class SubtensorYieldOperationFactoryTests: XCTestCase {
     private func decodePage(items: [String]) throws -> BittensorApi.AlphaYieldCollection {
         let json = """
         {"items": [\(items.joined(separator: ","))],
-         "pageInfo": {"page": 1, "pageSize": 100, "total": \(items.count), "nextPage": null},
          "meta": {"completeness": "COMPLETE",
                   "components": {"alphaYield": {"availability": "AVAILABLE",
                                                 "asOf": "2026-10-20T09:31:00Z",
