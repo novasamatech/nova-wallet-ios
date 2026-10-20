@@ -3,6 +3,7 @@ import Foundation_iOS
 import SubstrateSdk
 import Keystore_iOS
 import Operation_iOS
+import NovaAnalytics
 
 enum StakingMainViewFactory {
     static func createView(
@@ -11,7 +12,11 @@ enum StakingMainViewFactory {
         subtensorFlowState: SubtensorFlowStateProtocol
     ) -> ControllerBackedProtocol? {
         if stakingOption.type == .subtensor {
-            return SubtensorPortfolioViewFactory.createView(for: stakingOption, flowState: subtensorFlowState)
+            return SubtensorPortfolioViewFactory.createView(
+                for: stakingOption,
+                flowState: subtensorFlowState,
+                source: .dashboard
+            )
         }
 
         let settings = SettingsManager.shared

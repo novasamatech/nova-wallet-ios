@@ -34,6 +34,16 @@ extension SubtensorOperationResultPresenter: AnalyticsTracking {
         }
     }
 
+    func trackAction(_ action: SubtensorResultAction) {
+        trackAnalytics(
+            .subtensorResultAction(
+                analyticsAction(for: action),
+                flow: request.origin.analyticsFlow,
+                target: request.analyticsTarget
+            )
+        )
+    }
+
     func trackSubnetDiscovery() {
         let event = stakingOption.chainAsset.chain.analyticsNetworkName.map { network in
             AnalyticsEvent.stakingFlowOpened(network: network, source: .resultDiscover)
@@ -44,6 +54,25 @@ extension SubtensorOperationResultPresenter: AnalyticsTracking {
 }
 
 private extension SubtensorOperationResultPresenter {
+    func analyticsAction(for action: SubtensorResultAction) -> StakingResultAction {
+        switch action {
+        case .done:
+            request.origin == .newPosition || request.emptiesPosition ? .yourBittensor : .close
+        case .tryAgain:
+            .tryAgain
+        case .close:
+            .close
+        case .viewPosition:
+            .viewPosition
+        case .discoverSubnets:
+            .discoverSubnets
+        case .yourBittensor:
+            .yourBittensor
+        case .backToPosition:
+            .backToPosition
+        }
+    }
+
     var analyticsSubject: SubtensorAnalyticsSubject? {
         stakingOption.chainAsset.subtensorAnalyticsSubject(for: request.target)
     }

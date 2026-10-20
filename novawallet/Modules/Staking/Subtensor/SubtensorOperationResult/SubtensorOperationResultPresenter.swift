@@ -163,6 +163,8 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterPr
     }
 
     func activate(action: SubtensorResultAction) {
+        trackAction(action)
+
         switch action {
         case .done:
             completeAfterSuccess()

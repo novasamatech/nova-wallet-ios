@@ -18,6 +18,7 @@ final class SubtensorPositionPresenter {
     var isSubnetsRefreshForced = false
     var isSubnetsInfoUnavailable = false
     var isClosed = false
+    var isOpenedTracked = false
 
     init(
         group: SubtensorPortfolioGroup,
@@ -63,6 +64,7 @@ extension SubtensorPositionPresenter {
 
     func provideViewModel() {
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
+        trackOpenedIfReady()
     }
 
     func loadValidatorIfNeeded() {

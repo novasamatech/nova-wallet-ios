@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorPortfolioPresenter {
     weak var view: SubtensorPortfolioViewProtocol?
@@ -19,6 +20,8 @@ final class SubtensorPortfolioPresenter {
     private var isNetworkRootRateRequested = false
     private var chartSelection: SubtensorPortfolioChartSelection?
     let dataAnalytics = SubtensorDataAnalytics(screen: .portfolio)
+    var analyticsSource: StakingPortfolioSource
+    var isOpenedTracked = false
 
     init(
         interactor: SubtensorPortfolioInteractorInputProtocol,
@@ -27,9 +30,11 @@ final class SubtensorPortfolioPresenter {
         wallet: MetaAccountModel,
         account: MetaChainAccountResponse,
         chainAsset: ChainAsset,
+        analyticsSource: StakingPortfolioSource,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
+        self.analyticsSource = analyticsSource
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.wallet = wallet
@@ -45,6 +50,7 @@ private extension SubtensorPortfolioPresenter {
 
         let viewModel = viewModelFactory.createViewModel(for: state, locale: localizationManager.selectedLocale)
         view?.didReceive(viewModel: viewModel)
+        trackOpenedIfResolved(viewModel, groups: state.positions == nil ? nil : state.groups)
     }
 
     func requestRootRateIfNeeded() {
@@ -153,6 +159,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         requestRootRateIfNeeded()
         refetchLoadedHistories()
         requestPriceDataIfNeeded()
+        provideViewModel()
+    }
+
+    func reopen(from source: StakingPortfolioSource) {
+        analyticsSource = source
+        isOpenedTracked = false
         provideViewModel()
     }
 

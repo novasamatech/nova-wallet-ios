@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 protocol SubtensorPortfolioViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel)
@@ -14,6 +15,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func retry()
     func refresh()
     func selectChartPoint(at index: Int?)
+    func reopen(from source: StakingPortfolioSource)
 }
 
 protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
