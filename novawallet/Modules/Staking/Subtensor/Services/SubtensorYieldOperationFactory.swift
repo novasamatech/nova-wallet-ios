@@ -41,6 +41,7 @@ extension SubtensorYieldOperationFactory {
         }
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
+        var seenHotkeys: Set<AccountId> = []
         var skippedRows = 0
         var unverdictedRows = 0
 
@@ -59,14 +60,12 @@ extension SubtensorYieldOperationFactory {
                     unverdictedRows += 1
                 }
 
-                if yields[hotkey] == nil {
-                    // A missing verdict is trusted so a backend that predates ADR-0045 keeps working.
-                    yields[hotkey] = SubtensorReportedYield(
-                        reportedRate: item.reportedRate,
-                        stamp: pageStamp,
-                        isReliable: item.rateReliability != .unreliable
-                    )
+                // A missing verdict is trusted so a backend that predates ADR-0045 keeps working.
+                guard seenHotkeys.insert(hotkey).inserted, item.rateReliability != .unreliable else {
+                    continue
                 }
+
+                yields[hotkey] = SubtensorReportedYield(reportedRate: item.reportedRate, stamp: pageStamp)
             }
         }
 
@@ -115,7 +114,7 @@ extension SubtensorYieldOperationFactory {
             }
 
             // Root yields carry no verdict: they are net 30-day basket yields, not compounded alpha dividends.
-            yields[hotkey] = SubtensorReportedYield(reportedRate: d30.apy, stamp: stamp, isReliable: true)
+            yields[hotkey] = SubtensorReportedYield(reportedRate: d30.apy, stamp: stamp)
         }
 
         if skippedRows > 0 {
@@ -137,7 +136,7 @@ extension SubtensorYieldOperationFactory {
             return nil
         }
 
-        return SubtensorReportedYield(reportedRate: rate, stamp: stamp, isReliable: true)
+        return SubtensorReportedYield(reportedRate: rate, stamp: stamp)
     }
 }
 

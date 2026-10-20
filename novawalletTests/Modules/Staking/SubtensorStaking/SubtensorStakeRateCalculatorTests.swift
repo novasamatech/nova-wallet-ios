@@ -77,8 +77,8 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
         return SubtensorAlphaYields(
             netuid: netuid,
             yields: [
-                ratedHotkey: SubtensorReportedYield(reportedRate: "12", stamp: stamp, isReliable: true),
-                otherRatedHotkey: SubtensorReportedYield(reportedRate: "6", stamp: stamp, isReliable: true)
+                ratedHotkey: SubtensorReportedYield(reportedRate: "12", stamp: stamp),
+                otherRatedHotkey: SubtensorReportedYield(reportedRate: "6", stamp: stamp)
             ],
             stamp: stamp
         )
