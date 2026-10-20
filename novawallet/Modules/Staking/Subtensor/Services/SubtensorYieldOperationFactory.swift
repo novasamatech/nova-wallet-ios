@@ -43,7 +43,6 @@ extension SubtensorYieldOperationFactory {
         var yields: [AccountId: SubtensorReportedYield] = [:]
         var seenHotkeys: Set<AccountId> = []
         var skippedRows = 0
-        var unverdictedRows = 0
 
         for (page, pageStamp) in zip(pages, pageStamps) {
             for item in page.value.items {
@@ -54,10 +53,6 @@ extension SubtensorYieldOperationFactory {
                     ) else {
                     skippedRows += 1
                     continue
-                }
-
-                if item.rateReliability == nil {
-                    unverdictedRows += 1
                 }
 
                 // A missing verdict is trusted so a backend that predates ADR-0045 keeps working.
@@ -73,15 +68,25 @@ extension SubtensorYieldOperationFactory {
             logger.warning("Skipped \(skippedRows) alpha yield rows of netuid \(netuid)")
         }
 
-        if unverdictedRows > 0 {
-            logger.warning("\(unverdictedRows) alpha yield rows of netuid \(netuid) carry no rate verdict; rates trusted")
-        }
-
         return SubtensorAlphaYields(
             netuid: netuid,
             yields: yields,
             stamp: aggregateStamp
         )
+    }
+
+    static func logUnverdictedRows(
+        netuid: UInt16,
+        pages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>],
+        logger: LoggerProtocol
+    ) {
+        let count = pages.reduce(0) { total, page in
+            total + page.value.items.filter { $0.netuid == netuid && $0.rateReliability == nil }.count
+        }
+
+        if count > 0 {
+            logger.warning("\(count) alpha yield rows of netuid \(netuid) carry no rate verdict; rates trusted")
+        }
     }
 
     static func makeRootYields(
@@ -162,7 +167,8 @@ extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol
         )
 
         return pagesWrapper.mapped { pages in
-            try Self.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
+            Self.logUnverdictedRows(netuid: netuid, pages: pages, logger: logger)
+            return try Self.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
         }
     }
 
