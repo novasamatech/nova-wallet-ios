@@ -3172,6 +3172,7 @@
 		641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F10F130391C4B3652FE8F59 /* ParitySignerTxScanProtocols.swift */; };
 		642B0B0294604907D8070EC1 /* DAppSettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52D6675524DB913210F0459 /* DAppSettingsPresenter.swift */; };
 		642FDAC7A745ECC92BFF0CC0 /* DelegationReferendumVotersProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F4AC351A494FC4A89A6CF6 /* DelegationReferendumVotersProtocols.swift */; };
+		6482AE6A1C99542F5AC78389 /* SubtensorShieldEligibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09FB0A59621479126B6651A /* SubtensorShieldEligibility.swift */; };
 		64B508A1A3D820AA8DBCFAA3 /* AccountExportPasswordWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47E5832513985B89D06155 /* AccountExportPasswordWireframe.swift */; };
 		64FADFE4127233AFE9A99A03 /* NovaMainAppContainerWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED16E7F2F3F7BDBD849CC5A /* NovaMainAppContainerWireframe.swift */; };
 		65083CD11AE1998A1F4D98F1 /* PVAddressesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACD8A8495274E41F711B77 /* PVAddressesPresenter.swift */; };
@@ -6256,6 +6257,7 @@
 		9C89527054E954F7AEC0142A /* SwipeGovVotingConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7942853232FD63C419EE62E3 /* SwipeGovVotingConfirmViewController.swift */; };
 		9CFA514776771FBBD64D18DB /* StakingRewardsNotificationsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577466C7C5FEA9D1A12CC400 /* StakingRewardsNotificationsProtocols.swift */; };
 		9D16EC7C162525087A0F86BD /* MythosStakingConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADC43550D6DE65A50C132E /* MythosStakingConfirmPresenter.swift */; };
+		9D1D620F1D45B25DAF0305E0 /* AuthorizeOnceSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54FAD59D3C3F5A8EDBB2802 /* AuthorizeOnceSigningWrapper.swift */; };
 		9D48E705503741D0A140E4CA /* MetaAccountSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBC62079AD14007AEDF94A6 /* MetaAccountSettingsMapper.swift */; };
 		9D493268114217B00F6A9DB9 /* MevShieldPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451E676B63279EEF76955C1 /* MevShieldPallet.swift */; };
 		9D509AD640B01CAB872E0E71 /* NominationPoolSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AC3897EC736F5096949BBC /* NominationPoolSearchViewFactory.swift */; };
@@ -13213,6 +13215,7 @@
 		A5020B532D0A2223002A687B /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = hu; path = hu.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		A5020B542D0A2224002A687B /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A505A668A19249E64DD160FF /* ManualBackupWalletListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupWalletListViewLayout.swift; sourceTree = "<group>"; };
+		A54FAD59D3C3F5A8EDBB2802 /* AuthorizeOnceSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizeOnceSigningWrapper.swift; sourceTree = "<group>"; };
 		A558807C44AE52D76B4EE875 /* SwipeGovSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupProtocols.swift; sourceTree = "<group>"; };
 		A56BF3382C2DAE9D00D3BC38 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A56BF3392C2DAE9D00D3BC38 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -13651,6 +13654,7 @@
 		D03EB73B177017CDD68E8FFA /* StakingType+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingType+Analytics.swift"; sourceTree = "<group>"; };
 		D043AA10042F3C0D07583330 /* CrowdloanUnlockWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanUnlockWireframe.swift; sourceTree = "<group>"; };
 		D087F5710630FCC968B65FB5 /* MarkdownDescriptionViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownDescriptionViewLayout.swift; sourceTree = "<group>"; };
+		D09FB0A59621479126B6651A /* SubtensorShieldEligibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorShieldEligibility.swift; sourceTree = "<group>"; };
 		D0A100000000000000000001 /* AssetVisibilityPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityPolicyTests.swift; sourceTree = "<group>"; };
 		D0A100000000000000000003 /* AssetVisibilityPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityPolicy.swift; sourceTree = "<group>"; };
 		D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigratorTests.swift; sourceTree = "<group>"; };
@@ -20082,6 +20086,7 @@
 				84282293289BB79300163031 /* ParitySignerSigningWrapper.swift */,
 				84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */,
 				2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */,
+				A54FAD59D3C3F5A8EDBB2802 /* AuthorizeOnceSigningWrapper.swift */,
 			);
 			path = SigningWrappers;
 			sourceTree = "<group>";
@@ -30390,6 +30395,7 @@
 			isa = PBXGroup;
 			children = (
 				A293C7A2094C4B89937EE650 /* MevShieldOperationFactory.swift */,
+				D09FB0A59621479126B6651A /* SubtensorShieldEligibility.swift */,
 			);
 			path = MevShield;
 			sourceTree = "<group>";
@@ -39876,6 +39882,8 @@
 				1A600375C5572298E8573E4D /* PresetNonceOperationFactory.swift in Sources */,
 				3BB4C7A5F2A2A056AD119A40 /* FixedMortalEraOperationFactory.swift in Sources */,
 				679929BD2C3D1205C5E59205 /* ExtrinsicServiceFactory+Timing.swift in Sources */,
+				9D1D620F1D45B25DAF0305E0 /* AuthorizeOnceSigningWrapper.swift in Sources */,
+				6482AE6A1C99542F5AC78389 /* SubtensorShieldEligibility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
