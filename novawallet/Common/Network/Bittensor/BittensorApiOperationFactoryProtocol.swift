@@ -13,14 +13,10 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
     func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>>
 
     func createAlphaYieldWrapper(
-        netuid: UInt16,
-        page: Int
+        netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>>
 
-    func peekAlphaYield(
-        netuid: UInt16,
-        page: Int
-    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>>
+    func peekAlphaYield(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>>
 
     func createRootValidatorsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>>

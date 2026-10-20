@@ -14,9 +14,9 @@ final class SubtensorYieldOperationFactoryTests: XCTestCase {
             try item(unverdictedHotkey, rate: "52.1", verdict: nil)
         ])
 
-        let yields = try SubtensorYieldOperationFactory.makeAlphaYields(
+        let yields = SubtensorYieldOperationFactory.makeAlphaYields(
             netuid: netuid,
-            pages: [BittensorApiResult(value: page, requestId: nil, isFromExpiredCache: false)],
+            result: BittensorApiResult(value: page, requestId: nil, isFromExpiredCache: false),
             logger: Logger.shared
         )
 
