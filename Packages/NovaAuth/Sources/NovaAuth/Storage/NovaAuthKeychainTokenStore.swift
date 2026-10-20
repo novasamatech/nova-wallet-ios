@@ -25,15 +25,16 @@ struct NovaAuthSecurity: NovaAuthSecurityProtocol {
 }
 
 final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
-    private static let service = "io.novawallet.novaauth.profile3"
+    private let service: String
     private let security: NovaAuthSecurityProtocol
     private let mutationLock = NSLock()
 
-    init(security: NovaAuthSecurityProtocol = NovaAuthSecurity()) {
+    init(service: String, security: NovaAuthSecurityProtocol = NovaAuthSecurity()) {
+        self.service = service
         self.security = security
     }
 
-    static func removeLegacyRecord(namespace: String) throws {
+    static func removeLegacyRecord(service: String, namespace: String) throws {
         let status = NovaAuthSecurity().delete([
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service + "." + namespace,
@@ -76,7 +77,7 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
 private extension NovaAuthKeychainTokenStore {
     func scopedQuery() -> [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
-         kSecAttrService as String: Self.service,
+         kSecAttrService as String: service,
          kSecAttrAccount as String: "current"]
     }
 

@@ -21,7 +21,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         self.init(dependencies: NovaAuthDependencies(
             appAttest: NovaAuthDeviceCheckService(),
             identityStore: NovaAuthSettingsIdentityStore(settingsManager: configuration.settingsManager),
-            tokenStore: NovaAuthKeychainTokenStore(),
+            tokenStore: NovaAuthKeychainTokenStore(service: configuration.keychainService),
             clock: clock, random: NovaAuthSystemRandom(),
             http: http,
             ownerQueue: configuration.ownerQueue, bootstrapQueue: configuration.bootstrapQueue,
@@ -39,9 +39,9 @@ public final class NovaAuth: NovaAuthClientProtocol {
         dependencies.appAttest.isSupported
     }
 
-    public static func removeLegacyBearer() throws {
+    public static func removeLegacyBearer(keychainService: String) throws {
         guard let namespace = Bundle.main.bundleIdentifier else { return }
-        try NovaAuthKeychainTokenStore.removeLegacyRecord(namespace: namespace)
+        try NovaAuthKeychainTokenStore.removeLegacyRecord(service: keychainService, namespace: namespace)
     }
 
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {

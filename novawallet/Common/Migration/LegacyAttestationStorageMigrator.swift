@@ -4,9 +4,11 @@ import NovaAuth
 
 final class LegacyAttestationStorageMigrator: Migrating {
     let settingsManager: SettingsManagerProtocol
+    let novaAuthKeychainService: String
 
-    init(settingsManager: SettingsManagerProtocol) {
+    init(settingsManager: SettingsManagerProtocol, novaAuthKeychainService: String) {
         self.settingsManager = settingsManager
+        self.novaAuthKeychainService = novaAuthKeychainService
     }
 
     func migrate() throws {
@@ -22,7 +24,7 @@ final class LegacyAttestationStorageMigrator: Migrating {
             settingsManager.removeValue(for: key)
         }
 
-        try NovaAuth.removeLegacyBearer()
+        try NovaAuth.removeLegacyBearer(keychainService: novaAuthKeychainService)
 
         settingsManager.set(value: true, for: didMigrateKey)
     }

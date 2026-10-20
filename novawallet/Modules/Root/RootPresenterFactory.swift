@@ -21,7 +21,10 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             sharedSettingsManager: SharedSettingsManager()
         )
 
-        let legacyAttestationStorageMigrator = LegacyAttestationStorageMigrator(settingsManager: settings)
+        let legacyAttestationStorageMigrator = LegacyAttestationStorageMigrator(
+            settingsManager: settings,
+            novaAuthKeychainService: ApplicationConfig.shared.novaAuthKeychainService
+        )
 
         let assetVisibilitySeedMigrator = AssetVisibilitySeedMigrator(
             settingsManager: settings,

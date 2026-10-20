@@ -78,6 +78,7 @@ extension NovaAuthFacade {
            let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity {
             client = NovaAuth(configuration: NovaAuthConfiguration(
                 appIdentity: appIdentity,
+                keychainService: ApplicationConfig.shared.novaAuthKeychainService,
                 settingsManager: SettingsManager.shared,
                 ownerQueue: OperationManagerFacade.novaAuthOwnerQueue,
                 bootstrapQueue: OperationManagerFacade.novaAuthBootstrapQueue,
