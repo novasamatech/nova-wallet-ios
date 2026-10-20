@@ -5,7 +5,7 @@ import SubstrateSdk
 final class SubtensorShieldInnerSearch {
     struct Window {
         let deadline: BlockNumber
-        let polls: Int
+        let pollBudget: Int
         let pollInterval: TimeInterval
     }
 
@@ -42,20 +42,24 @@ final class SubtensorShieldInnerSearch {
 
     func start(
         from blockNumber: BlockNumber,
-        blockHash: BlockHash,
+        blockHash: BlockHash?,
         window: Window,
         completion: @escaping Completion
     ) {
         mutex.lock()
 
         self.window = window
-        pollsLeft = window.polls
+        pollsLeft = window.pollBudget
         self.completion = completion
 
         mutex.unlock()
 
         workingQueue.async {
-            self.inspect(blockNumber: blockNumber, blockHash: blockHash)
+            if let blockHash {
+                self.inspect(blockNumber: blockNumber, blockHash: blockHash)
+            } else {
+                self.resolveHash(of: blockNumber)
+            }
         }
     }
 

@@ -14,7 +14,10 @@ protocol SubtensorShieldExtrinsicFactoryProtocol {
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<SubtensorSealedInner>
 
-    func createCarrierService(nonce: UInt32) -> ExtrinsicServiceProtocol
+    func createCarrierWrapper(
+        for sealedInner: SubtensorSealedInner,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel>
 }
 
 final class SubtensorShieldExtrinsicFactory {
@@ -223,12 +226,14 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
             .insertingTail(operation: sealOperation)
     }
 
-    func createCarrierService(nonce: UInt32) -> ExtrinsicServiceProtocol {
-        extrinsicServiceFactory.createService(
-            account: account,
-            chain: chain,
-            nonceOperationFactory: PresetNonceOperationFactory(nonce: nonce),
-            eraOperationFactory: FixedMortalEraOperationFactory(period: SubtensorShieldConstants.eraPeriod)
+    func createCarrierWrapper(
+        for sealedInner: SubtensorSealedInner,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel> {
+        createOperationFactory(nonce: sealedInner.carrierNonce).buildExtrinsic(
+            Self.carrierClosure(ciphertext: sealedInner.ciphertext),
+            signer: signer,
+            payingFeeIn: nil
         )
     }
 }

@@ -3170,6 +3170,7 @@
 		62CE4B3B2345C69E5B8B3A62 /* SubtensorWhereToStakeViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5BC9DCBF6C2759B573BEA5 /* SubtensorWhereToStakeViewLayout.swift */; };
 		62D28F231DED3F39B2C53F1F /* StakingSetupAmountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73F89021BEE1F4576128305 /* StakingSetupAmountProtocols.swift */; };
 		63185C6D67EAEB2867069AB9 /* ParitySignerWelcomeProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBB8745F8C36BB107625E8F /* ParitySignerWelcomeProtocols.swift */; };
+		634550E473A6715C8C7B4753 /* SubtensorShieldCarrierWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A11072FD4E66FF877DC0F05 /* SubtensorShieldCarrierWatch.swift */; };
 		6362476898582D2118E96447 /* StakingProxyManagementInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211CEE2D931F177676D280DC /* StakingProxyManagementInteractor.swift */; };
 		63C96BADE7BF632D81AFB565 /* MythosStkClaimRewardsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1764F0D73F5D0564BA7C30 /* MythosStkClaimRewardsInteractor.swift */; };
 		6400486AF93B4CECAD7A2CB6 /* SubtensorPriceHistoryOperationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E399AD22C44879B7660643 /* SubtensorPriceHistoryOperationFactoryProtocol.swift */; };
@@ -13011,6 +13012,7 @@
 		89AAAF09837D225A05769A7D /* DelegatedSignFeeValidationPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegatedSignFeeValidationPresenter.swift; sourceTree = "<group>"; };
 		89CFED2E01AB638656E251AF /* NftListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListProtocols.swift; sourceTree = "<group>"; };
 		89FDA01AE07845FF9BC17302 /* SubtensorRecommendationOperationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRecommendationOperationFactoryProtocol.swift; sourceTree = "<group>"; };
+		8A11072FD4E66FF877DC0F05 /* SubtensorShieldCarrierWatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorShieldCarrierWatch.swift; sourceTree = "<group>"; };
 		8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainTabBarInteractor+OnLaunch.swift"; sourceTree = "<group>"; };
 		8A1C0E612F0300000000B102 /* FullDateCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDateCodable.swift; sourceTree = "<group>"; };
 		8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FullDateCodableTests.swift; sourceTree = "<group>"; };
@@ -30441,6 +30443,7 @@
 				F48F83C1B12089068493481A /* SubtensorShieldInnerSearch.swift */,
 				0E267480E0CFE8C6AD88949C /* SubtensorShieldSubmissionFactory.swift */,
 				F276A5E6574038DD659AC9D5 /* MevShieldSealer.swift */,
+				8A11072FD4E66FF877DC0F05 /* SubtensorShieldCarrierWatch.swift */,
 				020BA697ABAEBCBC4E3DB8AB /* SubtensorShieldFundsFactory.swift */,
 			);
 			path = MevShield;
@@ -39944,6 +39947,7 @@
 				31F7CB8AD20CD7DF2BDAA566 /* SubtensorConfirmPresenter+Shield.swift in Sources */,
 				FEEFFC5E525297E967321422 /* MevShieldSealer.swift in Sources */,
 				5C52A2A913BE0A4974458114 /* SubtensorStakeSetupPresenter+Shield.swift in Sources */,
+				634550E473A6715C8C7B4753 /* SubtensorShieldCarrierWatch.swift in Sources */,
 				EC87773854A5E7FCCCBEBB07 /* SubtensorShieldFundsFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

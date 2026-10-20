@@ -154,6 +154,7 @@ enum SubtensorFlowServicesFactory {
                 chainRegistry: chainRegistry,
                 runtimeProvider: runtimeProvider
             ),
+            carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
             inclusionTracker: createShieldInclusionTracker(
                 for: chain,
                 connection: connection,

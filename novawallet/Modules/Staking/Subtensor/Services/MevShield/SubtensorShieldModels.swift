@@ -29,12 +29,14 @@ struct SubtensorSealedInner {
 }
 
 enum SubtensorShieldedSubmission {
-    case executed(inner: SubstrateExtrinsicStatus, carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
-    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case executed(inner: SubstrateExtrinsicStatus, carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
+    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
     case carrierFailed(SubstrateExtrinsicStatus.FailedExtrinsic)
 }
 
 enum SubtensorShieldError: Error {
     case keyUnavailable
     case ciphertextTooLong(Int)
+    case carrierNotSent(Error)
+    case carrierRejected(Error)
 }

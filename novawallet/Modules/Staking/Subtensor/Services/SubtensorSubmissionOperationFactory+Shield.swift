@@ -61,8 +61,16 @@ extension SubtensorSubmissionOperationFactory {
 
 extension SubtensorSubmissionFinalizer {
     func shieldedFailure(for error: Error) -> SubtensorSubmissionFailure {
-        guard error is FinalExtrinsicStatusError || error is SubtensorShieldError else {
+        guard let shieldError = error as? SubtensorShieldError else {
             return failure(for: error)
+        }
+
+        if case let .carrierRejected(rejection) = shieldError {
+            let mappedRejection = errorMapper.mapSubmission(error: rejection)
+
+            if Self.isFirstSendRejection(mappedRejection) {
+                return SubtensorSubmissionFailure(stage: .notSubmitted, error: mappedRejection)
+            }
         }
 
         return SubtensorSubmissionFailure(stage: .notSubmitted, error: SubtensorSubmissionError.shieldedNotExecuted)
@@ -78,15 +86,16 @@ extension SubtensorSubmissionFinalizer {
             let outcome = complete(operation: operation, success: inner, codingFactory: codingFactory)
 
             return outcome.addingNetworkFee(
-                carrierFee(of: carrier, operation: operation, codingFactory: codingFactory)
+                carrier.flatMap { carrierFee(of: $0, operation: operation, codingFactory: codingFactory) }
             )
         case let .executed(.failure(inner), _):
             throw dispatchFailure(for: inner)
         case let .notExecuted(carrier):
-            throw SubtensorSubmissionFailure(
-                stage: .dispatched(blockHash: carrier.blockHash, extrinsicHash: carrier.extrinsicHash),
-                error: SubtensorSubmissionError.shieldedNotExecuted
-            )
+            let stage: SubtensorSubmissionFailure.Stage = carrier.map {
+                .dispatched(blockHash: $0.blockHash, extrinsicHash: $0.extrinsicHash)
+            } ?? .notSubmitted
+
+            throw SubtensorSubmissionFailure(stage: stage, error: SubtensorSubmissionError.shieldedNotExecuted)
         case let .carrierFailed(carrier):
             throw dispatchFailure(for: carrier)
         }
