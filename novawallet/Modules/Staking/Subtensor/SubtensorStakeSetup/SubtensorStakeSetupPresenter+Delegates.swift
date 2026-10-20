@@ -26,6 +26,7 @@ extension SubtensorStakeSetupPresenter: SubtensorValidatorSelectDelegate {
             return
         }
 
+        isValidatorPicked = true
         applyValidator(validator)
     }
 }
@@ -84,5 +85,21 @@ extension SubtensorStakeSetupPresenter {
             tolerance: target.isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
+    }
+}
+
+extension SubtensorStakeSetupPresenter: SubtensorQuoteHandling {
+    var isRoot: Bool { target?.isRoot == true }
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+
+    var alphaDisplayInfo: AssetBalanceDisplayInfo {
+        guard let target else {
+            return chainAsset.assetDisplayInfo
+        }
+
+        return chainAsset.assetDisplayInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
     }
 }

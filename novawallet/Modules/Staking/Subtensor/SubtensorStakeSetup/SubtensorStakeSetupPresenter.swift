@@ -1,6 +1,7 @@
 import BigInt
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorStakeSetupPresenter {
     weak var view: SubtensorStakeSetupViewProtocol?
@@ -49,6 +50,8 @@ final class SubtensorStakeSetupPresenter {
     var novaFeeRate: BigRational?
     var isConfirmationShown = false
     var isLockedValidatorPending = false
+    var isValidatorPicked = false
+    let abandonTracker = AnalyticsAbandonTracker { nil }
 
     init(
         interactor: SubtensorStakeSetupInteractorInputProtocol,
@@ -115,6 +118,7 @@ extension SubtensorStakeSetupPresenter {
 
     func startMode() {
         target = mode.initialTarget
+        resetAnalytics()
         validatorState = .pending
         validatorItem = nil
         isPresetRequested = false
@@ -294,22 +298,6 @@ extension SubtensorStakeSetupPresenter {
     }
 }
 
-extension SubtensorStakeSetupPresenter: SubtensorQuoteHandling {
-    var isRoot: Bool { target?.isRoot == true }
-    var retryView: ControllerBackedProtocol? { view }
-    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
-    var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
-    var loadingView: LoadableViewProtocol? { view }
-
-    var alphaDisplayInfo: AssetBalanceDisplayInfo {
-        guard let target else {
-            return chainAsset.assetDisplayInfo
-        }
-
-        return chainAsset.assetDisplayInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
-    }
-}
-
 extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
     func setup() {
         provideAmountInputViewModel()
@@ -319,6 +307,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
         interactor.loadBlockTime()
         interactor.loadNovaFeeRate()
 
+        trackScreenOpened()
         startMode()
     }
 
@@ -392,6 +381,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
 
             view?.didStopLoading()
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            trackInitiated(for: model)
             isConfirmationShown = true
             wireframe.showConfirmation(from: view, model: model)
         }

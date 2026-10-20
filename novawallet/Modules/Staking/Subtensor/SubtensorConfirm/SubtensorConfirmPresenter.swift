@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorConfirmPresenter {
     weak var view: SubtensorConfirmViewProtocol?
@@ -27,6 +28,8 @@ final class SubtensorConfirmPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var costBasis: SubtensorCostBasisState = .loading
+    var isPriceMoveAcknowledged = false
+    let abandonTracker = AnalyticsAbandonTracker { nil }
     private(set) var isHandingOff = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -215,6 +218,7 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
+            isPriceMoveAcknowledged = true
             state.acknowledgeLatest()
             quoteState = state
 
@@ -279,6 +283,7 @@ extension SubtensorConfirmPresenter {
         isHandingOff = true
         view?.didStartLoading()
 
+        trackConfirmed()
         wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
 
@@ -290,6 +295,7 @@ extension SubtensorConfirmPresenter {
 
 extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     func setup() {
+        trackScreenOpened()
         provideAccountViewModels()
         provideTileIcons()
         provideViewModel()

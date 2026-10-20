@@ -127,6 +127,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
             for: wallet,
             sheetPresentingView: view
         ) { [weak self] in
+            self?.trackAddPositionOpened()
             self?.wireframe.showAddPosition(from: self?.view)
         }
     }

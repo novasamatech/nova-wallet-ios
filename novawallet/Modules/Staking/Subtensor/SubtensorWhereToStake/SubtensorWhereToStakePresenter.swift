@@ -1,10 +1,15 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorWhereToStakePresenter {
     weak var view: SubtensorWhereToStakeViewProtocol?
     let wireframe: SubtensorWhereToStakeWireframeProtocol
     let viewModelFactory: SubtensorWhereToStakeViewModelFactory
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.subtensorStakingAbandoned(stage: .whereToStake, target: nil)
+    }
 
     init(
         wireframe: SubtensorWhereToStakeWireframeProtocol,
@@ -28,6 +33,7 @@ extension SubtensorWhereToStakePresenter: SubtensorWhereToStakePresenterProtocol
     }
 
     func choose(_ order: SubtensorQuickPickOrder) {
+        abandonTracker.markProceeded()
         wireframe.showSetup(from: view, order: order)
     }
 }

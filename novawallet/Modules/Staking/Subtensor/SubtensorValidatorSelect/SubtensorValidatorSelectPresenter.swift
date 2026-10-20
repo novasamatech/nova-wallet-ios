@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorValidatorSelectPresenter {
     weak var view: SubtensorValidatorSelectViewProtocol?
@@ -9,6 +10,7 @@ final class SubtensorValidatorSelectPresenter {
     let interactor: SubtensorValidatorSelectInteractorInputProtocol
     let wireframe: SubtensorValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
+    let abandonTracker: AnalyticsAbandonTracker
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
@@ -43,6 +45,12 @@ final class SubtensorValidatorSelectPresenter {
         self.delegate = delegate
         self.filterSession = filterSession
         filters = filterSession.applied(isRoot: target.isRoot)
+
+        let analyticsTarget = target.analyticsTarget
+        abandonTracker = AnalyticsAbandonTracker {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .validatorSelect, target: analyticsTarget)
+        }
+
         self.localizationManager = localizationManager
     }
 }
@@ -203,6 +211,8 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
         let validator = handedOut(item)
         let target = target
         let delegate = delegate
+
+        abandonTracker.markProceeded()
 
         delegate?.didSelectValidator(validator, for: target)
 

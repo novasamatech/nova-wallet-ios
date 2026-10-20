@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorSubnetSelectPresenter {
     weak var view: SubtensorSubnetSelectViewProtocol?
@@ -8,6 +9,11 @@ final class SubtensorSubnetSelectPresenter {
     let wireframe: SubtensorSubnetSelectWireframeProtocol
     let interactor: SubtensorSubnetSelectInteractorInputProtocol
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+
+    let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetSelect, target: nil)
+    }
 
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
@@ -29,11 +35,13 @@ final class SubtensorSubnetSelectPresenter {
         interactor: SubtensorSubnetSelectInteractorInputProtocol,
         wireframe: SubtensorSubnetSelectWireframeProtocol,
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
         delegate: SubtensorSubnetSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
         browseState: SubtensorSubnetBrowseState
     ) {
         self.browseState = browseState
+        self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -142,6 +150,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
             return
         }
 
+        abandonTracker.markProceeded()
         wireframe.showDetails(from: view, item: item, delegate: delegate)
     }
 
@@ -150,6 +159,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func selectRoot() {
+        trackRootSelected()
         wireframe.complete(from: view, target: .root, validator: nil, delegate: delegate)
     }
 

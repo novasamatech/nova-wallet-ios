@@ -32,6 +32,7 @@ enum SubtensorSubnetSelectViewFactory {
             interactor: interactor,
             wireframe: SubtensorSubnetSelectWireframe(state: state),
             viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: state.stakingOption.chainAsset),
+            chainAsset: state.stakingOption.chainAsset,
             delegate: delegate,
             localizationManager: localizationManager,
             browseState: browseState

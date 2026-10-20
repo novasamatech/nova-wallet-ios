@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorSubnetDetailsPresenter {
     weak var view: SubtensorSubnetDetailsViewProtocol?
@@ -10,6 +11,8 @@ final class SubtensorSubnetDetailsPresenter {
     let interactor: SubtensorSubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+    let abandonTracker: AnalyticsAbandonTracker
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
@@ -27,6 +30,7 @@ final class SubtensorSubnetDetailsPresenter {
         interactor: SubtensorSubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -35,10 +39,16 @@ final class SubtensorSubnetDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.chainAsset = chainAsset
 
         state = SubtensorSubnetDetailsState(
             validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
         )
+
+        let target = input.target.analyticsTarget
+        abandonTracker = AnalyticsAbandonTracker {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetDetails, target: target)
+        }
 
         self.localizationManager = localizationManager
     }
@@ -110,6 +120,8 @@ private extension SubtensorSubnetDetailsPresenter {
     }
 
     func complete(with validator: SubtensorValidatorDirectoryItem) {
+        trackSubnetSelected()
+
         wireframe.complete(
             from: view,
             host: host,

@@ -17,6 +17,7 @@ extension SubtensorStakeSetupPresenter {
     func didReceiveQuickPickSnapshot(_ result: Result<SubtensorQuickPickSnapshot, Error>) {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         if let target = quickPickVisit.resolve(result) {
+            trackQuickPickSelected(target, order: quickPickVisit.order)
             mode = .subnetPick(target: target, validator: nil)
             startMode()
         } else {
