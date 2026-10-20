@@ -10,9 +10,14 @@ struct SubtensorSubnetLinks: Equatable {
 extension SubtensorSubnetLinks {
     /// The catalogue passes the owner's identity links through as raw text: no URI validation, empty strings allowed.
     init(subnetUrl: String?, subnetWebsite: String?, githubRepo: String?) {
-        website = SubtensorSubnetLinkNormalizer.website(from: subnetUrl)
-            ?? SubtensorSubnetLinkNormalizer.website(from: subnetWebsite)
-        github = SubtensorSubnetLinkNormalizer.github(from: githubRepo)
+        let websiteCandidates = [subnetUrl, subnetWebsite]
+
+        website = websiteCandidates
+            .compactMap(SubtensorSubnetLinkNormalizer.website(from:))
+            .first { !SubtensorSubnetLinkNormalizer.isGithub($0) }
+        github = ([githubRepo] + websiteCandidates)
+            .compactMap(SubtensorSubnetLinkNormalizer.github(from:))
+            .first
     }
 }
 
@@ -47,10 +52,7 @@ enum SubtensorSubnetLinkNormalizer {
     /// Only `github.com/<owner>[/<repo>]` counts as a repository link; the result is canonical https
     /// without a trailing slash.
     static func github(from raw: String?) -> URL? {
-        guard
-            let url = website(from: raw),
-            let host = url.host?.lowercased(),
-            githubHosts.contains(host) else {
+        guard let url = website(from: raw), isGithub(url) else {
             return nil
         }
 
@@ -61,6 +63,10 @@ enum SubtensorSubnetLinkNormalizer {
         }
 
         return URL(string: "https://github.com/" + parts.joined(separator: "/"))
+    }
+
+    static func isGithub(_ url: URL) -> Bool {
+        url.host.map { githubHosts.contains($0.lowercased()) } ?? false
     }
 
     static func websiteDisplayText(_ url: URL) -> String {
