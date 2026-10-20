@@ -222,6 +222,7 @@ private extension NovaAuth {
     func beginEarlyRefresh(context: NovaAuthContext, now: NovaAuthTime) {
         do {
             guard case .registered = state?.identity?.registration else { return }
+            try state?.identity?.refusal?.check(now: now, appVersion: dependencies.appIdentity.version)
             try originCooldown.check(now: now)
             try issuanceCooldown.check(now: now)
             try prepareIdentity(context: context)
