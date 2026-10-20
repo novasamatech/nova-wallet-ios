@@ -84,6 +84,15 @@ extension BittensorApi.AlphaYieldCollection: BittensorApiWireChecked {
             }
 
             try BittensorApiWireCheck.decimal(item.reportedRate, "items[\(index)].reportedRate")
+
+            if let reliability = item.rateReliability {
+                try BittensorApiWireCheck.require(
+                    reliability == BittensorApi.AlphaYield.reliableRate ||
+                        reliability == BittensorApi.AlphaYield.unreliableRate
+                ) {
+                    "items[\(index)].rateReliability"
+                }
+            }
         }
     }
 }

@@ -63,6 +63,18 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
         XCTAssertNil(SubtensorStakeRateCalculator.subnetRate(of: positions, in: subnetYields, prices: prices([subnet: 1])))
     }
 
+    func testUnreliableReportedYieldHasNoAnnualRate() {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+
+        // A dust nominated stake compounded into 669,990 percent: the backend verdict hides it.
+        let unreliable = SubtensorReportedYield(reportedRate: "669990.45", stamp: stamp, isReliable: false)
+        let reliable = SubtensorReportedYield(reportedRate: "79.56", stamp: stamp, isReliable: true)
+
+        XCTAssertNil(unreliable.annualRate)
+        XCTAssertEqual(reliable.annualRate, Decimal(string: "0.7956"))
+        XCTAssertEqual(SubtensorReportedYield(reportedRate: "12", stamp: stamp).annualRate, Decimal(string: "0.12"))
+    }
+
     private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorPosition {
         SubtensorPosition(hotkey: hotkey, netuid: netuid, stakeAlpha: stake, isRegistered: true)
     }

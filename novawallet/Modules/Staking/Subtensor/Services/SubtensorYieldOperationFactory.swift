@@ -55,7 +55,11 @@ extension SubtensorYieldOperationFactory {
                 }
 
                 if yields[hotkey] == nil {
-                    yields[hotkey] = SubtensorReportedYield(reportedRate: item.reportedRate, stamp: pageStamp)
+                    yields[hotkey] = SubtensorReportedYield(
+                        reportedRate: item.reportedRate,
+                        stamp: pageStamp,
+                        isReliable: item.isRateReliable
+                    )
                 }
             }
         }
