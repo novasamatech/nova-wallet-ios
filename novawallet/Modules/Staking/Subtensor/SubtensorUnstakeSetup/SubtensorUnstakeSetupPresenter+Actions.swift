@@ -96,6 +96,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             }
 
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            trackInitiated(for: model)
             isConfirmationShown = true
             wireframe.showConfirmation(from: view, model: model)
         }
@@ -177,7 +178,8 @@ extension SubtensorUnstakeSetupPresenter {
                 groupHotkeys: groupHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
-            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
+            hasLockedStake: hasLockedStake
         )
     }
 }

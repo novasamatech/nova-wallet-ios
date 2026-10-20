@@ -22,6 +22,8 @@ final class SubtensorClaimRewardsPresenter {
     var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
     var pendingClaimHotkeys: Set<AccountId> = []
+    var isPriceResolved = false
+    var isInitiatedTracked = false
     private(set) var shownPreview: SubtensorRootClaimPreview
     private(set) var isNothingToClaim = false
     private(set) var isHandingOff = false

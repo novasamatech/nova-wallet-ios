@@ -277,7 +277,8 @@ extension SubtensorConfirmPresenter {
             emptiesPosition: emptiesPosition(verified.operation, group: group),
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
             costBasis: tracksCostBasis ? costBasis : nil,
-            blockTime: preflight.blockTime
+            blockTime: preflight.blockTime,
+            hasLockedStake: model.hasLockedStake
         )
 
         isHandingOff = true

@@ -8,8 +8,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
 
     func didReceivePrice(_ priceData: PriceData?) {
         price = priceData
+        isPriceResolved = true
 
         provideViewModel()
+        trackInitiatedIfReady()
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
@@ -29,12 +31,14 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
         }
 
         provideViewModel()
+        trackInitiatedIfReady()
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
         isPositionsSyncFailed = isFailed
 
         provideViewModel()
+        trackInitiatedIfReady()
     }
 
     func didReceiveBlockNumber(_: BlockNumber) {}

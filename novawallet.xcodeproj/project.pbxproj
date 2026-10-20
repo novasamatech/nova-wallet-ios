@@ -7163,6 +7163,8 @@
 		94450582DA634BFF31CB29C5 /* SubtensorStakeSetupPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD4F4CA4D8E18CA407E225 /* SubtensorStakeSetupPresenter+Analytics.swift */; };
 		EFE788905EC58F94F4294321 /* SubtensorConfirmPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57491EF46491A418FD6CA31B /* SubtensorConfirmPresenter+Analytics.swift */; };
 		8B274B4CBA93332E841EA246 /* SubtensorOperationResultPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699C234CC45C17F27C20C6FA /* SubtensorOperationResultPresenter+Analytics.swift */; };
+		841098D0FE79B220084DC10A /* SubtensorUnstakeSetupPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF8F75A3D5C69AA72D03A5 /* SubtensorUnstakeSetupPresenter+Analytics.swift */; };
+		BA0BA3FA877B5E1411691C9D /* SubtensorClaimRewardsPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C983298DF9229BA56D95E1F /* SubtensorClaimRewardsPresenter+Analytics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -14065,6 +14067,8 @@
 		3CBD4F4CA4D8E18CA407E225 /* SubtensorStakeSetupPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakeSetupPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		57491EF46491A418FD6CA31B /* SubtensorConfirmPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorConfirmPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		699C234CC45C17F27C20C6FA /* SubtensorOperationResultPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorOperationResultPresenter+Analytics.swift"; sourceTree = "<group>"; };
+		4CFF8F75A3D5C69AA72D03A5 /* SubtensorUnstakeSetupPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorUnstakeSetupPresenter+Analytics.swift"; sourceTree = "<group>"; };
+		6C983298DF9229BA56D95E1F /* SubtensorClaimRewardsPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorClaimRewardsPresenter+Analytics.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21093,6 +21097,7 @@
 				C62E83F7DAA34A309A91B745 /* SubtensorUnstakeSetupPresenter+Interactor.swift */,
 				C4863E19C3B64FC283371D65 /* ViewModel */,
 				6BE7804650664423800B500A /* SubtensorUnstakeSetupPresenter+Actions.swift */,
+				4CFF8F75A3D5C69AA72D03A5 /* SubtensorUnstakeSetupPresenter+Analytics.swift */,
 			);
 			path = SubtensorUnstakeSetup;
 			sourceTree = "<group>";
@@ -21108,6 +21113,7 @@
 				BC2A8C22CB52927414E89EDB /* SubtensorClaimRewardsPresenter+Interactor.swift */,
 				C2353FC4790D2B11CC8759C3 /* SubtensorClaimRewardsInteractor.swift */,
 				1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */,
+				6C983298DF9229BA56D95E1F /* SubtensorClaimRewardsPresenter+Analytics.swift */,
 			);
 			path = SubtensorClaimRewards;
 			sourceTree = "<group>";
@@ -33535,6 +33541,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0BA3FA877B5E1411691C9D /* SubtensorClaimRewardsPresenter+Analytics.swift in Sources */,
+				841098D0FE79B220084DC10A /* SubtensorUnstakeSetupPresenter+Analytics.swift in Sources */,
 				8B274B4CBA93332E841EA246 /* SubtensorOperationResultPresenter+Analytics.swift in Sources */,
 				EFE788905EC58F94F4294321 /* SubtensorConfirmPresenter+Analytics.swift in Sources */,
 				94450582DA634BFF31CB29C5 /* SubtensorStakeSetupPresenter+Analytics.swift in Sources */,
