@@ -30,7 +30,7 @@ enum SubtensorSubnetLinkNormalizer {
         let withScheme = hasScheme ? text : "https://" + text
 
         guard
-            let components = URLComponents(string: withScheme),
+            var components = URLComponents(string: withScheme),
             let scheme = components.scheme?.lowercased(),
             schemes.contains(scheme),
             components.user == nil,
@@ -38,6 +38,8 @@ enum SubtensorSubnetLinkNormalizer {
             host.contains(".") else {
             return nil
         }
+
+        components.scheme = scheme
 
         return components.url
     }
