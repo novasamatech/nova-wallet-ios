@@ -46,6 +46,10 @@ extension XcmUni.AbsoluteLocation {
         case invalidAccountKey20Length(Int)
     }
 
+    enum PointOfViewError: Error {
+        case foreignConsensusViewer(XcmUni.AbsoluteLocation)
+    }
+
     init(paraId: ParaId?) {
         if let paraId {
             items = [.parachain(paraId)]
@@ -98,8 +102,20 @@ extension XcmUni.AbsoluteLocation {
         return appending(components: [accountIdJunction])
     }
 
-    func fromPointOfView(location: XcmUni.AbsoluteLocation) -> XcmUni.RelativeLocation {
-        if isForeignConsensus, !location.isForeignConsensus {
+    func fromPointOfView(location: XcmUni.AbsoluteLocation) throws -> XcmUni.RelativeLocation {
+        guard !location.isForeignConsensus else {
+            throw PointOfViewError.foreignConsensusViewer(location)
+        }
+
+        return fromLocalPointOfView(location)
+    }
+
+    func fromChainPointOfView(_ paraId: ParaId?) -> XcmUni.RelativeLocation {
+        fromLocalPointOfView(XcmUni.AbsoluteLocation(paraId: paraId))
+    }
+
+    private func fromLocalPointOfView(_ location: XcmUni.AbsoluteLocation) -> XcmUni.RelativeLocation {
+        if isForeignConsensus {
             // up to the relay (one hop per junction of the viewer) and one more hop to the universal level
             return XcmUni.RelativeLocation(parents: UInt8(location.items.count + 1), interior: self)
         }
@@ -113,12 +129,6 @@ extension XcmUni.AbsoluteLocation {
             parents: UInt8(parents),
             interior: XcmUni.Junctions(items: Array(items))
         )
-    }
-
-    func fromChainPointOfView(_ paraId: ParaId?) -> XcmUni.RelativeLocation {
-        let location = XcmUni.AbsoluteLocation(paraId: paraId)
-
-        return fromPointOfView(location: location)
     }
 }
 
