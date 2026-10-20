@@ -84,7 +84,6 @@ final class AnalyticsConsentAuthTests: XCTestCase {
     private func makeFacade(settings: InMemorySettingsManager) -> AnalyticsServiceFacade {
         let configuration = AnalyticsConfiguration(
             authProvider: AnalyticsAuthSourceStub(auth: analyticsTestAuth(authClient)),
-            isAuthSupported: true,
             appVersion: "10.9.0",
             storeDirectory: storeDirectory,
             isFirstLaunch: { false },
