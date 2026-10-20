@@ -32,13 +32,13 @@ final class SubtensorStakeRateCalculatorTests: XCTestCase {
         XCTAssertNil(rate)
     }
 
-    func testStaleYieldsHideTheRootRate() {
+    func testStaleYieldsStillGiveTheRootRate() {
         let rate = SubtensorStakeRateCalculator.rootRate(
             of: [position(hotkey: ratedHotkey, netuid: SubtensorPallet.rootNetuid, stake: 10)],
             in: yields(netuid: SubtensorPallet.rootNetuid, freshness: .stale)
         )
 
-        XCTAssertNil(rate)
+        XCTAssertEqual(rate, Decimal(string: "0.12"))
     }
 
     func testSubnetRateIsWeightedByTaoValue() {

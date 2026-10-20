@@ -231,7 +231,7 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
 
     func didReceive(yields: SubtensorAlphaYields?) {
         guard yields == nil || yields?.netuid == target.netuid else { return }
-        self.yields = yields
+        self.yields = yields ?? self.yields
         provideState()
     }
 

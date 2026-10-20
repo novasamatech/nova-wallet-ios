@@ -55,6 +55,7 @@ private extension SubtensorValidatorPresetOperationFactory {
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let recommendedWrapper = recommendationOperationFactory.createRecommendedValidatorsWrapper(for: subnet)
+        let yieldOperationFactory = yieldOperationFactory
         let yieldsWrapper = yieldOperationFactory.createAlphaYieldsWrapper(for: subnet.netuid)
 
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
@@ -62,10 +63,12 @@ private extension SubtensorValidatorPresetOperationFactory {
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] in
                 let recommended = try recommendedWrapper.targetOperation.extractNoCancellableResultData()
+                let yields = (try? yieldsWrapper.targetOperation.extractNoCancellableResultData()) ??
+                    yieldOperationFactory.cachedAlphaYields(for: subnet.netuid).value
 
                 return self?.createBestItemWrapper(
                     among: recommended.validators,
-                    yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData(),
+                    yields: yields,
                     subnet: subnet,
                     allowsFallback: true
                 )

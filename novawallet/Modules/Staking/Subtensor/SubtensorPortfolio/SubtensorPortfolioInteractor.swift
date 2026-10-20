@@ -126,13 +126,20 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
     func loadRootYields() {
         rootRateStore.cancel()
 
+        let yieldOperationFactory = yieldOperationFactory
+
         load(
             yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorPallet.rootNetuid),
+            cached: { yieldOperationFactory.cachedAlphaYields(for: SubtensorPallet.rootNetuid).value },
             in: rootRateStore,
-            label: "portfolio root yields"
-        ) { [weak self] in
-            self?.presenter?.didReceive(rootYields: $0)
-        }
+            label: "portfolio root yields",
+            deliver: { [weak self] in
+                self?.presenter?.didReceive(rootYields: $0)
+            },
+            onRefetchFailure: { [weak self] in
+                self?.presenter?.didFailRootYields()
+            }
+        )
     }
 
     func loadNetworkRootRate() {

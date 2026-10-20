@@ -179,7 +179,7 @@ private extension SubtensorPositionInteractor {
 
         load(
             yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
+            cached: { yieldOperationFactory.cachedAlphaYields(for: netuid).value },
             in: rateStore,
             label: "position yields",
             deliver: { [weak self] in
