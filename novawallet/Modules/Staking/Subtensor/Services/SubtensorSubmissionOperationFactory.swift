@@ -156,12 +156,15 @@ private extension SubtensorSubmissionOperationFactory {
             )
         }
 
-        let availabilityWrapper = shield.submissionFactory.createAvailabilityWrapper()
+        let readinessWrapper = shield.submissionFactory.createReadinessWrapper(
+            for: operation,
+            innerClosure: builderClosure
+        )
 
         let submissionWrapper = OperationCombiningService<SubtensorOperationOutcome>.compoundNonOptionalWrapper(
             operationQueue: shield.operationQueue
         ) {
-            guard try availabilityWrapper.targetOperation.extractNoCancellableResultData() else {
+            guard try readinessWrapper.targetOperation.extractNoCancellableResultData() else {
                 return self.createSubmissionWrapper(
                     for: operation,
                     builderClosure: builderClosure,
@@ -179,9 +182,9 @@ private extension SubtensorSubmissionOperationFactory {
             )
         }
 
-        submissionWrapper.addDependency(wrapper: availabilityWrapper)
+        submissionWrapper.addDependency(wrapper: readinessWrapper)
 
-        return submissionWrapper.insertingHead(operations: availabilityWrapper.allOperations)
+        return submissionWrapper.insertingHead(operations: readinessWrapper.allOperations)
     }
 }
 

@@ -4,8 +4,6 @@ import SubstrateSdk
 import BigInt
 
 protocol SubtensorShieldExtrinsicFactoryProtocol {
-    func createKeyAvailabilityWrapper() -> CompoundOperationWrapper<Bool>
-
     func createQuoteWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
@@ -163,18 +161,6 @@ private extension SubtensorShieldExtrinsicFactory {
 }
 
 extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol {
-    func createKeyAvailabilityWrapper() -> CompoundOperationWrapper<Bool> {
-        let keyWrapper = keyOperationFactory.createNextKeyWrapper()
-
-        let availabilityOperation = ClosureOperation<Bool> {
-            try keyWrapper.targetOperation.extractNoCancellableResultData() != nil
-        }
-
-        availabilityOperation.addDependency(keyWrapper.targetOperation)
-
-        return keyWrapper.insertingTail(operation: availabilityOperation)
-    }
-
     func createQuoteWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping () throws -> ExtrinsicBuilderClosure

@@ -3,7 +3,10 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol SubtensorShieldSubmissionFactoryProtocol {
-    func createAvailabilityWrapper() -> CompoundOperationWrapper<Bool>
+    func createReadinessWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<Bool>
 
     func createQuoteWrapper(
         for operation: SubtensorOperation,
@@ -30,20 +33,26 @@ struct SubtensorShieldServices {
 }
 
 final class SubtensorShieldSubmissionFactory {
+    let walletType: MetaAccountModelType
     let extrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol
+    let fundsFactory: SubtensorShieldFundsFactoryProtocol
     let inclusionTracker: SubtensorShieldInclusionTrackingProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let signerFactory: () -> SigningWrapperProtocol?
     let operationQueue: OperationQueue
 
     init(
+        walletType: MetaAccountModelType,
         extrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol,
+        fundsFactory: SubtensorShieldFundsFactoryProtocol,
         inclusionTracker: SubtensorShieldInclusionTrackingProtocol,
         statusService: ExtrinsicStatusServiceProtocol,
         signerFactory: @escaping () -> SigningWrapperProtocol?,
         operationQueue: OperationQueue
     ) {
+        self.walletType = walletType
         self.extrinsicFactory = extrinsicFactory
+        self.fundsFactory = fundsFactory
         self.inclusionTracker = inclusionTracker
         self.statusService = statusService
         self.signerFactory = signerFactory
@@ -97,8 +106,32 @@ private extension SubtensorShieldSubmissionFactory {
 }
 
 extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProtocol {
-    func createAvailabilityWrapper() -> CompoundOperationWrapper<Bool> {
-        extrinsicFactory.createKeyAvailabilityWrapper()
+    func createReadinessWrapper(
+        for operation: SubtensorOperation,
+        innerClosure: @escaping ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<Bool> {
+        let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation) { innerClosure }
+        let fundsWrapper = fundsFactory.createFundsWrapper()
+
+        let readinessOperation = ClosureOperation<Bool> { [walletType] in
+            let funds = try fundsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let input = SubtensorShieldEligibilityInput(
+                walletType: walletType,
+                quote: try quoteWrapper.targetOperation.extractNoCancellableResultData(),
+                transferable: funds.transferable,
+                existentialDeposit: funds.existentialDeposit
+            )
+
+            return SubtensorShieldEligibility.isEligible(input)
+        }
+
+        readinessOperation.addDependency(quoteWrapper.targetOperation)
+        readinessOperation.addDependency(fundsWrapper.targetOperation)
+
+        return quoteWrapper
+            .insertingHead(operations: fundsWrapper.allOperations)
+            .insertingTail(operation: readinessOperation)
     }
 
     func createQuoteWrapper(
