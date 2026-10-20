@@ -1,7 +1,5 @@
 import Foundation
 
-/// Handles `/open/staking`. Without a query it opens the staking dashboard; with
-/// `chainid` (and an optional `assetid`, default 0) it opens the staking flow for that asset.
 final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     private let chainRegistry: ChainRegistryProtocol
     private var completed = false
@@ -59,7 +57,6 @@ final class OpenStakingUrlParsingService: OpenScreenUrlParsingServiceProtocol {
                 return
             }
 
-            // the registry delivers the whole chain list on the first callback
             guard !changes.isEmpty else {
                 return
             }
