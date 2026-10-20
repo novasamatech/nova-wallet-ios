@@ -98,7 +98,7 @@ final class SubtensorMaxApyOperationFactoryTests: XCTestCase {
                     SubtensorAlphaYields(
                         netuid: netuid,
                         yields: (yields[netuid] ?? [:]).mapValues {
-                            SubtensorReportedYield(reportedRate: $0, stamp: stamp)
+                            SubtensorReportedYield(reportedRate: $0, stamp: stamp, isReliable: true)
                         },
                         stamp: stamp
                     )

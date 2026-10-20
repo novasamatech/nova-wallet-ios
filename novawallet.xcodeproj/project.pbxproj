@@ -81,6 +81,7 @@
 		70DE23C1893A48A3AEA9852B /* SubtensorSubnetFiltersViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A06C6690BA545ACB8461D66 /* SubtensorSubnetFiltersViewLayout.swift */; };
 		70E195DB466646438C57904A /* SubtensorValidatorPresetOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetOperationFactoryTests.swift */; };
 		1FB0299B8480450951C9709F /* SubtensorMaxApyOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C470800084895471E54E /* SubtensorMaxApyOperationFactoryTests.swift */; };
+		99393AF1A15B888A390E33B6 /* SubtensorYieldOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FEAAB728E99A23F1DFDAED /* SubtensorYieldOperationFactoryTests.swift */; };
 		3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceOperationFactoryTests.swift */; };
 		73E64086311D42AA8CA1C1B4 /* SubtensorYourBittensorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C60873BD49718F8F0E6D /* SubtensorYourBittensorPresentable.swift */; };
 		76C88D596AFB40619667BB77 /* SubtensorValidatorListFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1943F67610514F62A8E067C2 /* SubtensorValidatorListFactory.swift */; };
@@ -7202,6 +7203,7 @@
 		19E88DACCADB4E1F851D1954 /* SubtensorOperationResultPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultPresenter.swift; sourceTree = "<group>"; };
 		2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorPresetOperationFactoryTests.swift; sourceTree = "<group>"; };
 		0E88C470800084895471E54E /* SubtensorMaxApyOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMaxApyOperationFactoryTests.swift; sourceTree = "<group>"; };
+		A0FEAAB728E99A23F1DFDAED /* SubtensorYieldOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorYieldOperationFactoryTests.swift; sourceTree = "<group>"; };
 		7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorAlphaPriceOperationFactoryTests.swift; sourceTree = "<group>"; };
 		231389F398BB41A685F5B32D /* SubtensorValidatorInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorInfoPresentable.swift; sourceTree = "<group>"; };
 		23A0DA6F4E1B4C329C8171B3 /* SubtensorOperation+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorOperation+Extrinsic.swift"; sourceTree = "<group>"; };
@@ -19367,6 +19369,7 @@
 				E2ADB59EA1C14D3CA86D9119 /* SubtensorSubnetCatalogueOperationFactoryTests.swift */,
 				2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetOperationFactoryTests.swift */,
 				0E88C470800084895471E54E /* SubtensorMaxApyOperationFactoryTests.swift */,
+				A0FEAAB728E99A23F1DFDAED /* SubtensorYieldOperationFactoryTests.swift */,
 				7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceOperationFactoryTests.swift */,
 				9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */,
 			);
@@ -40046,6 +40049,7 @@
 				09008728FBB34750884450BD /* SubtensorSubnetCatalogueOperationFactoryTests.swift in Sources */,
 				70E195DB466646438C57904A /* SubtensorValidatorPresetOperationFactoryTests.swift in Sources */,
 				1FB0299B8480450951C9709F /* SubtensorMaxApyOperationFactoryTests.swift in Sources */,
+				99393AF1A15B888A390E33B6 /* SubtensorYieldOperationFactoryTests.swift in Sources */,
 				3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceOperationFactoryTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
 				DB5DF5A18CE14F12AA059E4D /* ExtrinsicStatusTests.swift in Sources */,

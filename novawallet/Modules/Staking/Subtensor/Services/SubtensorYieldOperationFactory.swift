@@ -42,6 +42,7 @@ extension SubtensorYieldOperationFactory {
 
         var yields: [AccountId: SubtensorReportedYield] = [:]
         var skippedRows = 0
+        var unverdictedRows = 0
 
         for (page, pageStamp) in zip(pages, pageStamps) {
             for item in page.value.items {
@@ -54,11 +55,16 @@ extension SubtensorYieldOperationFactory {
                     continue
                 }
 
+                if item.rateReliability == nil {
+                    unverdictedRows += 1
+                }
+
                 if yields[hotkey] == nil {
+                    // A missing verdict is trusted so a backend that predates ADR-0045 keeps working.
                     yields[hotkey] = SubtensorReportedYield(
                         reportedRate: item.reportedRate,
                         stamp: pageStamp,
-                        isReliable: item.isRateReliable
+                        isReliable: item.rateReliability != .unreliable
                     )
                 }
             }
@@ -66,6 +72,10 @@ extension SubtensorYieldOperationFactory {
 
         if skippedRows > 0 {
             logger.warning("Skipped \(skippedRows) alpha yield rows of netuid \(netuid)")
+        }
+
+        if unverdictedRows > 0 {
+            logger.warning("\(unverdictedRows) alpha yield rows of netuid \(netuid) carry no rate verdict; rates trusted")
         }
 
         return SubtensorAlphaYields(
@@ -104,7 +114,8 @@ extension SubtensorYieldOperationFactory {
                 continue
             }
 
-            yields[hotkey] = SubtensorReportedYield(reportedRate: d30.apy, stamp: stamp)
+            // Root yields carry no verdict: they are net 30-day basket yields, not compounded alpha dividends.
+            yields[hotkey] = SubtensorReportedYield(reportedRate: d30.apy, stamp: stamp, isReliable: true)
         }
 
         if skippedRows > 0 {
@@ -126,7 +137,7 @@ extension SubtensorYieldOperationFactory {
             return nil
         }
 
-        return SubtensorReportedYield(reportedRate: rate, stamp: stamp)
+        return SubtensorReportedYield(reportedRate: rate, stamp: stamp, isReliable: true)
     }
 }
 

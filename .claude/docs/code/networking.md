@@ -166,6 +166,9 @@ The dashboard max APY is one burst: `GET /recommendations` joined with the alpha
 recommended netuid and the root d30, with no spacing, retries or memo. A netuid whose yields fail
 is skipped; the burst fails with the first error only when no rate is left. No result is kept
 between requests, so nothing can mask authentication recovery in the same context.
+Alpha yield rows carry `rateReliability` (ADR-0045 of nova-infrastructure); an `UNRELIABLE` rate
+is treated as absent everywhere (not shown, not ranked, excluded from the max APY), an absent
+verdict is trusted and logged, and any other value fails the page as a contract violation.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.

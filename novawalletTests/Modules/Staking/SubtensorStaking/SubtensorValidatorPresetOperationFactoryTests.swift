@@ -240,7 +240,7 @@ final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
                 return CompoundOperationWrapper.createWithResult(
                     SubtensorAlphaYields(
                         netuid: netuid,
-                        yields: rates.mapValues { SubtensorReportedYield(reportedRate: $0, stamp: stamp) },
+                        yields: rates.mapValues { SubtensorReportedYield(reportedRate: $0, stamp: stamp, isReliable: true) },
                         stamp: stamp
                     )
                 )

@@ -16,24 +16,20 @@ extension BittensorApi {
         let pageInfo: PageInfo
     }
 
-    struct AlphaYield: Decodable, Equatable {
-        static let reliableRate = "RELIABLE"
-        static let unreliableRate = "UNRELIABLE"
+    /// The server's verdict on an alpha `reportedRate` (ADR-0045).
+    enum RateReliability: String, Decodable, Equatable {
+        case reliable = "RELIABLE"
+        case unreliable = "UNRELIABLE"
+    }
 
+    struct AlphaYield: Decodable, Equatable {
         let metricKind: String
         let netuid: UInt16
         let hotkey: String
         let reportedRate: String
         let sourceTimestamp: String
-        /// The server's verdict on `reportedRate` (ADR-0045): `RELIABLE` or `UNRELIABLE`.
-        let rateReliability: String?
-        /// Why the rate is not reliable; an open lower-snake-case vocabulary.
-        let rateFlags: [String]?
-
-        /// A backend without the verdict keeps the previous behavior; any other value hides the rate.
-        var isRateReliable: Bool {
-            rateReliability.map { $0 == Self.reliableRate } ?? true
-        }
+        /// Absent on a backend that predates ADR-0045.
+        let rateReliability: RateReliability?
     }
 
     struct RootValidatorCollection: Decodable, Equatable {
