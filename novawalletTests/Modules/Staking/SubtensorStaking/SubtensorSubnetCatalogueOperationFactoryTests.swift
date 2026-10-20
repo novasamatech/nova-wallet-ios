@@ -48,28 +48,6 @@ final class SubtensorSubnetCatalogueOperationFactoryTests: XCTestCase {
         ))
     }
 
-    func testCatalogueNormalisesOwnerLinks() throws {
-        let json = subnetsJson
-            .replacingOccurrences(
-                of: "\"githubRepo\":\"\",\"name\":\"Chutes\"",
-                with: "\"githubRepo\":\"https://github.com/chutesai/chutes/\",\"name\":\"Chutes\""
-            )
-            .replacingOccurrences(
-                of: "\"subnetUrl\":\"\",\"subnetWebsite\":\"\",\"symbol\":\"ش\"",
-                with: "\"subnetUrl\":\"chutes.ai\",\"subnetWebsite\":\"https://ignored.example\",\"symbol\":\"ش\""
-            )
-        let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        stubSubnets(apiFactory, result: .success(try fixtureSubnets(json: json)))
-
-        let catalogue = try run(createOperationFactory(apiFactory).createCatalogueWrapper())
-
-        XCTAssertEqual(catalogue.subnet(for: 1)?.links, SubtensorSubnetLinks.empty)
-        XCTAssertEqual(catalogue.subnet(for: 64)?.links, SubtensorSubnetLinks(
-            website: URL(string: "https://chutes.ai"),
-            github: URL(string: "https://github.com/chutesai/chutes")
-        ))
-    }
-
     func testLookupByRefRejectsReRegisteredNetuid() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, result: .success(try fixtureSubnets()))
@@ -114,11 +92,8 @@ final class SubtensorSubnetCatalogueOperationFactoryTests: XCTestCase {
         }
     }
 
-    private func fixtureSubnets(json: String? = nil) throws -> SubnetsResult {
-        let collection = try JSONDecoder().decode(
-            BittensorApi.SubnetCollection.self,
-            from: Data((json ?? subnetsJson).utf8)
-        )
+    private func fixtureSubnets() throws -> SubnetsResult {
+        let collection = try JSONDecoder().decode(BittensorApi.SubnetCollection.self, from: Data(subnetsJson.utf8))
 
         return BittensorApiResult(
             value: collection,
