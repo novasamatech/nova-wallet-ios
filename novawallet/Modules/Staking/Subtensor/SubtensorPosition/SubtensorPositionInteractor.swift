@@ -305,7 +305,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             label: "position validator"
         ) { [weak self] in
             self?.presenter?.didReceive(validator: $0, for: hotkey)
-        } fail: { [weak self] in
+        } fail: { [weak self] _ in
             self?.presenter?.didFailValidator(for: hotkey)
         }
     }
@@ -351,7 +351,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         load(wrapper, in: historyStore, label: "position price history") { [weak self] in
             self?.presenter?.didReceive(history: $0, for: period)
-        } failWith: { [weak self] error in
+        } fail: { [weak self] error in
             self?.presenter?.didFailHistory(for: period, error: error)
         }
     }

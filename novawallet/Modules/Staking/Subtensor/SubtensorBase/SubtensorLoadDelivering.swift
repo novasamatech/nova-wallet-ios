@@ -13,7 +13,7 @@ extension SubtensorLoadDelivering {
         label: String,
         deliver: @escaping (T?) -> Void
     ) {
-        load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: { deliver(nil) })
+        load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: { _ in deliver(nil) })
     }
 
     func load<T>(
@@ -21,17 +21,7 @@ extension SubtensorLoadDelivering {
         in callStore: CancellableCallStore,
         label: String,
         deliver: @escaping (T) -> Void,
-        fail: @escaping () -> Void
-    ) {
-        load(wrapper, in: callStore, label: label, deliver: deliver, failWith: { _ in fail() })
-    }
-
-    func load<T>(
-        _ wrapper: CompoundOperationWrapper<T>,
-        in callStore: CancellableCallStore,
-        label: String,
-        deliver: @escaping (T) -> Void,
-        failWith: @escaping (Error) -> Void
+        fail: @escaping (Error) -> Void
     ) {
         executeCancellable(
             wrapper: wrapper,
@@ -44,7 +34,7 @@ extension SubtensorLoadDelivering {
                 deliver(value)
             case let .failure(error):
                 self?.logger.warning("Subtensor \(label) unavailable: \(error)")
-                failWith(error)
+                fail(error)
             }
         }
     }
@@ -55,18 +45,18 @@ extension SubtensorLoadDelivering {
         in callStore: CancellableCallStore,
         label: String,
         deliver: @escaping (T?) -> Void,
-        onRefetchFailure: (() -> Void)? = nil
+        onRefetchFailure: ((Error) -> Void)? = nil
     ) {
         loadCached(cached, in: callStore, then: { [weak self] value in
             if let value {
                 deliver(value)
             }
 
-            self?.load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: {
+            self?.load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: { error in
                 if value == nil {
                     deliver(nil)
                 } else {
-                    onRefetchFailure?()
+                    onRefetchFailure?(error)
                 }
             })
         })
