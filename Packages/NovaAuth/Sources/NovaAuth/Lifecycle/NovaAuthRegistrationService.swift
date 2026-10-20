@@ -137,7 +137,7 @@ private extension NovaAuth {
             }
         )
         run(wrapper, flight: flight) { [self] result in
-            let object = try attestation(from: result, attempt: attempt, flight: flight)
+            guard let object = try attestation(from: result, attempt: attempt, flight: flight) else { return }
             try validateAttemptAfterApple(attempt, flight: flight)
             let now = try dependencies.clock.now()
             try validateAttestationObject(object, flight: flight)
@@ -173,7 +173,7 @@ private extension NovaAuth {
         from result: Result<Data, Error>,
         attempt: NovaAuthRegistrationAttempt,
         flight: NovaAuthIssuanceFlight
-    ) throws -> Data {
+    ) throws -> Data? {
         do {
             return try result.get()
         } catch NovaAuthAppAttestError.serverUnavailable {
@@ -181,7 +181,8 @@ private extension NovaAuth {
             throw NovaAuthAppAttestError.serverUnavailable
         } catch NovaAuthAppAttestError.invalidKey where !flight.recentKey {
             try retire(.lostKey, flight: flight)
-            throw NovaAuthAppAttestError.invalidKey
+            try createKey(flight: flight)
+            return nil
         } catch {
             try dropKey(flight: flight, refusal: nextRefusal())
             throw error
