@@ -57,7 +57,7 @@ enum SubtensorFlowServicesFactory {
             extrinsicService: extrinsicService,
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
             signer: createSigner(for: account),
-            shield: createShieldServices(for: account, state: state, sealer: nil)
+            shield: createShieldServices(for: account, state: state, sealer: MevShieldSealer())
         ) else {
             return nil
         }
