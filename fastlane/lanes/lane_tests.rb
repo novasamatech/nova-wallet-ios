@@ -35,3 +35,25 @@ lane :test_build do |options|
 
   scan(scan_params)
 end
+
+desc "Run Swift package tests"
+desc "Parameters:"
+desc "- 'package : <value>' to define the package in Packages to test"
+desc "- 'test_target : <value>' to define the test target to run"
+desc "- 'derived_data_path : <value>' to define the derived data directory"
+desc " "
+desc "Example usage: fastlane test_package package:'NovaAuth' test_target:'NovaAuthTests'"
+lane :test_package do |options|
+  package = options[:package]
+
+  scan(
+    package_path: "Packages/#{package}",
+    scheme: package,
+    only_testing: options[:test_target],
+    derived_data_path: options[:derived_data_path],
+    output_directory: "./fastlane/test_output/",
+    prelaunch_simulator: true,
+    ensure_devices_found: true,
+    xcargs: "-destination-timeout 120"
+  )
+end
