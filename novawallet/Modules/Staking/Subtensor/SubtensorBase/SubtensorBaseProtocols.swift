@@ -19,61 +19,8 @@ enum SubtensorFlowConstants {
     }
 
     static let shieldQuoteAttempts = 3
-}
 
-struct SubtensorPendingEstimates {
-    var fee: SubtensorOperation?
-    private(set) var shieldQuote: SubtensorOperation?
-
-    private var quotedOperation: SubtensorOperation?
-    private var isShieldQuoteInFlight = false
-    private var shieldQuoteFailures = 0
-
-    mutating func scheduleShieldQuote(_ operation: SubtensorOperation) -> Bool {
-        guard operation != shieldQuote, !(isShieldQuoteInFlight && operation == quotedOperation) else {
-            return false
-        }
-
-        shieldQuote = operation
-        isShieldQuoteInFlight = false
-
-        return true
-    }
-
-    mutating func cancelShieldQuote() {
-        shieldQuote = nil
-        isShieldQuoteInFlight = false
-    }
-
-    mutating func take() -> (fee: SubtensorOperation?, shieldQuote: SubtensorOperation?) {
-        let operations = (fee: fee, shieldQuote: shieldQuote)
-
-        if let shieldQuote {
-            if shieldQuote != quotedOperation {
-                quotedOperation = shieldQuote
-                shieldQuoteFailures = 0
-            }
-
-            isShieldQuoteInFlight = true
-        }
-
-        fee = nil
-        shieldQuote = nil
-
-        return operations
-    }
-
-    mutating func didResolveShieldQuote() {
-        isShieldQuoteInFlight = false
-        shieldQuoteFailures = 0
-    }
-
-    mutating func didFailShieldQuote() -> Bool {
-        isShieldQuoteInFlight = false
-        shieldQuoteFailures += 1
-
-        return shieldQuoteFailures >= SubtensorFlowConstants.shieldQuoteAttempts
-    }
+    static let shieldQuoteTimeoutBlocks: BlockNumber = 2
 }
 
 protocol SubtensorBaseInteractorInputProtocol: AnyObject {

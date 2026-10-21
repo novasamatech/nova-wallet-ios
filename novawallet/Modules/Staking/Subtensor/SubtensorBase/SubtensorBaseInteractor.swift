@@ -26,9 +26,9 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private var priceProvider: StreamableProvider<PriceData>?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
-    private var pendingEstimates = SubtensorPendingEstimates()
+    private var pendingFeeOperation: SubtensorOperation?
+    private let shieldQuoteEstimator: SubtensorShieldQuoteEstimator
     private let feeCallStore = CancellableCallStore()
-    private let shieldQuoteCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
     private let validatingQuoteCallStore = CancellableCallStore()
@@ -61,12 +61,21 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
         operationQueue = flowServices.operationQueue
         self.logger = logger
 
+        shieldQuoteEstimator = SubtensorShieldQuoteEstimator(
+            submissionOperationFactory: flowServices.submissionOperationFactory,
+            operationQueue: flowServices.operationQueue,
+            logger: logger
+        )
+
         currencyManager = flowServices.currencyManager
+
+        shieldQuoteEstimator.onQuote = { [weak self] quote in
+            self?.basePresenter?.didReceiveShieldQuote(quote)
+        }
     }
 
     deinit {
         feeCallStore.cancel()
-        shieldQuoteCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
         validatingQuoteCallStore.cancel()
@@ -106,6 +115,7 @@ private extension SubtensorBaseInteractor {
                 switch result {
                 case let .success(blockNumber):
                     if let blockNumber {
+                        self?.shieldQuoteEstimator.didReceiveBlock(blockNumber)
                         self?.basePresenter?.didReceiveBlockNumber(blockNumber)
                     }
                 case let .failure(error):
@@ -130,9 +140,9 @@ private extension SubtensorBaseInteractor {
     }
 
     func startPendingEstimates() {
-        let operations = pendingEstimates.take()
+        if let operation = pendingFeeOperation {
+            pendingFeeOperation = nil
 
-        if let operation = operations.fee {
             executeCancellable(
                 wrapper: submissionOperationFactory.createFeeWrapper(for: operation),
                 inOperationQueue: operationQueue,
@@ -148,29 +158,7 @@ private extension SubtensorBaseInteractor {
             }
         }
 
-        if let operation = operations.shieldQuote {
-            executeCancellable(
-                wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
-                inOperationQueue: operationQueue,
-                backingCallIn: shieldQuoteCallStore,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                self?.deliverShieldQuote(result)
-            }
-        }
-    }
-
-    func deliverShieldQuote(_ result: Result<SubtensorShieldQuote?, Error>) {
-        switch result {
-        case let .success(quote):
-            pendingEstimates.didResolveShieldQuote()
-            basePresenter?.didReceiveShieldQuote(quote)
-        case let .failure(error):
-            logger.warning("Shield quote failed: \(error)")
-            if pendingEstimates.didFailShieldQuote() {
-                basePresenter?.didReceiveShieldQuote(nil)
-            }
-        }
+        shieldQuoteEstimator.startPending()
     }
 }
 
@@ -184,7 +172,7 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
 
     func estimateFee(for operation: SubtensorOperation) {
         feeCallStore.cancel()
-        pendingEstimates.fee = operation
+        pendingFeeOperation = operation
 
         feeDebouncer.debounce { [weak self] in
             self?.startPendingEstimates()
@@ -192,9 +180,9 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func estimateShieldQuote(for operation: SubtensorOperation) {
-        guard pendingEstimates.scheduleShieldQuote(operation) else { return }
-
-        shieldQuoteCallStore.cancel()
+        guard shieldQuoteEstimator.schedule(operation) else {
+            return
+        }
 
         feeDebouncer.debounce { [weak self] in
             self?.startPendingEstimates()
@@ -202,8 +190,7 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func cancelShieldQuote() {
-        shieldQuoteCallStore.cancel()
-        pendingEstimates.cancelShieldQuote()
+        shieldQuoteEstimator.cancel()
     }
 
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16) {
