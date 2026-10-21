@@ -11,7 +11,8 @@ protocol SubtensorShieldExtrinsicFactoryProtocol {
 
     func createSealedInnerWrapper(
         for innerClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        authorization: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<SubtensorSealedInner>
 
     func createCarrierWrapper(
@@ -26,7 +27,7 @@ final class SubtensorShieldExtrinsicFactory {
     let account: ChainAccountResponse
     let chain: ChainModel
     let connection: JSONRPCEngine
-    let extrinsicServiceFactory: ExtrinsicTimingServiceFactoryProtocol
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let keyOperationFactory: MevShieldOperationFactoryProtocol
     let nonceOperationFactory: TransactionNonceOperationFactoryProtocol
     let sealer: MevShieldSealing
@@ -36,7 +37,7 @@ final class SubtensorShieldExtrinsicFactory {
         account: ChainAccountResponse,
         chain: ChainModel,
         connection: JSONRPCEngine,
-        extrinsicServiceFactory: ExtrinsicTimingServiceFactoryProtocol,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         keyOperationFactory: MevShieldOperationFactoryProtocol,
         sealer: MevShieldSealing,
         operationQueue: OperationQueue,
@@ -76,6 +77,7 @@ extension SubtensorShieldExtrinsicFactory {
         extrinsicServiceFactory.createOperationFactory(
             account: account,
             chain: chain,
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(),
             nonceOperationFactory: PresetNonceOperationFactory(nonce: nonce),
             eraOperationFactory: eraOperationFactory
         )
@@ -146,17 +148,50 @@ private extension SubtensorShieldExtrinsicFactory {
             .insertingTail(operation: quoteOperation)
     }
 
-    func createSealOperation(
-        nonceWrapper: CompoundOperationWrapper<UInt32>,
-        eraWrapper: CompoundOperationWrapper<ExtrinsicEraParameters>,
-        innerWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>,
-        keyWrapper: CompoundOperationWrapper<Data?>
-    ) -> BaseOperation<SubtensorSealedInner> {
-        ClosureOperation { [sealer] in
-            let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
-            let era = try eraWrapper.targetOperation.extractNoCancellableResultData()
-            let inner = try Data(hexString: innerWrapper.targetOperation.extractNoCancellableResultData().extrinsic)
+    struct Timing {
+        let nonce: UInt32
+        let era: ExtrinsicEraParameters
+    }
 
+    func createTimingWrapper(
+        after authorizationOperation: BaseOperation<Void>
+    ) -> CompoundOperationWrapper<Timing> {
+        let timingWrapper = OperationCombiningService<Timing>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            try authorizationOperation.extractNoCancellableResultData()
+
+            let nonceWrapper = self.createNonceWrapper()
+            let eraWrapper = self.createEraWrapper()
+
+            let timingOperation = ClosureOperation<Timing> {
+                Timing(
+                    nonce: try nonceWrapper.targetOperation.extractNoCancellableResultData(),
+                    era: try eraWrapper.targetOperation.extractNoCancellableResultData()
+                )
+            }
+
+            timingOperation.addDependency(nonceWrapper.targetOperation)
+            timingOperation.addDependency(eraWrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: timingOperation,
+                dependencies: nonceWrapper.allOperations + eraWrapper.allOperations
+            )
+        }
+
+        timingWrapper.addDependency(operations: [authorizationOperation])
+
+        return timingWrapper
+    }
+
+    func createSealWrapper(
+        timing: Timing,
+        inner: Data
+    ) -> CompoundOperationWrapper<SubtensorSealedInner> {
+        let keyWrapper = keyOperationFactory.createNextKeyWrapper()
+
+        let sealOperation = ClosureOperation<SubtensorSealedInner> { [sealer] in
             guard let key = try keyWrapper.targetOperation.extractNoCancellableResultData() else {
                 throw SubtensorShieldError.keyUnavailable
             }
@@ -169,13 +204,17 @@ private extension SubtensorShieldExtrinsicFactory {
             }
 
             return SubtensorSealedInner(
-                carrierNonce: nonce,
-                era: era,
+                carrierNonce: timing.nonce,
+                era: timing.era,
                 extrinsic: inner,
                 extrinsicHash: try inner.blake2b32().toHex(includePrefix: true),
                 ciphertext: ciphertext
             )
         }
+
+        sealOperation.addDependency(keyWrapper.targetOperation)
+
+        return keyWrapper.insertingTail(operation: sealOperation)
     }
 }
 
@@ -207,20 +246,20 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
 
     func createSealedInnerWrapper(
         for innerClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        authorization: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<SubtensorSealedInner> {
-        let nonceWrapper = createNonceWrapper()
-        let eraWrapper = createEraWrapper()
+        let authorizationOperation = ClosureOperation { try authorization() }
+        let timingWrapper = createTimingWrapper(after: authorizationOperation)
 
         let innerWrapper = OperationCombiningService<ExtrinsicBuiltModel>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
-            let era = try eraWrapper.targetOperation.extractNoCancellableResultData()
+            let timing = try timingWrapper.targetOperation.extractNoCancellableResultData()
 
             return self.createOperationFactory(
-                nonce: nonce + 1,
-                eraOperationFactory: PresetEraOperationFactory(parameters: era)
+                nonce: timing.nonce + 1,
+                eraOperationFactory: PresetEraOperationFactory(parameters: timing.era)
             ).buildExtrinsic(
                 Self.shieldedClosure(innerClosure),
                 signer: signer,
@@ -228,27 +267,22 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
             )
         }
 
-        innerWrapper.addDependency(wrapper: nonceWrapper)
-        innerWrapper.addDependency(wrapper: eraWrapper)
+        innerWrapper.addDependency(wrapper: timingWrapper)
 
-        let keyWrapper = keyOperationFactory.createNextKeyWrapper()
+        let sealWrapper = OperationCombiningService<SubtensorSealedInner>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let timing = try timingWrapper.targetOperation.extractNoCancellableResultData()
+            let inner = try Data(hexString: innerWrapper.targetOperation.extractNoCancellableResultData().extrinsic)
 
-        keyWrapper.addDependency(wrapper: innerWrapper)
+            return self.createSealWrapper(timing: timing, inner: inner)
+        }
 
-        let sealOperation = createSealOperation(
-            nonceWrapper: nonceWrapper,
-            eraWrapper: eraWrapper,
-            innerWrapper: innerWrapper,
-            keyWrapper: keyWrapper
+        sealWrapper.addDependency(wrapper: innerWrapper)
+
+        return sealWrapper.insertingHead(
+            operations: [authorizationOperation] + timingWrapper.allOperations + innerWrapper.allOperations
         )
-
-        sealOperation.addDependency(keyWrapper.targetOperation)
-
-        let headOperations = nonceWrapper.allOperations + eraWrapper.allOperations + innerWrapper.allOperations
-
-        return keyWrapper
-            .insertingHead(operations: headOperations)
-            .insertingTail(operation: sealOperation)
     }
 
     func createCarrierWrapper(

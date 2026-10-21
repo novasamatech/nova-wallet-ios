@@ -39,8 +39,7 @@ enum SubtensorShieldCarrierLookup {
 
 enum SubtensorShieldedSubmission {
     case executed(inner: SubstrateExtrinsicStatus, carrier: SubtensorShieldCarrierLookup)
-    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
-    case carrierFailed(SubstrateExtrinsicStatus.FailedExtrinsic)
+    case notExecuted(carrier: SubtensorShieldCarrierLookup)
 }
 
 enum SubtensorShieldError: Error {

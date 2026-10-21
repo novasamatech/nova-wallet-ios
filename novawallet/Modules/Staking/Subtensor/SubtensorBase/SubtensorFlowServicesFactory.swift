@@ -37,27 +37,12 @@ enum SubtensorFlowServicesFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let extrinsicService = createExtrinsicService(
+        guard let submissionOperationFactory = createSubmissionOperationFactory(
             for: account,
-            chain: chain,
+            state: state,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue
-        )
-
-        let extrinsicSubmitMonitor = createSubmitMonitor(
-            for: extrinsicService,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
-        )
-
-        guard let submissionOperationFactory = try? state.createSubmissionOperationFactory(
-            for: account.chainAccount.accountId,
-            extrinsicService: extrinsicService,
-            extrinsicSubmitMonitor: extrinsicSubmitMonitor,
-            signer: createSigner(for: account),
-            shield: createShieldServices(for: account, state: state, sealer: MevShieldSealer())
         ) else {
             return nil
         }
@@ -100,37 +85,23 @@ enum SubtensorFlowServicesFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
+}
 
-    static func createShieldServices(
+private extension SubtensorFlowServicesFactory {
+    static func createSubmissionOperationFactory(
         for account: MetaChainAccountResponse,
         state: SubtensorSharedStateProtocol,
-        sealer: MevShieldSealing?
-    ) -> SubtensorShieldServices? {
-        createShieldServices(
-            for: account,
-            chainAsset: state.stakingOption.chainAsset,
-            chainRegistry: state.chainRegistry,
-            sealer: sealer
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
+        operationQueue: OperationQueue
+    ) -> SubtensorSubmissionOperationFactoryProtocol? {
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
-    }
-
-    static func createShieldServices(
-        for account: MetaChainAccountResponse,
-        chainAsset: ChainAsset,
-        chainRegistry: ChainRegistryProtocol,
-        sealer: MevShieldSealing?
-    ) -> SubtensorShieldServices? {
-        let chain = chainAsset.chain
-
-        guard
-            let sealer,
-            SubtensorShieldEligibility.supports(walletType: account.chainAccount.type),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return nil
-        }
-
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let statusService = ExtrinsicStatusService(
             connection: connection,
@@ -139,6 +110,47 @@ enum SubtensorFlowServicesFactory {
             logger: Logger.shared
         )
 
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: account.chainAccount,
+            chain: state.stakingOption.chainAsset.chain
+        )
+
+        return try? state.createSubmissionOperationFactory(
+            for: account.chainAccount.accountId,
+            extrinsicService: extrinsicService,
+            extrinsicSubmitMonitor: ExtrinsicSubmissionMonitorFactory(
+                submissionService: extrinsicService,
+                statusService: statusService,
+                operationQueue: operationQueue
+            ),
+            signer: createSigner(for: account),
+            shield: createShieldServices(
+                for: account,
+                state: state,
+                extrinsicServiceFactory: extrinsicServiceFactory,
+                statusService: statusService
+            )
+        )
+    }
+
+    static func createShieldServices(
+        for account: MetaChainAccountResponse,
+        state: SubtensorSharedStateProtocol,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        statusService: ExtrinsicStatusServiceProtocol
+    ) -> SubtensorShieldServices? {
+        let chainAsset = state.stakingOption.chainAsset
+        let chain = chainAsset.chain
+
+        guard
+            SubtensorShieldEligibility.supports(walletType: account.chainAccount.type),
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let submissionFactory = SubtensorShieldSubmissionFactory(
             walletType: account.chainAccount.type,
             extrinsicFactory: createShieldExtrinsicFactory(
@@ -146,12 +158,12 @@ enum SubtensorFlowServicesFactory {
                 chain: chain,
                 connection: connection,
                 runtimeProvider: runtimeProvider,
-                sealer: sealer
+                extrinsicServiceFactory: extrinsicServiceFactory
             ),
             fundsFactory: createShieldFundsFactory(
                 for: account.chainAccount.accountId,
                 chainAsset: chainAsset,
-                chainRegistry: chainRegistry,
+                chainRegistry: state.chainRegistry,
                 runtimeProvider: runtimeProvider
             ),
             carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
@@ -174,9 +186,7 @@ enum SubtensorFlowServicesFactory {
 
         return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
     }
-}
 
-private extension SubtensorFlowServicesFactory {
     static func createShieldFundsFactory(
         for accountId: AccountId,
         chainAsset: ChainAsset,
@@ -214,7 +224,7 @@ private extension SubtensorFlowServicesFactory {
         chain: ChainModel,
         connection: ChainConnection,
         runtimeProvider: RuntimeProviderProtocol,
-        sealer: MevShieldSealing
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     ) -> SubtensorShieldExtrinsicFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -222,19 +232,13 @@ private extension SubtensorFlowServicesFactory {
             account: account,
             chain: chain,
             connection: connection,
-            extrinsicServiceFactory: ExtrinsicServiceFactory(
-                runtimeRegistry: runtimeProvider,
-                engine: connection,
-                operationQueue: operationQueue,
-                userStorageFacade: UserDataStorageFacade.shared,
-                substrateStorageFacade: SubstrateDataStorageFacade.shared
-            ),
+            extrinsicServiceFactory: extrinsicServiceFactory,
             keyOperationFactory: MevShieldOperationFactory(
                 runtimeProvider: runtimeProvider,
                 connection: connection,
                 operationQueue: operationQueue
             ),
-            sealer: sealer,
+            sealer: MevShieldSealer(),
             operationQueue: operationQueue
         )
     }
@@ -265,43 +269,6 @@ private extension SubtensorFlowServicesFactory {
         return SigningWrapperFactory().createSigningWrapper(
             for: account.metaId,
             accountResponse: account.chainAccount
-        )
-    }
-
-    static func createExtrinsicService(
-        for account: MetaChainAccountResponse,
-        chain: ChainModel,
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol,
-        operationQueue: OperationQueue
-    ) -> ExtrinsicServiceProtocol {
-        ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationQueue: operationQueue,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(
-            account: account.chainAccount,
-            chain: chain
-        )
-    }
-
-    static func createSubmitMonitor(
-        for extrinsicService: ExtrinsicServiceProtocol,
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol,
-        operationQueue: OperationQueue
-    ) -> ExtrinsicSubmitMonitorFactoryProtocol {
-        ExtrinsicSubmissionMonitorFactory(
-            submissionService: extrinsicService,
-            statusService: ExtrinsicStatusService(
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
-                logger: Logger.shared
-            ),
-            operationQueue: operationQueue
         )
     }
 

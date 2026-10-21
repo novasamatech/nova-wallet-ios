@@ -7,7 +7,7 @@ struct SubtensorOperationResultPrices: Equatable {
 
 struct SubtensorOperationResultRequest {
     let operation: SubtensorOperation
-    let shielded: Bool
+    let shieldQuote: SubtensorShieldQuote?
     let origin: SubtensorOperationOrigin
     let account: MetaChainAccountResponse
     let target: SubtensorStakeTarget
