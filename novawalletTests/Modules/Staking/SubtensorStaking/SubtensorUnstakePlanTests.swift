@@ -7,45 +7,46 @@ final class SubtensorUnstakePlanTests: XCTestCase {
     private let second = SubtensorUnstakePosition(hotkey: Data(repeating: 0x0B, count: 32), alpha: 40_000_000_000, locked: 0)
     private let third = SubtensorUnstakePosition(hotkey: Data(repeating: 0x0C, count: 32), alpha: 30_000_000_000, locked: 0)
     private let floor: Balance = 2_000_000_000
+    private let floors = SubtensorUnstakeFloors(yield: 2_000_000_000, sweep: 2_000_000_000)
 
     func testAmountWithinThePrimaryIsASinglePartialFromIt() {
-        let plan = makeBasis().plan(for: 50_000_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 50_000_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(primary, 50_000_000_000)]))
     }
 
     func testAmountAboveThePrimaryEmptiesTheSmallestPositionsFirst() {
-        let plan = makeBasis().plan(for: 61_000_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 61_000_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third)], partials: [slice(second, 31_000_000_000)]))
     }
 
     func testAmountEqualToEverythingExitsAllHotkeys() {
-        let plan = makeBasis().plan(for: 130_000_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 130_000_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third), exit(second), exit(primary)], partials: []))
     }
 
     func testSliceBelowTheFloorIsDropped() {
-        let plan = makeBasis().plan(for: 71_000_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 71_000_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third), exit(second)], partials: []))
     }
 
     func testRemainderBelowTheFloorTrimsTheSlice() {
-        let plan = makeBasis().plan(for: 69_000_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 69_000_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third)], partials: [slice(second, 38_000_000_000)]))
     }
 
     func testRemainderBelowTheFloorExitsThePositionWhenCloser() {
-        let plan = makeBasis().plan(for: 69_500_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 69_500_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third), exit(second)], partials: []))
     }
 
     func testAmountAboveTheAvailableStakeHasNoPlan() {
-        let plan = makeBasis(available: 100_000_000_000).plan(for: 101_000_000_000, floor: floor)
+        let plan = makeBasis(available: 100_000_000_000).plan(for: 101_000_000_000, floors: floors)
 
         XCTAssertNil(plan)
     }
@@ -64,7 +65,10 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let basis = SubtensorGroupUnstakeBasis.make(from: group, excluding: [primary.hotkey])
 
         XCTAssertEqual(basis.max(floor: floor), second.alpha)
-        XCTAssertEqual(basis.plan(for: second.alpha, floor: floor), SubtensorUnstakePlan(exits: [exit(second)], partials: []))
+        XCTAssertEqual(
+            basis.plan(for: second.alpha, floors: floors),
+            SubtensorUnstakePlan(exits: [exit(second)], partials: [])
+        )
     }
 
     func testFloorSliceClearsTheValidatorMinimumOutWithThePoolFee() throws {
@@ -89,7 +93,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
             positions: [primary, bonded]
         )
 
-        let plan = basis.plan(for: 61_000_000_000, floor: floor)
+        let plan = basis.plan(for: 61_000_000_000, floors: floors)
 
         XCTAssertEqual(
             plan,
@@ -105,19 +109,53 @@ final class SubtensorUnstakePlanTests: XCTestCase {
 
         XCTAssertEqual(primaryBasis.max(floor: floor), 50_000_000_000)
         XCTAssertEqual(secondBasis.max(floor: floor), second.alpha)
-        XCTAssertNil(secondBasis.plan(for: 41_000_000_000, floor: floor))
+        XCTAssertNil(secondBasis.plan(for: 41_000_000_000, floors: floors))
     }
 
-    func testSelectedValidatorDustRemainderSnapsToItsFullExit() {
+    func testSelectedValidatorKeepsTheExactPartialForValidationToJudge() {
         let basis = makeBasis(makeGroup([primary, second]), selection: .validator(primary.hotkey))
 
-        let plan = basis.plan(for: 59_999_900_000, floor: floor)
+        let plan = basis.plan(for: 59_999_900_000, floors: floors)
 
-        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(primary)], partials: []))
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(primary, 59_999_900_000)]))
+    }
+
+    func testOwnedHotkeyIsExemptFromTheSweepFloor() {
+        var owned = primary
+        owned.isOwned = true
+        let basis = SubtensorGroupUnstakeBasis(
+            total: 130_000_000_000,
+            available: 130_000_000_000,
+            positions: [owned, second, third]
+        )
+
+        let plan = basis.plan(for: 59_500_000_000, floors: floors)
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(owned, 59_500_000_000)]))
+    }
+
+    func testZeroSweepThresholdLeavesOnlyTheYieldMinimum() {
+        let plan = makeBasis().plan(for: 59_500_000_000, floors: SubtensorUnstakeFloors(yield: floor, sweep: 0))
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(primary, 59_500_000_000)]))
+    }
+
+    func testAllValidatorsNeverPlanAnEmptySale() {
+        let small = SubtensorUnstakePosition(hotkey: second.hotkey, alpha: 3_000_000_000, locked: 0)
+        let smallest = SubtensorUnstakePosition(hotkey: third.hotkey, alpha: 3_000_000_000, locked: 0)
+        let basis = SubtensorGroupUnstakeBasis(
+            total: 6_000_000_000,
+            available: 6_000_000_000,
+            positions: [small, smallest]
+        )
+
+        let plan = basis.plan(for: 1_500_000_000, floors: floors)
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(smallest)], partials: []))
     }
 
     func testAllValidatorsDustyPrimaryRemainderFallsToSmallestFirstSplit() {
-        let plan = makeBasis().plan(for: 59_500_000_000, floor: floor)
+        let plan = makeBasis().plan(for: 59_500_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third)], partials: [slice(second, 29_500_000_000)]))
     }
@@ -136,7 +174,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
 
         XCTAssertEqual(basis.positions, Array(kept))
         XCTAssertEqual(basis.max(floor: floor), kept.reduce(0) { $0 + $1.alpha })
-        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floor: floor)?.slices.count, 16)
+        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floors: floors)?.slices.count, 16)
     }
 
     func testHeldValidatorIsLeftOutOfAllAndCannotStaySelected() {
