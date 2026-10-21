@@ -30,6 +30,12 @@ final class SubtensorValidatorCardView: UIControl {
         view.contentMode = .scaleAspectFit
     }
 
+    let statusView: StakingStatusView = .create { view in
+        view.backgroundView.apply(style: .chips)
+        view.isUserInteractionEnabled = false
+        view.isHidden = true
+    }
+
     private let nameSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     private let rateSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
@@ -39,7 +45,7 @@ final class SubtensorValidatorCardView: UIControl {
     private lazy var contentView = UIView.hStack(
         alignment: .center,
         spacing: Constants.spacing,
-        [iconView, titleView, rateView, chevronView]
+        [iconView, titleView, statusView, rateView, chevronView]
     )
 
     private lazy var titleView = UIView.vStack(alignment: .leading, spacing: 2, [nameLabel, subtitleLabel])
@@ -102,6 +108,19 @@ final class SubtensorValidatorCardView: UIControl {
             rateCaptionLabel.text = viewModel.rateCaption
             rateSkeletonView.setLoading(false)
         }
+    }
+
+    func bind(status isActive: Bool?, locale: Locale) {
+        statusView.isHidden = isActive == nil
+
+        guard let isActive else {
+            return
+        }
+
+        statusView.bind(status: isActive ? .active : .inactive, locale: locale)
+        statusView.backgroundView.fillColor = isActive
+            ? R.color.colorActiveStatusBackground()!
+            : R.color.colorChipsBackground()!
     }
 }
 
@@ -166,5 +185,7 @@ private extension SubtensorValidatorCardView {
         titleView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         rateView.setContentHuggingPriority(.required, for: .horizontal)
         rateView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        statusView.setContentHuggingPriority(.required, for: .horizontal)
+        statusView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }

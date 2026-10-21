@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "Prosty i efektywny proces KYC";
 "transak.buy.action.description" = "Kup kryptowaluty już od $5";
 "transak.sell.action.description" = "Sprzedaj kryptowaluty już od $10";
-"mercuryo.buy.action.description" = "Najlepsza cena z opłatami do 3,95%";
-"mercuryo.sell.action.description" = "Najlepsza cena z opłatami do 3,95%";
+"mercuryo.buy.action.description" = "Najlepsza cena z opłatami do 3,95%%";
+"mercuryo.sell.action.description" = "Najlepsza cena z opłatami do 3,95%%";
 "select.buy.provider.title" = "Wybierz dostawcę do zakupu %@ tokena";
 "select.sell.provider.title" = "Wybierz dostawcę do sprzedaży %@ tokena";
 "select.provider.disclaimer.text" = "Metody płatności, opłaty i limity różnią się w zależności od dostawcy. Porównaj ich oferty, aby znaleźć najlepszą opcję dla siebie.";

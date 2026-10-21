@@ -23,29 +23,16 @@ final class SubtensorValidatorDirectoryOperationFactory {
 private extension SubtensorValidatorDirectoryOperationFactory {
     func createListedItemWrapper(
         for hotkey: AccountId,
-        subnet: SubtensorSubnetRef,
-        requiresListing: Bool
+        subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let directoryWrapper = createDirectoryWrapper(for: subnet)
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-            let directory: SubtensorValidatorDirectory?
-
-            if requiresListing {
-                directory = try directoryWrapper.targetOperation.extractNoCancellableResultData()
-            } else {
-                directory = try? directoryWrapper.targetOperation.extractNoCancellableResultData()
-            }
-
-            guard let directory, var item = directory.items.first(where: { $0.hotkey == hotkey }) else {
+            guard let directory = try? directoryWrapper.targetOperation.extractNoCancellableResultData() else {
                 return nil
             }
 
-            if directory.listStamp?.freshness != .fresh {
-                item.reportedStake = nil
-            }
-
-            return item
+            return Self.listedItems(for: [hotkey], in: directory)[hotkey]
         }
 
         itemOperation.addDependency(directoryWrapper.targetOperation)
@@ -109,7 +96,7 @@ extension SubtensorValidatorDirectoryOperationFactory: SubtensorValidatorDirecto
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
-        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet, requiresListing: false)
+        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet)
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -136,46 +123,87 @@ extension SubtensorValidatorDirectoryOperationFactory: SubtensorValidatorDirecto
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet, requiresListing: true)
+        createListedDetailsWrapper(for: [hotkey], subnet: subnet).mapped { $0[hotkey] }
+    }
+
+    func createListedDetailsWrapper(
+        for hotkeys: [AccountId],
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<[AccountId: SubtensorValidatorDirectoryItem]> {
+        let directoryWrapper = createDirectoryWrapper(for: subnet)
         let logger = logger
 
-        let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
+        let itemsWrapper: CompoundOperationWrapper<[AccountId: SubtensorValidatorDirectoryItem]> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
                 guard let self else {
                     throw BaseOperationError.parentOperationCancelled
                 }
 
-                guard let listed = try listedWrapper.targetOperation.extractNoCancellableResultData() else {
-                    return .createWithResult(nil)
+                let directory = try directoryWrapper.targetOperation.extractNoCancellableResultData()
+                let listed = Self.listedItems(for: hotkeys, in: directory)
+
+                guard !listed.isEmpty else {
+                    return .createWithResult([:])
                 }
 
-                let chainWrapper = createChainItemWrapper(
-                    for: hotkey,
-                    subnet: subnet,
-                    name: listed.name,
-                    stake: listed.reportedStake
+                let pairs = listed.keys.map { SubtensorHotkeySubnet(hotkey: $0, netuid: subnet.netuid) }
+                let chainWrapper = chainOperationFactory.createChainSnapshotWrapper(
+                    for: SubtensorValidatorChainQuery(pairs: pairs)
                 )
 
-                let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
+                let itemsOperation = ClosureOperation<[AccountId: SubtensorValidatorDirectoryItem]> {
                     do {
-                        return try chainWrapper.targetOperation.extractNoCancellableResultData()
+                        let snapshot = try chainWrapper.targetOperation.extractNoCancellableResultData()
+
+                        return pairs.reduce(into: listed) { items, pair in
+                            items[pair.hotkey]?.take = snapshot.takeFractions[pair.hotkey]
+                            items[pair.hotkey]?.status = SubtensorValidatorChainStatus.make(
+                                snapshot: snapshot,
+                                pair: pair
+                            )
+                        }
                     } catch {
-                        logger.warning("Subtensor validator chain detail unavailable, keeping the listing: \(error)")
+                        logger.warning("Subtensor validators chain detail unavailable, keeping the listing: \(error)")
 
-                        var item = listed
-                        item.isChainDetailUnavailable = true
-
-                        return item
+                        return listed.mapValues { item in
+                            var item = item
+                            item.isChainDetailUnavailable = true
+                            return item
+                        }
                     }
                 }
 
-                itemOperation.addDependency(chainWrapper.targetOperation)
+                itemsOperation.addDependency(chainWrapper.targetOperation)
 
-                return chainWrapper.insertingTail(operation: itemOperation)
+                return chainWrapper.insertingTail(operation: itemsOperation)
             }
 
-        itemWrapper.addDependency(wrapper: listedWrapper)
+        itemsWrapper.addDependency(wrapper: directoryWrapper)
 
-        return itemWrapper.insertingHead(operations: listedWrapper.allOperations)
+        return itemsWrapper.insertingHead(operations: directoryWrapper.allOperations)
+    }
+}
+
+private extension SubtensorValidatorDirectoryOperationFactory {
+    static func listedItems(
+        for hotkeys: [AccountId],
+        in directory: SubtensorValidatorDirectory
+    ) -> [AccountId: SubtensorValidatorDirectoryItem] {
+        let requested = Set(hotkeys)
+        let isFresh = directory.listStamp?.freshness == .fresh
+
+        return directory.items.reduce(into: [:]) { items, item in
+            guard requested.contains(item.hotkey), items[item.hotkey] == nil else {
+                return
+            }
+
+            var listed = item
+
+            if !isFresh {
+                listed.reportedStake = nil
+            }
+
+            items[item.hotkey] = listed
+        }
     }
 }

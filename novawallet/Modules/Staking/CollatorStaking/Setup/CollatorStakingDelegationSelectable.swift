@@ -1,6 +1,14 @@
 import Foundation
 import Foundation_iOS
 
+struct CollatorStakingTargetPickerContent {
+    let title: LocalizableResource<String>?
+    let viewModels: [AccountDetailsPickerViewModel]
+    let action: LocalizableResource<IconWithTitleViewModel>?
+    let selectedIndex: Int
+    var allowsActionOnly = false
+}
+
 protocol CollatorStakingDelegationSelectable {
     func showDelegationSelection(
         from view: ControllerBackedProtocol?,
@@ -34,17 +42,17 @@ extension CollatorStakingDelegationSelectable {
             return IconWithTitleViewModel(icon: icon, title: title)
         }
 
-        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
-            viewModels,
-            actionViewModel: actionViewModel,
-            selectedIndex: selectedIndex,
+        showTargetSelection(
+            from: view,
+            content: CollatorStakingTargetPickerContent(
+                title: nil,
+                viewModels: viewModels,
+                action: actionViewModel,
+                selectedIndex: selectedIndex
+            ),
             delegate: delegate,
             context: context
-        ) else {
-            return
-        }
-
-        view?.controller.present(infoVew, animated: true, completion: nil)
+        )
     }
 
     func showUndelegationSelection(
@@ -54,16 +62,45 @@ extension CollatorStakingDelegationSelectable {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
-        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
-            viewModels,
-            actionViewModel: nil,
-            selectedIndex: selectedIndex,
+        showTargetSelection(
+            from: view,
+            content: CollatorStakingTargetPickerContent(
+                title: nil,
+                viewModels: viewModels,
+                action: nil,
+                selectedIndex: selectedIndex
+            ),
             delegate: delegate,
             context: context
-        ) else {
-            return
+        )
+    }
+
+    @discardableResult
+    func showTargetSelection(
+        from view: ControllerBackedProtocol?,
+        content: CollatorStakingTargetPickerContent,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?,
+        keeping current: CollatorStakingTargetPicker? = nil
+    ) -> CollatorStakingTargetPicker? {
+        if let current, current.presentingViewController != nil {
+            return current
         }
 
-        view?.controller.present(infoVew, animated: true, completion: nil)
+        guard let picker = ModalPickerFactory.createCollatorsPickingList(
+            content.viewModels,
+            actionViewModel: content.action,
+            selectedIndex: content.selectedIndex,
+            delegate: delegate,
+            context: context,
+            title: content.title,
+            allowsActionOnly: content.allowsActionOnly
+        ) else {
+            return nil
+        }
+
+        view?.controller.present(picker, animated: true, completion: nil)
+
+        return picker.presentingViewController != nil ? picker : nil
     }
 }

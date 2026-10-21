@@ -45,6 +45,15 @@ extension SubtensorOperation {
         return hotkey
     }
 
+    var hotkeyCount: Int {
+        switch self {
+        case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _, _):
+            Set(exits + partials.map(\.hotkey)).count
+        case .rootStake, .rootUnstake, .subnetBuy, .subnetSell, .rootClaim:
+            1
+        }
+    }
+
     var netuids: Set<UInt16>? {
         switch self {
         case .rootStake, .rootUnstake, .rootUnstakeGroup:

@@ -1,5 +1,38 @@
 import Foundation
 
+enum SubtensorUnstakeSelection: Equatable {
+    case validator(AccountId)
+    case all
+
+    var hotkey: AccountId? {
+        if case let .validator(hotkey) = self {
+            return hotkey
+        }
+
+        return nil
+    }
+
+    static func resolve(
+        _ requested: SubtensorUnstakeSelection?,
+        in group: SubtensorPortfolioGroup,
+        excluding heldHotkeys: Set<AccountId>
+    ) -> SubtensorUnstakeSelection {
+        let sellable = group.positions.map(\.hotkey).filter { !heldHotkeys.contains($0) }
+        let fallback = SubtensorUnstakeSelection.validator(sellable.first ?? group.primaryHotkey)
+
+        switch requested {
+        case .all, nil:
+            return canSellAll(in: group, excluding: heldHotkeys) ? .all : fallback
+        case let .validator(hotkey):
+            return sellable.contains(hotkey) ? .validator(hotkey) : fallback
+        }
+    }
+
+    static func canSellAll(in group: SubtensorPortfolioGroup, excluding heldHotkeys: Set<AccountId>) -> Bool {
+        group.positions.count > 1 && group.positions.contains { !heldHotkeys.contains($0.hotkey) }
+    }
+}
+
 struct SubtensorUnstakeSlice: Equatable {
     let hotkey: AccountId
     let alpha: Balance
@@ -96,6 +129,7 @@ struct SubtensorUnstakeModel {
     let netuid: UInt16
     let plan: SubtensorUnstakePlan
     let groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]
+    var validators: [AccountId: SubtensorConfirmValidator] = [:]
 
     var amount: Balance {
         plan.amount

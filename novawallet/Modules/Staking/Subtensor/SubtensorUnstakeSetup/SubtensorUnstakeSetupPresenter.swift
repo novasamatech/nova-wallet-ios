@@ -30,8 +30,13 @@ final class SubtensorUnstakeSetupPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
-    var validatorItem: SubtensorValidatorDirectoryItem?
     var validatorRequest: AccountId?
+    var failedValidatorRequest: AccountId?
+    var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var validatorsRequest: [AccountId]?
+    var validatorsResolved: [AccountId]?
+    weak var validatorPicker: CollatorStakingTargetPicker?
+    var selection: SubtensorUnstakeSelection?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
     var groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
@@ -89,50 +94,6 @@ private extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    var heldHotkeys: Set<AccountId> {
-        guard isRoot, let group, let holds, let currentBlock else {
-            return []
-        }
-
-        let head = UInt64(currentBlock)
-
-        return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
-    }
-
-    var excludedHotkeys: Set<AccountId> {
-        let held = heldHotkeys
-
-        guard let group, held.count < group.positions.count else {
-            return []
-        }
-
-        return held
-    }
-
-    func floorAlpha() -> Balance {
-        guard let minStake = preflight?.minStake else {
-            return 0
-        }
-
-        guard !isRoot else {
-            return SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: minStake,
-                price: SubtensorPallet.alphaPriceScale,
-                feeRate: 0
-            )
-        }
-
-        guard let limitPrice = currentLimitPrice() else {
-            return 0
-        }
-
-        return SubtensorGroupUnstakeBasis.floorAlpha(
-            minTao: minStake,
-            price: limitPrice,
-            feeRate: latestQuote?.quote.feeRate ?? 0
-        )
-    }
-
     func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorOperation? {
         guard !isRoot else {
             return plan.rootOperation(amount: plan.amount)
@@ -158,12 +119,34 @@ extension SubtensorUnstakeSetupPresenter {
         netuid == SubtensorPallet.rootNetuid
     }
 
+    func unstakeFloors() -> SubtensorUnstakeFloors {
+        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
+            return .none
+        }
+
+        return SubtensorUnstakeFloors(
+            yield: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.minStake,
+                price: price,
+                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+            ),
+            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.effectiveNominatorMinStake,
+                price: price,
+                feeRate: 0
+            )
+        )
+    }
+
     var basis: SubtensorGroupUnstakeBasis? {
-        if let group {
+        if let group, let currentSelection {
             return SubtensorGroupUnstakeBasis.make(
                 from: group,
-                excluding: excludedHotkeys,
-                groupHotkeys: groupHotkeys ?? [:]
+                selection: currentSelection,
+                excluding: heldHotkeys,
+                groupHotkeys: groupHotkeys ?? [:],
+                floor: unstakeFloors().yield,
+                coldkey: selectedAccount.chainAccount.accountId
             )
         }
 
@@ -175,7 +158,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var maxAmount: Balance? {
-        basis?.max(floor: floorAlpha())
+        basis?.max(floor: unstakeFloors().yield)
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
@@ -214,11 +197,11 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func plan(for amount: Balance) -> SubtensorUnstakePlan? {
-        basis?.plan(for: amount, floor: floorAlpha())
+        basis?.plan(for: amount, floors: unstakeFloors())
     }
 
     func feePlan() -> SubtensorUnstakePlan? {
-        guard let primary = group?.primaryHotkey else {
+        guard let anchorHotkey else {
             return nil
         }
 
@@ -226,7 +209,7 @@ extension SubtensorUnstakeSetupPresenter {
 
         return plan(for: amount) ?? SubtensorUnstakePlan(
             exits: [],
-            partials: [SubtensorUnstakeSlice(hotkey: primary, alpha: amount)]
+            partials: [SubtensorUnstakeSlice(hotkey: anchorHotkey, alpha: amount)]
         )
     }
 
@@ -243,6 +226,10 @@ extension SubtensorUnstakeSetupPresenter {
 
         guard !held.isEmpty, let group, let maxAmount, let holds, let currentBlock else {
             return nil
+        }
+
+        if let hotkey = currentSelection?.hotkey {
+            return held.contains(hotkey) ? holds[hotkey]?.remainingBlocks(at: UInt64(currentBlock)) : nil
         }
 
         guard held.count == group.positions.count || (amount ?? 0) > maxAmount else {
@@ -284,22 +271,12 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func refreshPreflight() {
-        guard let primary = group?.primaryHotkey else {
+        guard let anchorHotkey else {
             return
         }
 
-        preflightRequest = primary
-        interactor.refreshPreflight(for: primary, netuid: netuid)
-    }
-
-    func loadValidatorIfNeeded() {
-        guard let primary = group?.primaryHotkey, primary != validatorRequest, let subnetRef else {
-            return
-        }
-
-        validatorRequest = primary
-        validatorItem = nil
-        interactor.loadValidator(primary, on: subnetRef)
+        preflightRequest = anchorHotkey
+        interactor.refreshPreflight(for: anchorHotkey, netuid: netuid)
     }
 
     func applyInputChange() {
@@ -309,6 +286,8 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func applyPlanChange(from previousPlan: SubtensorUnstakePlan?) {
+        reconcileAnchor()
+
         let plan = feePlan()
 
         guard plan != previousPlan else {
@@ -368,8 +347,11 @@ extension SubtensorUnstakeSetupPresenter {
             basis: basis,
             maxAmount: maxAmount,
             amount: amount,
-            primaryHotkey: group?.primaryHotkey,
-            validatorName: validatorItem?.name,
+            validatorHotkey: anchorHotkey,
+            validatorName: anchorHotkey.flatMap { validatorName(for: $0) },
+            isValidatorSelectable: (group?.positions.count ?? 0) > 1,
+            isAllValidators: currentSelection == .all,
+            legCap: isLegCapped ? SubtensorGroupUnstakeBasis.maxLegs : nil,
             fee: fee,
             price: price,
             quote: quoteFlow.freshQuote,
