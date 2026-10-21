@@ -66,7 +66,12 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         titleControl.invalidateLayout()
 
         swapRateCell.bind(loadableViewModel: .loaded(value: viewModel.swapRate))
-        validatorCell.bind(loadableViewModel: .loaded(value: viewModel.validator))
+
+        validatorCell.isHidden = viewModel.validator == nil
+
+        if let validator = viewModel.validator {
+            validatorCell.bind(loadableViewModel: .loaded(value: validator))
+        }
 
         costBasisCell.titleButton.setTitle(viewModel.costBasis?.title)
         costBasisCell.bind(costBasisRow: viewModel.costBasis?.value ?? .hidden, locale: locale)
@@ -78,11 +83,19 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         }
 
         networkFeeCell.isHidden = viewModel.networkFee == nil
-        validatorCell.borderView.borderType = viewModel.networkFee == nil ? .none : .bottom
 
         if let networkFee = viewModel.networkFee {
             let feeViewModel = NetworkFeeInfoViewModel(isEditable: false, balanceViewModel: networkFee)
             networkFeeCell.bind(loadableViewModel: .loaded(value: feeViewModel))
+        }
+
+        let cells: [StackTableViewCellProtocol] = [
+            swapRateCell, costBasisCell, slippageCell, validatorCell, networkFeeCell
+        ]
+        let visibleCells = cells.filter { !$0.isHidden }
+
+        visibleCells.enumerated().forEach { index, cell in
+            cell.borderView.borderType = index < visibleCells.count - 1 ? .bottom : .none
         }
     }
 }

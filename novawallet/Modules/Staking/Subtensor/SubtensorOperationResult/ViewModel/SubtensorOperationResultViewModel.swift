@@ -35,7 +35,7 @@ struct SubtensorResultDetailsViewModel {
     let swapRate: String
     let costBasis: SubtensorResultCostBasisViewModel?
     let slippage: String?
-    let validator: String
+    let validator: String?
     let networkFee: BalanceViewModelProtocol?
     let isExpanded: Bool
 }
