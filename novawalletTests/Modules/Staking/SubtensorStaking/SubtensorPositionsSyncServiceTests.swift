@@ -90,7 +90,7 @@ final class SubtensorPositionsSyncServiceTests: XCTestCase {
                 return
             }
 
-            isFailed = newValue
+            isFailed = newValue != nil
             failureExpectation.fulfill()
         })
         service.refresh()

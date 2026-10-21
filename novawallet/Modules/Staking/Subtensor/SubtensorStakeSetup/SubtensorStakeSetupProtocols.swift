@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 protocol SubtensorStakeSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
@@ -52,7 +53,8 @@ protocol SubtensorStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentabl
     func showAllSubnets(
         from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState,
-        delegate: SubtensorSubnetSelectDelegate
+        delegate: SubtensorSubnetSelectDelegate,
+        source: SubnetListSource
     )
 
     func showConfirmation(
@@ -64,6 +66,7 @@ protocol SubtensorStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentabl
         from view: SubtensorStakeSetupViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         delegate: SubtensorValidatorSelectDelegate
     )
 

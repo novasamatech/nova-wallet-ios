@@ -87,6 +87,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
 
     func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Error: \(error)")
+        analytics.data.trackFailure(error)
 
         guard !error.isNovaFeeUnavailable else {
             tradesUnavailable = true
@@ -141,6 +142,7 @@ extension SubtensorConfirmPresenter: SubtensorOperationResultDelegate {
 }
 
 extension SubtensorConfirmPresenter: SubtensorBaseRetrying {
+    var dataAnalytics: SubtensorDataAnalytics { analytics.data }
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var retryInteractor: SubtensorBaseInteractorInputProtocol { interactor }

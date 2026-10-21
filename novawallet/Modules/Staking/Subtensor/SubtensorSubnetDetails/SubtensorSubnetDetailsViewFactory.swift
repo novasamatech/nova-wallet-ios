@@ -6,6 +6,7 @@ enum SubtensorSubnetDetailsViewFactory {
         for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
+        abandonTracker: AnalyticsAbandonTracker?,
         delegate: SubtensorSubnetSelectDelegate
     ) -> SubtensorSubnetDetailsViewProtocol? {
         guard
@@ -32,6 +33,8 @@ enum SubtensorSubnetDetailsViewFactory {
             interactor: interactor,
             wireframe: SubtensorSubnetDetailsWireframe(state: state),
             viewModelFactory: viewModelFactory,
+            chainAsset: state.stakingOption.chainAsset,
+            abandonTracker: abandonTracker,
             localizationManager: LocalizationManager.shared
         )
 

@@ -10,6 +10,7 @@ public struct AnalyticsContentValue: Equatable {
         case bannerId
         case signingMethod
         case caip2Chain
+        case netuid
     }
 
     public let kind: Kind
@@ -52,6 +53,10 @@ public struct AnalyticsContentValue: Equatable {
     public static func caip2Chain(_ chain: String) -> AnalyticsContentValue? {
         make(.caip2Chain, from: chain)
     }
+
+    public static func netuid(_ netuid: UInt16) -> AnalyticsContentValue? {
+        make(.netuid, from: String(netuid))
+    }
 }
 
 extension AnalyticsContentValue.Kind {
@@ -85,6 +90,8 @@ extension AnalyticsContentValue.Kind {
                 lengths: 5 ... 41,
                 shape: Self.isCaip2
             )
+        case .netuid:
+            return AnalyticsContentGrammar(alphabet: Alphabet.digits, lengths: 1 ... 5)
         }
     }
 }

@@ -23,6 +23,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         }
 
         if let validator {
+            recommendedHotkey = validator.hotkey
             applyValidator(validator)
         } else {
             validatorState = .none
@@ -35,6 +36,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             return
         }
 
+        dataAnalytics.trackFailure(error, endpoint: .recommendations)
         presetError = error
         validatorState = .none
         provideViewModel()
@@ -57,7 +59,9 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             return
         }
 
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.dataAnalytics.trackRetry(.chainRpc)
             self?.interactor.loadSubnet(netuid: position.netuid)
         }
     }

@@ -31,12 +31,12 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
 
 protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(group: SubtensorPortfolioGroup?)
-    func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceiveSyncFailure(_ error: Error?)
     func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didReceive(price: PriceData?)
     func didChangeCurrency()
     func didReceive(prices: SubtensorAlphaPrices)
-    func didFailPrices()
+    func didFailPrices(_ error: Error)
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
@@ -47,9 +47,10 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(pendingClaimHotkeys: Set<AccountId>)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
+    func didFailHolds()
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
-    func didFailHistory(for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error)
     func didBecomeActive()
 }
 

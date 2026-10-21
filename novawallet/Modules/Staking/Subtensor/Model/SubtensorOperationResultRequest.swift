@@ -21,4 +21,5 @@ struct SubtensorOperationResultRequest {
     let prices: SubtensorOperationResultPrices
     let costBasis: SubtensorCostBasisState?
     let blockTime: BlockTime
+    var hasLockedStake = false
 }

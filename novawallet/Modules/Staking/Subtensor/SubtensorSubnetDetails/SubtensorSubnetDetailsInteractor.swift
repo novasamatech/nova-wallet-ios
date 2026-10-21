@@ -75,8 +75,8 @@ private extension SubtensorSubnetDetailsInteractor {
             onState: { [weak self] state in
                 self?.presenter?.didReceivePositions(state)
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceivePositionsSyncFailed(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceivePositionsSyncFailed(error != nil)
             }
         )
     }
@@ -132,7 +132,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
             label: "parameters"
         ) { [weak self] in
             self?.presenter?.didReceiveParameters($0)
-        } fail: { [weak self] in
+        } fail: { [weak self] _ in
             self?.presenter?.didFailParameters()
         }
     }
@@ -149,8 +149,8 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
 
         load(wrapper, in: historyCallStore, label: "subnet price history") { [weak self] in
             self?.presenter?.didReceiveHistory($0, for: period)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistory(for: period)
+        } fail: { [weak self] error in
+            self?.presenter?.didFailHistory(for: period, error: error)
         }
     }
 
@@ -168,7 +168,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
             label: "subnet validator preset"
         ) { [weak self] in
             self?.presenter?.didReceivePreset($0)
-        } fail: { [weak self] in
+        } fail: { [weak self] _ in
             self?.presenter?.didFailPreset()
         }
     }

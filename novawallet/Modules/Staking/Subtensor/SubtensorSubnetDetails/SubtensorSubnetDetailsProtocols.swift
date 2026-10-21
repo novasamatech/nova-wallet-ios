@@ -16,6 +16,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func retryHistory()
     func selectChart(_ selection: SubtensorPriceChartSelection?)
     func selectLink(_ url: URL)
+    func becomeActive()
 }
 
 protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
@@ -29,7 +30,7 @@ protocol SubtensorSubnetDetailsInteractorInputProtocol: AnyObject {
 protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(isFavorite: Bool)
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
-    func didFailHistory(for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error)
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters)
     func didFailParameters()
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)
@@ -43,19 +44,13 @@ protocol SubtensorSubnetDetailsInteractorOutputProtocol: AnyObject {
     func didBecomeActive()
 }
 
-protocol SubtensorSubnetDetailsWireframeProtocol: WebPresentable {
+protocol SubtensorSubnetDetailsWireframeProtocol: WebPresentable, SubtensorSubnetPickerCompleting,
+    SubtensorCallerPopping {
     func showValidators(
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         delegate: SubtensorValidatorSelectDelegate
-    )
-
-    func complete(
-        from view: SubtensorSubnetDetailsViewProtocol?,
-        host: SubtensorSubnetDetailsHost,
-        target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?,
-        delegate: SubtensorSubnetSelectDelegate?
     )
 }

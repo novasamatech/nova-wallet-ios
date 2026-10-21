@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorSubnetSelectPresenter {
     weak var view: SubtensorSubnetSelectViewProtocol?
@@ -8,6 +9,13 @@ final class SubtensorSubnetSelectPresenter {
     let wireframe: SubtensorSubnetSelectWireframeProtocol
     let interactor: SubtensorSubnetSelectInteractorInputProtocol
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+
+    let abandonTracker: AnalyticsAbandonTracker?
+
+    let dataAnalytics = SubtensorDataAnalytics(screen: .subnetSelect)
+    let source: SubnetListSource
+    var isSearchTracked = false
 
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
@@ -29,11 +37,16 @@ final class SubtensorSubnetSelectPresenter {
         interactor: SubtensorSubnetSelectInteractorInputProtocol,
         wireframe: SubtensorSubnetSelectWireframeProtocol,
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
         delegate: SubtensorSubnetSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
-        browseState: SubtensorSubnetBrowseState
+        browseState: SubtensorSubnetBrowseState,
+        source: SubnetListSource
     ) {
         self.browseState = browseState
+        self.chainAsset = chainAsset
+        self.source = source
+        abandonTracker = source == .seeAllOptions ? AnalyticsAbandonTracker(makeEvent: Self.abandonEvent) : nil
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -121,6 +134,7 @@ private extension SubtensorSubnetSelectPresenter {
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
+        trackListOpened()
         provideList()
         requestApyIfNeeded()
 
@@ -128,11 +142,13 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func becomeActive() {
+        abandonTracker?.makeEvent = Self.abandonEvent
         interactor.refreshFavourites()
     }
 
     func search(query: String) {
         self.query = query
+        trackSearchIfNeeded(query)
 
         provideList()
     }
@@ -142,15 +158,17 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
             return
         }
 
-        wireframe.showDetails(from: view, item: item, delegate: delegate)
+        wireframe.showDetails(from: view, item: item, abandonTracker: abandonTracker, delegate: delegate)
     }
 
     func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
+        trackInteraction(favourites.contains(subnetRef) ? .favoriteRemoved : .favoriteAdded)
         interactor.toggleFavorite(subnetRef)
     }
 
     func selectRoot() {
-        wireframe.complete(from: view, target: .root, validator: nil, delegate: delegate)
+        trackRootSelected()
+        wireframe.complete(from: view, target: .root, validator: nil, recommendedHotkey: nil, delegate: delegate)
     }
 
     func showSort() {
@@ -164,6 +182,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func retry() {
+        dataAnalytics.trackRetry(.subnets)
         entries = nil
         entriesError = nil
         provideList()
@@ -216,6 +235,8 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectInteractorOutputP
         entries = nil
         entriesError = error
         provideList()
+
+        dataAnalytics.trackFailure(error, endpoint: .subnets)
     }
 }
 
@@ -237,6 +258,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSortSheetDelegate {
             return
         }
 
+        trackInteraction(.sort(sorts[index].analyticsKey))
         applySort(sorts[index])
     }
 }
@@ -247,6 +269,10 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetFiltersDelegate {
     }
 
     func didReceiveSubnet(filters: SubtensorSubnetFilters) {
+        if filters.hideThinPools != browseState.filters.hideThinPools {
+            trackInteraction(.filterThinPools(filters.hideThinPools))
+        }
+
         browseState.filters = filters
 
         provideList()

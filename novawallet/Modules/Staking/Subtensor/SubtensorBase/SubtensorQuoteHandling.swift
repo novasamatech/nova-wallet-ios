@@ -5,6 +5,7 @@ protocol SubtensorBaseRetrying: AnyObject, Localizable {
     var retryView: ControllerBackedProtocol? { get }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { get }
     var retryInteractor: SubtensorBaseInteractorInputProtocol { get }
+    var dataAnalytics: SubtensorDataAnalytics { get }
 
     func refreshFee()
     func refreshPreflight()
@@ -12,21 +13,27 @@ protocol SubtensorBaseRetrying: AnyObject, Localizable {
 
 extension SubtensorBaseRetrying {
     func presentBaseRetry(for error: SubtensorBaseError) {
+        let endpoint = error.analyticsEndpoint
+
         switch error {
         case .feeFailed:
             retryWireframe.presentFeeStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(endpoint)
                 self?.refreshFee()
             }
         case .preflightFailed:
             retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(endpoint)
                 self?.refreshPreflight()
             }
         case .rootHoldsFailed:
             retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(endpoint)
                 self?.retryInteractor.retryRootHolds()
             }
         case .existentialDepositFailed:
             retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(endpoint)
                 self?.retryInteractor.loadExistentialDeposit()
             }
         case .quoteFailed:
@@ -141,6 +148,7 @@ extension SubtensorQuoteHandling {
 
     func didReceiveBaseError(_ error: SubtensorBaseError) {
         logger.error("Subtensor setup error: \(error)")
+        dataAnalytics.trackFailure(error)
 
         if error.isNovaFeeUnavailable {
             tradesUnavailable = true

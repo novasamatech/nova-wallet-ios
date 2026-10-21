@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 protocol SubtensorPortfolioViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel)
@@ -14,6 +15,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func retry()
     func refresh()
     func selectChartPoint(at index: Int?)
+    func reopen(from source: StakingPortfolioSource)
 }
 
 protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
@@ -35,10 +37,10 @@ protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(networkRootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)
-    func didFailHistories(for period: SubtensorPricePeriod)
+    func didFailHistories(for period: SubtensorPricePeriod, error: Error?)
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didFailWeeklyChanges()
-    func didReceiveSyncFailure(_ isFailed: Bool)
+    func didReceiveSyncFailure(_ error: Error?)
     func didReceivePositionsSyncing(_ isSyncing: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()

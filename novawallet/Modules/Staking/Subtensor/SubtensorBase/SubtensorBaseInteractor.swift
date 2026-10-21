@@ -120,8 +120,8 @@ private extension SubtensorBaseInteractor {
             onState: { [weak self] newState in
                 self?.basePresenter?.didReceivePositions(newState)
             },
-            onFailure: { [weak self] isFailed in
-                self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
+            onFailure: { [weak self] error in
+                self?.basePresenter?.didReceivePositionsSyncFailed(error != nil)
             }
         )
     }

@@ -13,6 +13,7 @@ struct SubtensorConfirmModel {
     let mode: Mode
     let tolerance: BigRational?
     var acknowledgedQuote: SubtensorTradeQuote?
+    var hasLockedStake = false
 
     var amount: Balance {
         switch mode {

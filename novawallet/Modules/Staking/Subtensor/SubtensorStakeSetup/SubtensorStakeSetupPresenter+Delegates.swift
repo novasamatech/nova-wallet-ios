@@ -1,10 +1,16 @@
 import Foundation
 
 extension SubtensorStakeSetupPresenter: SubtensorSubnetSelectDelegate {
-    func didSelectStakeTarget(_ target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?) {
+    func didSelectStakeTarget(
+        _ target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
+    ) {
         guard !mode.isLocked else {
             return
         }
+
+        self.recommendedHotkey = recommendedHotkey
 
         quickPickVisit?.replaceManually()
         interactor.cancelQuickPickSnapshot()
@@ -58,7 +64,8 @@ extension SubtensorStakeSetupPresenter {
                 self?.refreshPreflight()
             },
             quoteContext: createQuoteContext(),
-            isValidatorInactive: validatorItem?.isInactive == true
+            isValidatorInactive: validatorItem?.isInactive == true,
+            analytics: createValidationReporter(for: target)
         )
     }
 
@@ -84,5 +91,21 @@ extension SubtensorStakeSetupPresenter {
             tolerance: target.isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
+    }
+}
+
+extension SubtensorStakeSetupPresenter: SubtensorQuoteHandling {
+    var isRoot: Bool { target?.isRoot == true }
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+
+    var alphaDisplayInfo: AssetBalanceDisplayInfo {
+        guard let target else {
+            return chainAsset.assetDisplayInfo
+        }
+
+        return chainAsset.assetDisplayInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
     }
 }

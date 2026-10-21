@@ -128,6 +128,7 @@ final class SubtensorValidationFactory {
         case let .rateChange(_, new) where context.onPriceMoved != nil:
             context.onPriceMoved?(new)
         case let .rateChange(old, new):
+            context.onRateUpdateShown?()
             presentable.presentRateUpdated(
                 from: view,
                 oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
@@ -139,6 +140,7 @@ final class SubtensorValidationFactory {
                 locale: locale
             )
         case .unavailable:
+            context.onLiquidityShown?()
             presentable.presentNotEnoughLiquidity(from: view, locale: locale)
         }
     }

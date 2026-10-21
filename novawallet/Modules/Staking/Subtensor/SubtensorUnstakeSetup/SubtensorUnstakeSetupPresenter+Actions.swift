@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
@@ -96,6 +97,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             }
 
             model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            trackInitiated(for: model)
             isConfirmationShown = true
             wireframe.showConfirmation(from: view, model: model)
         }
@@ -138,7 +140,8 @@ extension SubtensorUnstakeSetupPresenter {
                 self?.loadGroupHotkeys()
             },
             onUnstakeAll: createUnstakeAllOffer(),
-            quoteContext: createQuoteContext()
+            quoteContext: createQuoteContext(),
+            analytics: createValidationReporter()
         )
     }
 
@@ -177,7 +180,18 @@ extension SubtensorUnstakeSetupPresenter {
                 groupHotkeys: groupHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
-            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
+            hasLockedStake: hasLockedStake
         )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter: Localizable {
+    func applyLocalization() {
+        if let view, view.isSetup {
+            provideAmountInputViewModel()
+            provideAssetViewModel()
+            provideViewModel()
+        }
     }
 }

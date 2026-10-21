@@ -96,9 +96,11 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func provideViewModel() {
-        let viewModel = viewModelFactory.createViewModel(for: createViewModelInput(), locale: selectedLocale)
+        let input = createViewModelInput()
+        let viewModel = viewModelFactory.createViewModel(for: input, locale: selectedLocale)
 
         view?.didReceive(viewModel: viewModel)
+        trackNoBalanceIfNeeded(input.amountState)
     }
 
     func showLockedValidatorInfo() {
@@ -130,7 +132,12 @@ extension SubtensorStakeSetupPresenter {
 
         wireframe.showSubnetDetails(
             from: view,
-            input: SubtensorSubnetDetailsInput(subnet: subnet, target: target, validator: validatorItem),
+            input: SubtensorSubnetDetailsInput(
+                subnet: subnet,
+                target: target,
+                validator: validatorItem,
+                recommendedHotkey: recommendedHotkey
+            ),
             delegate: self
         )
     }

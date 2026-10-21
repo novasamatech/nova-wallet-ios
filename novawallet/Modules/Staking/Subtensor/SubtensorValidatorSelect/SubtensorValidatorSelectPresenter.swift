@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorValidatorSelectPresenter {
     weak var view: SubtensorValidatorSelectViewProtocol?
@@ -9,6 +10,8 @@ final class SubtensorValidatorSelectPresenter {
     let interactor: SubtensorValidatorSelectInteractorInputProtocol
     let wireframe: SubtensorValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
+    let analytics: SubtensorValidatorSelectAnalytics
+    let dataAnalytics = SubtensorDataAnalytics(screen: .validatorSelect)
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
@@ -27,6 +30,7 @@ final class SubtensorValidatorSelectPresenter {
     init(
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         interactor: SubtensorValidatorSelectInteractorInputProtocol,
         wireframe: SubtensorValidatorSelectWireframeProtocol,
         listFactory: SubtensorValidatorListFactory,
@@ -37,12 +41,14 @@ final class SubtensorValidatorSelectPresenter {
         self.target = target
         self.selectedHotkey = selectedHotkey
         preselectedHotkey = selectedHotkey
+        self.analytics = analytics
         self.interactor = interactor
         self.wireframe = wireframe
         self.listFactory = listFactory
         self.delegate = delegate
         self.filterSession = filterSession
         filters = filterSession.applied(isRoot: target.isRoot)
+
         self.localizationManager = localizationManager
     }
 }
@@ -133,11 +139,29 @@ private extension SubtensorValidatorSelectPresenter {
 
 extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterProtocol {
     func setup() {
+        becomeActive()
         provideState()
         interactor.setup()
     }
 
+    func becomeActive() {
+        let analyticsTarget = target.analyticsTarget
+
+        analytics.abandonTracker?.makeEvent = {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .validatorSelect, target: analyticsTarget)
+        }
+    }
+
     func retry() {
+        let endpoint: BittensorDataEndpoint = if directoryError != nil {
+            .validators
+        } else if verificationError != nil {
+            .chainRpc
+        } else {
+            .recommendations
+        }
+
+        dataAnalytics.trackRetry(endpoint)
         directory = nil
         directoryError = nil
         yields = nil
@@ -204,6 +228,10 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
         let target = target
         let delegate = delegate
 
+        if item.hotkey != preselectedHotkey, item.hotkey != analytics.recommendedHotkey {
+            trackValidatorChanged(source: query.isEmpty ? .list : .search, unusualApyFilter: filters.hidesUnusualApy)
+        }
+
         delegate?.didSelectValidator(validator, for: target)
 
         wireframe.complete(from: view) { [weak delegate] in
@@ -227,6 +255,8 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
         directory = nil
         directoryError = error
         provideState()
+
+        dataAnalytics.trackFailure(error, endpoint: .validators)
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
@@ -258,12 +288,18 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectInteractorO
         }
 
         provideState()
+
+        if filters.hidesUnusualApy {
+            dataAnalytics.trackFailure(recommendedError, endpoint: .recommendations)
+        }
     }
 
     func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
         verificationError = error
         provideState()
+
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
     }
 }
 

@@ -15,7 +15,8 @@ final class SubtensorOperationResultPresenter {
     private var catalogue: SubtensorSubnetCatalogue?
     private var subnetLogos: SubtensorSubnetLogos?
     private var countdownTimer: CountdownTimer?
-    private var progressStartedAt = Date()
+    private(set) var progressStartedAt = Date()
+    var isOutcomeTracked = false
 
     init(
         request: SubtensorOperationResultRequest,
@@ -80,12 +81,15 @@ private extension SubtensorOperationResultPresenter {
     }
 
     func handleSuccess(_ outcome: SubtensorOperationOutcome) {
+        trackSuccess(outcome)
         changeState(.done(outcome: outcome, time: Date()))
 
         interactor.fetchBlockTimestamp(at: outcome.blockHash)
     }
 
     func handleFailure(_ failure: SubtensorSubmissionFailure) {
+        trackFailure(failure)
+
         if failure.isSigningCancelled {
             clearCountdown()
             retry()
@@ -159,6 +163,8 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterPr
     }
 
     func activate(action: SubtensorResultAction) {
+        trackAction(action)
+
         switch action {
         case .done:
             completeAfterSuccess()
@@ -169,6 +175,7 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultPresenterPr
         case .viewPosition, .yourBittensor:
             wireframe.showYourBittensor(from: view, stakingOption: stakingOption)
         case .discoverSubnets:
+            trackSubnetDiscovery()
             wireframe.showSubnetDiscovery(from: view)
         }
     }
@@ -240,6 +247,7 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorO
             return
         }
 
+        trackUnconfirmed()
         changeState(.unconfirmed(time: Date()))
     }
 

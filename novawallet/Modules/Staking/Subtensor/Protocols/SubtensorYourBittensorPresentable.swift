@@ -1,4 +1,5 @@
 import UIKit
+import NovaAnalytics
 
 protocol SubtensorYourBittensorPresentable {
     func showYourBittensor(from view: ControllerBackedProtocol?, stakingOption: Multistaking.ChainAssetOption)
@@ -18,10 +19,12 @@ extension SubtensorYourBittensorPresentable {
             }
 
             if let portfolio = hostNavigation.viewControllers.last(where: { $0 is SubtensorPortfolioViewController }) {
+                (portfolio as? SubtensorPortfolioViewController)?.presenter.reopen(from: .result)
                 hostNavigation.popToViewController(portfolio, animated: true)
             } else if let portfolioView = SubtensorPortfolioViewFactory.createView(
                 for: stakingOption,
-                flowState: flowState
+                flowState: flowState,
+                source: .result
             ) {
                 hostNavigation.pushViewController(portfolioView.controller, animated: true)
             }

@@ -18,6 +18,9 @@ final class SubtensorPositionPresenter {
     var isSubnetsRefreshForced = false
     var isSubnetsInfoUnavailable = false
     var isClosed = false
+    var isOpenedTracked = false
+    var isHoldsResolved = false
+    let dataAnalytics = SubtensorDataAnalytics(screen: .position)
 
     init(
         group: SubtensorPortfolioGroup,
@@ -63,6 +66,7 @@ extension SubtensorPositionPresenter {
 
     func provideViewModel() {
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
+        trackOpenedIfReady()
     }
 
     func loadValidatorIfNeeded() {
@@ -182,10 +186,18 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         wireframe.checkingSupport(
             of: .subtensorStaking(chain: chainAsset.chain),
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.perform(action, account: account)
-        }
+            sheetPresentingView: view,
+            onRefusal: { [weak self] result in
+                guard let reason = result.subtensorBlockedReason else {
+                    return
+                }
+
+                self?.trackActionRefusal(action, reason: reason, wallet: wallet)
+            },
+            successClosure: { [weak self] in
+                self?.perform(action, account: account)
+            }
+        )
     }
 
     func selectValidator() {
@@ -207,11 +219,13 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 
     func retrySync() {
+        dataAnalytics.trackRetry(.chainRpc)
         interactor.refreshPositions()
         loadValidatorIfNeeded()
     }
 
     func retryHistory() {
+        dataAnalytics.trackRetry(state.catalogue == nil ? .subnets : .coingecko)
         historyRequest = nil
 
         if state.catalogue == nil {

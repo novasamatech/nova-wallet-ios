@@ -80,7 +80,11 @@ private extension StakingDashboardPresenter {
 
     func showStartStaking(for chainAsset: ChainAsset, source: StakingFlowSource) {
         let event = chainAsset.chain.analyticsNetworkName.map { network in
-            AnalyticsEvent.stakingFlowOpened(network: network, source: source)
+            AnalyticsEvent.stakingFlowOpened(
+                network: network,
+                source: source,
+                hasNewBadge: source == .dashboard ? chainAsset.chain.newFeatures.contains(.staking) : nil
+            )
         }
 
         trackAnalytics(event)

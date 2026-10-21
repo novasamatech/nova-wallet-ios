@@ -16,8 +16,9 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
-    func didReceiveSyncFailure(_ isFailed: Bool) {
-        state.isSyncFailed = isFailed
+    func didReceiveSyncFailure(_ error: Error?) {
+        state.isSyncFailed = error != nil
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         provideViewModel()
     }
 
@@ -42,7 +43,11 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         resolveCatalogue()
     }
 
-    func didFailPrices() {
+    func didFailPrices(_ error: Error) {
+        if state.catalogue == nil {
+            dataAnalytics.trackFailure(error, endpoint: .subnets)
+        }
+
         resolveCatalogue()
     }
 
@@ -118,9 +123,15 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
     }
 
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
+        isHoldsResolved = true
         state.holds = holds
         state.blockTime = blockTime
         provideViewModel()
+    }
+
+    func didFailHolds() {
+        isHoldsResolved = true
+        trackOpenedIfReady()
     }
 
     func didReceive(blockNumber: BlockNumber) {
@@ -139,10 +150,12 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
-    func didFailHistory(for period: SubtensorPricePeriod) {
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error) {
         guard period == state.period, state.history == .loading else {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: .coingecko)
 
         state.history = .failed
         state.hasResolvedHistory = true

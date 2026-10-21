@@ -1,10 +1,12 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 enum SubtensorPortfolioViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol,
+        source: StakingPortfolioSource
     ) -> SubtensorPortfolioViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -44,6 +46,7 @@ enum SubtensorPortfolioViewFactory {
             wallet: wallet,
             account: account,
             chainAsset: stakingOption.chainAsset,
+            analyticsSource: source,
             localizationManager: LocalizationManager.shared
         )
 

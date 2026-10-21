@@ -6,7 +6,7 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol, Obse
     func add(
         observer: AnyObject,
         onState: @escaping (Multistaking.SubtensorState?) -> Void,
-        onFailure: @escaping (Bool) -> Void
+        onFailure: @escaping (Error?) -> Void
     )
 
     func remove(observer: AnyObject)
@@ -30,7 +30,8 @@ final class SubtensorPositionsSyncService: ObservableSyncService {
     )
 
     private var stateObservable: Observable<Multistaking.SubtensorState?> = .init(state: nil)
-    private var failureObservable: Observable<Bool> = .init(state: false)
+    private var failureObservable: Observable<SubtensorPositionsSyncFailure?> = .init(state: nil)
+    private var failureSequence: UInt = 0
 
     init(
         stakeStateSource: SubtensorStakeStateSource,
@@ -60,7 +61,7 @@ final class SubtensorPositionsSyncService: ObservableSyncService {
 
 private extension SubtensorPositionsSyncService {
     func publish(state: Multistaking.SubtensorState) {
-        failureObservable.state = false
+        failureObservable.state = nil
 
         stateObservable.state = state
 
@@ -68,7 +69,8 @@ private extension SubtensorPositionsSyncService {
     }
 
     func markFailed(_ error: Error) {
-        failureObservable.state = true
+        failureSequence &+= 1
+        failureObservable.state = SubtensorPositionsSyncFailure(error: error, sequence: failureSequence)
 
         completeImmediate(error)
     }
@@ -78,7 +80,7 @@ extension SubtensorPositionsSyncService: SubtensorPositionsSyncServiceProtocol {
     func add(
         observer: AnyObject,
         onState: @escaping (Multistaking.SubtensorState?) -> Void,
-        onFailure: @escaping (Bool) -> Void
+        onFailure: @escaping (Error?) -> Void
     ) {
         mutex.lock()
 
@@ -90,8 +92,8 @@ extension SubtensorPositionsSyncService: SubtensorPositionsSyncServiceProtocol {
             onState(state)
         }
 
-        failureObservable.addObserver(with: observer, sendStateOnSubscription: true, queue: .main) { _, isFailed in
-            onFailure(isFailed)
+        failureObservable.addObserver(with: observer, sendStateOnSubscription: true, queue: .main) { _, failure in
+            onFailure(failure?.error)
         }
     }
 
@@ -118,5 +120,14 @@ extension SubtensorPositionsSyncService: SubtensorPositionsSyncServiceProtocol {
         }
 
         stakeStateSubscription.refresh()
+    }
+}
+
+struct SubtensorPositionsSyncFailure: Equatable {
+    let error: Error
+    let sequence: UInt
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.sequence == rhs.sequence
     }
 }

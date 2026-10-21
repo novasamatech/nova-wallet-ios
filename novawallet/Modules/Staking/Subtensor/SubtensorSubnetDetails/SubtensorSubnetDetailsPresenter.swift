@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorSubnetDetailsPresenter {
     weak var view: SubtensorSubnetDetailsViewProtocol?
@@ -10,6 +11,9 @@ final class SubtensorSubnetDetailsPresenter {
     let interactor: SubtensorSubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
+    let chainAsset: ChainAsset
+    let abandonTracker: AnalyticsAbandonTracker?
+    let dataAnalytics = SubtensorDataAnalytics(screen: .subnetDetails)
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
@@ -19,6 +23,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var isParametersRequested = false
     private var isPresetRequested = false
     private var isUsePending = false
+    private var recommendedHotkey: AccountId?
 
     init(
         input: SubtensorSubnetDetailsInput,
@@ -27,6 +32,8 @@ final class SubtensorSubnetDetailsPresenter {
         interactor: SubtensorSubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
+        chainAsset: ChainAsset,
+        abandonTracker: AnalyticsAbandonTracker?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -35,10 +42,13 @@ final class SubtensorSubnetDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.chainAsset = chainAsset
 
         state = SubtensorSubnetDetailsState(
             validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
         )
+        recommendedHotkey = input.recommendedHotkey
+        self.abandonTracker = abandonTracker
 
         self.localizationManager = localizationManager
     }
@@ -110,13 +120,25 @@ private extension SubtensorSubnetDetailsPresenter {
     }
 
     func complete(with validator: SubtensorValidatorDirectoryItem) {
-        wireframe.complete(
-            from: view,
-            host: host,
-            target: input.target,
-            validator: validator,
-            delegate: selectionDelegate
-        )
+        trackSubnetSelected()
+
+        switch host {
+        case .picker:
+            wireframe.complete(
+                from: view,
+                target: input.target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey,
+                delegate: selectionDelegate
+            )
+        case .pushed:
+            wireframe.popToCaller(from: view)
+            selectionDelegate?.didSelectStakeTarget(
+                input.target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey
+            )
+        }
     }
 
     func showValidators(completesOnSelection: Bool) {
@@ -126,6 +148,10 @@ private extension SubtensorSubnetDetailsPresenter {
             from: view,
             target: input.target,
             selectedHotkey: state.validator.item?.hotkey,
+            analytics: SubtensorValidatorSelectAnalytics(
+                recommendedHotkey: recommendedHotkey,
+                abandonTracker: abandonTracker
+            ),
             delegate: self
         )
     }
@@ -133,6 +159,8 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
+        becomeActive()
+        trackOpened(period: nil)
         provideTitle()
         provideViewModel()
 
@@ -163,6 +191,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         }
 
         state.period = periods[index]
+        trackOpened(period: periods[index])
         loadHistory()
         provideViewModel()
     }
@@ -194,10 +223,20 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         wireframe.showWeb(url: url, from: view, style: .automatic)
     }
 
+    func becomeActive() {
+        let target = input.target.analyticsTarget
+
+        abandonTracker?.makeEvent = {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetDetails, target: target)
+        }
+    }
+
     func retryHistory() {
         guard state.history == .failed else {
             return
         }
+
+        dataAnalytics.trackRetry(.coingecko)
 
         loadHistory()
         provideViewModel()
@@ -229,7 +268,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         provideViewModel()
     }
 
-    func didFailHistory(for period: SubtensorPricePeriod) {
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error) {
         guard period == state.period else {
             return
         }
@@ -237,6 +276,8 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
         if case .available = state.history {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: .coingecko)
 
         state.history = .failed
         provideViewModel()
@@ -264,6 +305,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutpu
             return
         }
 
+        recommendedHotkey = validator?.hotkey
         state.validator = validator.map { .selected($0) } ?? .unselected
         provideViewModel()
     }

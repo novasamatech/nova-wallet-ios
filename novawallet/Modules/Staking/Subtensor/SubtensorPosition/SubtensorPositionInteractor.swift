@@ -128,8 +128,8 @@ private extension SubtensorPositionInteractor {
                     )
                 }
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceiveSyncFailure(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceiveSyncFailure(error)
             }
         )
 
@@ -277,9 +277,10 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             deliver: { [weak self] prices in
                 if let prices {
                     self?.presenter?.didReceive(prices: prices)
-                } else {
-                    self?.presenter?.didFailPrices()
                 }
+            },
+            fail: { [weak self] error in
+                self?.presenter?.didFailPrices(error)
             }
         )
     }
@@ -305,7 +306,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             label: "position validator"
         ) { [weak self] in
             self?.presenter?.didReceive(validator: $0, for: hotkey)
-        } fail: { [weak self] in
+        } fail: { [weak self] _ in
             self?.presenter?.didFailValidator(for: hotkey)
         }
     }
@@ -335,6 +336,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             case let .failure(error):
                 self?.logger.warning("Subtensor position root holds unavailable: \(error)")
                 self?.failedHoldsHotkeys = hotkeys
+                self?.presenter?.didFailHolds()
             }
         }
     }
@@ -351,8 +353,8 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         load(wrapper, in: historyStore, label: "position price history") { [weak self] in
             self?.presenter?.didReceive(history: $0, for: period)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistory(for: period)
+        } fail: { [weak self] error in
+            self?.presenter?.didFailHistory(for: period, error: error)
         }
     }
 }

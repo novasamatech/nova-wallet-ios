@@ -104,7 +104,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
 
     func loadHistories(for period: SubtensorPricePeriod) {
         guard let priceHistoryOperationFactory, let accountSubject else {
-            presenter?.didFailHistories(for: period)
+            presenter?.didFailHistories(for: period, error: nil)
             return
         }
 
@@ -118,8 +118,8 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
 
         load(wrapper, in: historiesStore, label: "portfolio chart") { [weak self] in
             self?.presenter?.didReceive(histories: $0)
-        } fail: { [weak self] in
-            self?.presenter?.didFailHistories(for: period)
+        } fail: { [weak self] error in
+            self?.presenter?.didFailHistories(for: period, error: error)
         }
     }
 
@@ -136,7 +136,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
             deliver: { [weak self] in
                 self?.presenter?.didReceive(rootYields: $0)
             },
-            onRefetchFailure: { [weak self] in
+            fail: { [weak self] _ in
                 self?.presenter?.didFailRootYields()
             }
         )
@@ -168,7 +168,7 @@ extension SubtensorPortfolioInteractor: SubtensorPortfolioInteractorInputProtoco
             label: "portfolio weekly changes"
         ) { [weak self] in
             self?.presenter?.didReceive(weeklyChanges: $0)
-        } fail: { [weak self] in
+        } fail: { [weak self] _ in
             self?.presenter?.didFailWeeklyChanges()
         }
     }
@@ -189,8 +189,8 @@ private extension SubtensorPortfolioInteractor {
                     providePrices(for: newState.heldSubnetNetuids)
                 }
             },
-            onFailure: { [weak self] isFailed in
-                self?.presenter?.didReceiveSyncFailure(isFailed)
+            onFailure: { [weak self] error in
+                self?.presenter?.didReceiveSyncFailure(error)
             }
         )
 

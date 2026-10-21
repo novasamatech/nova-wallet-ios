@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import NovaAnalytics
 
 final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
     let state: SubtensorSharedStateProtocol
@@ -13,10 +14,11 @@ final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
     func showAllSubnets(
         from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState,
-        delegate: SubtensorSubnetSelectDelegate
+        delegate: SubtensorSubnetSelectDelegate,
+        source: SubnetListSource
     ) {
         guard let picker = SubtensorSubnetSelectViewFactory.createPicker(
-            for: state, delegate: delegate, browseState: browseState
+            for: state, delegate: delegate, browseState: browseState, source: source
         ) else { return }
         view?.controller.presentWithCardLayout(picker, animated: true)
     }
@@ -39,12 +41,14 @@ final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
         from view: SubtensorStakeSetupViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
         delegate: SubtensorValidatorSelectDelegate
     ) {
         guard let selectView = SubtensorValidatorSelectViewFactory.createView(
             for: state,
             target: target,
             selectedHotkey: selectedHotkey,
+            analytics: analytics,
             delegate: delegate
         ) else {
             return
@@ -62,6 +66,7 @@ final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
             for: state,
             input: input,
             host: .pushed,
+            abandonTracker: nil,
             delegate: delegate
         ) else {
             return

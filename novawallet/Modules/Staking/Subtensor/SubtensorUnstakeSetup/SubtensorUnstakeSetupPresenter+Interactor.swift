@@ -26,10 +26,14 @@ private extension SubtensorUnstakeSetupPresenter {
         updateQuote()
     }
 
-    func presentSubnetRetry() {
+    func presentSubnetRetry(tracksRetry: Bool) {
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
             guard let self else {
                 return
+            }
+
+            if tracksRetry {
+                dataAnalytics.trackRetry(.chainRpc)
             }
 
             interactor.loadSubnetsInfo(for: netuid)
@@ -47,7 +51,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             let subnetInfo = info.subnets.first(where: { $0.netuid == netuid }),
             let subnetPrice = info.prices[netuid] else {
             guard !isSubnetsRefreshForced else {
-                presentSubnetRetry()
+                presentSubnetRetry(tracksRetry: false)
                 return
             }
 
@@ -73,8 +77,9 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveSubnetsInfoError(_ error: Error) {
         logger.error("Subtensor unstake subnets info failed: \(error)")
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
 
-        presentSubnetRetry()
+        presentSubnetRetry(tracksRetry: true)
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SubtensorPortfolioPresenter {
     weak var view: SubtensorPortfolioViewProtocol?
@@ -18,6 +19,9 @@ final class SubtensorPortfolioPresenter {
     private var isRootYieldsRequested = false
     private var isNetworkRootRateRequested = false
     private var chartSelection: SubtensorPortfolioChartSelection?
+    let dataAnalytics = SubtensorDataAnalytics(screen: .portfolio)
+    var analyticsSource: StakingPortfolioSource
+    var isOpenedTracked = false
 
     init(
         interactor: SubtensorPortfolioInteractorInputProtocol,
@@ -26,9 +30,11 @@ final class SubtensorPortfolioPresenter {
         wallet: MetaAccountModel,
         account: MetaChainAccountResponse,
         chainAsset: ChainAsset,
+        analyticsSource: StakingPortfolioSource,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
+        self.analyticsSource = analyticsSource
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.wallet = wallet
@@ -44,6 +50,7 @@ private extension SubtensorPortfolioPresenter {
 
         let viewModel = viewModelFactory.createViewModel(for: state, locale: localizationManager.selectedLocale)
         view?.didReceive(viewModel: viewModel)
+        trackOpenedIfResolved(viewModel, groups: state.positions == nil ? nil : state.groups)
     }
 
     func requestRootRateIfNeeded() {
@@ -125,13 +132,23 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         wireframe.checkingSupport(
             of: .subtensorStaking(chain: chainAsset.chain),
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.wireframe.showAddPosition(from: self?.view)
-        }
+            sheetPresentingView: view,
+            onRefusal: { [weak self] result in
+                guard let reason = result.subtensorBlockedReason else {
+                    return
+                }
+
+                self?.trackAddPositionRefusal(reason)
+            },
+            successClosure: { [weak self] in
+                self?.trackAddPositionOpened()
+                self?.wireframe.showAddPosition(from: self?.view)
+            }
+        )
     }
 
     func retry() {
+        dataAnalytics.trackRetry(.chainRpc)
         isRootYieldsRequested = false
         isNetworkRootRateRequested = false
         interactor.refresh()
@@ -147,6 +164,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         requestRootRateIfNeeded()
         refetchLoadedHistories()
         requestPriceDataIfNeeded()
+        provideViewModel()
+    }
+
+    func reopen(from source: StakingPortfolioSource) {
+        analyticsSource = source
+        isOpenedTracked = false
         provideViewModel()
     }
 
@@ -219,10 +242,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         provideViewModel()
     }
 
-    func didFailHistories(for period: SubtensorPricePeriod) {
+    func didFailHistories(for period: SubtensorPricePeriod, error: Error?) {
         guard period == state.period, state.histories == .loading else {
             return
         }
+
+        dataAnalytics.trackFailure(error, endpoint: error is BittensorApiError ? .portfolioHistory : .coingecko)
 
         historiesPeriod = nil
         state.histories = .failed
@@ -238,8 +263,9 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioInteractorOutputProtoco
         weeklyChangesRequest = nil
     }
 
-    func didReceiveSyncFailure(_ isFailed: Bool) {
-        state.isSyncFailed = isFailed
+    func didReceiveSyncFailure(_ error: Error?) {
+        state.isSyncFailed = error != nil
+        dataAnalytics.trackFailure(error, endpoint: .chainRpc)
         provideViewModel()
     }
 

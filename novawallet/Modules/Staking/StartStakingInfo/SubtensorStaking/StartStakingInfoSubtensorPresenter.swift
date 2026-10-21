@@ -8,6 +8,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
+    let dataAnalytics = SubtensorDataAnalytics(screen: .landing)
 
     private var state = State() {
         didSet {
@@ -40,6 +41,8 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             applicationConfig: applicationConfig,
             logger: logger
         )
+
+        setupAbandonEvent()
     }
 
     override func setup() {
@@ -75,6 +78,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         guard let view, let wallet, let accountExistense else { return }
 
         guard case .assetBalance = accountExistense else {
+            trackGateRefusal(.noAccount, wallet: wallet)
             super.startStaking(continuation: continuation)
             return
         }
@@ -82,10 +86,18 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         subtensorWireframe.checkingSupport(
             of: .subtensorStaking(chain: chainAsset.chain),
             for: wallet,
-            sheetPresentingView: view
-        ) { [weak self] in
-            self?.proceedStaking(continuation: continuation)
-        }
+            sheetPresentingView: view,
+            onRefusal: { [weak self] result in
+                guard let reason = result.subtensorBlockedReason else {
+                    return
+                }
+
+                self?.trackGateRefusal(reason, wallet: wallet)
+            },
+            successClosure: { [weak self] in
+                self?.proceedStaking(continuation: continuation)
+            }
+        )
     }
 
     private func proceedStaking(continuation: () -> Void) {
@@ -102,8 +114,10 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .maxApy:
+        case let .maxApy(underlying):
+            dataAnalytics.trackFailure(underlying, endpoint: .recommendations)
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.dataAnalytics.trackRetry(.recommendations)
                 self?.interactor.retryMaxApy()
             }
         }
@@ -115,11 +129,20 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
 }
 
 extension StartStakingInfoSubtensorPresenter: SubtensorSubnetSelectDelegate {
-    func didSelectStakeTarget(_ target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?) {
+    func didSelectStakeTarget(
+        _ target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?,
+        recommendedHotkey: AccountId?
+    ) {
         if target.isRoot {
             subtensorWireframe.showRootDetails(from: view)
         } else {
-            subtensorWireframe.showSubnetSetup(from: view, target: target, validator: validator)
+            subtensorWireframe.showSubnetSetup(
+                from: view,
+                target: target,
+                validator: validator,
+                recommendedHotkey: recommendedHotkey
+            )
         }
     }
 }

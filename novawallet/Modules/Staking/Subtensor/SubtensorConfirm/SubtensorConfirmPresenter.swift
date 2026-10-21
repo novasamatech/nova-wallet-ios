@@ -27,6 +27,7 @@ final class SubtensorConfirmPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var costBasis: SubtensorCostBasisState = .loading
+    let analytics: SubtensorConfirmAnalytics
     private(set) var isHandingOff = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -50,6 +51,7 @@ final class SubtensorConfirmPresenter {
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
+        analytics = SubtensorConfirmAnalytics(model: model)
 
         if case let .subnet(info, _) = model.target {
             let tolerance = model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
@@ -120,6 +122,7 @@ extension SubtensorConfirmPresenter {
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+        analytics.syncPriceMoveBanner(isShown: input.isPriceMoved)
     }
 
     func createStakeChange() -> SubtensorConfirmStakeChange? {
@@ -215,6 +218,7 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
+            analytics.acknowledgePriceMove()
             state.acknowledgeLatest()
             quoteState = state
 
@@ -273,12 +277,14 @@ extension SubtensorConfirmPresenter {
             emptiesPosition: emptiesPosition(verified.operation, group: group),
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
             costBasis: tracksCostBasis ? costBasis : nil,
-            blockTime: preflight.blockTime
+            blockTime: preflight.blockTime,
+            hasLockedStake: model.hasLockedStake
         )
 
         isHandingOff = true
         view?.didStartLoading()
 
+        trackConfirmed()
         wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
 
@@ -290,6 +296,7 @@ extension SubtensorConfirmPresenter {
 
 extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     func setup() {
+        trackScreenOpened()
         provideAccountViewModels()
         provideTileIcons()
         provideViewModel()
@@ -311,11 +318,14 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     }
 
     func confirm() {
+        analytics.beginTap()
+
         guard !isWatchOnly, !isHandingOff else {
             return
         }
 
         guard !tradesUnavailable else {
+            analytics.reporter.tradesUnavailable()
             if let view {
                 wireframe.presentSubnetTradesUnavailable(view, locale: selectedLocale)
             }
