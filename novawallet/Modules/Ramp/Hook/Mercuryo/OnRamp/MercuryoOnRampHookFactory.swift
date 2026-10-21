@@ -14,7 +14,7 @@ final class MercuryoOnRampHookFactory {
         let originalXhrOpen = XMLHttpRequest.prototype.open;
 
         XMLHttpRequest.prototype.open = function(method, url) {
-            if (url.includes('\(MercuryoApi.buyEndpoint)')) {
+            if (url.includes('\(MercuryoApi.buyEndpoint)/') && url.split('?')[0].endsWith('/status')) {
                 this.addEventListener('load', function() {
                     window.webkit.messageHandlers.\(onRampAction).postMessage(this.responseText);
                 });
