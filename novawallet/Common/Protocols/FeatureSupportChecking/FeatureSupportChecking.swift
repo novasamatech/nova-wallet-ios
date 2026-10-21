@@ -52,8 +52,6 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
                 chainAsset: chainAsset,
                 completion: completion
             )
-        case .card:
-            featureSupportChecker.checkCardSupport(for: metaAccountModel, completion: completion)
         case let .gift(chains):
             featureSupportChecker.checkGiftSupport(for: metaAccountModel, chains: chains, completion: completion)
         case let .subtensorStaking(chain):

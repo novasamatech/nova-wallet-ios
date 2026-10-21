@@ -150,14 +150,6 @@ private extension AssetListCollectionViewDataSource {
             for: .touchUpInside
         )
 
-        let cardView = totalBalanceCell.cardView
-
-        cardView.addTarget(
-            self,
-            action: #selector(actionCardOpen),
-            for: .touchUpInside
-        )
-
         if let viewModel = headerViewModel {
             totalBalanceCell.bind(viewModel: viewModel)
         }
@@ -497,10 +489,6 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwitchStyle() {
         actionsDelegate?.actionChangeAssetListStyle()
-    }
-
-    @objc func actionCardOpen() {
-        actionsDelegate?.actionCardOpen()
     }
 
     @objc func actionRefresh() {

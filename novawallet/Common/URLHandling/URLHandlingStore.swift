@@ -6,7 +6,6 @@ enum URLHandlingPendingLink: Codable {
     case staking(chainAssetId: ChainAssetId?)
     case governance(Referenda.ReferendumIndex)
     case dApp(URL)
-    case card(String?)
     case assetHubMigration(config: AHMRemoteData)
     case giftClaim(giftPayload: ClaimGiftPayload, amount: BigUInt)
 }
