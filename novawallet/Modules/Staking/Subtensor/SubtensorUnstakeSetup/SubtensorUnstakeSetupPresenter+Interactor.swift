@@ -1,14 +1,17 @@
 import Foundation
 
 extension SubtensorUnstakeSetupPresenter {
-    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
-        reconcileAnchor()
+    func reloadGroupData() {
         loadValidatorsIfNeeded()
         loadGroupHotkeys()
 
         if isRoot, let group, !group.positions.isEmpty {
             interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
+    }
+
+    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
+        reconcileAnchor()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
@@ -189,11 +192,16 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
+        let previousPositions = group?.positions
         let previousBasis = basis
         let previousPlan = feePlan()
 
         positionsState = state
         group = findGroup(in: state)
+
+        if group?.positions != previousPositions {
+            reloadGroupData()
+        }
 
         if basis != previousBasis {
             applyBasisChange(from: previousPlan)
