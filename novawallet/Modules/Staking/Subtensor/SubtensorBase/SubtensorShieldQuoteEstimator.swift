@@ -17,7 +17,6 @@ final class SubtensorShieldQuoteEstimator {
     private var quotedOperation: SubtensorOperation?
     private var isInFlight = false
     private var startBlock: BlockNumber?
-    private var lastBlock: BlockNumber?
     private var failures = 0
 
     init(
@@ -65,7 +64,7 @@ final class SubtensorShieldQuoteEstimator {
         }
 
         isInFlight = true
-        startBlock = lastBlock
+        startBlock = nil
 
         executeCancellable(
             wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
@@ -78,8 +77,6 @@ final class SubtensorShieldQuoteEstimator {
     }
 
     func didReceiveBlock(_ blockNumber: BlockNumber) {
-        lastBlock = blockNumber
-
         guard isInFlight else {
             return
         }
@@ -89,7 +86,7 @@ final class SubtensorShieldQuoteEstimator {
             return
         }
 
-        guard blockNumber > startBlock + SubtensorFlowConstants.shieldQuoteTimeoutBlocks else {
+        guard blockNumber >= startBlock + SubtensorFlowConstants.shieldQuoteTimeoutBlocks else {
             return
         }
 
