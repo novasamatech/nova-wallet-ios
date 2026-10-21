@@ -62,7 +62,7 @@ extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProto
                 search.start(
                     window: SubtensorShieldInnerSearch.Window(
                         start: eraBirth,
-                        deadline: eraBirth + BlockNumber(SubtensorShieldConstants.eraPeriod),
+                        deadline: eraBirth + BlockNumber(SubtensorShieldConstants.eraPeriod) - 1,
                         pollBudget: Constants.pollsPerBlock * Constants.waitBudgetBlocks,
                         pollInterval: TimeInterval(blockTime).seconds / TimeInterval(Constants.pollsPerBlock)
                     ),
