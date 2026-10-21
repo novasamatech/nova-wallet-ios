@@ -2010,8 +2010,8 @@
 "gift.created.date.format" = "作成日: %@";
 "gift.reclaim.no.account.alert.message" = "続行するには別のウォレットを選択するか、設定で %@ アカウントを追加してください。";
 "gift.reclaim.dialog.title" = "%@ ギフトを再請求しますか？";
-"polkadot.vault.scanner.message" = "QRコードをスキャン\n%";
-"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに % を提供します";
+"polkadot.vault.scanner.message" = "QRコードをスキャン\n%@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに %@ を提供します";
 "welcome.polkadot.vault.step3.import" = "右上のアイコンをタップして %@ を選択";
 "welcome.polkadot.vault.step2.pair" = "Nova Wallet に追加したい %@";
 "feature.unsupported.sheet.title.gift" = "送金は%@ ウォレットに対してサポートされていません";
