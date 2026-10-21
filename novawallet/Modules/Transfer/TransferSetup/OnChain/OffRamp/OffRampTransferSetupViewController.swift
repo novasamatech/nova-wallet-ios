@@ -1,8 +1,8 @@
 import UIKit
 import Foundation_iOS
 
-final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
-    typealias RootViewType = CardTopUpTransferSetupViewLayout
+final class OffRampTransferSetupViewController: UIViewController, ViewHolder {
+    typealias RootViewType = OffRampTransferSetupViewLayout
 
     let presenter: TransferSetupPresenterProtocol
 
@@ -27,7 +27,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = CardTopUpTransferSetupViewLayout()
+        view = OffRampTransferSetupViewLayout()
     }
 
     override func viewDidLoad() {
@@ -148,7 +148,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     }
 }
 
-extension CardTopUpTransferSetupViewController: CardTopUpTransferSetupViewProtocol {
+extension OffRampTransferSetupViewController: OffRampTransferSetupViewProtocol {
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
         rootView.amountInputView.bind(assetViewModel: viewModel.assetViewModel)
     }
@@ -189,7 +189,7 @@ extension CardTopUpTransferSetupViewController: CardTopUpTransferSetupViewProtoc
     }
 }
 
-extension CardTopUpTransferSetupViewController {
+extension OffRampTransferSetupViewController {
     func applyLocalization() {
         if isSetup {
             setupLocalization()

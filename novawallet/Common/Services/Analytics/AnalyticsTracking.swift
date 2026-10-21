@@ -19,8 +19,4 @@ extension AnalyticsTracking {
     func trackTabSwitched(to tab: AnalyticsTab) {
         FeatureNavigationTrackerFactory.createDefault().trackTabSwitched(to: tab)
     }
-
-    func trackNovaCardOpened() {
-        FeatureNavigationTrackerFactory.createDefault().trackNovaCardOpened()
-    }
 }

@@ -16,11 +16,6 @@ protocol FeatureSupportCheckerProtocol {
         completion: @escaping FeatureSupportCheckerClosure
     )
 
-    func checkCardSupport(
-        for wallet: MetaAccountModel,
-        completion: @escaping FeatureSupportCheckerClosure
-    )
-
     func checkGiftSupport(
         for wallet: MetaAccountModel,
         chains: [ChainModel],
@@ -268,36 +263,6 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
                 chain: chainAsset.chain
             ) { hasSupport in
                 let result: OperationCheckCommonResult = hasSupport ? .available : .noSellSupport(wallet, chainAsset)
-
-                completion(result)
-            }
-        }
-    }
-
-    func checkCardSupport(
-        for wallet: MetaAccountModel,
-        completion: @escaping FeatureSupportCheckerClosure
-    ) {
-        // to get the card one need to be able to operate in Polkadot without delay
-        guard
-            let polkadotChain = chainRegistry.getChain(for: KnowChainId.polkadot),
-            let dotToken = polkadotChain.utilityChainAsset() else {
-            completion(.noCardSupport(wallet))
-            return
-        }
-
-        // to get the card one need to sell tokens first
-        let sellCheckResult = checkSellByWalletTypeSupported(wallet, chainAsset: dotToken)
-
-        switch sellCheckResult {
-        case let .commonResult(result):
-            completion(result)
-        case .delayedExecutionCheckRequired:
-            executeAccountExistenceAndDelay(
-                wallet: wallet,
-                chain: polkadotChain
-            ) { hasSupport in
-                let result: OperationCheckCommonResult = hasSupport ? .available : .noCardSupport(wallet)
 
                 completion(result)
             }

@@ -28,7 +28,7 @@ final class AnalyticsUploaderTests: XCTestCase {
                 identifier: "row-\(index)",
                 eventId: UUID().uuidString.lowercased(),
                 sequence: Int64(index),
-                name: "nova_card_opened",
+                name: "feature_opened",
                 timestamp: Date(timeIntervalSince1970: TimeInterval(index)),
                 payload: Data("{}".utf8),
                 consentEpoch: 0

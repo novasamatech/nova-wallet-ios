@@ -1784,15 +1784,7 @@
 "chart.period.year" = "Ultimo Anno";
 "chart.period.max" = "Tutti i Tempi";
 "common.pay" = "Paga";
-"common.card.issued" = "Carta emessa";
-"card.top.up.dot.setup.title" = "Ricarica la carta con DOT";
-"common.manage.debit.card" = "Gestisci Carta di Debito";
 "common.estimated.timer" = "Circa ~%@";
-"card.open.pending.sheet.title" = "La tua carta è in fase di emissione!";
-"card.open.pending.sheet.message" = "Può richiedere fino a %@.\nQuesta finestra si chiuderà automaticamente.";
-"card.open.failed.alert.title" = "Contatta il supporto";
-"card.open.failed.alert.message" = "Si prega di contattare support@novawallet.io. Includere l'indirizzo email che hai usato per emettere la carta.";
-"card.topup.pending.sheet.title" = "La tua carta sta ricevendo fondi!";
 "staking.restake.message" = "Le tue ricompense saranno aggiunte al tuo staking";
 "unified.address.popup.title" = "Nuovo Indirizzo Unificato";
 "unified.address.popup.subtitle" = "Alcuni exchange possono ancora richiedere il formato legacy\nper operazioni mentre sono in aggiornamento.";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "Dati della chiamata non validi";
 "enter.call.data" = "Inserisci i dati della chiamata";
 "multisig.wallet.details.threshold" = "Soglia %li su %li";
-"feature.unsupported.sheet.message.card" = "Per gestire la tua carta di debito, passa a un diverso tipo di portafoglio.";
 "feature.unsupported.sheet.message.sell" = "Per vendere criptovaluta per fiat, passa a un diverso tipo di portafoglio.";
 "multisig.operation.status.created" = "Creato da te";
 "multisig.operation.signing.progress.format" = "Firma (%li di %li)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@ ha bisogno di almeno %@ per pagare questa tariffa di transazione e rimanere al di sopra del saldo minimo di rete. Devi aggiungere %@ al tuo saldo.";
 "multisig.validation.insuffisient.balance.message" = "%@ non ha saldo sufficiente per pagare la tariffa di rete di %@ e collocare un deposito multisig di %@. Devi aggiungere %@ al tuo saldo.";
 "feature.unsupported.sheet.title.sell" = "La vendita non è supportata per i portafogli %@";
-"feature.unsupported.sheet.title.card" = "La carta di debito non è supportata per i wallet %@";
 "multisig.transaction.created.sheet.message" = "Altri firmatari possono ora confermare la transazione. Puoi monitorare il suo stato in %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova ha automaticamente cambiato il portafoglio in modalità multisig affinché tu possa visualizzare le transazioni in sospeso.";
 "multisig.other.signatories" = "Altri firmatari";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "Questi dati di chiamata sono per un'altra operazione con hash di chiamata %@";
 "call.data.validation.error.message" = "I dati della chiamata forniti non sono validi o hanno un formato errato. Assicurati che siano corretti e riprova.";
 "feature.unsupported.sheet.title.sell.proxied" = "La vendita non è supportata per questo wallet con proxied";
-"feature.unsupported.sheet.title.card.proxied" = "La carta di debito non è supportata per questo wallet proxied";
 "feature.unsupported.sheet.message.sell.proxied" = "Per vendere criptovalute in valuta fiat, passa a un portafoglio diverso.";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "Usa i tuoi account Trust Wallet in Nova";
