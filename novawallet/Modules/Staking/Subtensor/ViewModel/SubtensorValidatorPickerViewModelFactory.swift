@@ -1,19 +1,20 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorUnstakeSetupViewModelFactory {
-    func createPickerViewModels(
+struct SubtensorValidatorPickerViewModelFactory {
+    let chainFormat: ChainFormat
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+
+    func createViewModels(
         for positions: [SubtensorPosition],
         names: [AccountId: String],
         disabled: Set<AccountId>,
-        netuid: UInt16,
-        catalogue: SubtensorSubnetCatalogue?
+        displayInfo: AssetBalanceDisplayInfo
     ) -> [AccountDetailsPickerViewModel] {
-        let displayInfo = inputDisplayInfo(for: netuid, catalogue: catalogue)
         let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: displayInfo)
 
         return positions.map { position in
-            let address = (try? position.hotkey.toAddress(using: chainAsset.chain.chainFormat)) ?? ""
+            let address = (try? position.hotkey.toAddress(using: chainFormat)) ?? ""
             let addressViewModel = displayAddressFactory.createViewModel(
                 from: DisplayAddress(address: address, username: names[position.hotkey] ?? "")
             )
@@ -39,6 +40,12 @@ extension SubtensorUnstakeSetupViewModelFactory {
         }
     }
 
+    func createTitle() -> LocalizableResource<String> {
+        LocalizableResource { locale in
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonValidator()
+        }
+    }
+
     func createAllValidatorsAction() -> LocalizableResource<IconWithTitleViewModel> {
         LocalizableResource { locale in
             IconWithTitleViewModel(
@@ -48,9 +55,12 @@ extension SubtensorUnstakeSetupViewModelFactory {
         }
     }
 
-    func createPickerTitle() -> LocalizableResource<String> {
+    func createNewValidatorAction() -> LocalizableResource<IconWithTitleViewModel> {
         LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonValidator()
+            IconWithTitleViewModel(
+                icon: R.image.iconBlueAdd(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorNew()
+            )
         }
     }
 }

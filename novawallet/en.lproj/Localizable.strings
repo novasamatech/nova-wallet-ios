@@ -2200,6 +2200,7 @@ Do you want to continue?";
 "staking.subtensor.ui.validator.recommended.empty" = "No quick-pick validators for this subnet yet. Remove filters to see all validators.";
 "staking.subtensor.ui.validator.remove.filters" = "Remove all filters";
 "staking.subtensor.ui.validator.all" = "All validators";
+"staking.subtensor.ui.validator.new" = "New validator";
 "staking.subtensor.ui.confirm.full.exit" = "Full exit";
 "staking.subtensor.ui.validator.inactive.title" = "Validator is inactive";
 "staking.subtensor.ui.validator.inactive.message" = "This validator is inactive, so new stake earns nothing until it’s active again.";

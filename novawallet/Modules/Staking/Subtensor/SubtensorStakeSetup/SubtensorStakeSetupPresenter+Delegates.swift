@@ -28,11 +28,169 @@ extension SubtensorStakeSetupPresenter: SubtensorSubnetSelectDelegate {
 
 extension SubtensorStakeSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        if mode.isLocked, target.netuid == mode.netuid {
+            let held = heldPositions().first { $0.hotkey == validator.hotkey }
+            applyStakeMore(
+                held ?? SubtensorPosition(
+                    hotkey: validator.hotkey,
+                    netuid: target.netuid,
+                    stakeAlpha: 0,
+                    isRegistered: !validator.isInactive
+                )
+            )
+            return
+        }
+
         guard !mode.isLocked, target.subnetRef == subnetRef else {
             return
         }
 
         applyValidator(validator)
+    }
+
+    func selectValidator() {
+        guard !mode.isLocked else {
+            showStakeMorePicker()
+            return
+        }
+
+        guard let target else {
+            return
+        }
+
+        showValidatorList(for: target)
+    }
+}
+
+extension SubtensorStakeSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let positions = context as? [SubtensorPosition], index < positions.count else {
+            return
+        }
+
+        applyStakeMore(positions[index])
+    }
+
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        guard let target else {
+            return
+        }
+
+        showValidatorList(for: target)
+    }
+}
+
+extension SubtensorStakeSetupPresenter {
+    func didReceiveHeldValidators(_ validators: [AccountId: SubtensorValidatorDirectoryItem], hotkeys: [AccountId]) {
+        guard hotkeys == heldValidatorsRequest else {
+            return
+        }
+
+        heldValidators = validators
+        heldValidatorsResolved = hotkeys
+        presentPendingStakeMorePicker()
+    }
+
+    func didFailHeldValidators(for hotkeys: [AccountId]) {
+        guard hotkeys == heldValidatorsRequest else {
+            return
+        }
+
+        heldValidatorsRequest = nil
+        presentPendingStakeMorePicker()
+    }
+
+    func loadHeldValidatorsIfNeeded() {
+        let hotkeys = heldPositions().map(\.hotkey)
+
+        guard mode.isLocked, let subnetRef, !hotkeys.isEmpty, hotkeys != heldValidatorsRequest else {
+            return
+        }
+
+        heldValidatorsRequest = hotkeys
+        interactor.loadHeldValidators(hotkeys, on: subnetRef)
+    }
+}
+
+private extension SubtensorStakeSetupPresenter {
+    func heldPositions() -> [SubtensorPosition] {
+        guard let netuid = mode.netuid, let positionsState else {
+            return []
+        }
+
+        return SubtensorPortfolioBuilder.build(state: positionsState).group(netuid: netuid)?.positions ?? []
+    }
+
+    func showValidatorList(for target: SubtensorStakeTarget) {
+        wireframe.showValidatorSelection(
+            from: view,
+            target: target,
+            selectedHotkey: validatorState.validator?.hotkey,
+            analytics: SubtensorValidatorSelectAnalytics(recommendedHotkey: recommendedHotkey, abandonTracker: nil),
+            delegate: self
+        )
+    }
+
+    func showStakeMorePicker() {
+        let hotkeys = heldPositions().map(\.hotkey)
+
+        guard !hotkeys.isEmpty, target != nil else {
+            return
+        }
+
+        isStakeMorePickerPending = true
+
+        if heldValidatorsResolved == hotkeys {
+            presentPendingStakeMorePicker()
+        } else {
+            loadHeldValidatorsIfNeeded()
+        }
+    }
+
+    func presentPendingStakeMorePicker() {
+        guard isStakeMorePickerPending, let netuid = mode.netuid else {
+            return
+        }
+
+        isStakeMorePickerPending = false
+
+        let positions = heldPositions()
+        let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
+        let names = positions.reduce(into: [AccountId: String]()) { names, position in
+            names[position.hotkey] = heldValidators[position.hotkey]?.name ??
+                (validatorItem?.hotkey == position.hotkey ? validatorItem?.name : nil)
+        }
+
+        let content = CollatorStakingTargetPickerContent(
+            title: pickerFactory.createTitle(),
+            viewModels: pickerFactory.createViewModels(
+                for: positions,
+                names: names,
+                disabled: [],
+                displayInfo: chainAsset.assetDisplayInfo.subtensorAlpha(netuid: netuid, catalogue: catalogue)
+            ),
+            action: pickerFactory.createNewValidatorAction(),
+            selectedIndex: positions.firstIndex { $0.hotkey == mode.lockedHotkey } ?? NSNotFound
+        )
+
+        wireframe.showTargetSelection(from: view, content: content, delegate: self, context: positions as NSArray)
+    }
+
+    func applyStakeMore(_ position: SubtensorPosition) {
+        guard position.hotkey != mode.lockedHotkey else {
+            return
+        }
+
+        switch mode {
+        case .addStake:
+            mode = .addStake(position: position)
+        case .buyMore:
+            mode = .buyMore(position: position)
+        case .quickPick, .rootDetails, .subnetPick:
+            return
+        }
+
+        startMode()
     }
 }
 
