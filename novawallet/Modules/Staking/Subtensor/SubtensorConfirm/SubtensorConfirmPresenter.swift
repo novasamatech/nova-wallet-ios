@@ -153,10 +153,7 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
-
-        shieldQuoteOperation = operation
-        isShieldQuoteResolved = false
-        interactor.estimateShieldQuote(for: operation)
+        requestShieldQuote(for: operation)
     }
 
     func refreshPreflight() {
@@ -230,7 +227,7 @@ extension SubtensorConfirmPresenter {
             refreshFee()
             provideViewModel()
 
-            return true
+            return !isShieldable
         }
 
         guard !state.raisePriceMovedIfCrossed() else {
