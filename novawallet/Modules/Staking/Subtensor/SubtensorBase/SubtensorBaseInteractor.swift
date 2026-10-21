@@ -201,6 +201,11 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
         }
     }
 
+    func cancelShieldQuote() {
+        shieldQuoteCallStore.cancel()
+        pendingEstimates.shieldQuote = nil
+    }
+
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16) {
         preflightCallStore.cancel()
 

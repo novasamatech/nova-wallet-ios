@@ -151,7 +151,7 @@ extension SubtensorStakeSetupPresenter {
         requestPresetIfReady()
         refreshPreflight()
         fee = nil
-        shieldQuote = nil
+        resetShieldQuote()
         refreshFee()
         updateQuote()
         provideViewModel()

@@ -26,4 +26,9 @@ extension SubtensorStakeSetupPresenter {
             networkFee: networkFee.amountForCurrentAccount ?? 0
         )
     }
+
+    func resetShieldQuote() {
+        shieldQuote = nil
+        interactor.cancelShieldQuote()
+    }
 }
