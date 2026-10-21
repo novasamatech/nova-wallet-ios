@@ -6,6 +6,9 @@ import NovaCrypto
 import SubstrateSdk
 
 typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>
+typealias AccountDetailsPicker<D: AccountDetailsSelectionDecorator> =
+    ModalPickerViewController<AccountDetailsGenericSelectionCell<D>, AccountDetailsGenericSelectionCell<D>.Model>
+typealias CollatorStakingTargetPicker = AccountDetailsPicker<AccountDetailsBalanceDecorator>
 
 enum ModalPickerFactory {
     static func createActionsList(
@@ -281,7 +284,8 @@ enum ModalPickerFactory {
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?,
-        title: LocalizableResource<String>? = nil
+        title: LocalizableResource<String>? = nil,
+        allowsActionOnly: Bool = false
     ) -> CollatorStakingTargetPicker? {
         createGenericCollatorsPickingList(
             items,
@@ -289,7 +293,8 @@ enum ModalPickerFactory {
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context,
-            title: title
+            title: title,
+            allowsActionOnly: allowsActionOnly
         )
     }
 
@@ -299,20 +304,14 @@ enum ModalPickerFactory {
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?,
-        title: LocalizableResource<String>? = nil
-    ) -> ModalPickerViewController<
-        AccountDetailsGenericSelectionCell<D>,
-        SelectableViewModel<AccountDetailsSelectionViewModel>
-    >? {
-        guard !items.isEmpty || actionViewModel != nil else {
+        title: LocalizableResource<String>? = nil,
+        allowsActionOnly: Bool = false
+    ) -> AccountDetailsPicker<D>? {
+        guard !items.isEmpty || (allowsActionOnly && actionViewModel != nil) else {
             return nil
         }
 
-        let viewController: ModalPickerViewController<
-            AccountDetailsGenericSelectionCell<D>,
-            SelectableViewModel<AccountDetailsSelectionViewModel>
-        >
-            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+        let viewController = AccountDetailsPicker<D>(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = title ?? LocalizableResource { locale in
             R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollator()

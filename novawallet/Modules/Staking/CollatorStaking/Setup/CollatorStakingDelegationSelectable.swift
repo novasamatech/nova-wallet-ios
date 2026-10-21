@@ -1,16 +1,12 @@
 import Foundation
 import Foundation_iOS
 
-typealias CollatorStakingTargetPicker = ModalPickerViewController<
-    AccountDetailsGenericSelectionCell<AccountDetailsBalanceDecorator>,
-    SelectableViewModel<AccountDetailsSelectionViewModel>
->
-
 struct CollatorStakingTargetPickerContent {
     let title: LocalizableResource<String>?
     let viewModels: [AccountDetailsPickerViewModel]
     let action: LocalizableResource<IconWithTitleViewModel>?
     let selectedIndex: Int
+    var allowsActionOnly = false
 }
 
 protocol CollatorStakingDelegationSelectable {
@@ -97,7 +93,8 @@ extension CollatorStakingDelegationSelectable {
             selectedIndex: content.selectedIndex,
             delegate: delegate,
             context: context,
-            title: content.title
+            title: content.title,
+            allowsActionOnly: content.allowsActionOnly
         ) else {
             return nil
         }

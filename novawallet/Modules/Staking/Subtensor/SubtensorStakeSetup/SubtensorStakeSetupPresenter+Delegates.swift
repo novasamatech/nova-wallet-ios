@@ -197,7 +197,8 @@ private extension SubtensorStakeSetupPresenter {
             title: pickerFactory.createTitle(),
             viewModels: createStakeMorePickerViewModels(for: positions),
             action: pickerFactory.createNewValidatorAction(),
-            selectedIndex: positions.firstIndex { $0.hotkey == mode.lockedHotkey } ?? NSNotFound
+            selectedIndex: positions.firstIndex { $0.hotkey == mode.lockedHotkey } ?? NSNotFound,
+            allowsActionOnly: true
         )
 
         validatorPicker = wireframe.showTargetSelection(
