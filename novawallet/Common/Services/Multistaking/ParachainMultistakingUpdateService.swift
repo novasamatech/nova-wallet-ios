@@ -2,7 +2,8 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning {
+final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning,
+    MultistakingOnchainSyncServiceProtocol {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset

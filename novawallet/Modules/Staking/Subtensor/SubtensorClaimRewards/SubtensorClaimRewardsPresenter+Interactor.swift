@@ -1,0 +1,107 @@
+import Foundation
+import Foundation_iOS
+
+extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputProtocol {
+    func didReceiveAssetBalance(_ balance: AssetBalance?) {
+        self.balance = balance
+    }
+
+    func didReceivePrice(_ priceData: PriceData?) {
+        price = priceData
+        isPriceResolved = true
+
+        provideViewModel()
+        trackInitiatedIfReady()
+    }
+
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
+        logger.debug("Fee: \(fee)")
+
+        self.fee = fee
+
+        provideViewModel()
+    }
+
+    func didReceivePositions(_ state: Multistaking.SubtensorState?) {
+        positionsState = state
+
+        if let state, !state.isRootRedeemableStale {
+            claimable = state.rootClaimPreviews
+            applySilently(state.rootClaimPreviews)
+        }
+
+        provideViewModel()
+        trackInitiatedIfReady()
+    }
+
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        isPositionsSyncFailed = isFailed
+
+        provideViewModel()
+        trackInitiatedIfReady()
+    }
+
+    func didReceiveBlockNumber(_: BlockNumber) {}
+
+    func didReceivePreflight(_ preflight: SubtensorPreflight) {
+        self.preflight = preflight
+
+        provideViewModel()
+    }
+
+    func didReceiveQuote(_: SubtensorTradeQuote) {}
+
+    func didReceiveCatalogue(_: SubtensorSubnetCatalogue?) {}
+
+    func didReceiveSubnetLogos(_: SubtensorSubnetLogos?) {}
+
+    func didReceiveNovaFeeRate(_: BigRational?) {}
+
+    func didReceiveCostBasis(_: SubtensorCostBasis?) {}
+
+    func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
+
+    func didReceiveExistentialDeposit(_ deposit: Balance) {
+        existentialDeposit = deposit
+    }
+
+    func didReceiveBaseError(_ error: SubtensorBaseError) {
+        logger.error("Error: \(error)")
+        dataAnalytics.trackFailure(error)
+
+        presentBaseRetry(for: error)
+    }
+
+    func didReceive(pendingClaimHotkeys: Set<AccountId>) {
+        self.pendingClaimHotkeys = pendingClaimHotkeys
+    }
+}
+
+extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
+    func didRequestRetry() {
+        finishHandOff()
+
+        refreshFee()
+        refreshPreflight()
+        interactor.refreshPositions()
+
+        provideViewModel()
+    }
+}
+
+extension SubtensorClaimRewardsPresenter: SubtensorBaseRetrying {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var retryInteractor: SubtensorBaseInteractorInputProtocol { interactor }
+}
+
+extension SubtensorClaimRewardsPresenter: Localizable {
+    func applyLocalization() {
+        guard let view, view.isSetup else {
+            return
+        }
+
+        provideAccountViewModels()
+        provideViewModel()
+    }
+}

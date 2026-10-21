@@ -1,8 +1,15 @@
 import Foundation
 
 struct PriceAPI {
-    static let baseURL = URL(string: "https://tokens-price.novasama-tech.org/api/v3")!
+    #if F_RELEASE
+        static let baseURL = URL(string: "https://tokens-price.novasama-tech.org/api/v3")!
+    #else
+        static let baseURL = URL(string: "https://tokens-price-stg.novasama-tech.org/api/v3")!
+    #endif
+
     static let price = "simple/price"
+    static let markets = "coins/markets"
+    static let marketsPageSize = 250
 
     static func priceHistory(for tokenId: String) -> String {
         "coins/\(tokenId)/market_chart"

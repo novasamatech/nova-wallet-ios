@@ -18,6 +18,18 @@ extension UILabel {
         textColor = style.textColor
         font = style.font
     }
+
+    func apply(text: String, lineHeight: CGFloat, kern: CGFloat = 0) {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = lineHeight
+        paragraph.maximumLineHeight = lineHeight
+        paragraph.alignment = textAlignment
+        attributedText = NSAttributedString(string: text, attributes: [
+            .paragraphStyle: paragraph,
+            .baselineOffset: (lineHeight - font.lineHeight) / 2,
+            .kern: kern
+        ])
+    }
 }
 
 extension UILabel.Style {
@@ -183,6 +195,11 @@ extension UILabel.Style {
 
     static let semiboldCaps1Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps1
+    )
+
+    static let semiboldCaps1ChartLabel = UILabel.Style(
+        textColor: R.color.colorChartLabelText(),
         font: .semiBoldCaps1
     )
 

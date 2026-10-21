@@ -94,10 +94,7 @@ final class StakingDashboardActiveCellView: UIView {
             size: Constants.assetIconSize
         )
 
-        setRewardsText(
-            with: viewModel.chainAssetViewModel,
-            locale: locale
-        )
+        rewardsView.valueTop.text = viewModel.title
 
         var newLoadingState: LoadingState = .none
 
@@ -108,15 +105,16 @@ final class StakingDashboardActiveCellView: UIView {
             stakingTypeView.isHidden = true
         }
 
-        rewardsView.valueBottom.bind(viewModel: viewModel.totalRewards)
+        rewardsView.valueBottom.bind(viewModel: viewModel.amount)
 
-        if viewModel.totalRewards.originalContent.isLoading {
+        if viewModel.amount.originalContent.isLoading {
             newLoadingState.formUnion(.rewards)
         }
 
         detailsView.view.bind(
             stakingStatus: viewModel.status,
             stake: viewModel.yourStake,
+            stakeTitle: viewModel.stakeTitle,
             estimatedEarnings: viewModel.estimatedEarnings,
             locale: locale
         )
@@ -130,18 +128,6 @@ final class StakingDashboardActiveCellView: UIView {
         }
 
         bindAnnouncement(viewModel.announcement)
-    }
-
-    func setRewardsText(
-        with viewModel: ChainAssetViewModel,
-        locale: Locale
-    ) {
-        rewardsView.valueTop.text = [
-            viewModel.assetName,
-            R.string(
-                preferredLanguages: locale.rLanguages
-            ).localizable.commonRewards().lowercased()
-        ].joined(with: .space)
     }
 
     func bindLoadingState() {
@@ -195,6 +181,10 @@ final class StakingDashboardActiveCellView: UIView {
             make.top.equalTo(assetContainerView.snp.bottom).offset(6)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
+        }
+
+        assetView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.assetIconSize)
         }
 
         assetView.setContentCompressionResistancePriority(.low, for: .horizontal)
@@ -259,13 +249,22 @@ extension StakingDashboardActiveCellView: SkeletonableView {
         if loadingState.contains(.rewards) {
             if loadingState == .all {
                 skeletons.append(
-                    SingleSkeleton.createRow(
-                        on: self,
-                        containerView: self,
-                        spaceSize: spaceSize,
-                        offset: CGPoint(x: Constants.leadingOffset, y: 67),
-                        size: CGSize(width: 49, height: 10)
-                    )
+                    contentsOf: [
+                        SingleSkeleton.createRow(
+                            on: self,
+                            containerView: self,
+                            spaceSize: spaceSize,
+                            offset: CGPoint(x: 14, y: 14),
+                            size: CGSize(width: 36, height: 36)
+                        ),
+                        SingleSkeleton.createRow(
+                            on: self,
+                            containerView: self,
+                            spaceSize: spaceSize,
+                            offset: CGPoint(x: Constants.leadingOffset, y: 67),
+                            size: CGSize(width: 49, height: 10)
+                        )
+                    ]
                 )
             }
 

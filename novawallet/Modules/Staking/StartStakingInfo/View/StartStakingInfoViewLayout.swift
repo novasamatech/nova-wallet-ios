@@ -20,6 +20,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.textContainerInset = .zero
     }
 
+    let captionLabel = UILabel(style: .footnoteSecondary, textAlignment: .center, numberOfLines: 0)
+
     lazy var termsView: UITextView = .create {
         $0.textAlignment = .center
         $0.font = .regularCallout
@@ -39,13 +41,16 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     let actionView = LoadableActionView()
 
+    let secondaryButton: TriangularedButton?
+
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
     var paragraphViews: [ParagraphView] = []
 
     lazy var footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
         actionView,
+        secondaryButton,
         balanceLabel
-    ])
+    ].compactMap { $0 })
 
     var onAnnouncementLinkTap: (() -> Void)?
 
@@ -53,9 +58,14 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private var announcementViewModel: AnnouncementViewModel?
     private var appliedFooterExtra: CGFloat = 0
 
-    init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
+    init(
+        headerStyle: MultiColorTextStyle,
+        paragraphStyle: MultiColorTextStyle,
+        hasSecondaryAction: Bool = false
+    ) {
         self.headerStyle = headerStyle
         self.paragraphStyle = paragraphStyle
+        secondaryButton = hasSecondaryAction ? Self.createSecondaryButton() : nil
 
         super.init(frame: .zero)
     }
@@ -86,11 +96,20 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         super.setupLayout()
 
         stackView.layoutMargins = Constants.containerInsets
+        stackView.layoutMargins.bottom += secondaryActionHeight
 
         footer.addSubview(footerContentView)
 
         actionView.snp.makeConstraints {
             $0.height.equalTo(Constants.actionViewHeight)
+        }
+
+        if let secondaryButton {
+            secondaryButton.snp.makeConstraints {
+                $0.height.equalTo(Constants.actionViewHeight)
+            }
+
+            footerContentView.setCustomSpacing(Constants.secondaryActionSpacing, after: actionView)
         }
 
         footerContentView.snp.makeConstraints {
@@ -100,13 +119,14 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         addSubview(footer)
         footer.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth)
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + secondaryActionHeight)
             $0.bottom.equalToSuperview().offset(Constants.footerBorderWidth)
         }
     }
 
     func updateContent(
         title: AccentTextModel,
+        caption: String?,
         paragraphs: [ParagraphView.Model],
         wikiUrl: StartStakingUrlModel,
         termsUrl: StartStakingUrlModel
@@ -121,6 +141,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         stackView.spacing = Constants.containerSpacing
 
         set(title: title)
+        set(caption: caption)
         set(paragraphs: paragraphs)
         setWiki(urlModel: wikiUrl)
         setTerms(urlModel: termsUrl)
@@ -131,6 +152,11 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         actionView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.stakingStartTitle()
+    }
+
+    func updateSecondaryButton(title: String) {
+        secondaryButton?.imageWithTitleView?.title = title
+        secondaryButton?.invalidateLayout()
     }
 
     func setAnnouncement(viewModel: AnnouncementViewModel?) {
@@ -182,16 +208,36 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         }
 
         footer.snp.updateConstraints {
-            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + extra)
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + secondaryActionHeight + extra)
         }
 
-        stackView.layoutMargins.bottom = Constants.containerInsets.bottom + extra
+        stackView.layoutMargins.bottom = Constants.containerInsets.bottom + secondaryActionHeight + extra
+    }
+
+    private var secondaryActionHeight: CGFloat {
+        secondaryButton != nil ? Constants.actionViewHeight + Constants.secondaryActionSpacing : 0
+    }
+
+    private static func createSecondaryButton() -> TriangularedButton {
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+        return button
     }
 
     private func set(title: AccentTextModel) {
         header.titleLabel.bind(model: title, with: headerStyle)
         header.titleLabel.numberOfLines = 0
         stackView.addArrangedSubview(header)
+    }
+
+    private func set(caption: String?) {
+        guard let caption else {
+            return
+        }
+
+        captionLabel.apply(text: caption, lineHeight: Constants.captionLineHeight)
+        stackView.setCustomSpacing(Constants.captionSpacing, after: header)
+        stackView.addArrangedSubview(captionLabel)
     }
 
     private func set(paragraphs: [ParagraphView.Model]) {
@@ -229,126 +275,12 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 }
 
-extension StartStakingInfoViewLayout: SkeletonableView {
-    var skeletonSuperview: UIView {
-        containerView
-    }
-
-    var hidingViews: [UIView] {
-        [
-            header,
-            wikiView,
-            termsView
-        ] + paragraphViews
-    }
-
-    // swiftlint:disable:next function_body_length
-    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let offsetX: CGFloat = 18
-        let offsetY: CGFloat = 39
-        let spacing: CGFloat = 55
-        let iconSize = CGSize(width: 28, height: 28)
-        let titleSize = CGSize(width: 155, height: 10)
-        let subtitleSize = CGSize(width: 126, height: 10)
-
-        let headerFirstLineSize = CGSize(width: 145, height: 16)
-        let headerSecondLineSize = CGSize(width: 185, height: 16)
-        let headerThirdLineSize = CGSize(width: 109, height: 16)
-
-        let topOffsetY = safeAreaInsets.top + 23
-
-        let headerFirstLineOffset = CGPoint(
-            x: spaceSize.width / 2 - headerFirstLineSize.width / 2,
-            y: topOffsetY
-        )
-
-        let headerFirstLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
-            spaceSize: spaceSize,
-            offset: headerFirstLineOffset,
-            size: headerFirstLineSize
-        )
-        let headerSecondLineOffset = CGPoint(
-            x: spaceSize.width / 2 - headerSecondLineSize.width / 2,
-            y: headerFirstLineOffset.y + headerFirstLineSize.height + 17
-        )
-        let headerSecondLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
-            spaceSize: spaceSize,
-            offset: headerSecondLineOffset,
-            size: headerSecondLineSize
-        )
-
-        let headerThirdLineOffset = CGPoint(
-            x: spaceSize.width / 2 - headerThirdLineSize.width / 2,
-            y: headerSecondLineOffset.y + headerSecondLineSize.height + 17
-        )
-        let headerThirdLineSkeleton = SingleSkeleton.createRow(
-            on: containerView,
-            containerView: containerView,
-            spaceSize: spaceSize,
-            offset: headerThirdLineOffset,
-            size: headerThirdLineSize
-        )
-
-        let compoundSkeletons: [[Skeletonable]] = (0 ..< 5).map { index in
-            let iconOffset = CGPoint(
-                x: offsetX,
-                y: headerThirdLineOffset.y + offsetY + CGFloat(index) * (iconSize.height + spacing)
-            )
-
-            let iconSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
-                spaceSize: spaceSize,
-                offset: iconOffset,
-                size: iconSize
-            )
-
-            let titleOffset = CGPoint(
-                x: iconOffset.x + iconSize.width + 18,
-                y: iconOffset.y + 7
-            )
-
-            let titleSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
-                spaceSize: spaceSize,
-                offset: titleOffset,
-                size: titleSize
-            )
-
-            let subtitleOffset = CGPoint(
-                x: titleOffset.x,
-                y: titleOffset.y + titleSize.height + 15
-            )
-
-            let subtitleSkeleton = SingleSkeleton.createRow(
-                on: containerView,
-                containerView: containerView,
-                spaceSize: spaceSize,
-                offset: subtitleOffset,
-                size: subtitleSize
-            )
-
-            return [iconSkeleton, titleSkeleton, subtitleSkeleton]
-        }
-
-        return [
-            headerFirstLineSkeleton,
-            headerSecondLineSkeleton,
-            headerThirdLineSkeleton
-        ] + compoundSkeletons.flatMap { $0 }
-    }
-}
-
 extension StartStakingInfoViewLayout {
     enum Constants {
         static let footerHeight: CGFloat = 144
         static let footerContentSpace: CGFloat = 28
         static let footerSpacing: CGFloat = 12
+        static let secondaryActionSpacing: CGFloat = 8
         static let footerInsets = UIEdgeInsets(top: 16, left: 16, bottom: 31, right: 16)
         static let containerInsets = UIEdgeInsets(
             top: 12,
@@ -358,6 +290,8 @@ extension StartStakingInfoViewLayout {
         )
         static let containerSpacing: CGFloat = 32
         static let wikiAndTermsSpacing: CGFloat = 16
+        static let captionSpacing: CGFloat = 8
+        static let captionLineHeight: CGFloat = 18
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
         static let footerBorderWidth: CGFloat = 1
         static let linkChevronSize: CGFloat = 20.0

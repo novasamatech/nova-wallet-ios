@@ -1,0 +1,94 @@
+import Foundation
+
+struct SubtensorConfirmQuoteState {
+    private(set) var acknowledged: SubtensorTradeQuote?
+    private(set) var isPriceMoved = false
+    private(set) var isLatestFailed = false
+    private(set) var verified: SubtensorTradeQuote?
+    private var flow = SubtensorQuoteFlowModel()
+
+    init(request: SubtensorTradeQuoteRequest, acknowledged: SubtensorTradeQuote?) {
+        _ = flow.updateRequest(request)
+
+        if let acknowledged, flow.applyQuote(acknowledged) {
+            self.acknowledged = acknowledged
+        }
+    }
+
+    var request: SubtensorTradeQuoteRequest? {
+        flow.request
+    }
+
+    var latest: SubtensorTradeQuote? {
+        flow.freshQuote
+    }
+
+    var displayed: SubtensorTradeQuote? {
+        latest ?? acknowledged
+    }
+
+    var latestCrossesAcknowledgedLimit: Bool {
+        guard let latest, let acknowledged else {
+            return false
+        }
+
+        return !latest.isFillable(atLimit: acknowledged.limitPrice)
+    }
+
+    var signingLimit: Balance? {
+        guard let verified, verified == latest, let acknowledged else {
+            return nil
+        }
+
+        return verified.tighterLimit(than: acknowledged.limitPrice)
+    }
+
+    mutating func apply(latest quote: SubtensorTradeQuote) -> Bool {
+        guard flow.applyQuote(quote) else {
+            return false
+        }
+
+        isLatestFailed = false
+
+        if acknowledged == nil {
+            acknowledged = quote
+        } else if latestCrossesAcknowledgedLimit {
+            isPriceMoved = true
+        }
+
+        return true
+    }
+
+    mutating func verify(_ quote: SubtensorTradeQuote) {
+        verified = apply(latest: quote) ? quote : nil
+    }
+
+    mutating func acknowledgeLatest() {
+        acknowledged = latest ?? acknowledged
+        isPriceMoved = false
+    }
+
+    mutating func raisePriceMovedIfCrossed() -> Bool {
+        guard latestCrossesAcknowledgedLimit else {
+            return false
+        }
+
+        isPriceMoved = true
+
+        return true
+    }
+
+    mutating func raisePriceMoved() {
+        isPriceMoved = true
+    }
+
+    mutating func invalidateLatest() {
+        flow.clearQuote()
+        isPriceMoved = false
+    }
+
+    mutating func markLatestFailed() {
+        invalidateLatest()
+        isLatestFailed = true
+    }
+}

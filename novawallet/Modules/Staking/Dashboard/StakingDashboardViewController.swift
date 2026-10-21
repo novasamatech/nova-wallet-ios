@@ -48,6 +48,14 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         updateLoadingState()
+
+        presenter.becomeActive()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        presenter.cancelStakingOpening()
     }
 
     private func setupCollectionView() {
@@ -345,6 +353,14 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
         if !viewModel.isSyncing {
             rootView.collectionView.refreshControl?.endRefreshing()
         }
+    }
+
+    func openStaking(for chainAssetId: ChainAssetId) {
+        presenter.openStaking(for: chainAssetId)
+    }
+
+    func cancelStakingOpening() {
+        presenter.cancelStakingOpening()
     }
 
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel) {

@@ -1,0 +1,312 @@
+import Foundation
+import NovaCrypto
+import Operation_iOS
+
+protocol BittensorApiWireChecked {
+    func validateWire() throws
+}
+
+protocol BittensorApiGenerationalResponse {
+    var generationOrder: BittensorApiGenerationOrder { get }
+}
+
+struct BittensorApiWireViolation: Error {
+    let field: String
+}
+
+final class BittensorApiOperationFactory {
+    static let pageSize = 100
+    static let pageRange = 1 ... 100
+
+    let transport: BittensorApiTransportProtocol
+    let cache: BittensorApiResponseCache
+    private let logger: LoggerProtocol
+
+    init(
+        transport: BittensorApiTransportProtocol,
+        cache: BittensorApiResponseCache,
+        logger: LoggerProtocol
+    ) {
+        self.transport = transport
+        self.cache = cache
+        self.logger = logger
+    }
+}
+
+extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
+    func createSubnetsWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetCollection>> {
+        createWrapper(path: "/subnets")
+    }
+
+    func peekSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetCollection>> {
+        peek(path: "/subnets")
+    }
+
+    func createValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.ValidatorCollection>> {
+        createWrapper(path: "/subnets/\(netuid)/validators")
+    }
+
+    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
+        peek(path: "/subnets/\(netuid)/validators")
+    }
+
+    func createAlphaYieldWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
+        guard netuid != 0 else {
+            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
+        }
+        return createWrapper(path: "/subnets/\(netuid)/yields/alpha")
+    }
+
+    func peekAlphaYield(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
+        guard netuid != 0 else { return .miss }
+        return peek(path: "/subnets/\(netuid)/yields/alpha")
+    }
+
+    func createRootValidatorsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        createWrapper(path: "/root/validators")
+    }
+
+    func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        peek(path: "/root/validators")
+    }
+
+    func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
+        createWrapper(path: "/root/overview")
+    }
+
+    func createOperationsWrapper(
+        accountSubject: AccountAddress,
+        page: Int?
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>> {
+        createSearchWrapper(path: Self.operationsPath, accountSubject: accountSubject, page: page)
+    }
+
+    func peekOperations(
+        accountSubject: AccountAddress,
+        page: Int
+    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.OperationCollection>> {
+        guard Self.isValidAccountSubject(accountSubject), Self.pageRange.contains(page) else { return .miss }
+
+        return peek(
+            path: Self.operationsPath,
+            queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page)
+        )
+    }
+
+    func dropOperations(accountSubject: AccountAddress) {
+        cache.drop(
+            BittensorApiCacheDrop(path: Self.operationsPath, queryItem: "accountSubject=\(accountSubject)")
+        )
+    }
+
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: BittensorApi.PortfolioHistoryPeriod
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
+        createSearchWrapper(
+            path: Self.portfolioHistoryPath,
+            accountSubject: accountSubject,
+            page: nil,
+            queryItems: [URLQueryItem(name: "period", value: period.rawValue)]
+        )
+    }
+
+    func dropPortfolioHistory(accountSubject: AccountAddress) {
+        cache.drop(
+            BittensorApiCacheDrop(path: Self.portfolioHistoryPath, queryItem: "accountSubject=\(accountSubject)")
+        )
+    }
+
+    func createRecommendationsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>> {
+        createWrapper(path: "/recommendations")
+    }
+
+    func createRankedSubnetsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
+        createWrapper(path: "/recommendations/subnets")
+    }
+
+    func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
+        peek(path: "/recommendations/subnets")
+    }
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>> {
+        createWrapper(path: "/recommendations/subnets/\(netuid)/validators")
+    }
+}
+
+private extension BittensorApiOperationFactory {
+    static let operationsPath = "/operations/search"
+    static let portfolioHistoryPath = "/portfolio/history/search"
+
+    func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
+        let cached = cache.peek(Self.cacheKey(path: path, queryItems: queryItems))
+
+        return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: !cached.isFresh) }
+    }
+
+    func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
+        path: String,
+        accountSubject: AccountAddress,
+        page: Int?,
+        queryItems: [URLQueryItem] = []
+    ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
+        guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
+            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
+        }
+
+        return createWrapper(
+            path: path,
+            queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page) + queryItems
+        )
+    }
+
+    static func searchQueryItems(accountSubject: AccountAddress, page: Int?) -> [URLQueryItem] {
+        let subjectItem = URLQueryItem(name: "accountSubject", value: accountSubject)
+        let pageItems = page.map { [URLQueryItem(name: "page", value: String($0))] } ?? []
+
+        return [subjectItem] + pageItems
+    }
+
+    func createWrapper<T: Decodable & BittensorApiWireChecked>(
+        path: String,
+        queryItems: [URLQueryItem] = []
+    ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
+        let request = BittensorApiRequest(path: path, queryItems: queryItems)
+
+        let job = BittensorApiCacheJob(
+            key: Self.cacheKey(path: path, queryItems: queryItems),
+            admit: { [transport] in transport.createAdmissionWrapper() },
+            fetch: { [transport, logger] admission in
+                Self.createFetchWrapper(
+                    T.self, responseWrapper: transport.createResponseWrapper(for: request, admission: admission),
+                    path: path, logger: logger
+                )
+            }
+        )
+
+        return cache.createWrapper(for: job).mapped { try Self.makeResult(from: $0, isFromExpiredCache: false) }
+    }
+
+    static func cacheKey(path: String, queryItems: [URLQueryItem]) -> BittensorApiCacheKey {
+        BittensorApiCacheKey(
+            path: path,
+            query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted()
+        )
+    }
+
+    static func makeResult<T>(
+        from entry: BittensorApiCacheEntry,
+        isFromExpiredCache: Bool
+    ) throws -> BittensorApiResult<T> {
+        guard let value = entry.value as? T else {
+            throw BaseOperationError.unexpectedDependentResult
+        }
+
+        return BittensorApiResult(
+            value: value,
+            requestId: entry.requestId,
+            isFromExpiredCache: isFromExpiredCache
+        )
+    }
+
+    static func createFetchWrapper<T: Decodable & BittensorApiWireChecked>(
+        _ type: T.Type,
+        responseWrapper: CompoundOperationWrapper<BittensorApiRawResponse>,
+        path: String,
+        logger: LoggerProtocol
+    ) -> CompoundOperationWrapper<BittensorApiFetchedValue> {
+        responseWrapper.mapped { response in
+            do {
+                return try parse(type, response: response, path: path)
+            } catch let BittensorApiError.contractViolation(detail, requestId) {
+                logger.warning("Bittensor API contract violation, request id \(requestId ?? "none"): \(detail)")
+
+                throw BittensorApiError.contractViolation(detail: detail, requestId: requestId)
+            }
+        }
+    }
+
+    static func parse<T: Decodable & BittensorApiWireChecked>(
+        _ type: T.Type,
+        response: BittensorApiRawResponse,
+        path: String
+    ) throws -> BittensorApiFetchedValue {
+        let value: T
+
+        do {
+            value = try JSONDecoder().decode(type, from: response.body)
+            try value.validateWire()
+        } catch let violation as BittensorApiWireViolation {
+            throw BittensorApiError.contractViolation(
+                detail: "GET \(path): invalid \(violation.field)",
+                requestId: response.requestId
+            )
+        } catch {
+            throw BittensorApiError.contractViolation(
+                detail: "GET \(path): \(describe(error))",
+                requestId: response.requestId
+            )
+        }
+
+        let generational = value as? BittensorApiGenerationalResponse
+
+        return BittensorApiFetchedValue(
+            value: value,
+            requestId: response.requestId,
+            generation: generational?.generationOrder,
+            directives: response.directives
+        )
+    }
+
+    static func describe(_ error: Error) -> String {
+        guard let decodingError = error as? DecodingError else {
+            return "undecodable body"
+        }
+
+        switch decodingError {
+        case let .dataCorrupted(context):
+            return "invalid value at \(codingPath(context.codingPath))"
+        case let .keyNotFound(key, context):
+            return "missing \(codingPath(context.codingPath + [key]))"
+        case let .typeMismatch(_, context):
+            return "type mismatch at \(codingPath(context.codingPath))"
+        case let .valueNotFound(_, context):
+            return "null at \(codingPath(context.codingPath))"
+        @unknown default:
+            return "undecodable body"
+        }
+    }
+
+    static func codingPath(_ keys: [CodingKey]) -> String {
+        let path = keys.map { key in key.intValue.map { "[\($0)]" } ?? "." + key.stringValue }.joined()
+
+        return path.isEmpty ? "body" : path
+    }
+
+    static func isValidAccountSubject(_ subject: AccountAddress) -> Bool {
+        let factory = SS58AddressFactory()
+
+        do {
+            let type = try factory.type(fromAddress: subject).uint16Value
+
+            guard type == SubstrateConstants.genericAddressPrefix else {
+                return false
+            }
+
+            _ = try factory.accountId(fromAddress: subject, type: type)
+
+            return true
+        } catch {
+            return false
+        }
+    }
+}

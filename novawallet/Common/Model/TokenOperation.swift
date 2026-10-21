@@ -47,6 +47,7 @@ enum OperationCheckCommonResult {
     case noCardSupport(MetaAccountModel)
     case noSellSupport(MetaAccountModel, ChainAsset)
     case noGiftSupport(MetaAccountModel)
+    case noSubtensorStakingSupport(MetaAccountModelType)
     case noRampActions
     case available
 

@@ -949,8 +949,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
 
         wireframe.showGetTokenOptions(
-            form: view,
-            purchaseHadler: self,
+            from: view,
+            purchaseHandler: self,
             destinationChainAsset: payChainAsset,
             locale: selectedLocale
         )

@@ -140,7 +140,7 @@ requests, state, tokens, UUID/key, proof or body. Successful transitions are not
 Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown and the
 refusal delay are persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
 
-Source walkthrough: [eight client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
+Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
 [retirement](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
 [shared origin protection](Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift),
 [settings storage](Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift), and

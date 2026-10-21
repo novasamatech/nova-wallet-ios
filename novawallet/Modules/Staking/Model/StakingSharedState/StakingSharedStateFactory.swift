@@ -25,6 +25,11 @@ protocol StakingSharedStateFactoryProtocol {
     func createMythosStaking(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> MythosStakingSharedStateProtocol
+
+    func createSubtensorStaking(
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorFlowStateProtocol
+    ) throws -> SubtensorSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {

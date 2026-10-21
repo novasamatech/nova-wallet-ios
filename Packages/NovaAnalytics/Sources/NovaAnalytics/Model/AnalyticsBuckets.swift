@@ -98,3 +98,19 @@ public enum NftCountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
         }
     }
 }
+
+public enum CountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
+    case none = "0"
+    case one = "1"
+    case two = "2"
+    case threePlus = "3_plus"
+
+    public init(count: Int) {
+        self = switch count {
+        case ..<1: .none
+        case 1: .one
+        case 2: .two
+        default: .threePlus
+        }
+    }
+}

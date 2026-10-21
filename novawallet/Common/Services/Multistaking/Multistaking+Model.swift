@@ -131,6 +131,7 @@ extension Multistaking {
         let stake: BigUInt?
         let totalRewards: BigUInt?
         let maxApy: Decimal?
+        let subtensorDetails: DashboardItemSubtensorDetails?
 
         var hasStaking: Bool {
             stake != nil

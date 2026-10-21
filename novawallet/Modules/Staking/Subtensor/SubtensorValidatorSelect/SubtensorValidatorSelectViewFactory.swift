@@ -1,0 +1,48 @@
+import Foundation
+import Foundation_iOS
+
+enum SubtensorValidatorSelectViewFactory {
+    static func createView(
+        for state: SubtensorSharedStateProtocol,
+        target: SubtensorStakeTarget,
+        selectedHotkey: AccountId?,
+        analytics: SubtensorValidatorSelectAnalytics,
+        delegate: SubtensorValidatorSelectDelegate
+    ) -> SubtensorValidatorSelectViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
+        let interactor = SubtensorValidatorSelectInteractor(
+            target: target,
+            state: state,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let listFactory = SubtensorValidatorListFactory(
+            chainFormat: chainAsset.chain.chainFormat,
+            assetDisplayInfo: chainAsset.assetDisplayInfo
+        )
+
+        let presenter = SubtensorValidatorSelectPresenter(
+            target: target,
+            selectedHotkey: selectedHotkey,
+            analytics: analytics,
+            interactor: interactor,
+            wireframe: SubtensorValidatorSelectWireframe(state: state),
+            listFactory: listFactory,
+            delegate: delegate,
+            localizationManager: LocalizationManager.shared,
+            filterSession: state.flowState.validatorFilterSession
+        )
+
+        let view = SubtensorValidatorSelectViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+}

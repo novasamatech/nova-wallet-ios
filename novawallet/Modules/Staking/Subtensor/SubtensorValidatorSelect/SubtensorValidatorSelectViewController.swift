@@ -1,0 +1,247 @@
+import Foundation_iOS
+import UIKit
+
+final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder {
+    typealias RootViewType = SubtensorValidatorSelectViewLayout
+
+    let presenter: SubtensorValidatorSelectPresenterProtocol
+
+    private var state: SubtensorValidatorListState?
+
+    init(presenter: SubtensorValidatorSelectPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = SubtensorValidatorSelectViewLayout()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupTableView()
+        setupHandlers()
+        setupNavigationItems()
+        setupLocalization()
+
+        presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        presenter.becomeActive()
+    }
+}
+
+private extension SubtensorValidatorSelectViewController {
+    static let loadingRowsCount = 7
+
+    var loadedViewModel: SubtensorValidatorListViewModel? {
+        if case let .loaded(viewModel) = state {
+            return viewModel
+        }
+
+        return nil
+    }
+
+    var isLoading: Bool {
+        if case .loading = state {
+            return true
+        }
+
+        return false
+    }
+
+    func setupTableView() {
+        rootView.tableView.registerClassForCell(SubtensorValidatorSelectCell.self)
+        rootView.tableView.registerClassForCell(SubtensorValidatorSkeletonCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SubtensorValidatorSectionHeaderView.self)
+        rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+    }
+
+    func setupHandlers() {
+        rootView.searchTextField.addTarget(self, action: #selector(actionSearchChanged), for: .editingChanged)
+        rootView.actionButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
+
+        rootView.errorView.learnMoreButton.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+
+        rootView.filteredEmptyView.actionButton.addTarget(
+            self,
+            action: #selector(actionRemoveFilters),
+            for: .touchUpInside
+        )
+    }
+
+    func setupNavigationItems() {
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(
+                image: R.image.iconFilter(),
+                style: .plain,
+                target: self,
+                action: #selector(actionSort)
+            ),
+            UIBarButtonItem(
+                image: R.image.iconSearch(),
+                style: .plain,
+                target: self,
+                action: #selector(actionToggleSearch)
+            )
+        ]
+    }
+
+    func setupLocalization() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        title = strings.stakingSubtensorSelectValidator()
+        rootView.searchTextField.attributedPlaceholder = NSAttributedString(
+            string: strings.stakingSubtensorUiValidatorSearch(),
+            attributes: [.foregroundColor: R.color.colorHintText()!]
+        )
+    }
+
+    func applyState() {
+        guard let state else {
+            return
+        }
+
+        switch state {
+        case let .loading(viewModel):
+            rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
+            rootView.bind(empty: nil)
+            rootView.errorView.isHidden = true
+            rootView.headerView.isHidden = false
+            rootView.tableView.isHidden = false
+        case let .loaded(viewModel):
+            rootView.headerView.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
+            rootView.bindAction(title: viewModel.selectTitle, isEnabled: viewModel.canSelect)
+            rootView.bind(empty: viewModel.empty)
+            rootView.errorView.isHidden = true
+            rootView.headerView.isHidden = false
+            rootView.tableView.isHidden = false
+        case let .failed(viewModel):
+            rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
+            rootView.bindError(viewModel)
+            rootView.bind(empty: nil)
+            rootView.errorView.isHidden = false
+            rootView.headerView.isHidden = true
+            rootView.tableView.isHidden = true
+        }
+
+        rootView.tableView.reloadData()
+    }
+
+    func rowModel(at indexPath: IndexPath) -> SubtensorValidatorRowViewModel? {
+        guard let viewModel = loadedViewModel, viewModel.rows.indices.contains(indexPath.row) else {
+            return nil
+        }
+
+        return viewModel.rows[indexPath.row]
+    }
+
+    @objc func actionSearchChanged() {
+        presenter.search(rootView.searchTextField.text ?? "")
+    }
+
+    @objc func actionRetry() {
+        presenter.retry()
+    }
+
+    @objc func actionConfirm() {
+        presenter.confirm()
+    }
+
+    @objc func actionSort() {
+        presenter.showSortOptions()
+    }
+
+    @objc func actionRemoveFilters() {
+        presenter.removeFilters()
+    }
+
+    @objc func actionToggleSearch() {
+        let isVisible = rootView.searchView.isHidden
+
+        rootView.setSearchVisible(isVisible)
+
+        if isVisible {
+            rootView.searchTextField.becomeFirstResponder()
+        } else {
+            rootView.searchTextField.resignFirstResponder()
+            rootView.searchTextField.text = nil
+            presenter.search("")
+        }
+    }
+}
+
+extension SubtensorValidatorSelectViewController: UITableViewDataSource {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        if isLoading {
+            return Self.loadingRowsCount
+        }
+
+        return loadedViewModel?.rows.count ?? 0
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let model = rowModel(at: indexPath) else {
+            return tableView.dequeueReusableCellWithType(SubtensorValidatorSkeletonCell.self, forIndexPath: indexPath)
+        }
+
+        let cell = tableView.dequeueReusableCellWithType(SubtensorValidatorSelectCell.self, forIndexPath: indexPath)
+
+        cell.bind(model)
+
+        cell.infoAction = { [weak self] in
+            self?.presenter.showInfo(hotkey: model.hotkey)
+        }
+
+        return cell
+    }
+}
+
+extension SubtensorValidatorSelectViewController: UITableViewDelegate {
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat { 0 }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard let model = rowModel(at: indexPath) else {
+            return
+        }
+
+        presenter.select(hotkey: model.hotkey)
+    }
+}
+
+extension SubtensorValidatorSelectViewController: SubtensorValidatorSelectViewProtocol {
+    func didReceive(header: SubtensorValidatorListHeaderViewModel, isFilterActive: Bool) {
+        rootView.headerView.bind(title: header.countTitle, details: header.sortTitle)
+        navigationItem.rightBarButtonItems?.first?.tintColor = isFilterActive
+            ? R.color.colorButtonBackgroundPrimary() : R.color.colorIconPrimary()
+    }
+
+    func didReceive(state: SubtensorValidatorListState) {
+        self.state = state
+
+        applyState()
+    }
+}
+
+extension SubtensorValidatorSelectViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
+}

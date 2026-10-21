@@ -1,0 +1,91 @@
+import Foundation
+import Foundation_iOS
+import NovaAnalytics
+
+enum SubtensorPortfolioViewFactory {
+    static func createView(
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorFlowStateProtocol,
+        source: StakingPortfolioSource
+    ) -> SubtensorPortfolioViewProtocol? {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let stateFactory = StakingSharedStateFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            delegatedAccountSyncService: nil,
+            eventCenter: EventCenter.shared,
+            syncOperationQueue: operationQueue,
+            repositoryOperationQueue: operationQueue,
+            applicationConfig: ApplicationConfig.shared,
+            logger: Logger.shared
+        )
+
+        guard
+            let state = try? stateFactory.createSubtensorStaking(for: stakingOption, flowState: flowState),
+            let wallet = SelectedWalletSettings.shared.value,
+            let account = wallet.fetchMetaChainAccount(for: stakingOption.chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let interactor = createInteractor(
+            state: state,
+            account: account,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+
+        let presenter = SubtensorPortfolioPresenter(
+            interactor: interactor,
+            wireframe: SubtensorPortfolioWireframe(state: state),
+            viewModelFactory: SubtensorPortfolioViewModelFactory(
+                chainAsset: stakingOption.chainAsset,
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            ),
+            wallet: wallet,
+            account: account,
+            chainAsset: stakingOption.chainAsset,
+            analyticsSource: source,
+            localizationManager: LocalizationManager.shared
+        )
+
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
+
+        let view = SubtensorPortfolioViewController(
+            presenter: presenter,
+            seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.hidesBottomBarWhenPushed = true
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+}
+
+private extension SubtensorPortfolioViewFactory {
+    static func createInteractor(
+        state: SubtensorSharedStateProtocol,
+        account: MetaChainAccountResponse,
+        currencyManager: CurrencyManagerProtocol,
+        operationQueue: OperationQueue
+    ) -> SubtensorPortfolioInteractor {
+        SubtensorPortfolioInteractor(
+            state: state,
+            account: account,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared,
+            applicationHandler: ApplicationHandler(),
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+    }
+}

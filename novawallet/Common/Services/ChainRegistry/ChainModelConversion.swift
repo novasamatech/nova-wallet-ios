@@ -19,6 +19,7 @@ final class ChainModelConverter: ChainModelConversionProtocol {
         let localUserAssets = localModel?.assets.filter { $0.source == .user } ?? []
 
         let remoteAssets = remoteModel.assets + additionalAssets
+
         let chainAssets = remoteAssets.map { AssetModel(remoteModel: $0) }
 
         let newAssets = Set(chainAssets).union(localUserAssets)

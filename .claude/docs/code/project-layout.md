@@ -46,8 +46,8 @@ Nothing in a package may reference an app type — no `ApplicationConfig`, `Glob
 `Logger`, `UserDataStorageFacade`, `OperationManagerFacade`, `R.string` or
 `ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration` or
 `NovaAuthConfiguration`. The host's `NovaAuthFacade.shared` injects the same auth owner into
-analytics; the package owns recovery, storage and DeviceCheck. The app owns
-configuration/context publication; `NovaAnalytics` owns
+analytics and Bittensor; the package owns recovery, storage and DeviceCheck. The app owns
+configuration/context publication and Bittensor error presentation; `NovaAnalytics` owns
 consent and normal flush scheduling, retaining auth-failed batches silently for later flushes.
 Auth's only store configuration is the host-supplied Keychain service: the bearer sits under it
 in the app's default Keychain access group,

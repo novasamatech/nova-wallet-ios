@@ -95,6 +95,15 @@ struct MessageSheetViewFactory {
             message = LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetMessageGift()
             }
+        case .subtensorStaking:
+            title = LocalizableResource<String> { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable
+                    .featureUnsupportedSheetTitleSubtensorStaking(walletType.description(for: locale).capitalized)
+            }
+            message = LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable
+                    .featureUnsupportedSheetMessageSubtensorStaking()
+            }
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(

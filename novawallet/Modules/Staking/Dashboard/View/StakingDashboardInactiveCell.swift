@@ -21,6 +21,9 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 > {
     private enum Constants {
         static let iconSize = CGSize(width: 44, height: 44)
+        static let newBadgeTopOffset: CGFloat = 8
+        static let newBadgeLineHeight: CGFloat = 13
+        static let newBadgeKern: CGFloat = 0.6
     }
 
     var assetIconView: AssetIconView { titleView.fView }
@@ -30,6 +33,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     var balanceSecureLabel: DotsSecureView<UILabel> { titleView.sView.sView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
+
+    let newBadgeView: GenericBorderedView<UILabel> = .create { view in
+        view.contentView.apply(style: .semiboldCaps2Secondary)
+        view.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        view.isHidden = true
+    }
 
     var skeletonView: SkrullableView?
 
@@ -76,6 +85,13 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             viewModel.estimatedEarnings.satisfies { $0 != nil }
         setupStaticLocalization(for: locale, hasEstimatedRewards: hasEstimatedRewards)
 
+        newBadgeView.isHidden = !viewModel.isNew
+        newBadgeView.contentView.apply(
+            text: R.string(preferredLanguages: locale.rLanguages).localizable.commonNewBadge().uppercased(with: locale),
+            lineHeight: Constants.newBadgeLineHeight,
+            kern: Constants.newBadgeKern
+        )
+
         loadingState = newLoadingState
 
         if loadingState != .none {
@@ -85,6 +101,8 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     func bindLoadingState() {
         stopLoadingIfNeeded()
+
+        newBadgeView.isHidden = true
 
         loadingState = .all
 
@@ -211,6 +229,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         valueView.detailsView.fView.setContentCompressionResistancePriority(.required, for: .horizontal)
         valueView.detailsView.sView.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        addSubview(newBadgeView)
+        newBadgeView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(-Constants.newBadgeTopOffset)
+            make.trailing.equalToSuperview()
+        }
     }
 }
 
@@ -243,16 +267,15 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: 14),
-                        size: CGSize(width: 38, height: 38),
-                        cornerRadii: CGSize(width: 12.0 / 38.0, height: 12.0 / 38.0)
+                        offset: CGPoint(x: 4, y: 14),
+                        size: CGSize(width: 36, height: 36)
                     ),
 
                     SingleSkeleton.createRow(
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 48, y: 26),
+                        offset: CGPoint(x: 54, y: 26),
                         size: CGSize(width: 73, height: 12)
                     )
                 ]
@@ -266,14 +289,14 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: spaceSize.width - 61, y: 18),
+                        offset: CGPoint(x: spaceSize.width - 65, y: 18),
                         size: CGSize(width: 57, height: 12)
                     ),
                     SingleSkeleton.createRow(
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: spaceSize.width - 53, y: 38),
+                        offset: CGPoint(x: spaceSize.width - 57, y: 38),
                         size: CGSize(width: 49, height: 8)
                     )
                 ]

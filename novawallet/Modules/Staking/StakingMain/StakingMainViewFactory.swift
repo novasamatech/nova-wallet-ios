@@ -3,12 +3,22 @@ import Foundation_iOS
 import SubstrateSdk
 import Keystore_iOS
 import Operation_iOS
+import NovaAnalytics
 
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
-    ) -> StakingMainViewProtocol? {
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        subtensorFlowState: SubtensorFlowStateProtocol
+    ) -> ControllerBackedProtocol? {
+        if stakingOption.type == .subtensor {
+            return SubtensorPortfolioViewFactory.createView(
+                for: stakingOption,
+                flowState: subtensorFlowState,
+                source: .dashboard
+            )
+        }
+
         let settings = SettingsManager.shared
 
         let interactor = createInteractor(

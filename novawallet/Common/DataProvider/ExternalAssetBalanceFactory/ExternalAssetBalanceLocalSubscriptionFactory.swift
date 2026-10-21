@@ -77,8 +77,17 @@ enum ExternalBalanceLocalSubscriptionFacade {
             logger: Logger.shared
         )
 
+        let subtensorServiceFactory = SubtensorExternalBalanceServiceFactory(
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger,
+            processServices: .shared
+        )
+
         return ExternalBalanceLocalSubscriptionFactory(
-            serviceFactories: [crowdloanServiceFactory, poolServiceFactory],
+            serviceFactories: [crowdloanServiceFactory, poolServiceFactory, subtensorServiceFactory],
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             eventCenter: EventCenter.shared,

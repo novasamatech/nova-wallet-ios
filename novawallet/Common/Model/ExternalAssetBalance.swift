@@ -7,6 +7,7 @@ struct ExternalAssetBalance: Equatable, Identifiable {
     enum BalanceType: String {
         case crowdloan
         case nominationPools
+        case subtensorStaking
         case unknown
 
         init(rawType: String) {
@@ -59,6 +60,10 @@ extension ExternalAssetBalance.BalanceType {
         case .nominationPools:
             return LocalizableResource {
                 R.string(preferredLanguages: $0.rLanguages).localizable.stakingTypeNominationPool()
+            }
+        case .subtensorStaking:
+            return LocalizableResource {
+                R.string(preferredLanguages: $0.rLanguages).localizable.walletBalanceBonded()
             }
         case .unknown:
             return LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonUnknown() }

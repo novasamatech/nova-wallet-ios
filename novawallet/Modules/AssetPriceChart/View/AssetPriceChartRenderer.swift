@@ -63,7 +63,8 @@ final class AssetPriceChartRenderer: LineChartRenderer {
             y: selectedEntry.y
         )
 
-        let trans = dataProvider.getTransformer(forAxis: .left)
+        let axis = dataProvider.lineData?.dataSets.first?.axisDependency ?? .left
+        let trans = dataProvider.getTransformer(forAxis: axis)
         let pixelPoint = trans.pixelForValues(x: point.x, y: point.y)
 
         context.saveGState()
