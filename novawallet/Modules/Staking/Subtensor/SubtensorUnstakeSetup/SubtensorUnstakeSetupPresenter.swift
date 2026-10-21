@@ -30,10 +30,11 @@ final class SubtensorUnstakeSetupPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
-    var validatorItem: SubtensorValidatorDirectoryItem?
     var validatorRequest: AccountId?
     var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
     var validatorsRequest: [AccountId]?
+    var validatorsResolved: [AccountId]?
+    weak var validatorPicker: CollatorStakingTargetPicker?
     var selection: SubtensorUnstakeSelection?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
@@ -276,16 +277,6 @@ extension SubtensorUnstakeSetupPresenter {
         interactor.refreshPreflight(for: anchorHotkey, netuid: netuid)
     }
 
-    func loadValidatorIfNeeded() {
-        guard let anchorHotkey, anchorHotkey != validatorRequest, let subnetRef else {
-            return
-        }
-
-        validatorRequest = anchorHotkey
-        validatorItem = nil
-        interactor.loadValidator(anchorHotkey, on: subnetRef)
-    }
-
     func applyInputChange() {
         refreshFee()
         updateQuote()
@@ -355,7 +346,7 @@ extension SubtensorUnstakeSetupPresenter {
             maxAmount: maxAmount,
             amount: amount,
             validatorHotkey: anchorHotkey,
-            validatorName: validatorItem?.name,
+            validatorName: anchorHotkey.flatMap { validatorName(for: $0) },
             isValidatorSelectable: (group?.positions.count ?? 0) > 1,
             isAllValidators: currentSelection == .all,
             legCap: isLegCapped ? SubtensorGroupUnstakeBasis.maxLegs : nil,

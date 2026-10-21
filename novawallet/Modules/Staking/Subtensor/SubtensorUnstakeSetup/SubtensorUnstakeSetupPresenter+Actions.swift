@@ -32,30 +32,19 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func selectValidator() {
+        loadValidatorsIfNeeded()
+
         guard let group, group.positions.count > 1 else {
             showValidatorInfo()
             return
         }
 
-        let hotkeys = group.positions.map(\.hotkey)
-        let held = heldHotkeys
-        let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
-        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: held)
-        let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
-
-        let content = CollatorStakingTargetPickerContent(
-            title: pickerFactory.createTitle(),
-            viewModels: pickerFactory.createViewModels(
-                for: group.positions,
-                names: names,
-                disabled: held,
-                displayInfo: inputDisplayInfo
-            ),
-            action: hasAllAction ? pickerFactory.createAllValidatorsAction() : nil,
-            selectedIndex: currentSelection?.hotkey.flatMap { hotkeys.firstIndex(of: $0) } ?? NSNotFound
+        validatorPicker = wireframe.showTargetSelection(
+            from: view,
+            content: createValidatorPickerContent(for: group),
+            delegate: self,
+            context: group.positions.map(\.hotkey) as NSArray
         )
-
-        wireframe.showTargetSelection(from: view, content: content, delegate: self, context: hotkeys as NSArray)
     }
 
     func showValidatorInfo() {
@@ -67,7 +56,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             from: view,
             target: target,
             hotkey: anchorHotkey,
-            detail: validatorItem
+            detail: validatorItems[anchorHotkey]
         )
     }
 
@@ -95,6 +84,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func proceed() {
+        loadValidatorsIfNeeded()
+
         let amount = inputAmount()
 
         guard
@@ -245,7 +236,40 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func validatorName(for hotkey: AccountId) -> String? {
-        validatorItems[hotkey]?.name ?? (validatorItem?.hotkey == hotkey ? validatorItem?.name : nil)
+        validatorItems[hotkey]?.name
+    }
+
+    func createValidatorPickerContent(for group: SubtensorPortfolioGroup) -> CollatorStakingTargetPickerContent {
+        let hotkeys = group.positions.map(\.hotkey)
+        let held = heldHotkeys
+        let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
+        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: held)
+        let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
+
+        return CollatorStakingTargetPickerContent(
+            title: pickerFactory.createTitle(),
+            viewModels: pickerFactory.createViewModels(
+                for: group.positions,
+                names: names,
+                disabled: held,
+                displayInfo: inputDisplayInfo
+            ),
+            action: hasAllAction ? pickerFactory.createAllValidatorsAction() : nil,
+            selectedIndex: currentSelection?.hotkey.flatMap { hotkeys.firstIndex(of: $0) } ?? NSNotFound
+        )
+    }
+
+    func refreshValidatorPicker() {
+        guard
+            let picker = validatorPicker,
+            picker.isViewLoaded,
+            let group,
+            (picker.context as? [AccountId]) == group.positions.map(\.hotkey) else {
+            return
+        }
+
+        picker.viewModels = createValidatorPickerContent(for: group).viewModels
+        picker.reload()
     }
 
     func createConfirmValidator(for hotkey: AccountId) -> SubtensorConfirmValidator? {
