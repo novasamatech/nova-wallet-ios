@@ -16,8 +16,8 @@ struct SubtensorPositionState {
     var isCatalogueResolved = false
     var prices: SubtensorAlphaPrices?
     var subnetLogos: SubtensorSubnetLogos?
-    var validatorHotkey: AccountId?
-    var validator: SubtensorValidatorDirectoryItem?
+    var validators: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var resolvedValidatorHotkeys: Set<AccountId> = []
     var isRateResolved = false
     var yields: SubtensorAlphaYields?
     var costBasis = SubtensorCostBasisState.loading
@@ -58,12 +58,28 @@ struct SubtensorPositionState {
         }
     }
 
-    var isValidatorResolved: Bool {
-        validatorHotkey != nil && validatorHotkey == group?.primaryHotkey
+    var validatorHotkeys: [AccountId] {
+        guard let group else {
+            return []
+        }
+
+        return group.positions.isEmpty ? [group.primaryHotkey] : group.positions.map(\.hotkey)
     }
 
-    var annualRate: Decimal? {
-        group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
+    var hasValidatorList: Bool {
+        (group?.positions.count ?? 0) > 1
+    }
+
+    func isValidatorResolved(_ hotkey: AccountId) -> Bool {
+        resolvedValidatorHotkeys.contains(hotkey)
+    }
+
+    func validator(for hotkey: AccountId) -> SubtensorValidatorDirectoryItem? {
+        isValidatorResolved(hotkey) ? validators[hotkey] : nil
+    }
+
+    func annualRate(for hotkey: AccountId) -> Decimal? {
+        SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
     }
 
     var unstakeBasis: SubtensorGroupUnstakeBasis? {
@@ -132,7 +148,7 @@ extension SubtensorPositionState {
             return nil
         }
 
-        let name = target.hotkey == validatorHotkey ? validator?.name : nil
+        let name = validator(for: target.hotkey)?.name
 
         return SubtensorClaimRewardsModel(
             account: account,
@@ -186,6 +202,7 @@ struct SubtensorPositionViewModel {
     let priceWidget: SubtensorPriceWidgetViewModel?
     let actions: [SubtensorPositionActionViewModel]
     let validator: SubtensorValidatorCardViewModel
+    let validators: [SubtensorValidatorCardViewModel]
     let notice: SubtensorPositionNoticeViewModel?
     let isSyncFailed: Bool
 }

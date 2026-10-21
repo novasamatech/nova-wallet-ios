@@ -55,7 +55,7 @@ extension SubtensorPositionPresenter {
     }
 
     struct ValidatorRequest: Equatable {
-        let hotkey: AccountId
+        let hotkeys: [AccountId]
         let subnet: SubtensorSubnetRef
     }
 
@@ -70,18 +70,20 @@ extension SubtensorPositionPresenter {
     }
 
     func loadValidatorIfNeeded() {
-        guard let hotkey = state.group?.primaryHotkey else {
+        let hotkeys = state.validatorHotkeys
+
+        guard !hotkeys.isEmpty else {
             return
         }
 
-        let request = ValidatorRequest(hotkey: hotkey, subnet: subnetRef)
+        let request = ValidatorRequest(hotkeys: hotkeys, subnet: subnetRef)
 
         guard request != validatorRequest else {
             return
         }
 
         validatorRequest = request
-        interactor.loadValidator(hotkey, on: request.subnet)
+        interactor.loadValidators(hotkeys, on: request.subnet)
     }
 
     func apply(group: SubtensorPortfolioGroup) {
@@ -200,17 +202,21 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         )
     }
 
-    func selectValidator() {
-        guard let hotkey = state.group?.primaryHotkey else {
+    func selectValidator(at index: Int) {
+        let hotkeys = state.validatorHotkeys
+
+        guard index < hotkeys.count else {
             return
         }
+
+        let hotkey = hotkeys[index]
 
         guard let target else {
             retrySubnetsInfoIfUnavailable()
             return
         }
 
-        let detail = state.isValidatorResolved ? state.validator : nil
+        let detail = state.validator(for: hotkey)
         let needsChainDetail = detail?.isChainDetailUnavailable == true
 
         wireframe.showValidatorInfo(

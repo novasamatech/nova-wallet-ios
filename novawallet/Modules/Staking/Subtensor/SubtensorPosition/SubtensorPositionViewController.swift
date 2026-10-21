@@ -54,6 +54,10 @@ private extension SubtensorPositionViewController {
             self?.presenter.selectAction(action)
         }
 
+        rootView.onSelectValidator = { [weak self] index in
+            self?.presenter.selectValidator(at: index)
+        }
+
         rootView.sellButton.addTarget(self, action: #selector(actionSell), for: .touchUpInside)
         rootView.buyButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
         rootView.validatorView.addTarget(self, action: #selector(actionValidator), for: .touchUpInside)
@@ -79,7 +83,7 @@ private extension SubtensorPositionViewController {
     }
 
     @objc func actionValidator() {
-        presenter.selectValidator()
+        presenter.selectValidator(at: 0)
     }
 
     @objc func actionPeriod() {
