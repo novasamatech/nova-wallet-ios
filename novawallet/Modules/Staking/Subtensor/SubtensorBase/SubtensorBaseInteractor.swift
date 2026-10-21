@@ -28,6 +28,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private var quoteDebouncer = Debouncer(delay: 0.25)
     private var pendingFeeOperation: SubtensorOperation?
     private var pendingShieldQuoteOperation: SubtensorOperation?
+    private var shieldQuoteFailures = 0
     private let feeCallStore = CancellableCallStore()
     private let shieldQuoteCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
@@ -154,18 +155,28 @@ private extension SubtensorBaseInteractor {
                 backingCallIn: shieldQuoteCallStore,
                 runningCallbackIn: .main
             ) { [weak self] result in
-                switch result {
-                case let .success(quote):
-                    self?.basePresenter?.didReceiveShieldQuote(quote)
-                case let .failure(error):
-                    self?.logger.warning("Shield quote unavailable: \(error)")
-                    self?.basePresenter?.didReceiveShieldQuote(nil)
-                }
+                self?.deliverShieldQuote(result)
             }
         }
 
         pendingFeeOperation = nil
         pendingShieldQuoteOperation = nil
+    }
+
+    func deliverShieldQuote(_ result: Result<SubtensorShieldQuote?, Error>) {
+        switch result {
+        case let .success(quote):
+            shieldQuoteFailures = 0
+            basePresenter?.didReceiveShieldQuote(quote)
+        case let .failure(error):
+            shieldQuoteFailures += 1
+            logger.warning("Shield quote failed (attempt \(shieldQuoteFailures)): \(error)")
+
+            // an unresolved quote holds the fee; past the cap the order goes out unshielded instead of blocking
+            if shieldQuoteFailures >= SubtensorFlowConstants.shieldQuoteAttempts {
+                basePresenter?.didReceiveShieldQuote(nil)
+            }
+        }
     }
 }
 

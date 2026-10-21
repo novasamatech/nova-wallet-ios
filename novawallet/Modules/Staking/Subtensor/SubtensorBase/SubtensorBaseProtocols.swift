@@ -17,6 +17,8 @@ enum SubtensorFlowConstants {
 
         return drift * threshold.denominator > reviewed * threshold.numerator
     }
+
+    static let shieldQuoteAttempts = 3
 }
 
 protocol SubtensorBaseInteractorInputProtocol: AnyObject {
