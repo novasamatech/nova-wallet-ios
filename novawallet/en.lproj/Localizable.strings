@@ -2231,6 +2231,7 @@ Do you want to continue?";
 "staking.subtensor.result.failed.price.moved.format" = "Order cancelled · price moved > %@";
 "staking.subtensor.result.nothing.spent" = "Nothing was spent.";
 "staking.subtensor.result.fee.charged" = "Only the network fee was charged.";
+"staking.subtensor.result.fee.may.be.charged" = "A network fee may have been charged.";
 "staking.subtensor.result.unconfirmed.message" = "We couldn’t confirm the result yet. Your position updates once the network confirms it.";
 "staking.subtensor.result.staking.title" = "Staking...";
 "staking.subtensor.result.updating.title" = "Updating position...";

@@ -7,7 +7,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
 
     let operation: SubtensorOperation
     let shielded: Bool
-    let confirmationCap: TimeInterval
+    let blockTime: BlockTime
     let coldkey: AccountId
     let loadsSubnetData: Bool
     let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
@@ -26,7 +26,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     init(
         operation: SubtensorOperation,
         shielded: Bool,
-        confirmationCap: TimeInterval,
+        blockTime: BlockTime,
         coldkey: AccountId,
         loadsSubnetData: Bool,
         submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol,
@@ -40,7 +40,7 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     ) {
         self.operation = operation
         self.shielded = shielded
-        self.confirmationCap = confirmationCap
+        self.blockTime = blockTime
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
         self.submissionOperationFactory = submissionOperationFactory
@@ -61,14 +61,16 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
 }
 
 private extension SubtensorOperationResultInteractor {
-    func startConfirmationCap() {
+    func startConfirmationCap(for route: SubtensorSubmissionRoute) {
         guard confirmationScheduler == nil, !isSubmissionFinished else {
             return
         }
 
+        presenter?.didSelectRoute(route)
+
         let scheduler = schedulerFactory(self)
         confirmationScheduler = scheduler
-        scheduler.notifyAfter(confirmationCap)
+        scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap(for: route, blockTime: blockTime))
     }
 
     func submit() {
@@ -77,9 +79,9 @@ private extension SubtensorOperationResultInteractor {
         let wrapper = submissionOperationFactory.createSubmitWrapper(
             for: operation,
             shielded: shielded
-        ) { [weak self] in
+        ) { [weak self] route in
             DispatchQueue.main.async {
-                self?.startConfirmationCap()
+                self?.startConfirmationCap(for: route)
             }
         }
 

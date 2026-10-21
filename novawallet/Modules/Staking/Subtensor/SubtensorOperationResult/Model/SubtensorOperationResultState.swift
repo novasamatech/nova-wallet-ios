@@ -3,8 +3,8 @@ import Foundation
 enum SubtensorOperationResultConstants {
     static let confirmationCap: TimeInterval = 90
 
-    static func confirmationCap(isShielded: Bool, blockTime: BlockTime) -> TimeInterval {
-        guard isShielded else {
+    static func confirmationCap(for route: SubtensorSubmissionRoute, blockTime: BlockTime) -> TimeInterval {
+        guard route == .shielded else {
             return confirmationCap
         }
 

@@ -30,6 +30,14 @@ protocol ExtrinsicServiceFactoryProtocol {
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicOperationFactoryProtocol
 
+    func createOperationFactory(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        extensions: [TransactionExtending],
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol?,
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol?
+    ) -> ExtrinsicOperationFactoryProtocol
+
     func createExtrinsicSubmissionMonitor(
         with extrinsicService: ExtrinsicServiceProtocol
     ) -> ExtrinsicSubmitMonitorFactoryProtocol
@@ -142,12 +150,12 @@ extension ExtrinsicServiceFactoryProtocol {
 }
 
 final class ExtrinsicServiceFactory {
-    let runtimeRegistry: RuntimeProviderProtocol
-    let engine: JSONRPCEngine
-    let operationQueue: OperationQueue
-    let userStorageFacade: StorageFacadeProtocol
-    let substrateStorageFacade: StorageFacadeProtocol
-    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    private let runtimeRegistry: RuntimeProviderProtocol
+    private let engine: JSONRPCEngine
+    private let operationQueue: OperationQueue
+    private let userStorageFacade: StorageFacadeProtocol
+    private let substrateStorageFacade: StorageFacadeProtocol
+    private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     private let nonceOperationFactory = TransactionNonceOperationFactory()
     private let logger: LoggerProtocol
 
@@ -227,6 +235,22 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         chain: ChainModel,
         extensions: [TransactionExtending]
     ) -> ExtrinsicOperationFactoryProtocol {
+        createOperationFactory(
+            account: account,
+            chain: chain,
+            extensions: extensions,
+            nonceOperationFactory: nil,
+            eraOperationFactory: nil
+        )
+    }
+
+    func createOperationFactory(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        extensions: [TransactionExtending],
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol?,
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol?
+    ) -> ExtrinsicOperationFactoryProtocol {
         let senderResolvingFactory = createSenderResolvingFactory(account: account, chain: chain)
         let feeEstimationRegistry = createFeeEstimationRegistry(account: account, chain: chain)
 
@@ -237,8 +261,9 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             engine: engine,
             feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
-            nonceOperationFactory: nonceOperationFactory,
+            nonceOperationFactory: nonceOperationFactory ?? self.nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            eraOperationFactory: eraOperationFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
@@ -289,7 +314,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     }
 }
 
-extension ExtrinsicServiceFactory {
+private extension ExtrinsicServiceFactory {
     func createSenderResolvingFactory(
         account: ChainAccountResponse,
         chain: ChainModel
