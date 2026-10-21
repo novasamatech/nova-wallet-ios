@@ -305,6 +305,12 @@ extension BannersViewController: UIScrollViewDelegate {
         unpinBackground()
     }
 
+    func scrollViewDidEndDragging(_: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
+
+        unpinBackground()
+    }
+
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         guard
             let position = currentItemPosition(lastItemIndex: dataSource.numberOfItems() - 1),
