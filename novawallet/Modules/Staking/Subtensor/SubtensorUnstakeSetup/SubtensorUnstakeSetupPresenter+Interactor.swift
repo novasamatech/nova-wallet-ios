@@ -131,6 +131,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
 
+        refreshShieldQuote(for: shieldQuoteOperation)
         provideViewModel()
     }
 

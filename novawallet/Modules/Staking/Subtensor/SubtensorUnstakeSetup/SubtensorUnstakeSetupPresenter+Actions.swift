@@ -126,6 +126,27 @@ extension SubtensorUnstakeSetupPresenter {
     func resetShieldQuote() {
         shieldQuote = nil
         isShieldQuoteResolved = false
+        shieldQuoteInputs = nil
+    }
+
+    func refreshShieldQuote(for operation: SubtensorOperation?) {
+        let inputs = SubtensorUnstakeShieldQuoteInputs(inputResult: inputResult, transferable: balance?.transferable)
+
+        guard let operation, inputs != shieldQuoteInputs else {
+            return
+        }
+
+        shieldQuoteInputs = inputs
+        shieldQuoteOperation = operation
+        interactor.estimateShieldQuote(for: operation)
+    }
+
+    func retryUnresolvedShieldQuote() {
+        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
+            return
+        }
+
+        interactor.estimateShieldQuote(for: shieldQuoteOperation)
     }
 
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDependencies {
@@ -152,6 +173,7 @@ extension SubtensorUnstakeSetupPresenter {
             syncFailed: isPositionsSyncFailed,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
+                self?.retryUnresolvedShieldQuote()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
@@ -214,5 +236,27 @@ extension SubtensorUnstakeSetupPresenter: Localizable {
             provideAssetViewModel()
             provideViewModel()
         }
+    }
+}
+
+struct SubtensorUnstakeShieldQuoteInputs: Equatable {
+    let rate: Decimal?
+    let absolute: Decimal?
+    let transferable: Balance?
+
+    init(inputResult: AmountInputResult?, transferable: Balance?) {
+        switch inputResult {
+        case let .rate(value):
+            rate = value
+            absolute = nil
+        case let .absolute(value):
+            rate = nil
+            absolute = value
+        case .none:
+            rate = nil
+            absolute = nil
+        }
+
+        self.transferable = transferable
     }
 }

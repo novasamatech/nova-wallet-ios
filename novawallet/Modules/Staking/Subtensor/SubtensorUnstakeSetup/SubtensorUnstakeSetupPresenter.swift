@@ -25,6 +25,8 @@ final class SubtensorUnstakeSetupPresenter {
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
     var isShieldQuoteResolved = false
+    var shieldQuoteOperation: SubtensorOperation?
+    var shieldQuoteInputs: SubtensorUnstakeShieldQuoteInputs?
     var preflight: SubtensorPreflight?
     var blockTime: BlockTime?
     var existentialDeposit: Balance?
@@ -274,7 +276,7 @@ extension SubtensorUnstakeSetupPresenter {
         }
 
         interactor.estimateFee(for: operation)
-        interactor.estimateShieldQuote(for: operation)
+        refreshShieldQuote(for: operation)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
