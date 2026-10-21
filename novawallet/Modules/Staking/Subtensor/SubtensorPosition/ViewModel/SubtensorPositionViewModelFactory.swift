@@ -209,7 +209,7 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
-        let isActive = state.primaryPosition?.isRegistered ?? true
+        let isActive = state.hasValidatorList ? nil : state.primaryPosition?.isRegistered ?? true
 
         guard !state.isRoot else {
             return SubtensorPositionSummaryViewModel(
@@ -218,7 +218,7 @@ private extension SubtensorPositionViewModelFactory {
                     .stakingSubtensorUiPositionStakedRoot(),
                 amount: state.group.map { formatTao($0.totalAlpha, locale: locale) },
                 fiat: createFiat(for: state, locale: locale),
-                isActive: state.primaryPosition.map(\.isRegistered),
+                isActive: state.hasValidatorList ? nil : state.primaryPosition.map(\.isRegistered),
                 rows: [createRewardsRow(for: state, locale: locale)]
             )
         }
@@ -273,25 +273,60 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorValidatorCardViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let address = state.group.flatMap { try? $0.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) }
+        createValidatorCard(
+            for: state.group?.primaryHotkey,
+            subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonValidator(),
+            state: state,
+            locale: locale
+        )
+    }
+
+    func createValidators(for state: SubtensorPositionState, locale: Locale) -> [SubtensorValidatorCardViewModel] {
+        guard state.hasValidatorList, let group = state.group else {
+            return []
+        }
+
+        return group.positions.map { position in
+            var card = createValidatorCard(
+                for: position.hotkey,
+                subtitle: state.isRoot
+                    ? formatTao(position.stakeAlpha, locale: locale)
+                    : formatAlpha(position.stakeAlpha, state: state, locale: locale),
+                state: state,
+                locale: locale
+            )
+
+            card.isActive = position.isRegistered
+
+            return card
+        }
+    }
+
+    func createValidatorCard(
+        for hotkey: AccountId?,
+        subtitle: String,
+        state: SubtensorPositionState,
+        locale: Locale
+    ) -> SubtensorValidatorCardViewModel {
+        let address = hotkey.flatMap { try? $0.toAddress(using: chainAsset.chain.chainFormat) }
+        let validator = hotkey.flatMap { state.validators[$0] }
 
         let icon = address.flatMap { address in
             displayAddressFactory.createViewModel(
-                from: DisplayAddress(address: address, username: state.validator?.name ?? "")
+                from: DisplayAddress(address: address, username: validator?.name ?? "")
             ).imageViewModel
         }
 
-        let name = state.isValidatorResolved
-            ? state.validator?.name ?? address?.mediumTruncated ?? .subtensorUnknown(for: locale)
-            : nil
+        let isResolved = hotkey.map { state.isValidatorResolved($0) } ?? false
+        let name = isResolved ? validator?.name ?? address?.mediumTruncated ?? .subtensorUnknown(for: locale) : nil
+        let annualRate = hotkey.flatMap { state.annualRate(for: $0) }
 
         let rate: SubtensorRowState<String>
 
         if !state.isRateResolved {
             rate = .loading
-        } else if state.annualRate != nil || (state.isRoot && state.yields != nil) {
-            rate = .value(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
+        } else if annualRate != nil || (state.isRoot && state.yields != nil) {
+            rate = .value(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }
@@ -299,9 +334,9 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorValidatorCardViewModel(
             icon: icon,
             name: name,
-            subtitle: strings.stakingCommonValidator(),
+            subtitle: subtitle,
             rate: rate,
-            rateCaption: strings.stakingSubtensorV22EstApy()
+            rateCaption: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorV22EstApy()
         )
     }
 
@@ -351,6 +386,7 @@ extension SubtensorPositionViewModelFactory: SubtensorPositionViewModelFactoryPr
             priceWidget: createPriceWidget(for: state, locale: locale),
             actions: createActions(for: state, locale: locale),
             validator: createValidator(for: state, locale: locale),
+            validators: createValidators(for: state, locale: locale),
             notice: createNotice(for: state, locale: locale),
             isSyncFailed: state.isSyncFailed
         )

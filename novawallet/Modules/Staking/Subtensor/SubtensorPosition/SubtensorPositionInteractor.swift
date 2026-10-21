@@ -297,17 +297,17 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         }
     }
 
-    func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
+    func loadValidators(_ hotkeys: [AccountId], on subnet: SubtensorSubnetRef) {
         validatorStore.cancel()
 
         load(
-            directoryOperationFactory.createListedDetailWrapper(for: hotkey, subnet: subnet),
+            directoryOperationFactory.createListedDetailsWrapper(for: hotkeys, subnet: subnet),
             in: validatorStore,
-            label: "position validator"
+            label: "position validators"
         ) { [weak self] in
-            self?.presenter?.didReceive(validator: $0, for: hotkey)
+            self?.presenter?.didReceive(validators: $0, for: hotkeys)
         } fail: { [weak self] _ in
-            self?.presenter?.didFailValidator(for: hotkey)
+            self?.presenter?.didFailValidators(for: hotkeys)
         }
     }
 

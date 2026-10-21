@@ -6,4 +6,5 @@ struct SubtensorValidatorCardViewModel {
     let subtitle: String
     let rate: SubtensorRowState<String>
     let rateCaption: String
+    var isActive: Bool?
 }
