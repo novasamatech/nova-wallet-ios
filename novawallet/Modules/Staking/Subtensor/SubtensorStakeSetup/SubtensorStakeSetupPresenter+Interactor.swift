@@ -145,6 +145,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
 
     func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
         shieldQuote = quote
+        isShieldQuoteResolved = true
 
         applyMaxChange()
     }
@@ -172,6 +173,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         }
 
         forceQuoteRefresh()
+        retryUnresolvedShieldQuote()
     }
 
     func didReceivePreflight(_ preflight: SubtensorPreflight) {

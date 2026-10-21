@@ -139,7 +139,7 @@ extension SubtensorUnstakeSetupPresenter {
             groupHotkeys: groupHotkeys,
             availability: group?.availability,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             existentialDeposit: existentialDeposit,
             preflight: preflight,
             holds: holds,
@@ -148,6 +148,7 @@ extension SubtensorUnstakeSetupPresenter {
             syncFailed: isPositionsSyncFailed,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
+                self?.retryUnresolvedShieldQuote()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
