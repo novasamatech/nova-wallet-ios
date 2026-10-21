@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "簡単で効率的なKYCプロセス";
 "transak.buy.action.description" = "わずか$5からクリプトを購入";
 "transak.sell.action.description" = "わずか$10からクリプトを売る";
-"mercuryo.buy.action.description" = "手数料最大3.95%で最良の価格";
-"mercuryo.sell.action.description" = "手数料最大3.95%で最良の価格";
+"mercuryo.buy.action.description" = "手数料最大3.95%%で最良の価格";
+"mercuryo.sell.action.description" = "手数料最大3.95%%で最良の価格";
 "select.buy.provider.title" = "%@ トークンを買うためのプロバイダーを選択";
 "select.sell.provider.title" = "%@ トークンを売るためのプロバイダーを選択";
 "select.provider.disclaimer.text" = "プロバイダーによって支払い方法、手数料、制限が異なります。それらの見積もりを比較して最適なオプションを見つけてください。";

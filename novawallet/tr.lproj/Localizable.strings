@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "Doğrudan ve etkili KYC süreci";
 "transak.buy.action.description" = "Sadece $5 ile kripto satın al";
 "transak.sell.action.description" = "Sadece $10 ile kripto sat";
-"mercuryo.buy.action.description" = "3.95% kadar ücretlerle en iyi fiyat";
-"mercuryo.sell.action.description" = "3.95% kadar ücretlerle en iyi fiyat";
+"mercuryo.buy.action.description" = "3.95%% kadar ücretlerle en iyi fiyat";
+"mercuryo.sell.action.description" = "3.95%% kadar ücretlerle en iyi fiyat";
 "select.buy.provider.title" = "%@ tokenını satın almak için bir sağlayıcı seçin";
 "select.sell.provider.title" = "%@ tokenının satışını yapmak için bir sağlayıcı seçin";
 "select.provider.disclaimer.text" = "Ödeme yöntemleri, ücretler ve limitler sağlayıcıya göre farklılık gösterir. Sizin için en iyi seçeneği bulmak için teklifleri karşılaştırın.";

@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "Quy trình KYC đơn giản và hiệu quả";
 "transak.buy.action.description" = "Mua tiền điện tử bắt đầu chỉ với $5";
 "transak.sell.action.description" = "Bán tiền điện tử bắt đầu chỉ với $10";
-"mercuryo.buy.action.description" = "Giá tốt nhất với phí lên đến 3.95%";
-"mercuryo.sell.action.description" = "Giá tốt nhất với phí lên đến 3.95%";
+"mercuryo.buy.action.description" = "Giá tốt nhất với phí lên đến 3.95%%";
+"mercuryo.sell.action.description" = "Giá tốt nhất với phí lên đến 3.95%%";
 "select.buy.provider.title" = "Chọn một nhà cung cấp để mua token %@";
 "select.sell.provider.title" = "Chọn một nhà cung cấp để bán token %@";
 "select.provider.disclaimer.text" = "Phương thức thanh toán, phí và giới hạn khác nhau tùy theo nhà cung cấp. So sánh báo giá của họ để tìm tùy chọn tốt nhất cho bạn.";
