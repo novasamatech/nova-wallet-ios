@@ -44,8 +44,8 @@ extension SubtensorStakeSetupPresenter: AnalyticsTracking {
         )
     }
 
-    func trackNoBalanceIfNeeded() {
-        guard !isNoBalanceTracked, !mode.isLocked, transferable == 0 else {
+    func trackNoBalanceIfNeeded(_ amountState: SubtensorStakeSetupAmountState) {
+        guard !isNoBalanceTracked, !mode.isLocked, amountState == .noTao else {
             return
         }
 

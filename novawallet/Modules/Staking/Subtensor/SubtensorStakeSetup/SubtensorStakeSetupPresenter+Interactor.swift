@@ -112,7 +112,6 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         isBalanceLoaded = true
 
         applyMaxChange()
-        trackNoBalanceIfNeeded()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {

@@ -96,9 +96,11 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func provideViewModel() {
-        let viewModel = viewModelFactory.createViewModel(for: createViewModelInput(), locale: selectedLocale)
+        let input = createViewModelInput()
+        let viewModel = viewModelFactory.createViewModel(for: input, locale: selectedLocale)
 
         view?.didReceive(viewModel: viewModel)
+        trackNoBalanceIfNeeded(input.amountState)
     }
 
     func showLockedValidatorInfo() {
