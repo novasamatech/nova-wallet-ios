@@ -194,6 +194,8 @@ private extension SubtensorOperationResultViewModelFactory {
             strings.stakingSubtensorResultNothingSpent()
         case .dispatched:
             strings.stakingSubtensorResultFeeCharged()
+        case .notExecutedFeeUnknown:
+            strings.stakingSubtensorResultFeeMayBeCharged()
         case .unconfirmed:
             nil
         }

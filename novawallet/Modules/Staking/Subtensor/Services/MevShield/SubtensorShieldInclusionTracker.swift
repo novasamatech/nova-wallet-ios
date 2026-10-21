@@ -1,19 +1,13 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
-
-enum SubtensorShieldBlockRange {
-    case fromCarrierBlock(BlockHash)
-    case innerEra(birth: BlockNumber)
-}
 
 protocol SubtensorShieldInclusionTrackingProtocol {
-    func createInnerStatusWrapper(
+    func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
-        in range: SubtensorShieldBlockRange,
+        eraBirth: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus?>
+    ) -> CompoundOperationWrapper<SubtensorShieldInnerScan>
 }
 
 final class SubtensorShieldInclusionTracker {
@@ -40,73 +34,17 @@ final class SubtensorShieldInclusionTracker {
 
 private extension SubtensorShieldInclusionTracker {
     enum Constants {
-        static let averagePollsPerBlock = 4
-    }
-
-    struct SearchStart {
-        let blockNumber: BlockNumber
-        let blockHash: BlockHash?
-        let deadline: BlockNumber
-    }
-
-    static func blockNumber(of header: Block.Header) throws -> BlockNumber {
-        guard
-            let number = BigUInt.fromHexString(header.number),
-            let blockNumber = BlockNumber(exactly: number) else {
-            throw BaseOperationError.unexpectedDependentResult
-        }
-
-        return blockNumber
-    }
-
-    func createHeaderWrapper(
-        for blockHashClosure: @escaping () throws -> BlockHash
-    ) -> CompoundOperationWrapper<Block.Header> {
-        let headerOperation = JSONRPCListOperation<Block.Header>(engine: connection, method: RPCMethod.getBlockHeader)
-
-        headerOperation.configurationBlock = {
-            do {
-                headerOperation.parameters = [try blockHashClosure()]
-            } catch {
-                headerOperation.result = .failure(error)
-            }
-        }
-
-        return CompoundOperationWrapper(targetOperation: headerOperation)
-    }
-
-    func createSearchStartWrapper(for range: SubtensorShieldBlockRange) -> CompoundOperationWrapper<SearchStart> {
-        let eraPeriod = BlockNumber(SubtensorShieldConstants.eraPeriod)
-
-        switch range {
-        case let .fromCarrierBlock(blockHash):
-            let headerWrapper = createHeaderWrapper { blockHash }
-
-            let startOperation = ClosureOperation<SearchStart> {
-                let header = try headerWrapper.targetOperation.extractNoCancellableResultData()
-                let blockNumber = try Self.blockNumber(of: header)
-
-                return SearchStart(blockNumber: blockNumber, blockHash: blockHash, deadline: blockNumber + eraPeriod)
-            }
-
-            startOperation.addDependency(headerWrapper.targetOperation)
-
-            return headerWrapper.insertingTail(operation: startOperation)
-        case let .innerEra(birth):
-            return .createWithResult(
-                SearchStart(blockNumber: birth, blockHash: nil, deadline: birth + eraPeriod)
-            )
-        }
+        static let pollsPerBlock = 2
+        static let waitBudgetBlocks = 13
     }
 }
 
 extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProtocol {
-    func createInnerStatusWrapper(
+    func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
-        in range: SubtensorShieldBlockRange,
+        eraBirth: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus?> {
-        let startWrapper = createSearchStartWrapper(for: range)
+    ) -> CompoundOperationWrapper<SubtensorShieldInnerScan> {
         let blockTimeWrapper = blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
 
         let search = SubtensorShieldInnerSearch(
@@ -117,18 +55,16 @@ extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProto
             operationQueue: operationQueue
         )
 
-        let searchOperation = AsyncClosureOperation<SubstrateExtrinsicStatus?>(
+        let searchOperation = AsyncClosureOperation<SubtensorShieldInnerScan>(
             operationClosure: { completion in
-                let start = try startWrapper.targetOperation.extractNoCancellableResultData()
                 let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
 
                 search.start(
-                    from: start.blockNumber,
-                    blockHash: start.blockHash,
                     window: SubtensorShieldInnerSearch.Window(
-                        deadline: start.deadline,
-                        pollBudget: Constants.averagePollsPerBlock * Int(start.deadline - start.blockNumber + 1),
-                        pollInterval: TimeInterval(blockTime).seconds
+                        start: eraBirth,
+                        deadline: eraBirth + BlockNumber(SubtensorShieldConstants.eraPeriod),
+                        pollBudget: Constants.pollsPerBlock * Constants.waitBudgetBlocks,
+                        pollInterval: TimeInterval(blockTime).seconds / TimeInterval(Constants.pollsPerBlock)
                     ),
                     completion: completion
                 )
@@ -138,12 +74,8 @@ extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProto
             }
         )
 
-        searchOperation.addDependency(startWrapper.targetOperation)
         searchOperation.addDependency(blockTimeWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: searchOperation,
-            dependencies: startWrapper.allOperations + blockTimeWrapper.allOperations
-        )
+        return blockTimeWrapper.insertingTail(operation: searchOperation)
     }
 }

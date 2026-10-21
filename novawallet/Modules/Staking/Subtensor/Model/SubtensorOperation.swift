@@ -100,6 +100,7 @@ struct SubtensorSubmissionFailure: Error {
     enum Stage: Equatable {
         case notSubmitted
         case dispatched(blockHash: BlockHash, extrinsicHash: ExtrinsicHash)
+        case notExecutedFeeUnknown
         case unconfirmed(extrinsicHash: ExtrinsicHash?)
     }
 

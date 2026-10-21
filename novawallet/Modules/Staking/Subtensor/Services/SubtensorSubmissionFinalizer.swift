@@ -113,13 +113,16 @@ extension SubtensorSubmissionFinalizer {
         case let .executed(.failure(inner), _):
             throw dispatchFailure(for: inner)
         case let .notExecuted(carrier):
-            let stage: SubtensorSubmissionFailure.Stage = carrier.map {
-                .dispatched(blockHash: $0.blockHash, extrinsicHash: $0.extrinsicHash)
-            } ?? .notSubmitted
+            let stage: SubtensorSubmissionFailure.Stage = switch carrier {
+            case let .found(carrierSuccess):
+                .dispatched(blockHash: carrierSuccess.blockHash, extrinsicHash: carrierSuccess.extrinsicHash)
+            case .absent:
+                .notSubmitted
+            case .unknown:
+                .notExecutedFeeUnknown
+            }
 
             throw SubtensorSubmissionFailure(stage: stage, error: SubtensorSubmissionError.shieldedNotExecuted)
-        case let .carrierFailed(carrier):
-            throw dispatchFailure(for: carrier)
         }
     }
 }

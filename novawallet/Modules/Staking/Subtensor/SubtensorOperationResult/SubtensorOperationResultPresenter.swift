@@ -99,7 +99,7 @@ private extension SubtensorOperationResultPresenter {
         }
 
         switch failure.stage {
-        case .notSubmitted:
+        case .notSubmitted, .notExecutedFeeUnknown:
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))
         case let .dispatched(blockHash, _):
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))

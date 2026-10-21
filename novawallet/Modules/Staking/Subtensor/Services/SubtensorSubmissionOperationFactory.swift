@@ -299,7 +299,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
 private extension SubtensorSubmissionFailure.Stage {
     var revertsSharedOperation: Bool {
         switch self {
-        case .notSubmitted, .dispatched:
+        case .notSubmitted, .dispatched, .notExecutedFeeUnknown:
             true
         case .unconfirmed:
             false

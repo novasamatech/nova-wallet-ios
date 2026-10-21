@@ -1,19 +1,26 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 enum SubtensorShieldInnerSearchError: Error {
     case windowUnfinished(BlockNumber)
 }
 
+enum SubtensorShieldInnerScan {
+    case found(SubstrateExtrinsicStatus)
+    case absent(scannedBlocks: [BlockHash])
+}
+
 final class SubtensorShieldInnerSearch {
     struct Window {
+        let start: BlockNumber
         let deadline: BlockNumber
         let pollBudget: Int
         let pollInterval: TimeInterval
     }
 
-    typealias Completion = (Result<SubstrateExtrinsicStatus?, Error>) -> Void
+    typealias Completion = (Result<SubtensorShieldInnerScan, Error>) -> Void
 
     let innerHash: ExtrinsicHash
     let matchingEvents: ExtrinsicEventsMatching?
@@ -29,6 +36,8 @@ final class SubtensorShieldInnerSearch {
     private var window: Window?
     private var pollsLeft = 0
     private var completion: Completion?
+    private var finalizedNumber: BlockNumber?
+    private var scannedBlocks: [BlockHash] = []
 
     init(
         innerHash: ExtrinsicHash,
@@ -44,12 +53,7 @@ final class SubtensorShieldInnerSearch {
         self.operationQueue = operationQueue
     }
 
-    func start(
-        from blockNumber: BlockNumber,
-        blockHash: BlockHash?,
-        window: Window,
-        completion: @escaping Completion
-    ) {
+    func start(window: Window, completion: @escaping Completion) {
         mutex.lock()
 
         self.window = window
@@ -59,11 +63,7 @@ final class SubtensorShieldInnerSearch {
         mutex.unlock()
 
         workingQueue.async {
-            if let blockHash {
-                self.inspect(blockNumber: blockNumber, blockHash: blockHash)
-            } else {
-                self.resolveHash(of: blockNumber)
-            }
+            self.visit(window.start)
         }
     }
 
@@ -91,6 +91,94 @@ private extension SubtensorShieldInnerSearch {
         return completion != nil
     }
 
+    func createFinalizedNumberWrapper() -> CompoundOperationWrapper<BlockNumber> {
+        let hashOperation = JSONRPCListOperation<String>(engine: connection, method: RPCMethod.getFinalizedBlockHash)
+        let headerOperation = JSONRPCListOperation<Block.Header>(engine: connection, method: RPCMethod.getBlockHeader)
+
+        headerOperation.configurationBlock = {
+            do {
+                headerOperation.parameters = [try hashOperation.extractNoCancellableResultData()]
+            } catch {
+                headerOperation.result = .failure(error)
+            }
+        }
+
+        headerOperation.addDependency(hashOperation)
+
+        let numberOperation = ClosureOperation<BlockNumber> {
+            let header = try headerOperation.extractNoCancellableResultData()
+
+            guard
+                let number = BigUInt.fromHexString(header.number),
+                let blockNumber = BlockNumber(exactly: number) else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return blockNumber
+        }
+
+        numberOperation.addDependency(headerOperation)
+
+        return CompoundOperationWrapper(targetOperation: numberOperation, dependencies: [hashOperation, headerOperation])
+    }
+
+    func visit(_ blockNumber: BlockNumber) {
+        guard isActive else {
+            return
+        }
+
+        // finalized heights only: a carrier is sealed to one author's key, so a reorg can change the outcome
+        if let finalizedNumber, finalizedNumber >= blockNumber {
+            resolveHash(of: blockNumber)
+        } else {
+            refreshFinalized(waitingFor: blockNumber)
+        }
+    }
+
+    func refreshFinalized(waitingFor blockNumber: BlockNumber) {
+        executeCancellable(
+            wrapper: createFinalizedNumberWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            if case let .success(number) = result {
+                finalizedNumber = max(finalizedNumber ?? 0, number)
+            }
+
+            if let finalizedNumber, finalizedNumber >= blockNumber {
+                resolveHash(of: blockNumber)
+            } else {
+                waitAndRevisit(blockNumber)
+            }
+        }
+    }
+
+    func resolveHash(of blockNumber: BlockNumber) {
+        guard isActive else {
+            return
+        }
+
+        let operation = blockHashOperationFactory.createBlockHashOperation(connection: connection) { blockNumber }
+
+        executeCancellable(
+            wrapper: CompoundOperationWrapper(targetOperation: operation),
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            if case let .success(blockHash) = result, !blockHash.isEmpty {
+                self?.inspect(blockNumber: blockNumber, blockHash: blockHash)
+            } else {
+                self?.waitAndRevisit(blockNumber)
+            }
+        }
+    }
+
     func inspect(blockNumber: BlockNumber, blockHash: BlockHash) {
         guard isActive else {
             return
@@ -110,12 +198,13 @@ private extension SubtensorShieldInnerSearch {
         ) { [weak self] result in
             switch result {
             case let .success(status):
-                self?.finish(with: .success(status))
+                self?.finish(with: .success(.found(status)))
             case let .failure(error):
                 if case ExtrinsicStatusServiceError.extrinsicNotFound = error {
+                    self?.scannedBlocks.append(blockHash)
                     self?.advance(from: blockNumber)
                 } else {
-                    self?.finish(with: .failure(error))
+                    self?.waitAndRevisit(blockNumber)
                 }
             }
         }
@@ -123,42 +212,21 @@ private extension SubtensorShieldInnerSearch {
 
     func advance(from blockNumber: BlockNumber) {
         guard let deadline = currentWindow()?.deadline, blockNumber < deadline else {
-            finish(with: .success(nil))
+            finish(with: .success(.absent(scannedBlocks: scannedBlocks)))
             return
         }
 
-        resolveHash(of: blockNumber + 1)
+        visit(blockNumber + 1)
     }
 
-    func resolveHash(of blockNumber: BlockNumber) {
-        guard isActive else {
-            return
-        }
-
-        let operation = blockHashOperationFactory.createBlockHashOperation(connection: connection) { blockNumber }
-
-        executeCancellable(
-            wrapper: CompoundOperationWrapper(targetOperation: operation),
-            inOperationQueue: operationQueue,
-            backingCallIn: callStore,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            if case let .success(blockHash) = result, !blockHash.isEmpty {
-                self?.inspect(blockNumber: blockNumber, blockHash: blockHash)
-            } else {
-                self?.waitForBlock(blockNumber)
-            }
-        }
-    }
-
-    func waitForBlock(_ blockNumber: BlockNumber) {
+    func waitAndRevisit(_ blockNumber: BlockNumber) {
         guard let pollInterval = consumePoll() else {
             finish(with: .failure(SubtensorShieldInnerSearchError.windowUnfinished(blockNumber)))
             return
         }
 
         workingQueue.asyncAfter(deadline: .now() + pollInterval) { [weak self] in
-            self?.resolveHash(of: blockNumber)
+            self?.visit(blockNumber)
         }
     }
 
@@ -188,7 +256,7 @@ private extension SubtensorShieldInnerSearch {
         return window.pollInterval
     }
 
-    func finish(with result: Result<SubstrateExtrinsicStatus?, Error>) {
+    func finish(with result: Result<SubtensorShieldInnerScan, Error>) {
         mutex.lock()
 
         let currentCompletion = completion
