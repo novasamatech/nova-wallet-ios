@@ -6157,6 +6157,7 @@
 		90A4B2B8909F981631AF3D52 /* UnifiedAddressPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F422D17016EBE301C876BC1 /* UnifiedAddressPopupViewController.swift */; };
 		90ACE8690DA095E4F45494E9 /* TransferConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7865BACFB8591F67D8EE06 /* TransferConfirmProtocols.swift */; };
 		90BFDC091007C0B39DE82F47 /* SubtensorValidatorCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA373D4CE1BEEEDB2B078359 /* SubtensorValidatorCardViewModel.swift */; };
+		0A189ED9A4B9A01C9C08318A /* SubtensorValidatorPickerViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B31293571FCCA7CF5CCE85 /* SubtensorValidatorPickerViewModelFactory.swift */; };
 		91201789084DD9A419CA8CD3 /* MarkdownDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080BC55D9575EBE4216283C /* MarkdownDescriptionViewController.swift */; };
 		912ECC319A48CAD09FB694AC /* AssetsSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9F9E43E296386A7F138326 /* AssetsSearchProtocols.swift */; };
 		91530F7301CA39654E008580 /* DAppBrowserInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4DFCC4236D25A3D59F809 /* DAppBrowserInteractor.swift */; };
@@ -13309,6 +13310,7 @@
 		AA2580363AC3E4A9CD40256E /* RecommendedValidatorListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorListPresenter.swift; sourceTree = "<group>"; };
 		AA2BB29AE8E556E6756A4F02 /* DAppListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppListViewController.swift; sourceTree = "<group>"; };
 		AA373D4CE1BEEEDB2B078359 /* SubtensorValidatorCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorCardViewModel.swift; sourceTree = "<group>"; };
+		C8B31293571FCCA7CF5CCE85 /* SubtensorValidatorPickerViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorPickerViewModelFactory.swift; sourceTree = "<group>"; };
 		AA42C2FD5C2D4047A147AB46 /* SubtensorNovaFeeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorNovaFeeConstants.swift; sourceTree = "<group>"; };
 		AA4EA7B2404E5B1970B3498D /* DAppBrowserWidgetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetProtocols.swift; sourceTree = "<group>"; };
 		AAC5294102607A80F62F9848 /* NPoolsUnstakeConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmViewFactory.swift; sourceTree = "<group>"; };
@@ -30493,6 +30495,7 @@
 				83784B81067D487F88C32416 /* SubtensorConfirmViewModelFactory.swift */,
 				95F01D256EF54A8E8D42532C /* SubtensorCostBasisViewModelFactory.swift */,
 				AA373D4CE1BEEEDB2B078359 /* SubtensorValidatorCardViewModel.swift */,
+				C8B31293571FCCA7CF5CCE85 /* SubtensorValidatorPickerViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -39893,6 +39896,7 @@
 				E835FDC0D7804C04D111EDA4 /* SubtensorBottomPanelView.swift in Sources */,
 				E824EDAC719815DB1BA3D60B /* SubtensorValidatorCardView.swift in Sources */,
 				90BFDC091007C0B39DE82F47 /* SubtensorValidatorCardViewModel.swift in Sources */,
+				0A189ED9A4B9A01C9C08318A /* SubtensorValidatorPickerViewModelFactory.swift in Sources */,
 				0B68565A4152D96598B6FCE7 /* SubtensorSlippageViewController.swift in Sources */,
 				02FCB19B8F67B33626BD4D2D /* SubtensorSlippageViewLayout.swift in Sources */,
 				D22E35F15DBFB15CF668D30C /* SubtensorSubnetFiltersProtocols.swift in Sources */,

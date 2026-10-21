@@ -27,6 +27,21 @@ final class SubtensorPositionViewLayout: UIView {
 
     let validatorView = SubtensorValidatorCardView()
 
+    let validatorsTitleLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
+
+    let validatorsStackView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.spacing = 8
+    }
+
+    private(set) lazy var validatorsView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.spacing = 8
+        view.isHidden = true
+        view.addArrangedSubview(validatorsTitleLabel)
+        view.addArrangedSubview(validatorsStackView)
+    }
+
     let noticeView: SubtensorPositionNoticeView = .create { view in
         view.isHidden = true
     }
@@ -48,6 +63,10 @@ final class SubtensorPositionViewLayout: UIView {
     }
 
     var onSelectAction: ((SubtensorPositionAction) -> Void)?
+
+    var onSelectValidator: ((Int) -> Void)?
+
+    private var validatorCards: [SubtensorValidatorCardView] = []
 
     private var actionCells: [StackActionCell] = []
     private var actions: [SubtensorPositionAction] = []
@@ -78,6 +97,7 @@ final class SubtensorPositionViewLayout: UIView {
         bind(priceWidget: viewModel.priceWidget)
         bind(actions: viewModel.actions)
         validatorView.bind(viewModel: viewModel.validator)
+        bind(validators: viewModel.validators, locale: locale)
 
         noticeView.isHidden = viewModel.notice == nil
 
@@ -93,6 +113,46 @@ final class SubtensorPositionViewLayout: UIView {
 }
 
 private extension SubtensorPositionViewLayout {
+    func bind(validators viewModels: [SubtensorValidatorCardViewModel], locale: Locale) {
+        validatorView.isHidden = !viewModels.isEmpty
+        validatorsView.isHidden = viewModels.isEmpty
+
+        guard !viewModels.isEmpty else {
+            return
+        }
+
+        validatorsTitleLabel.applySubtensorCaps(
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourValidatorsTitle()
+                .uppercased(with: locale)
+        )
+
+        while validatorCards.count < viewModels.count {
+            let card = SubtensorValidatorCardView()
+            card.addTarget(self, action: #selector(actionValidator(_:)), for: .touchUpInside)
+            validatorsStackView.addArrangedSubview(card)
+            validatorCards.append(card)
+        }
+
+        validatorCards.enumerated().forEach { index, card in
+            card.isHidden = index >= viewModels.count
+
+            guard index < viewModels.count else {
+                return
+            }
+
+            card.bind(viewModel: viewModels[index])
+            card.bind(status: viewModels[index].isActive, locale: locale)
+        }
+    }
+
+    @objc func actionValidator(_ sender: UIControl) {
+        guard let card = sender as? SubtensorValidatorCardView, let index = validatorCards.firstIndex(of: card) else {
+            return
+        }
+
+        onSelectValidator?(index)
+    }
+
     func bind(priceWidget viewModel: SubtensorPriceWidgetViewModel?) {
         priceWidget.isHidden = viewModel == nil
 
@@ -187,11 +247,13 @@ private extension SubtensorPositionViewLayout {
         if isRoot {
             setupActions()
             containerView.stackView.addArrangedSubview(validatorView)
+            containerView.stackView.addArrangedSubview(validatorsView)
             containerView.stackView.addArrangedSubview(noticeView)
         } else {
             containerView.stackView.addArrangedSubview(priceWidget)
             containerView.stackView.addArrangedSubview(noticeView)
             containerView.stackView.addArrangedSubview(validatorView)
+            containerView.stackView.addArrangedSubview(validatorsView)
         }
 
         containerView.stackView.addArrangedSubview(syncNoticeView)

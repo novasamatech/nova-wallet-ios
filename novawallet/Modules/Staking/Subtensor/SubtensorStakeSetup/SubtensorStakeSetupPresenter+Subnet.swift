@@ -103,19 +103,6 @@ extension SubtensorStakeSetupPresenter {
         trackNoBalanceIfNeeded(input.amountState)
     }
 
-    func showLockedValidatorInfo() {
-        guard let hotkey = mode.lockedHotkey else {
-            return
-        }
-
-        wireframe.showValidatorInfo(
-            from: view,
-            target: .root,
-            hotkey: hotkey,
-            detail: validatorItem
-        )
-    }
-
     func selectCardHeader() {
         if case .rootDetails = mode {
             wireframe.showRootDetails(from: view, browseState: browseState)

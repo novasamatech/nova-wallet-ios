@@ -92,7 +92,13 @@ private extension SubtensorStakeSetupPresenter {
     }
 
     func validatorSource(for model: SubtensorConfirmModel) -> StakingValidatorSource {
-        if mode.isLocked || model.validator.hotkey == existingPrimaryHotkey(on: model.target.netuid) {
+        let group = positionsState.flatMap {
+            SubtensorPortfolioBuilder.build(state: $0).group(netuid: model.target.netuid)
+        }
+
+        let positions = (group?.positions ?? []) + [mode.lockedPosition].compactMap { $0 }
+
+        if positions.contains(where: { $0.hotkey == model.validator.hotkey && $0.stakeAlpha > 0 }) {
             return .existingHotkey
         }
 

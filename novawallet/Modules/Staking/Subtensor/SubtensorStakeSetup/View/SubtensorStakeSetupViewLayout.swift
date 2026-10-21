@@ -86,6 +86,9 @@ final class SubtensorStakeSetupViewLayout: SubtensorAmountSetupLayout {
             setValidatorRowsVisible(false)
         case let .rows(validator, apy):
             validatorCell.bind(viewModel: validator)
+            validatorCell.accessoryImageView.image = R.image.iconSmallArrow()?.tinted(
+                with: R.color.colorIconSecondary()!
+            )
             apyCell.bind(details: apy)
             setValidatorRowsVisible(true)
         }

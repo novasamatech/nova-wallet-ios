@@ -41,6 +41,11 @@ final class SubtensorStakeSetupPresenter {
     var isYieldsResolved = false
     var isSubnetDataRequested = false
     var validatorItem: SubtensorValidatorDirectoryItem?
+    var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var lockedValidatorRequest: AccountId?
+    var heldValidatorsRequest: [AccountId]?
+    var heldValidatorsResolved: [AccountId]?
+    weak var validatorPicker: CollatorStakingTargetPicker?
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
     var acceptedQuote: SubtensorTradeQuote?
@@ -160,9 +165,9 @@ extension SubtensorStakeSetupPresenter {
             return
         }
 
-        if let hotkey = mode.lockedHotkey, let subnetRef {
-            isLockedValidatorPending = true
-            interactor.loadLockedValidator(hotkey, on: subnetRef)
+        if mode.isLocked {
+            loadHeldValidatorsIfNeeded()
+            resolveLockedValidator()
         }
 
         requestPresetIfReady()
@@ -331,25 +336,6 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
         } else {
             retryQuickPick()
         }
-    }
-
-    func selectValidator() {
-        if case .addStake = mode {
-            showLockedValidatorInfo()
-            return
-        }
-
-        guard !mode.isLocked, let target else {
-            return
-        }
-
-        wireframe.showValidatorSelection(
-            from: view,
-            target: target,
-            selectedHotkey: validatorState.validator?.hotkey,
-            analytics: SubtensorValidatorSelectAnalytics(recommendedHotkey: recommendedHotkey, abandonTracker: nil),
-            delegate: self
-        )
     }
 
     func getTao() {

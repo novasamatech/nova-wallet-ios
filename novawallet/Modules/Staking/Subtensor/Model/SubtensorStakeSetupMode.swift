@@ -36,13 +36,17 @@ extension SubtensorStakeSetupMode {
         netuid == SubtensorPallet.rootNetuid
     }
 
-    var lockedHotkey: AccountId? {
+    var lockedPosition: SubtensorPosition? {
         switch self {
         case .quickPick, .rootDetails, .subnetPick:
             return nil
         case let .addStake(position), let .buyMore(position):
-            return position.hotkey
+            return position
         }
+    }
+
+    var lockedHotkey: AccountId? {
+        lockedPosition?.hotkey
     }
 
     var isLocked: Bool {
