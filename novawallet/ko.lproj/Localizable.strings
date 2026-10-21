@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "직관적이고 효율적인 KYC 프로세스";
 "transak.buy.action.description" = "$5부터 암호화폐 구매 시작";
 "transak.sell.action.description" = "$10부터 암호화폐 판매 시작";
-"mercuryo.buy.action.description" = "최대 3.95%의 수수료로 최고의 가격 제공";
-"mercuryo.sell.action.description" = "최대 3.95%의 수수료로 최고의 가격 제공";
+"mercuryo.buy.action.description" = "최대 3.95%%의 수수료로 최고의 가격 제공";
+"mercuryo.sell.action.description" = "최대 3.95%%의 수수료로 최고의 가격 제공";
 "select.buy.provider.title" = "%@ 토큰 구매를 위한 제공업체 선택";
 "select.sell.provider.title" = "%@ 토큰 판매를 위한 제공업체 선택";
 "select.provider.disclaimer.text" = "결제 수단, 수수료 및 제한은 제공업체에 따라 다릅니다. 그들의 견적을 비교하여 최적의 옵션을 찾으세요.";

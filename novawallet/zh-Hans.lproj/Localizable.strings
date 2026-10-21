@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "简单高效的KYC流程";
 "transak.buy.action.description" = "最低仅需$5即可购买加密货币";
 "transak.sell.action.description" = "最低仅需$10即可出售加密货币";
-"mercuryo.buy.action.description" = "最佳价格，手续费最高至3.95%";
-"mercuryo.sell.action.description" = "最佳价格，手续费最高至3.95%";
+"mercuryo.buy.action.description" = "最佳价格，手续费最高至3.95%%";
+"mercuryo.sell.action.description" = "最佳价格，手续费最高至3.95%%";
 "select.buy.provider.title" = "选择一个提供商购买 %@ 代币";
 "select.sell.provider.title" = "选择一个提供商出售 %@ 代币";
 "select.provider.disclaimer.text" = "不同提供商的支付方式、费用和限额有所不同。比较他们的报价以找到适合您的最佳选项。";

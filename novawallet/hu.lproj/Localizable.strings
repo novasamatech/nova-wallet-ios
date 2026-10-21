@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "Közvetlen és hatékony KYC folyamat";
 "transak.buy.action.description" = "Kriptovásárlás már $5-tól";
 "transak.sell.action.description" = "Kripto eladás már $10-től";
-"mercuryo.buy.action.description" = "Legjobb ár akár 3,95% díjakkal";
-"mercuryo.sell.action.description" = "Legjobb ár akár 3,95% díjakkal";
+"mercuryo.buy.action.description" = "Legjobb ár akár 3,95%% díjakkal";
+"mercuryo.sell.action.description" = "Legjobb ár akár 3,95%% díjakkal";
 "select.buy.provider.title" = "Válasszon szolgáltatót a(z) %@ token vásárlásához";
 "select.sell.provider.title" = "Válasszon szolgáltatót a(z) %@ token eladásához";
 "select.provider.disclaimer.text" = "A fizetési módok, díjak és korlátok szolgáltatónként eltérőek. Hasonlítsa össze az ajánlatukat, hogy megtalálja a legjobb lehetőséget.";

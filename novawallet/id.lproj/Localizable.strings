@@ -1822,8 +1822,8 @@
 "banxa.sell.action.description" = "Proses KYC yang sederhana dan efisien";
 "transak.buy.action.description" = "Beli kripto mulai dari $5";
 "transak.sell.action.description" = "Jual kripto mulai dari $10";
-"mercuryo.buy.action.description" = "Harga terbaik dengan biaya hingga 3,95%";
-"mercuryo.sell.action.description" = "Harga terbaik dengan biaya hingga 3,95%";
+"mercuryo.buy.action.description" = "Harga terbaik dengan biaya hingga 3,95%%";
+"mercuryo.sell.action.description" = "Harga terbaik dengan biaya hingga 3,95%%";
 "select.buy.provider.title" = "Pilih penyedia untuk membeli token %@";
 "select.sell.provider.title" = "Pilih penyedia untuk menjual token %@";
 "select.provider.disclaimer.text" = "Metode pembayaran, biaya, dan batasan berbeda-beda tergantung penyedia. Bandingkan kutipan mereka untuk menemukan pilihan terbaik untuk Anda.";
