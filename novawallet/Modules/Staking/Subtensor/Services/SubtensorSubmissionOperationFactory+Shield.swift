@@ -16,7 +16,8 @@ extension SubtensorSubmissionOperationFactory {
 
         return SubtensorShieldSigners(
             inner: SubtensorRecordingSigner(signer: signer) {},
-            carrier: SubtensorRecordingSigner(signer: signer, signedClosure: signedClosure)
+            carrier: SubtensorRecordingSigner(signer: signer, signedClosure: signedClosure),
+            authorizer: signer as? SigningPreauthorizing
         )
     }
 

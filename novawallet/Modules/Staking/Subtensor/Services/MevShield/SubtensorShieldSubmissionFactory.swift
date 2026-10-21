@@ -25,6 +25,7 @@ protocol SubtensorShieldSubmissionFactoryProtocol {
 struct SubtensorShieldSigners {
     let inner: SubtensorRecordingSigner
     let carrier: SubtensorRecordingSigner
+    let authorizer: SigningPreauthorizing?
 }
 
 struct SubtensorShieldServices {
@@ -326,7 +327,11 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         signers: SubtensorShieldSigners,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let sealedWrapper = extrinsicFactory.createSealedInnerWrapper(for: innerClosure, signer: signers.inner)
+        let sealedWrapper = extrinsicFactory.createSealedInnerWrapper(
+            for: innerClosure,
+            signer: signers.inner,
+            authorization: { try signers.authorizer?.preauthorize() }
+        )
 
         let carrierWrapper = OperationCombiningService<ExtrinsicBuiltModel>.compoundNonOptionalWrapper(
             operationQueue: operationQueue

@@ -11,7 +11,8 @@ protocol SubtensorShieldExtrinsicFactoryProtocol {
 
     func createSealedInnerWrapper(
         for innerClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        authorization: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<SubtensorSealedInner>
 
     func createCarrierWrapper(
@@ -208,10 +209,16 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
 
     func createSealedInnerWrapper(
         for innerClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        authorization: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<SubtensorSealedInner> {
+        let authorizationOperation = ClosureOperation { try authorization() }
+
         let nonceWrapper = createNonceWrapper()
+        nonceWrapper.addDependency(operations: [authorizationOperation])
+
         let eraWrapper = createEraWrapper()
+        eraWrapper.addDependency(operations: [authorizationOperation])
 
         let innerWrapper = OperationCombiningService<ExtrinsicBuiltModel>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -245,7 +252,8 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
 
         sealOperation.addDependency(keyWrapper.targetOperation)
 
-        let headOperations = nonceWrapper.allOperations + eraWrapper.allOperations + innerWrapper.allOperations
+        let headOperations = [authorizationOperation] + nonceWrapper.allOperations + eraWrapper.allOperations +
+            innerWrapper.allOperations
 
         return keyWrapper
             .insertingHead(operations: headOperations)
