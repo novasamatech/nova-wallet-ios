@@ -78,21 +78,6 @@ enum TransferSetupViewFactory {
         )
     }
 
-    static func createCardTopUpView(
-        from chainAsset: ChainAsset,
-        recepient: DisplayAddress?,
-        amount: Decimal? = nil,
-        transferCompletion: TransferCompletionClosure? = nil
-    ) -> TransferSetupViewProtocol? {
-        createRampTransferSetupView(
-            from: chainAsset,
-            recepient: recepient,
-            amount: amount,
-            transferCompletion: transferCompletion,
-            flowType: .cardTopUp
-        )
-    }
-
     static func createView(
         from params: TransferSetupViewParams,
         wireframe: TransferSetupWireframeProtocol,
@@ -272,10 +257,6 @@ private extension TransferSetupViewFactory {
             LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.sellNamedToken(chainAsset.asset.symbol)
             }
-        case .cardTopUp:
-            LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.cardTopUpDotSetupTitle()
-            }
         }
 
         let view = CardTopUpTransferSetupViewController(
@@ -331,14 +312,11 @@ private extension TransferSetupViewFactory {
 private extension TransferSetupViewFactory {
     enum RampFlowTransferType {
         case offRamp
-        case cardTopUp
 
         var analyticsFlow: TransferAnalyticsFlow {
             switch self {
             case .offRamp:
                 .offRamp
-            case .cardTopUp:
-                .cardTopUp
             }
         }
     }
