@@ -11,6 +11,7 @@ final class SubtensorConfirmAnalytics {
     let data = SubtensorDataAnalytics(screen: .confirm)
     let reporter: SubtensorValidationReporter
     private(set) var priceMoveBanner: PriceMoveBanner?
+    private var isAcknowledgementHeld = false
 
     init(model: SubtensorConfirmModel) {
         reporter = SubtensorValidationReporter(
@@ -33,9 +34,11 @@ final class SubtensorConfirmAnalytics {
     }
 
     func beginTap() {
-        if priceMoveBanner == .acknowledged {
+        if priceMoveBanner == .acknowledged, !isAcknowledgementHeld {
             closePriceMoveBanner(.blocked)
         }
+
+        isAcknowledgementHeld = false
     }
 
     func syncPriceMoveBanner(isShown: Bool) {
@@ -52,8 +55,9 @@ final class SubtensorConfirmAnalytics {
         }
     }
 
-    func acknowledgePriceMove() {
+    func acknowledgePriceMove(heldForNextTap: Bool) {
         priceMoveBanner = .acknowledged
+        isAcknowledgementHeld = heldForNextTap
     }
 
     func takePriceMoveAcknowledgement() -> Bool {
@@ -68,6 +72,7 @@ final class SubtensorConfirmAnalytics {
 
     private func closePriceMoveBanner(_ outcome: StakingValidationOutcome) {
         priceMoveBanner = nil
+        isAcknowledgementHeld = false
         reporter.report(.priceMoved, outcome: outcome)
     }
 }

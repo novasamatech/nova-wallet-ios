@@ -147,10 +147,7 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
-
-        shieldQuoteOperation = operation
-        isShieldQuoteResolved = false
-        interactor.estimateShieldQuote(for: operation)
+        requestShieldQuote(for: operation)
     }
 
     func refreshPreflight() {
@@ -218,14 +215,14 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
-            analytics.acknowledgePriceMove()
+            analytics.acknowledgePriceMove(heldForNextTap: isShieldable)
             state.acknowledgeLatest()
             quoteState = state
 
             refreshFee()
             provideViewModel()
 
-            return true
+            return !isShieldable
         }
 
         guard !state.raisePriceMovedIfCrossed() else {
