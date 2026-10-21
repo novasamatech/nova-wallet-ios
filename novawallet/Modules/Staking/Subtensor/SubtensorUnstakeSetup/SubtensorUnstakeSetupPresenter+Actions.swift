@@ -43,7 +43,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             from: view,
             content: createValidatorPickerContent(for: group),
             delegate: self,
-            context: group.positions.map(\.hotkey) as NSArray
+            context: group.positions.map(\.hotkey) as NSArray,
+            keeping: validatorPicker
         )
     }
 

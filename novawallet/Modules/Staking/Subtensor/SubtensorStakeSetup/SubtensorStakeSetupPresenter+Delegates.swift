@@ -204,7 +204,8 @@ private extension SubtensorStakeSetupPresenter {
             from: view,
             content: content,
             delegate: self,
-            context: positions as NSArray
+            context: positions as NSArray,
+            keeping: validatorPicker
         )
     }
 

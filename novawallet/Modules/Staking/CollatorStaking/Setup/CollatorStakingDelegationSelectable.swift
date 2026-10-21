@@ -84,8 +84,13 @@ extension CollatorStakingDelegationSelectable {
         from view: ControllerBackedProtocol?,
         content: CollatorStakingTargetPickerContent,
         delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
+        context: AnyObject?,
+        keeping current: CollatorStakingTargetPicker? = nil
     ) -> CollatorStakingTargetPicker? {
+        if let current, current.presentingViewController != nil {
+            return current
+        }
+
         guard let picker = ModalPickerFactory.createCollatorsPickingList(
             content.viewModels,
             actionViewModel: content.action,
@@ -99,6 +104,6 @@ extension CollatorStakingDelegationSelectable {
 
         view?.controller.present(picker, animated: true, completion: nil)
 
-        return picker
+        return picker.presentingViewController != nil ? picker : nil
     }
 }
