@@ -15,6 +15,13 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(primary, 50_000_000_000)]))
     }
 
+    func testAmountEqualToThePrimaryStakeIsOneFullExitOfIt() {
+        let plan = makeBasis().plan(for: primary.alpha, floors: floors)
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(primary)], partials: []))
+        XCTAssertEqual(plan?.isBatched, false)
+    }
+
     func testAmountAboveThePrimaryEmptiesTheSmallestPositionsFirst() {
         let plan = makeBasis().plan(for: 61_000_000_000, floors: floors)
 
@@ -132,6 +139,12 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let plan = basis.plan(for: 59_500_000_000, floors: floors)
 
         XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [], partials: [slice(owned, 59_500_000_000)]))
+    }
+
+    func testRemainderBelowTheSweepThresholdMovesTheSaleOffTheValidator() {
+        let plan = makeBasis().plan(for: 56_000_000_000, floors: SubtensorUnstakeFloors(yield: floor, sweep: 5_000_000_000))
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third)], partials: [slice(second, 26_000_000_000)]))
     }
 
     func testZeroSweepThresholdLeavesOnlyTheYieldMinimum() {

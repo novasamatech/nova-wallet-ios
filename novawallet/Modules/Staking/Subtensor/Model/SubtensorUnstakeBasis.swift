@@ -65,14 +65,14 @@ struct SubtensorGroupUnstakeBasis: Equatable {
             return nil
         }
 
-        guard positions.count > 1 else {
-            return singlePlan(for: amount, position: primary, floor: floors.yield)
+        if primary.locked == 0, amount == primary.alpha {
+            return SubtensorUnstakePlan(
+                exits: [SubtensorUnstakeSlice(hotkey: primary.hotkey, alpha: amount)],
+                partials: []
+            )
         }
 
-        if
-            amount <= primary.free,
-            amount < drawable(floor: floors.yield),
-            primary.leavesSweepFloor(after: amount, floors: floors) {
+        if positions.count == 1 || primaryCovers(amount, primary: primary, floors: floors) {
             return SubtensorUnstakePlan(
                 exits: [],
                 partials: [SubtensorUnstakeSlice(hotkey: primary.hotkey, alpha: amount)]
@@ -110,22 +110,14 @@ struct SubtensorGroupUnstakeBasis: Equatable {
 }
 
 private extension SubtensorGroupUnstakeBasis {
-    func singlePlan(
-        for amount: Balance,
-        position: SubtensorUnstakePosition,
-        floor: Balance
-    ) -> SubtensorUnstakePlan {
-        guard amount == position.drawable(floor: floor), position.locked == 0 else {
-            return SubtensorUnstakePlan(
-                exits: [],
-                partials: [SubtensorUnstakeSlice(hotkey: position.hotkey, alpha: amount)]
-            )
-        }
-
-        return SubtensorUnstakePlan(
-            exits: [SubtensorUnstakeSlice(hotkey: position.hotkey, alpha: amount)],
-            partials: []
-        )
+    func primaryCovers(
+        _ amount: Balance,
+        primary: SubtensorUnstakePosition,
+        floors: SubtensorUnstakeFloors
+    ) -> Bool {
+        amount <= primary.free &&
+            amount < drawable(floor: floors.yield) &&
+            primary.leavesSweepFloor(after: amount, floors: floors)
     }
 
     func adjustedPlan(
