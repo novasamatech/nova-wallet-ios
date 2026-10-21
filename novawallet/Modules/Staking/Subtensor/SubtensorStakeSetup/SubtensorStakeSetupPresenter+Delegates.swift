@@ -239,7 +239,15 @@ private extension SubtensorStakeSetupPresenter {
             return
         }
 
-        startMode()
+        validatorState = .selected(
+            SubtensorStakeSetupValidator(hotkey: position.hotkey, name: validatorItems[position.hotkey]?.name)
+        )
+        preflight = nil
+        quoteFlow = SubtensorQuoteFlowModel()
+        isQuoteFailed = false
+        tradesUnavailable = false
+
+        applyTargetIfReady()
     }
 }
 
