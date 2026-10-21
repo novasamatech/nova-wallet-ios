@@ -164,7 +164,7 @@ private extension SubtensorSubmissionOperationFactory {
         let submissionWrapper = OperationCombiningService<SubtensorOperationOutcome>.compoundNonOptionalWrapper(
             operationQueue: shield.operationQueue
         ) {
-            guard try readinessWrapper.targetOperation.extractNoCancellableResultData() else {
+            guard let quote = try readinessWrapper.targetOperation.extractNoCancellableResultData() else {
                 return self.createSubmissionWrapper(
                     for: operation,
                     builderClosure: builderClosure,
@@ -173,12 +173,15 @@ private extension SubtensorSubmissionOperationFactory {
                 )
             }
 
-            return self.createShieldedSubmissionWrapper(
+            return self.createShieldedOutcomeWrapper(
                 for: operation,
-                builderClosure: builderClosure,
-                signers: shieldSigners,
-                finalizer: finalizer,
-                submissionFactory: shield.submissionFactory
+                submissionWrapper: shield.submissionFactory.createSubmissionWrapper(
+                    for: builderClosure,
+                    signers: shieldSigners,
+                    matchingEvents: SubtensorEventMatcher()
+                ),
+                quote: quote,
+                finalizer: finalizer
             )
         }
 
@@ -226,7 +229,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
     func createSubmitWrapper(
         for operation: SubtensorOperation,
         shielded: Bool,
-        signedClosure: @escaping () -> Void
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         let builderClosure: ExtrinsicBuilderClosure
 
@@ -238,14 +241,14 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
 
         let claimMarker = pendingRootClaims?.marker(for: operation, coldkey: accountId)
 
-        let markSigned: () -> Void = {
+        let markSigned: (SubtensorSubmissionRoute) -> Void = { route in
             claimMarker?.markSigned()
-            signedClosure()
+            signedClosure(route)
         }
 
-        let recordingSigner = SubtensorRecordingSigner(signer: signer, signedClosure: markSigned)
+        let recordingSigner = SubtensorRecordingSigner(signer: signer) { markSigned(.clear) }
 
-        let shieldSigners = shielded ? createShieldSigners(for: operation, signedClosure: markSigned) : nil
+        let shieldSigners = shielded ? createShieldSigners(for: operation) { markSigned(.shielded) } : nil
 
         let finalizer = createFinalizer(
             for: operation,

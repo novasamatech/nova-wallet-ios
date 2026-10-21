@@ -47,7 +47,12 @@ private extension SubtensorOperationResultViewModelFactory {
         request: SubtensorOperationResultRequest,
         locale: Locale
     ) -> SubtensorResultSheetRowViewModel {
-        let fee = networkFee(for: state, request: request, locale: locale)
+        let fee = networkFee(
+            for: state,
+            request: request,
+            route: request.shieldQuote != nil ? .shielded : .clear,
+            locale: locale
+        )
 
         return SubtensorResultSheetRowViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),

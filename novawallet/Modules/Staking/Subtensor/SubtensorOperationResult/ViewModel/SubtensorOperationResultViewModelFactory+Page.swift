@@ -73,7 +73,9 @@ private extension SubtensorOperationResultViewModelFactory {
             let pay = outcome.novaFeePaid.map { executed.tao + $0 } ?? request.payAmount
             return SubtensorResultTradeAmounts(pay: pay, receive: executed.alpha)
         case .sell:
-            let networkFee = outcome.alphaFeePaid == nil ? (outcome.networkFeePaid ?? 0) : 0
+            let networkFee = outcome.alphaFeePaid == nil
+                ? (outcome.networkFeePaid ?? 0) + (outcome.unconfirmedNetworkFee ?? 0)
+                : 0
             let receive = executed.tao.subtractOrZero((outcome.novaFeePaid ?? 0) + networkFee)
             return SubtensorResultTradeAmounts(pay: executed.alpha, receive: receive)
         }
@@ -238,7 +240,9 @@ private extension SubtensorOperationResultViewModelFactory {
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
             validator: request.validator.name,
-            networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
+            networkFee: showsNetworkFee(in: state)
+                ? networkFee(for: state, request: request, route: context.route, locale: locale)
+                : nil,
             isExpanded: isDone
         )
     }
@@ -294,11 +298,12 @@ private extension SubtensorOperationResultViewModelFactory {
             return true
         }
 
-        if case .dispatched = failure.stage {
+        switch failure.stage {
+        case .dispatched, .notExecutedFeeUnknown:
             return true
+        case .notSubmitted, .unconfirmed:
+            return false
         }
-
-        return false
     }
 
     func createPageAction(

@@ -6,7 +6,7 @@ protocol SubtensorShieldSubmissionFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<Bool>
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
 
     func createQuoteWrapper(
         for operation: SubtensorOperation,
@@ -267,21 +267,22 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<Bool> {
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
         let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation) { innerClosure }
         let fundsWrapper = fundsFactory.createFundsWrapper()
 
-        let readinessOperation = ClosureOperation<Bool> { [walletType] in
+        let readinessOperation = ClosureOperation<SubtensorShieldQuote?> { [walletType] in
             let funds = try fundsWrapper.targetOperation.extractNoCancellableResultData()
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
             let input = SubtensorShieldEligibilityInput(
                 walletType: walletType,
-                quote: try quoteWrapper.targetOperation.extractNoCancellableResultData(),
+                quote: quote,
                 transferable: funds.transferable,
                 existentialDeposit: funds.existentialDeposit
             )
 
-            return SubtensorShieldEligibility.isEligible(input)
+            return SubtensorShieldEligibility.isEligible(input) ? quote : nil
         }
 
         readinessOperation.addDependency(quoteWrapper.targetOperation)

@@ -21,19 +21,12 @@ extension SubtensorSubmissionOperationFactory {
         )
     }
 
-    func createShieldedSubmissionWrapper(
+    func createShieldedOutcomeWrapper(
         for operation: SubtensorOperation,
-        builderClosure: @escaping ExtrinsicBuilderClosure,
-        signers: SubtensorShieldSigners,
-        finalizer: SubtensorSubmissionFinalizer,
-        submissionFactory: SubtensorShieldSubmissionFactoryProtocol
+        submissionWrapper: CompoundOperationWrapper<SubtensorShieldedSubmission>,
+        quote: SubtensorShieldQuote,
+        finalizer: SubtensorSubmissionFinalizer
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
-        let submissionWrapper = submissionFactory.createSubmissionWrapper(
-            for: builderClosure,
-            signers: signers,
-            matchingEvents: SubtensorEventMatcher()
-        )
-
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let outcomeOperation = ClosureOperation<SubtensorOperationOutcome> {
@@ -47,7 +40,12 @@ extension SubtensorSubmissionOperationFactory {
 
             let codingFactory = try? codingFactoryOperation.extractNoCancellableResultData()
 
-            return try finalizer.shieldedOutcome(for: submission, operation: operation, codingFactory: codingFactory)
+            return try finalizer.shieldedOutcome(
+                for: submission,
+                operation: operation,
+                quote: quote,
+                codingFactory: codingFactory
+            )
         }
 
         outcomeOperation.addDependency(submissionWrapper.targetOperation)

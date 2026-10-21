@@ -94,6 +94,12 @@ struct SubtensorOperationOutcome: Equatable {
     let networkFeePaid: Balance?
     let extrinsicHash: ExtrinsicHash
     let blockHash: BlockHash
+    var unconfirmedNetworkFee: Balance?
+}
+
+enum SubtensorSubmissionRoute: Equatable {
+    case clear
+    case shielded
 }
 
 struct SubtensorSubmissionFailure: Error {
@@ -106,6 +112,8 @@ struct SubtensorSubmissionFailure: Error {
 
     let stage: Stage
     let error: Error
+    var paidNetworkFee: Balance?
+    var estimatedNetworkFee: Balance?
 }
 
 enum SubtensorSellPlan: Equatable {
