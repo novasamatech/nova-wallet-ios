@@ -40,7 +40,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         let hotkeys = group.positions.map(\.hotkey)
         let held = heldHotkeys
         let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
-        let hasAllAction = hotkeys.filter { !held.contains($0) }.count > 1
+        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: held)
         let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
 
         let content = CollatorStakingTargetPickerContent(

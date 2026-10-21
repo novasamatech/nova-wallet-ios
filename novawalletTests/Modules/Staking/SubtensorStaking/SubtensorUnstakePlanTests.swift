@@ -149,7 +149,20 @@ final class SubtensorUnstakePlanTests: XCTestCase {
 
         XCTAssertEqual(basis.total, second.alpha + third.alpha)
         XCTAssertEqual(heldSelection, .validator(second.hotkey))
-        XCTAssertEqual(soleSellable, .validator(second.hotkey))
+        XCTAssertEqual(soleSellable, .all)
+    }
+
+    func testSellDefaultsToAllValidatorsOnlyWhenSeveralAreStaked() {
+        let pair = makeGroup([primary, second])
+        let held: Set<AccountId> = [primary.hotkey, second.hotkey]
+
+        let severalStaked = SubtensorUnstakeSelection.resolve(nil, in: pair, excluding: [])
+        let singleStaked = SubtensorUnstakeSelection.resolve(nil, in: makeGroup([primary]), excluding: [])
+        let everyoneHeld = SubtensorUnstakeSelection.resolve(nil, in: pair, excluding: held)
+
+        XCTAssertEqual(severalStaked, .all)
+        XCTAssertEqual(singleStaked, .validator(primary.hotkey))
+        XCTAssertEqual(everyoneHeld, .validator(primary.hotkey))
     }
 
     private func makeGroup(

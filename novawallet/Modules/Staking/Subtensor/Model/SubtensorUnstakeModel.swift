@@ -21,13 +21,15 @@ enum SubtensorUnstakeSelection: Equatable {
         let fallback = SubtensorUnstakeSelection.validator(sellable.first ?? group.primaryHotkey)
 
         switch requested {
-        case .all:
-            return sellable.count > 1 ? .all : fallback
+        case .all, nil:
+            return canSellAll(in: group, excluding: heldHotkeys) ? .all : fallback
         case let .validator(hotkey):
             return sellable.contains(hotkey) ? .validator(hotkey) : fallback
-        case nil:
-            return fallback
         }
+    }
+
+    static func canSellAll(in group: SubtensorPortfolioGroup, excluding heldHotkeys: Set<AccountId>) -> Bool {
+        group.positions.count > 1 && group.positions.contains { !heldHotkeys.contains($0.hotkey) }
     }
 }
 
