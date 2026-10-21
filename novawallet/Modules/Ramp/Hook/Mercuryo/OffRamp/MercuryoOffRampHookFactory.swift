@@ -21,7 +21,7 @@ final class MercuryoOffRampHookFactory {
         for delegate: OffRampHookDelegate
     ) -> RampHook {
         let offRampAction = MercuryoRampEventNames.onSell.rawValue
-        let sellRequestEndpoints = Self.sellRequestEndpoints.map { "'\($0)'" }.joined(separator: ", ")
+        let sellRequestEndpoints = Self.sellRequestEndpoints.map { "'\($0)'" }.joined(with: .commaSpace)
 
         let scriptSource = """
         let originalXhrOpen = XMLHttpRequest.prototype.open;

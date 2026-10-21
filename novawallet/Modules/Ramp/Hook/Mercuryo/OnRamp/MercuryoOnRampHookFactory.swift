@@ -18,7 +18,7 @@ final class MercuryoOnRampHookFactory {
 
     private func createResponseInterceptingHook(for delegate: OnRampHookDelegate) -> RampHook {
         let onRampAction = MercuryoRampEventNames.onBuy.rawValue
-        let buyEndpoints = Self.buyEndpoints.map { "'\($0)/'" }.joined(separator: ", ")
+        let buyEndpoints = Self.buyEndpoints.map { "'\($0)/'" }.joined(with: .commaSpace)
 
         let scriptSource = """
         let originalXhrOpen = XMLHttpRequest.prototype.open;
