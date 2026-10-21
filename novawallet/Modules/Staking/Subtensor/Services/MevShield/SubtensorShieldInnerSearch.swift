@@ -119,7 +119,10 @@ private extension SubtensorShieldInnerSearch {
 
         numberOperation.addDependency(headerOperation)
 
-        return CompoundOperationWrapper(targetOperation: numberOperation, dependencies: [hashOperation, headerOperation])
+        return CompoundOperationWrapper(
+            targetOperation: numberOperation,
+            dependencies: [hashOperation, headerOperation]
+        )
     }
 
     func visit(_ blockNumber: BlockNumber) {
