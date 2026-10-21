@@ -123,9 +123,15 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
     }
 
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
+        isHoldsResolved = true
         state.holds = holds
         state.blockTime = blockTime
         provideViewModel()
+    }
+
+    func didFailHolds() {
+        isHoldsResolved = true
+        trackOpenedIfReady()
     }
 
     func didReceive(blockNumber: BlockNumber) {

@@ -19,6 +19,7 @@ final class SubtensorPositionPresenter {
     var isSubnetsInfoUnavailable = false
     var isClosed = false
     var isOpenedTracked = false
+    var isHoldsResolved = false
     let dataAnalytics = SubtensorDataAnalytics(screen: .position)
 
     init(

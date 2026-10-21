@@ -336,6 +336,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             case let .failure(error):
                 self?.logger.warning("Subtensor position root holds unavailable: \(error)")
                 self?.failedHoldsHotkeys = hotkeys
+                self?.presenter?.didFailHolds()
             }
         }
     }

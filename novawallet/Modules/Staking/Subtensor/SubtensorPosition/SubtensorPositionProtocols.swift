@@ -47,6 +47,7 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(pendingClaimHotkeys: Set<AccountId>)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
+    func didFailHolds()
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod, error: Error)

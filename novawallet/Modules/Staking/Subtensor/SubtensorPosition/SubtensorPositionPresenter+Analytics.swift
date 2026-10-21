@@ -29,7 +29,7 @@ extension SubtensorPositionPresenter {
         }
 
         if state.isRoot {
-            guard state.claimable != nil || state.isClaimableFailed, state.blockNumber != nil else {
+            guard state.claimable != nil || state.isClaimableFailed, state.blockNumber != nil, isHoldsResolved else {
                 return
             }
         }
