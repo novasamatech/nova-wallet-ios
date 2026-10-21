@@ -50,7 +50,13 @@ extension MevShieldSealer: MevShieldSealing {
 
         let kemLength = withUnsafeBytes(of: UInt16(MevShieldPallet.kemCiphertextLength).littleEndian) { Data($0) }
 
-        return publicKey.twox128() + kemLength + encapsulation.ciphertext + nonce +
+        let payload = publicKey.twox128() + kemLength + encapsulation.ciphertext + nonce +
             Data(sealed.cipherText) + Data(sealed.authenticationTag)
+
+        guard payload.count <= MevShieldPallet.maxCiphertextLength else {
+            throw SubtensorShieldError.ciphertextTooLong(payload.count)
+        }
+
+        return payload
     }
 }

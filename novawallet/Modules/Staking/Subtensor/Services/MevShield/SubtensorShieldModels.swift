@@ -5,6 +5,8 @@ enum SubtensorShieldConstants {
     static let eraPeriod: UInt64 = 8
 
     static let signaturesPerOrder = 2
+
+    static let confirmationWindowBlocks = 2 * eraPeriod + 1
 }
 
 struct SubtensorShieldQuote {
@@ -23,18 +25,26 @@ struct SubtensorShieldQuote {
 
 struct SubtensorSealedInner {
     let carrierNonce: UInt32
+    let era: ExtrinsicEraParameters
     let extrinsic: Data
     let extrinsicHash: ExtrinsicHash
     let ciphertext: Data
 }
 
+enum SubtensorShieldCarrierLookup {
+    case found(SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case absent
+    case unknown
+}
+
 enum SubtensorShieldedSubmission {
-    case executed(inner: SubstrateExtrinsicStatus, carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
-    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case executed(inner: SubstrateExtrinsicStatus, carrier: SubtensorShieldCarrierLookup)
+    case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
     case carrierFailed(SubstrateExtrinsicStatus.FailedExtrinsic)
 }
 
 enum SubtensorShieldError: Error {
     case keyUnavailable
     case ciphertextTooLong(Int)
+    case carrierRejected(Error)
 }

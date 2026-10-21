@@ -29,6 +29,8 @@ final class SubtensorStakeSetupPresenter {
     var isBalanceLoaded = false
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var existentialDeposit: Balance?
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
@@ -98,17 +100,6 @@ final class SubtensorStakeSetupPresenter {
 extension SubtensorStakeSetupPresenter {
     var transferable: Balance? {
         isBalanceLoaded ? (balance?.transferable ?? 0) : nil
-    }
-
-    var maxAmount: Balance? {
-        guard let transferable, let fee else {
-            return nil
-        }
-
-        return SubtensorAmountPolicy.maxBuyOrStake(
-            transferable: transferable,
-            networkFee: fee.amountForCurrentAccount ?? 0
-        )
     }
 
     var subnetRef: SubtensorSubnetRef? {
@@ -263,6 +254,7 @@ extension SubtensorStakeSetupPresenter {
         }
 
         interactor.estimateFee(for: operation)
+        interactor.estimateShieldQuote(for: operation)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
@@ -315,6 +307,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
         interactor.setup()
         interactor.loadBlockTime()
         interactor.loadNovaFeeRate()
+        interactor.loadExistentialDeposit()
 
         trackScreenOpened()
         startMode()

@@ -23,14 +23,14 @@ enum SubtensorShieldEligibility {
         walletType == .secrets
     }
 
-    static func canPayCarrierFee(
-        _ carrierFee: Balance,
+    static func canPayShieldedFees(
+        _ quote: SubtensorShieldQuote,
         transferable: Balance,
         existentialDeposit: Balance
     ) -> Bool {
         SubtensorAmountPolicy.paysFeeFromFreeBalance(
             transferable: transferable,
-            networkFee: carrierFee,
+            networkFee: quote.totalFee.amount,
             existentialDeposit: existentialDeposit
         )
     }
@@ -45,10 +45,6 @@ enum SubtensorShieldEligibility {
 
         return supports(operation: quote.operation) &&
             supports(walletType: input.walletType) &&
-            canPayCarrierFee(
-                quote.carrierFee.amount,
-                transferable: transferable,
-                existentialDeposit: existentialDeposit
-            )
+            canPayShieldedFees(quote, transferable: transferable, existentialDeposit: existentialDeposit)
     }
 }

@@ -143,7 +143,11 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         applyMaxChange()
     }
 
-    func didReceiveShieldQuote(_: SubtensorShieldQuote?) {}
+    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
+        shieldQuote = quote
+
+        applyMaxChange()
+    }
 
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positionsState = state
@@ -179,5 +183,9 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         provideViewModel()
     }
 
-    func didReceiveExistentialDeposit(_: Balance) {}
+    func didReceiveExistentialDeposit(_ deposit: Balance) {
+        existentialDeposit = deposit
+
+        applyMaxChange()
+    }
 }
