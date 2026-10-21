@@ -116,7 +116,16 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var networkFee: ExtrinsicFeeProtocol? {
-        eligibleShieldQuote?.totalFee ?? fee
+        guard isShieldQuoteResolved else {
+            return nil
+        }
+
+        return eligibleShieldQuote?.totalFee ?? fee
+    }
+
+    func resetShieldQuote() {
+        shieldQuote = nil
+        isShieldQuoteResolved = false
     }
 
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDependencies {

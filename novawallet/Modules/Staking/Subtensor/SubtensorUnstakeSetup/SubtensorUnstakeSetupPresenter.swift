@@ -24,6 +24,7 @@ final class SubtensorUnstakeSetupPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
+    var isShieldQuoteResolved = false
     var preflight: SubtensorPreflight?
     var blockTime: BlockTime?
     var existentialDeposit: Balance?
@@ -269,7 +270,7 @@ extension SubtensorUnstakeSetupPresenter {
         if newShape != feeShape {
             feeShape = newShape
             fee = nil
-            shieldQuote = nil
+            resetShieldQuote()
         }
 
         interactor.estimateFee(for: operation)

@@ -13,7 +13,11 @@ extension SubtensorStakeSetupPresenter {
     }
 
     var networkFee: ExtrinsicFeeProtocol? {
-        eligibleShieldQuote?.totalFee ?? fee
+        guard isShieldQuoteResolved else {
+            return nil
+        }
+
+        return eligibleShieldQuote?.totalFee ?? fee
     }
 
     var maxAmount: Balance? {
@@ -29,6 +33,16 @@ extension SubtensorStakeSetupPresenter {
 
     func resetShieldQuote() {
         shieldQuote = nil
+        shieldQuoteOperation = nil
+        isShieldQuoteResolved = false
         interactor.cancelShieldQuote()
+    }
+
+    func retryUnresolvedShieldQuote() {
+        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
+            return
+        }
+
+        interactor.estimateShieldQuote(for: shieldQuoteOperation)
     }
 }

@@ -148,6 +148,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
         shieldQuote = quote
+        isShieldQuoteResolved = true
 
         provideViewModel()
     }
