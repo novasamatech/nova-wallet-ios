@@ -108,11 +108,18 @@ jobs:
         with:
           xcode-version: "26.2"
 
+      - name: Boot simulator
+        id: simulator
+        run: |
+          udid=$(python3 .github/scripts/boot_simulator.py "iPhone 17 Pro")
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
       - name: Run package unit tests
         working-directory: Packages/${{ matrix.package }}
         run: |
           xcodebuild test \
             -scheme "${{ matrix.package }}" \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            -destination-timeout 120 \
             -derivedDataPath "${{ runner.temp }}/DerivedData-${{ matrix.package }}" \
             -only-testing:"${{ matrix.test-target }}"
