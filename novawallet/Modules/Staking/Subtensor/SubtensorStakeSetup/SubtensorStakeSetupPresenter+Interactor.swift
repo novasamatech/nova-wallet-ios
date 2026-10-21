@@ -6,14 +6,22 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             return
         }
 
-        if let lockedHotkey = mode.lockedHotkey {
-            isLockedValidatorPending = false
+        if mode.isLocked {
+            let requested = lockedValidatorRequest
+            lockedValidatorRequest = nil
 
-            if let validator, validator.hotkey == lockedHotkey {
-                validatorState = .selected(SubtensorStakeSetupValidator(hotkey: lockedHotkey, name: validator.name))
-                validatorItem = validator
+            if let validator, validator.hotkey == requested {
+                validatorItems[validator.hotkey] = validator
             }
 
+            guard let requested, requested == mode.lockedHotkey else {
+                return
+            }
+
+            isLockedValidatorPending = false
+            validatorState = .selected(
+                SubtensorStakeSetupValidator(hotkey: requested, name: validatorItems[requested]?.name)
+            )
             provideViewModel()
             return
         }
@@ -32,6 +40,13 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
     }
 
     func didFailValidator(_ error: Error, on subnet: SubtensorSubnetRef) {
+        if mode.isLocked, lockedValidatorRequest != nil {
+            lockedValidatorRequest = nil
+            isLockedValidatorPending = false
+            provideViewModel()
+            return
+        }
+
         guard subnet == subnetRef, mode.lockedHotkey == nil, case .pending = validatorState else {
             return
         }

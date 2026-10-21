@@ -41,7 +41,8 @@ final class SubtensorStakeSetupPresenter {
     var isYieldsResolved = false
     var isSubnetDataRequested = false
     var validatorItem: SubtensorValidatorDirectoryItem?
-    var heldValidators: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var lockedValidatorRequest: AccountId?
     var heldValidatorsRequest: [AccountId]?
     var heldValidatorsResolved: [AccountId]?
     var isStakeMorePickerPending = false
@@ -164,10 +165,9 @@ extension SubtensorStakeSetupPresenter {
             return
         }
 
-        if let hotkey = mode.lockedHotkey, let subnetRef {
-            isLockedValidatorPending = true
-            interactor.loadLockedValidator(hotkey, on: subnetRef)
+        if mode.isLocked {
             loadHeldValidatorsIfNeeded()
+            resolveLockedValidator()
         }
 
         requestPresetIfReady()
