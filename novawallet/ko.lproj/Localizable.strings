@@ -2361,3 +2361,7 @@
 "staking.subtensor.v22.validators" = "사용 가능한 검증인";
 "staking.subtensor.v22.validators.count" = "검증인";
 "staking.subtensor.v22.website" = "웹사이트";
+"staking.subtensor.ui.confirm.full.exit" = "완전히 나가기";
+"staking.subtensor.ui.unstake.legs.cap.format" = "한 번의 트랜잭션으로 최대 %@명의 검증인을 처리할 수 있습니다. 나머지에 대해 반복하세요.";
+"staking.subtensor.ui.validator.all" = "모든 검증인";
+"staking.subtensor.ui.validator.new" = "새 검증인";

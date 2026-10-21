@@ -2361,3 +2361,7 @@
 "staking.subtensor.v22.validators" = "ELÉRHETŐ VALIDÁTOROK";
 "staking.subtensor.v22.validators.count" = "Validátorok";
 "staking.subtensor.v22.website" = "Webhely";
+"staking.subtensor.ui.confirm.full.exit" = "Teljes kilépés";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Egy tranzakció legfeljebb %@ validátort kezel. Ismételd meg a fennmaradó validátoroknál.";
+"staking.subtensor.ui.validator.all" = "Összes validátor";
+"staking.subtensor.ui.validator.new" = "Új validátor";

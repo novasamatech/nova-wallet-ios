@@ -2361,3 +2361,7 @@
 "staking.subtensor.v22.validators" = "CÁC VALIDATOR KHẢ DỤNG";
 "staking.subtensor.v22.validators.count" = "Validator";
 "staking.subtensor.v22.website" = "Trang web";
+"staking.subtensor.ui.confirm.full.exit" = "Thoát hoàn toàn";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Một giao dịch bao gồm tối đa %@ validator. Lặp lại với các validator còn lại.";
+"staking.subtensor.ui.validator.all" = "Tất cả validator";
+"staking.subtensor.ui.validator.new" = "Validator mới";
