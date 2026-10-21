@@ -51,11 +51,8 @@ private extension FixedMortalEraOperationFactory {
     }
 }
 
-extension FixedMortalEraOperationFactory: ExtrinsicEraOperationFactoryProtocol {
-    func createOperation(
-        from connection: JSONRPCEngine,
-        runtimeService _: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<ExtrinsicEraParameters> {
+extension FixedMortalEraOperationFactory {
+    func createParametersWrapper(from connection: JSONRPCEngine) -> CompoundOperationWrapper<ExtrinsicEraParameters> {
         let headerWrapper = createFinalizedHeaderWrapper(from: connection)
 
         let period = period
@@ -78,5 +75,14 @@ extension FixedMortalEraOperationFactory: ExtrinsicEraOperationFactoryProtocol {
         mapOperation.addDependency(headerWrapper.targetOperation)
 
         return headerWrapper.insertingTail(operation: mapOperation)
+    }
+}
+
+extension FixedMortalEraOperationFactory: ExtrinsicEraOperationFactoryProtocol {
+    func createOperation(
+        from connection: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<ExtrinsicEraParameters> {
+        createParametersWrapper(from: connection)
     }
 }
