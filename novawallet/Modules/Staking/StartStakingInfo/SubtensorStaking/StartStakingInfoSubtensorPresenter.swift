@@ -83,11 +83,15 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             return
         }
 
-        subtensorWireframe.checkingSubtensorStakingSupport(
+        subtensorWireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
             for: wallet,
-            chain: chainAsset.chain,
             sheetPresentingView: view,
-            onRefusal: { [weak self] reason in
+            onRefusal: { [weak self] result in
+                guard let reason = result.subtensorBlockedReason else {
+                    return
+                }
+
                 self?.trackGateRefusal(reason, wallet: wallet)
             },
             successClosure: { [weak self] in

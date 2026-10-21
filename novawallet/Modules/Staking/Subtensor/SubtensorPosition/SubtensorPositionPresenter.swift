@@ -183,11 +183,15 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        wireframe.checkingSubtensorStakingSupport(
+        wireframe.checkingSupport(
+            of: .subtensorStaking(chain: chainAsset.chain),
             for: wallet,
-            chain: chainAsset.chain,
             sheetPresentingView: view,
-            onRefusal: { [weak self] reason in
+            onRefusal: { [weak self] result in
+                guard let reason = result.subtensorBlockedReason else {
+                    return
+                }
+
                 self?.trackActionRefusal(action, reason: reason, wallet: wallet)
             },
             successClosure: { [weak self] in
