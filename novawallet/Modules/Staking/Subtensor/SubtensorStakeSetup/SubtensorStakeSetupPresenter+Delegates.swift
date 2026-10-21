@@ -87,6 +87,7 @@ extension SubtensorStakeSetupPresenter {
         }
 
         heldValidators = validators
+        heldValidatorsResolved = hotkeys
         presentPendingStakeMorePicker()
     }
 
@@ -131,13 +132,15 @@ private extension SubtensorStakeSetupPresenter {
     }
 
     func showStakeMorePicker() {
-        guard !heldPositions().isEmpty, target != nil else {
+        let hotkeys = heldPositions().map(\.hotkey)
+
+        guard !hotkeys.isEmpty, target != nil else {
             return
         }
 
         isStakeMorePickerPending = true
 
-        if heldValidatorsRequest == heldPositions().map(\.hotkey), !heldValidators.isEmpty {
+        if heldValidatorsResolved == hotkeys {
             presentPendingStakeMorePicker()
         } else {
             loadHeldValidatorsIfNeeded()

@@ -43,6 +43,7 @@ final class SubtensorStakeSetupPresenter {
     var validatorItem: SubtensorValidatorDirectoryItem?
     var heldValidators: [AccountId: SubtensorValidatorDirectoryItem] = [:]
     var heldValidatorsRequest: [AccountId]?
+    var heldValidatorsResolved: [AccountId]?
     var isStakeMorePickerPending = false
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
