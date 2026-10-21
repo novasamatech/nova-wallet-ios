@@ -55,6 +55,8 @@ extension SubtensorShieldCarrierWatch: SubtensorShieldCarrierWatchingProtocol {
                 }
 
                 let failureClosure: (Error, Bool) -> Void = { error, _ in
+                    // first send = no status seen yet (the SDK re-sends after a reconnect); 1012/1013 count as
+                    // rejections only because the caller then checks the pool-aware system_accountNextIndex
                     let isRejected = !state.isAccepted && Self.isDefinitiveRejection(error)
                     state.finish(with: isRejected ? .rejected(error) : .lost, connection: connection)
                 }
