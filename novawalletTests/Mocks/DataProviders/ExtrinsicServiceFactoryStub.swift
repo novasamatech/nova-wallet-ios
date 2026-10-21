@@ -51,6 +51,16 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
         extrinsicOperationFactory
     }
 
+    func createOperationFactory(
+        account _: ChainAccountResponse,
+        chain _: ChainModel,
+        extensions _: [TransactionExtending],
+        nonceOperationFactory _: TransactionNonceOperationFactoryProtocol?,
+        eraOperationFactory _: ExtrinsicEraOperationFactoryProtocol?
+    ) -> ExtrinsicOperationFactoryProtocol {
+        extrinsicOperationFactory
+    }
+
     func createExtrinsicSubmissionMonitor(
         with _: ExtrinsicServiceProtocol
     ) -> ExtrinsicSubmitMonitorFactoryProtocol {

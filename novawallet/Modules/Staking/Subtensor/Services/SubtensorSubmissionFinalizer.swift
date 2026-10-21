@@ -75,6 +75,79 @@ struct SubtensorSubmissionFinalizer {
 }
 
 extension SubtensorSubmissionFinalizer {
+    func shieldedFailure(for error: Error) -> SubtensorSubmissionFailure {
+        guard let shieldError = error as? SubtensorShieldError else {
+            return failure(for: error)
+        }
+
+        if case let .carrierRejected(rejection) = shieldError {
+            let mappedRejection = errorMapper.mapSubmission(error: rejection)
+
+            if Self.isFirstSendRejection(mappedRejection) {
+                return SubtensorSubmissionFailure(stage: .notSubmitted, error: mappedRejection)
+            }
+        }
+
+        return SubtensorSubmissionFailure(stage: .notSubmitted, error: SubtensorSubmissionError.shieldedNotExecuted)
+    }
+
+    func shieldedOutcome(
+        for submission: SubtensorShieldedSubmission,
+        operation: SubtensorOperation,
+        quote: SubtensorShieldQuote,
+        codingFactory: RuntimeCoderFactoryProtocol?
+    ) throws -> SubtensorOperationOutcome {
+        switch submission {
+        case let .executed(.success(inner), carrier):
+            var outcome = complete(operation: operation, success: inner, codingFactory: codingFactory)
+
+            switch carrier {
+            case let .found(carrierSuccess):
+                return outcome.addingNetworkFee(
+                    carrierFee(of: carrierSuccess, operation: operation, codingFactory: codingFactory)
+                )
+            case .absent:
+                return outcome
+            case .unknown:
+                outcome.unconfirmedNetworkFee = quote.carrierFee.amount
+                return outcome
+            }
+        case let .executed(.failure(inner), _):
+            throw dispatchFailure(for: inner)
+        case let .notExecuted(carrier):
+            throw notExecutedFailure(for: carrier, operation: operation, quote: quote, codingFactory: codingFactory)
+        }
+    }
+}
+
+private extension SubtensorSubmissionFinalizer {
+    func notExecutedFailure(
+        for carrier: SubtensorShieldCarrierLookup,
+        operation: SubtensorOperation,
+        quote: SubtensorShieldQuote,
+        codingFactory: RuntimeCoderFactoryProtocol?
+    ) -> SubtensorSubmissionFailure {
+        let error = SubtensorSubmissionError.shieldedNotExecuted
+
+        switch carrier {
+        case let .found(carrierSuccess):
+            return SubtensorSubmissionFailure(
+                stage: .dispatched(blockHash: carrierSuccess.blockHash, extrinsicHash: carrierSuccess.extrinsicHash),
+                error: error,
+                paidNetworkFee: carrierFee(of: carrierSuccess, operation: operation, codingFactory: codingFactory),
+                estimatedNetworkFee: quote.carrierFee.amount
+            )
+        case .absent:
+            return SubtensorSubmissionFailure(stage: .notSubmitted, error: error)
+        case .unknown:
+            return SubtensorSubmissionFailure(
+                stage: .notExecutedFeeUnknown,
+                error: error,
+                estimatedNetworkFee: quote.carrierFee.amount
+            )
+        }
+    }
+
     static func isFirstSendRejection(_ error: Error) -> Bool {
         switch error as? SubtensorSubmissionError {
         case .feeUnpayable, .coldkeySwapInProgress:
@@ -87,6 +160,46 @@ extension SubtensorSubmissionFinalizer {
     func notifyStakeChanged() {
         eventCenter.notify(
             with: SubtensorStakeChanged(chainAssetId: chainAssetId, accountId: accountId, netuids: netuids)
+        )
+    }
+
+    func carrierFee(
+        of carrier: SubstrateExtrinsicStatus.SuccessExtrinsic,
+        operation: SubtensorOperation,
+        codingFactory: RuntimeCoderFactoryProtocol?
+    ) -> Balance? {
+        guard let codingFactory else {
+            return nil
+        }
+
+        let parser = SubtensorOutcomeParser(
+            coldkey: accountId,
+            novaFeeBeneficiary: novaFeeBeneficiary,
+            codingFactory: codingFactory
+        )
+
+        return parser.parse(
+            events: carrier.interestedEvents,
+            for: operation,
+            extrinsicHash: carrier.extrinsicHash,
+            blockHash: carrier.blockHash
+        ).networkFeePaid
+    }
+}
+
+private extension SubtensorOperationOutcome {
+    func addingNetworkFee(_ fee: Balance?) -> SubtensorOperationOutcome {
+        guard let fee else {
+            return self
+        }
+
+        return SubtensorOperationOutcome(
+            executed: executed,
+            novaFeePaid: novaFeePaid,
+            alphaFeePaid: alphaFeePaid,
+            networkFeePaid: (networkFeePaid ?? 0) + fee,
+            extrinsicHash: extrinsicHash,
+            blockHash: blockHash
         )
     }
 }

@@ -43,7 +43,7 @@ extension SubtensorSubmissionFailure {
         switch stage {
         case .notSubmitted:
             analyticsStage = .notSubmitted
-        case .dispatched:
+        case .dispatched, .notExecutedFeeUnknown:
             analyticsStage = .dispatched
         case .unconfirmed:
             return nil

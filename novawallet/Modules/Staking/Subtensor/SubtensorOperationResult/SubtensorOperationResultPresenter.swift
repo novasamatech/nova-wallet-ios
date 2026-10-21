@@ -12,6 +12,7 @@ final class SubtensorOperationResultPresenter {
     let stakingOption: Multistaking.ChainAssetOption
 
     private(set) var state: SubtensorOperationResultState = .progress
+    private var route: SubtensorSubmissionRoute?
     private var catalogue: SubtensorSubnetCatalogue?
     private var subnetLogos: SubtensorSubnetLogos?
     private var countdownTimer: CountdownTimer?
@@ -47,6 +48,7 @@ private extension SubtensorOperationResultPresenter {
     func provideViewModel() {
         let context = SubtensorResultViewContext(
             request: request,
+            route: route ?? (request.shieldQuote != nil ? .shielded : .clear),
             catalogue: catalogue,
             subnetLogos: subnetLogos,
             remainedTime: countdownTimer?.remainedInterval ?? 0
@@ -103,7 +105,7 @@ private extension SubtensorOperationResultPresenter {
         }
 
         switch failure.stage {
-        case .notSubmitted:
+        case .notSubmitted, .notExecutedFeeUnknown:
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))
         case let .dispatched(blockHash, _):
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))
@@ -240,6 +242,12 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorO
         case let .failure(failure):
             handleFailure(failure)
         }
+    }
+
+    func didSelectRoute(_ route: SubtensorSubmissionRoute) {
+        self.route = route
+
+        provideViewModel()
     }
 
     func didReachConfirmationCap() {

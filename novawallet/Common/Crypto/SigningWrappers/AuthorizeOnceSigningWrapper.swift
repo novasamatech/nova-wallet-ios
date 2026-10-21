@@ -2,6 +2,10 @@ import Foundation
 import NovaCrypto
 import Keystore_iOS
 
+protocol SigningPreauthorizing: AnyObject {
+    func preauthorize() throws
+}
+
 final class AuthorizeOnceSigningWrapper: BaseSigner, SigningWrapperProtocol {
     private let signer: SigningWrapper
     private let signaturesPerAuthorization: Int
@@ -27,7 +31,7 @@ final class AuthorizeOnceSigningWrapper: BaseSigner, SigningWrapperProtocol {
 
         let signature = try super.sign(originalData, context: context)
 
-        grantAuthorizedSignatures()
+        grantAuthorizedSignatures(count: signaturesPerAuthorization - 1)
 
         return signature
     }
@@ -54,13 +58,39 @@ private extension AuthorizeOnceSigningWrapper {
         return true
     }
 
-    func grantAuthorizedSignatures() {
+    func grantAuthorizedSignatures(count: Int) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        authorizedSignaturesLeft = max(signaturesPerAuthorization - 1, 0)
+        authorizedSignaturesLeft = max(count, 0)
+    }
+}
+
+extension AuthorizeOnceSigningWrapper: SigningPreauthorizing {
+    func preauthorize() throws {
+        guard settingsManager.pinConfirmationEnabled == true else {
+            return
+        }
+
+        let semaphore = DispatchSemaphore(value: 0)
+        var isAuthorized = false
+
+        DispatchQueue.main.async {
+            self.authorize(animated: true, cancellable: true) { completed in
+                isAuthorized = completed
+                semaphore.signal()
+            }
+        }
+
+        semaphore.wait()
+
+        guard isAuthorized else {
+            throw SigningWrapperError.pinCheckNotPassed
+        }
+
+        grantAuthorizedSignatures(count: signaturesPerAuthorization)
     }
 }

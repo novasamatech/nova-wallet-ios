@@ -260,7 +260,7 @@ extension SubtensorConfirmPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
-            shielded: activeShieldQuote != nil,
+            shieldQuote: activeShieldQuote,
             origin: model.origin,
             account: model.account,
             target: model.target,
@@ -268,7 +268,7 @@ extension SubtensorConfirmPresenter {
             quote: verified.quote,
             slippage: model.tolerance,
             validator: model.validator,
-            estimatedNetworkFee: fee,
+            estimatedNetworkFee: self.fee ?? fee,
             stakeBefore: group?.totalAlpha ?? 0,
             groupHotkeyCount: hotkeyCountAfterOperation(in: group),
             emptiesPosition: emptiesPosition(verified.operation, group: group),

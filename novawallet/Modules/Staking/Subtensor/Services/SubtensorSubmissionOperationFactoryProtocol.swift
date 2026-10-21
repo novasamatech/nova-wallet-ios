@@ -13,6 +13,6 @@ protocol SubtensorSubmissionOperationFactoryProtocol: AnyObject {
     func createSubmitWrapper(
         for operation: SubtensorOperation,
         shielded: Bool,
-        signedClosure: @escaping () -> Void
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome>
 }

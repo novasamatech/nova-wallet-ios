@@ -6,7 +6,7 @@ protocol SubtensorShieldSubmissionFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<Bool>
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
 
     func createQuoteWrapper(
         for operation: SubtensorOperation,
@@ -25,6 +25,7 @@ protocol SubtensorShieldSubmissionFactoryProtocol {
 struct SubtensorShieldSigners {
     let inner: SubtensorRecordingSigner
     let carrier: SubtensorRecordingSigner
+    let authorizer: SigningPreauthorizing?
 }
 
 struct SubtensorShieldServices {
@@ -148,25 +149,38 @@ private extension SubtensorShieldSubmissionFactory {
         return lookupWrapper.insertingHead(operations: statusWrapper.allOperations)
     }
 
-    func createScannedCarrierWrapper(
-        for inner: SubstrateExtrinsicStatus,
-        carrier: ExtrinsicBuiltModel,
+    func createCarrierScanWrapper(
+        for carrier: ExtrinsicBuiltModel,
+        in blocks: [BlockHash],
         matchingEvents: ExtrinsicEventsMatching?
-    ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let lookupWrapper = try createCarrierLookupWrapper(
-            for: carrier,
-            inBlock: Self.blockHash(of: inner),
-            matchingEvents: matchingEvents,
-            retries: Constants.carrierLookupRetries
-        )
-
-        let mapOperation = ClosureOperation<SubtensorShieldedSubmission> {
-            .executed(inner: inner, carrier: try lookupWrapper.targetOperation.extractNoCancellableResultData())
+    ) throws -> CompoundOperationWrapper<SubtensorShieldCarrierLookup> {
+        let lookupWrappers = try blocks.map { blockHash in
+            try createCarrierLookupWrapper(
+                for: carrier,
+                inBlock: blockHash,
+                matchingEvents: matchingEvents,
+                retries: Constants.carrierLookupRetries
+            )
         }
 
-        mapOperation.addDependency(lookupWrapper.targetOperation)
+        let combineOperation = ClosureOperation<SubtensorShieldCarrierLookup> {
+            let lookups = try lookupWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-        return lookupWrapper.insertingTail(operation: mapOperation)
+            for lookup in lookups {
+                if case .found = lookup {
+                    return lookup
+                }
+            }
+
+            return lookups.contains { if case .unknown = $0 { true } else { false } } ? .unknown : .absent
+        }
+
+        lookupWrappers.forEach { combineOperation.addDependency($0.targetOperation) }
+
+        return CompoundOperationWrapper(
+            targetOperation: combineOperation,
+            dependencies: lookupWrappers.flatMap(\.allOperations)
+        )
     }
 
     func createScannedResolutionWrapper(
@@ -174,49 +188,49 @@ private extension SubtensorShieldSubmissionFactory {
         carrier: ExtrinsicBuiltModel,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let statusWrapper = inclusionTracker.createInnerStatusWrapper(
+        let scanWrapper = inclusionTracker.createInnerScanWrapper(
             for: sealedInner.extrinsicHash,
-            in: .innerEra(birth: sealedInner.era.blockNumber),
+            eraBirth: sealedInner.era.blockNumber,
             matchingEvents: matchingEvents
         )
 
         let resolutionWrapper = OperationCombiningService<SubtensorShieldedSubmission>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            guard let inner = try statusWrapper.targetOperation.extractNoCancellableResultData() else {
-                return .createWithResult(.notExecuted(carrier: nil))
+            let scan = try scanWrapper.targetOperation.extractNoCancellableResultData()
+
+            let blocks: [BlockHash] = switch scan {
+            case let .found(inner):
+                [Self.blockHash(of: inner)]
+            case let .absent(scannedBlocks):
+                scannedBlocks
             }
 
-            return try self.createScannedCarrierWrapper(for: inner, carrier: carrier, matchingEvents: matchingEvents)
-        }
+            let lookupWrapper = try self.createCarrierScanWrapper(
+                for: carrier,
+                in: blocks,
+                matchingEvents: matchingEvents
+            )
 
-        resolutionWrapper.addDependency(wrapper: statusWrapper)
+            let mapOperation = ClosureOperation<SubtensorShieldedSubmission> {
+                let lookup = try lookupWrapper.targetOperation.extractNoCancellableResultData()
 
-        return resolutionWrapper.insertingHead(operations: statusWrapper.allOperations)
-    }
-
-    func createInnerResolutionWrapper(
-        for sealedInner: SubtensorSealedInner,
-        carrier: SubstrateExtrinsicStatus.SuccessExtrinsic,
-        matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let statusWrapper = inclusionTracker.createInnerStatusWrapper(
-            for: sealedInner.extrinsicHash,
-            in: .fromCarrierBlock(carrier.blockHash),
-            matchingEvents: matchingEvents
-        )
-
-        let mapOperation = ClosureOperation<SubtensorShieldedSubmission> {
-            guard let inner = try statusWrapper.targetOperation.extractNoCancellableResultData() else {
-                return .notExecuted(carrier: carrier)
+                switch scan {
+                case let .found(inner):
+                    return .executed(inner: inner, carrier: lookup)
+                case .absent:
+                    return .notExecuted(carrier: lookup)
+                }
             }
 
-            return .executed(inner: inner, carrier: .found(carrier))
+            mapOperation.addDependency(lookupWrapper.targetOperation)
+
+            return lookupWrapper.insertingTail(operation: mapOperation)
         }
 
-        mapOperation.addDependency(statusWrapper.targetOperation)
+        resolutionWrapper.addDependency(wrapper: scanWrapper)
 
-        return statusWrapper.insertingTail(operation: mapOperation)
+        return resolutionWrapper.insertingHead(operations: scanWrapper.allOperations)
     }
 
     func createRejectedResolutionWrapper(
@@ -247,59 +261,28 @@ private extension SubtensorShieldSubmissionFactory {
 
         return resolutionWrapper.insertingHead(operations: nonceWrapper.allOperations)
     }
-
-    func createIncludedResolutionWrapper(
-        for sealedInner: SubtensorSealedInner,
-        carrier: ExtrinsicBuiltModel,
-        blockHash: BlockHash,
-        matchingEvents: ExtrinsicEventsMatching?
-    ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let statusWrapper = try createCarrierStatusWrapper(
-            for: carrier,
-            inBlock: blockHash,
-            matchingEvents: matchingEvents
-        )
-
-        let resolutionWrapper = OperationCombiningService<SubtensorShieldedSubmission>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) {
-            switch try statusWrapper.targetOperation.extractNoCancellableResultData() {
-            case let .success(carrierSuccess):
-                return self.createInnerResolutionWrapper(
-                    for: sealedInner,
-                    carrier: carrierSuccess,
-                    matchingEvents: matchingEvents
-                )
-            case let .failure(carrierFailure):
-                return .createWithResult(.carrierFailed(carrierFailure))
-            }
-        }
-
-        resolutionWrapper.addDependency(wrapper: statusWrapper)
-
-        return resolutionWrapper.insertingHead(operations: statusWrapper.allOperations)
-    }
 }
 
 extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<Bool> {
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
         let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation) { innerClosure }
         let fundsWrapper = fundsFactory.createFundsWrapper()
 
-        let readinessOperation = ClosureOperation<Bool> { [walletType] in
+        let readinessOperation = ClosureOperation<SubtensorShieldQuote?> { [walletType] in
             let funds = try fundsWrapper.targetOperation.extractNoCancellableResultData()
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
             let input = SubtensorShieldEligibilityInput(
                 walletType: walletType,
-                quote: try quoteWrapper.targetOperation.extractNoCancellableResultData(),
+                quote: quote,
                 transferable: funds.transferable,
                 existentialDeposit: funds.existentialDeposit
             )
 
-            return SubtensorShieldEligibility.isEligible(input)
+            return SubtensorShieldEligibility.isEligible(input) ? quote : nil
         }
 
         readinessOperation.addDependency(quoteWrapper.targetOperation)
@@ -326,7 +309,11 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         signers: SubtensorShieldSigners,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let sealedWrapper = extrinsicFactory.createSealedInnerWrapper(for: innerClosure, signer: signers.inner)
+        let sealedWrapper = extrinsicFactory.createSealedInnerWrapper(
+            for: innerClosure,
+            signer: signers.inner,
+            authorization: { try signers.authorizer?.preauthorize() }
+        )
 
         let carrierWrapper = OperationCombiningService<ExtrinsicBuiltModel>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -349,11 +336,10 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
             let watchResult = try watchWrapper.targetOperation.extractNoCancellableResultData()
 
             switch watchResult {
-            case let .included(blockHash):
-                return try self.createIncludedResolutionWrapper(
+            case .included, .lost:
+                return self.createScannedResolutionWrapper(
                     for: sealedInner,
                     carrier: carrier,
-                    blockHash: blockHash,
                     matchingEvents: matchingEvents
                 )
             case let .rejected(error):
@@ -361,12 +347,6 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
                     for: sealedInner,
                     carrier: carrier,
                     rejection: error,
-                    matchingEvents: matchingEvents
-                )
-            case .lost:
-                return self.createScannedResolutionWrapper(
-                    for: sealedInner,
-                    carrier: carrier,
                     matchingEvents: matchingEvents
                 )
             }
