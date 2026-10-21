@@ -28,6 +28,8 @@ final class SubtensorUnstakeSetupViewLayout: SubtensorAmountSetupLayout {
 
     let subnetValidatorSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
+    private(set) var isValidatorSelectable = false
+
     let noteLabel: UILabel = .create { label in
         label.apply(style: .footnoteSecondary)
         label.numberOfLines = 0
@@ -69,6 +71,22 @@ final class SubtensorUnstakeSetupViewLayout: SubtensorAmountSetupLayout {
     func setupMode(isRoot: Bool) {
         validatorCell.isHidden = !isRoot
         subnetValidatorCell.isHidden = isRoot
+        detailsTableView.updateLayout()
+    }
+
+    func applyValidatorMode(isRoot: Bool, isSelectable: Bool) {
+        guard isSelectable != isValidatorSelectable else {
+            return
+        }
+
+        isValidatorSelectable = isSelectable
+
+        validatorCell.isHidden = !(isRoot || isSelectable)
+        subnetValidatorCell.isHidden = isRoot || isSelectable
+
+        let accessory = isSelectable ? R.image.iconSmallArrow() : R.image.iconInfoFilled()
+        validatorCell.accessoryImageView.image = accessory?.tinted(with: R.color.colorIconSecondary()!)
+
         detailsTableView.updateLayout()
     }
 }

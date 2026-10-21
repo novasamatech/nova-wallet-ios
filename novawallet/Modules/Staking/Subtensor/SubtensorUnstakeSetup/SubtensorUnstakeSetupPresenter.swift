@@ -32,6 +32,9 @@ final class SubtensorUnstakeSetupPresenter {
     var isSubnetsRefreshForced = false
     var validatorItem: SubtensorValidatorDirectoryItem?
     var validatorRequest: AccountId?
+    var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var validatorsRequest: [AccountId]?
+    var selection: SubtensorUnstakeSelection?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
     var groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
@@ -89,26 +92,6 @@ private extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    var heldHotkeys: Set<AccountId> {
-        guard isRoot, let group, let holds, let currentBlock else {
-            return []
-        }
-
-        let head = UInt64(currentBlock)
-
-        return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
-    }
-
-    var excludedHotkeys: Set<AccountId> {
-        let held = heldHotkeys
-
-        guard let group, held.count < group.positions.count else {
-            return []
-        }
-
-        return held
-    }
-
     func floorAlpha() -> Balance {
         guard let minStake = preflight?.minStake else {
             return 0
@@ -159,10 +142,11 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var basis: SubtensorGroupUnstakeBasis? {
-        if let group {
+        if let group, let currentSelection {
             return SubtensorGroupUnstakeBasis.make(
                 from: group,
-                excluding: excludedHotkeys,
+                selection: currentSelection,
+                excluding: heldHotkeys,
                 groupHotkeys: groupHotkeys ?? [:]
             )
         }
@@ -218,7 +202,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func feePlan() -> SubtensorUnstakePlan? {
-        guard let primary = group?.primaryHotkey else {
+        guard let anchorHotkey else {
             return nil
         }
 
@@ -226,7 +210,7 @@ extension SubtensorUnstakeSetupPresenter {
 
         return plan(for: amount) ?? SubtensorUnstakePlan(
             exits: [],
-            partials: [SubtensorUnstakeSlice(hotkey: primary, alpha: amount)]
+            partials: [SubtensorUnstakeSlice(hotkey: anchorHotkey, alpha: amount)]
         )
     }
 
@@ -243,6 +227,10 @@ extension SubtensorUnstakeSetupPresenter {
 
         guard !held.isEmpty, let group, let maxAmount, let holds, let currentBlock else {
             return nil
+        }
+
+        if let hotkey = currentSelection?.hotkey {
+            return held.contains(hotkey) ? holds[hotkey]?.remainingBlocks(at: UInt64(currentBlock)) : nil
         }
 
         guard held.count == group.positions.count || (amount ?? 0) > maxAmount else {
@@ -284,22 +272,22 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func refreshPreflight() {
-        guard let primary = group?.primaryHotkey else {
+        guard let anchorHotkey else {
             return
         }
 
-        preflightRequest = primary
-        interactor.refreshPreflight(for: primary, netuid: netuid)
+        preflightRequest = anchorHotkey
+        interactor.refreshPreflight(for: anchorHotkey, netuid: netuid)
     }
 
     func loadValidatorIfNeeded() {
-        guard let primary = group?.primaryHotkey, primary != validatorRequest, let subnetRef else {
+        guard let anchorHotkey, anchorHotkey != validatorRequest, let subnetRef else {
             return
         }
 
-        validatorRequest = primary
+        validatorRequest = anchorHotkey
         validatorItem = nil
-        interactor.loadValidator(primary, on: subnetRef)
+        interactor.loadValidator(anchorHotkey, on: subnetRef)
     }
 
     func applyInputChange() {
@@ -368,8 +356,11 @@ extension SubtensorUnstakeSetupPresenter {
             basis: basis,
             maxAmount: maxAmount,
             amount: amount,
-            primaryHotkey: group?.primaryHotkey,
+            validatorHotkey: anchorHotkey,
             validatorName: validatorItem?.name,
+            isValidatorSelectable: (group?.positions.count ?? 0) > 1,
+            isAllValidators: currentSelection == .all,
+            legCap: isLegCapped ? SubtensorGroupUnstakeBasis.maxLegs : nil,
             fee: fee,
             price: price,
             quote: quoteFlow.freshQuote,

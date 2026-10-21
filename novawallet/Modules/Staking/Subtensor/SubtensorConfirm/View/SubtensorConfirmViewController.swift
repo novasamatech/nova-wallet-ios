@@ -231,9 +231,13 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
             bindRoot(rootViewModel, networkFee: viewModel.networkFee)
         }
 
-        [rootView.detailsTableView, rootView.walletTableView, rootView.rootTableView].forEach {
-            SubtensorDividerStyle.apply(to: $0)
-        }
+        rootView.bind(breakdown: viewModel.breakdown)
+
+        let tables = [
+            rootView.detailsTableView, rootView.walletTableView, rootView.rootTableView, rootView.validatorsTableView
+        ]
+
+        tables.forEach { SubtensorDividerStyle.apply(to: $0) }
         rootView.priceMovedView.isHidden = !viewModel.isPriceMoved
 
         bindAction(viewModel.action)

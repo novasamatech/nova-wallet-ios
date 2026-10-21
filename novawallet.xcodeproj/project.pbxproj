@@ -6649,6 +6649,7 @@
 		C18124044388698CB0BE8947 /* ParaStkStakeConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7CB6BF970620958C9DDD037 /* ParaStkStakeConfirmWireframe.swift */; };
 		C19EF49636E698D87D5D18FA /* ParaStkYieldBoostSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63ECD1205B2CCCDA2E66A1E /* ParaStkYieldBoostSetupViewLayout.swift */; };
 		C1BE218E19ED42DC9530FDF5 /* SubtensorUnstakeSetupViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EE450254334A6DB17422C0 /* SubtensorUnstakeSetupViewModelFactory.swift */; };
+		B851A6981A3920A5887FBF02 /* SubtensorUnstakeSetupViewModelFactory+Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19102DF63F7F7DCDC199EEA /* SubtensorUnstakeSetupViewModelFactory+Picker.swift */; };
 		C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9035D0F739C88CCBE11E886 /* GovernanceRemoveVotesConfirmInteractor.swift */; };
 		C21129B2B8D8B33BCBD5843E /* StakingRedeemViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */; };
 		C25AA1549353E61CAED8E3D4 /* NetworksListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7FAF5A236F05902A612A70 /* NetworksListInteractor.swift */; };
@@ -8819,6 +8820,7 @@
 		23A74BDB54D503FA2BFBEF35 /* StakingUnbondSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupProtocols.swift; sourceTree = "<group>"; };
 		23CC3812E4DFC26484324D57 /* ReferendumVotersInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVotersInteractor.swift; sourceTree = "<group>"; };
 		23EE450254334A6DB17422C0 /* SubtensorUnstakeSetupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupViewModelFactory.swift; sourceTree = "<group>"; };
+		B19102DF63F7F7DCDC199EEA /* SubtensorUnstakeSetupViewModelFactory+Picker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorUnstakeSetupViewModelFactory+Picker.swift"; sourceTree = "<group>"; };
 		23EF6FA61F2B7E3B2ADD3200 /* NPoolsRedeemViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsRedeemViewLayout.swift; sourceTree = "<group>"; };
 		245DED717B5B3FC380C24E3D /* ChainAddressDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsWireframe.swift; sourceTree = "<group>"; };
 		24B23BAD22C87DA5F324B44F /* DAppAuthSettingsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsWireframe.swift; sourceTree = "<group>"; };
@@ -31547,6 +31549,7 @@
 			children = (
 				8BA68DB10F4B44AAA80A8DE2 /* SubtensorUnstakeSetupViewModel.swift */,
 				23EE450254334A6DB17422C0 /* SubtensorUnstakeSetupViewModelFactory.swift */,
+				B19102DF63F7F7DCDC199EEA /* SubtensorUnstakeSetupViewModelFactory+Picker.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -39821,6 +39824,7 @@
 				A68D808D87654E87AC644BAD /* SubtensorUnstakeSetupPresenter+Interactor.swift in Sources */,
 				445D2FFFD4AD4179ACE2E55A /* SubtensorUnstakeSetupViewModel.swift in Sources */,
 				C1BE218E19ED42DC9530FDF5 /* SubtensorUnstakeSetupViewModelFactory.swift in Sources */,
+				B851A6981A3920A5887FBF02 /* SubtensorUnstakeSetupViewModelFactory+Picker.swift in Sources */,
 				EC609127B9524F02A38D7097 /* SubtensorUnstakeSetupPresenter+Actions.swift in Sources */,
 				621A24175D8C40D3AFCA741B /* SubtensorConfirmQuoteState.swift in Sources */,
 				76E53FF488F4425D946E50E0 /* SubtensorConfirmViewModel.swift in Sources */,

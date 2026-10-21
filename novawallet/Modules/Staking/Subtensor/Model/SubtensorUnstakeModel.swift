@@ -127,6 +127,7 @@ struct SubtensorUnstakeModel {
     let netuid: UInt16
     let plan: SubtensorUnstakePlan
     let groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]
+    var validators: [AccountId: SubtensorConfirmValidator] = [:]
 
     var amount: Balance {
         plan.amount
