@@ -8,7 +8,7 @@ final class MercuryoOnRampHookFactory {
     }
 
     private func createResponseInterceptingHook(for delegate: OnRampHookDelegate) -> RampHook {
-        let onRampAction = MercuryoRampEventNames.onSell.rawValue
+        let onRampAction = MercuryoRampEventNames.onBuy.rawValue
 
         let scriptSource = """
         let originalXhrOpen = XMLHttpRequest.prototype.open;
