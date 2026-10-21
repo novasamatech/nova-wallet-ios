@@ -32,7 +32,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func selectValidator() {
-        loadValidatorsIfNeeded()
+        retryValidatorNames()
 
         guard let group, group.positions.count > 1 else {
             showValidatorInfo()
@@ -85,7 +85,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func proceed() {
-        loadValidatorsIfNeeded()
+        retryValidatorNames()
 
         let amount = inputAmount()
 

@@ -31,6 +31,7 @@ final class SubtensorUnstakeSetupPresenter {
     var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
     var validatorRequest: AccountId?
+    var failedValidatorRequest: AccountId?
     var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
     var validatorsRequest: [AccountId]?
     var validatorsResolved: [AccountId]?

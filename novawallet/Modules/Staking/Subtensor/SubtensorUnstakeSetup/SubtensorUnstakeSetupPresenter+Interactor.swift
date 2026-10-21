@@ -45,11 +45,19 @@ extension SubtensorUnstakeSetupPresenter {
         interactor.loadValidators(hotkeys, on: subnetRef)
     }
 
+    func retryValidatorNames() {
+        failedValidatorRequest = nil
+
+        loadValidatorsIfNeeded()
+        loadValidatorIfNeeded()
+    }
+
     func loadValidatorIfNeeded() {
         guard
             let anchorHotkey,
             validatorItems[anchorHotkey] == nil,
             anchorHotkey != validatorRequest,
+            anchorHotkey != failedValidatorRequest,
             validatorsRequest == validatorsResolved,
             let subnetRef else {
             return
@@ -140,6 +148,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId) {
+        if validator == nil, hotkey == validatorRequest {
+            validatorRequest = nil
+            failedValidatorRequest = hotkey
+        }
+
         validatorItems[hotkey] = validator ?? validatorItems[hotkey]
 
         refreshValidatorPicker()
