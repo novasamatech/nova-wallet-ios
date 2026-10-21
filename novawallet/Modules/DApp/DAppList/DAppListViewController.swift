@@ -25,6 +25,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     var sectionViewModels: [DAppListSectionViewModel] = []
     private var pendingSectionViewModels: [DAppListSectionViewModel]?
     private var hasPendingRefreshCompletion: Bool = false
+    private var appliedBannerHeight: CGFloat?
     var walletSwitchViewModel: WalletSwitchViewModel?
 
     init(
@@ -110,6 +111,15 @@ private extension DAppListViewController {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 
+    func updateBannerHeightIfNeeded() {
+        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
+
+        guard bannerHeight != appliedBannerHeight else { return }
+
+        appliedBannerHeight = bannerHeight
+        rootView.collectionView.collectionViewLayout.invalidateLayout()
+    }
+
     func applyPendingUpdates() {
         guard !rootView.collectionView.isDragging else { return }
 
@@ -120,6 +130,7 @@ private extension DAppListViewController {
             sectionViewModels = pendingSectionViewModels
 
             dataSource.apply(pendingSectionViewModels.models)
+            updateBannerHeightIfNeeded()
         }
 
         if hasPendingRefreshCompletion {

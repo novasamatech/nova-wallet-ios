@@ -66,6 +66,8 @@ enum DAppListItem: Hashable {
             lhsModel == rhsModel
         case let (.categorySelect(lhsModel), .categorySelect(rhsModel)):
             lhsModel == rhsModel
+        case (.banner, .banner):
+            true
         case (.notLoaded, .notLoaded):
             true
         case (.error, .error):
