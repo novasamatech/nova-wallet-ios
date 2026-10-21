@@ -23,6 +23,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     lazy var dataSource = createDataSource()
 
     var sectionViewModels: [DAppListSectionViewModel] = []
+    private var pendingSectionViewModels: [DAppListSectionViewModel]?
     var walletSwitchViewModel: WalletSwitchViewModel?
 
     init(
@@ -107,6 +108,20 @@ private extension DAppListViewController {
     func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
+
+    func applySections(_ sections: [DAppListSectionViewModel]) {
+        rootView.sectionViewModels = sections
+        sectionViewModels = sections
+
+        dataSource.apply(sections.models)
+    }
+
+    func applyPendingSections() {
+        guard let pendingSectionViewModels else { return }
+
+        self.pendingSectionViewModels = nil
+        applySections(pendingSectionViewModels)
+    }
 }
 
 // MARK: Actions
@@ -175,6 +190,16 @@ extension DAppListViewController: UICollectionViewDelegate {
             break
         }
     }
+
+    func scrollViewDidEndDragging(_: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
+
+        applyPendingSections()
+    }
+
+    func scrollViewDidEndDecelerating(_: UIScrollView) {
+        applyPendingSections()
+    }
 }
 
 // MARK: ErrorStateViewDelegate
@@ -202,10 +227,13 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 
 extension DAppListViewController: DAppListViewProtocol {
     func didReceive(_ sections: [DAppListSectionViewModel]) {
-        rootView.sectionViewModels = sections
-        sectionViewModels = sections
+        guard !rootView.collectionView.isDragging else {
+            pendingSectionViewModels = sections
+            return
+        }
 
-        dataSource.apply(sections.models)
+        pendingSectionViewModels = nil
+        applySections(sections)
     }
 
     func didCompleteRefreshing() {
