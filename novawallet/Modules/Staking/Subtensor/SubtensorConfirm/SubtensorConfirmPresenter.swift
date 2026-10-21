@@ -152,6 +152,8 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
+
+        isShieldQuoteResolved = false
         interactor.estimateShieldQuote(for: operation)
     }
 
