@@ -23,7 +23,7 @@ extension RampWireframe: RampWireframeProtocol {
 
     func showSend(
         from view: (any ControllerBackedProtocol)?,
-        with transferModel: PayCardTopupModel
+        with transferModel: OffRampTransferModel
     ) {
         guard let sendTransferView = TransferSetupViewFactory.createOffRampView(
             from: transferModel.chainAsset,

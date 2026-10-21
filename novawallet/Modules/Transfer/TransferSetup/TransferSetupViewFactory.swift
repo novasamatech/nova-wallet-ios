@@ -193,7 +193,7 @@ private extension TransferSetupViewFactory {
         recepient: DisplayAddress?,
         amount: Decimal? = nil,
         transferCompletion: TransferCompletionClosure? = nil
-    ) -> CardTopUpTransferSetupViewController? {
+    ) -> OffRampTransferSetupViewController? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -254,7 +254,7 @@ private extension TransferSetupViewFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.sellNamedToken(chainAsset.asset.symbol)
         }
 
-        let view = CardTopUpTransferSetupViewController(
+        let view = OffRampTransferSetupViewController(
             presenter: presenter,
             localizationManager: localizationManager,
             titleResource: title

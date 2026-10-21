@@ -27,7 +27,7 @@ final class MercuryoOffRampHookFactory {
         };
         """
 
-        let handlers: [PayCardMessageHandling] = [
+        let handlers: [RampMessageHandling] = [
             MercuryoOffRampResponseHandler(
                 delegate: delegate,
                 chainAsset: params.chainAsset,

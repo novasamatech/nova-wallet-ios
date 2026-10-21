@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
 
-struct PayCardResource {
+struct RampResource {
     let url: URL
 }

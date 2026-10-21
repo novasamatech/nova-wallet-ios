@@ -1,6 +1,6 @@
 import Foundation
 
-struct PayCardTopupModel {
+struct OffRampTransferModel {
     let chainAsset: ChainAsset
     let amount: Decimal
     let recipientAddress: AccountAddress
