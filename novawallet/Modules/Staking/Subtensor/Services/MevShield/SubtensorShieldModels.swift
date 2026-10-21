@@ -31,8 +31,14 @@ struct SubtensorSealedInner {
     let ciphertext: Data
 }
 
+enum SubtensorShieldCarrierLookup {
+    case found(SubstrateExtrinsicStatus.SuccessExtrinsic)
+    case absent
+    case unknown
+}
+
 enum SubtensorShieldedSubmission {
-    case executed(inner: SubstrateExtrinsicStatus, carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
+    case executed(inner: SubstrateExtrinsicStatus, carrier: SubtensorShieldCarrierLookup)
     case notExecuted(carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?)
     case carrierFailed(SubstrateExtrinsicStatus.FailedExtrinsic)
 }

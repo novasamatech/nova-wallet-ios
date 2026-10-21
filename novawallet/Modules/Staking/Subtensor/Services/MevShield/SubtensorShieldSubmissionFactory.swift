@@ -64,6 +64,10 @@ final class SubtensorShieldSubmissionFactory {
 }
 
 private extension SubtensorShieldSubmissionFactory {
+    enum Constants {
+        static let carrierLookupRetries = 1
+    }
+
     func createWatchWrapper(
         carrierWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>
     ) -> CompoundOperationWrapper<SubtensorShieldCarrierWatchResult> {
@@ -101,29 +105,68 @@ private extension SubtensorShieldSubmissionFactory {
         )
     }
 
+    func createCarrierLookupWrapper(
+        for carrier: ExtrinsicBuiltModel,
+        inBlock blockHash: BlockHash,
+        matchingEvents: ExtrinsicEventsMatching?,
+        retries: Int
+    ) throws -> CompoundOperationWrapper<SubtensorShieldCarrierLookup> {
+        let statusWrapper = try createCarrierStatusWrapper(
+            for: carrier,
+            inBlock: blockHash,
+            matchingEvents: matchingEvents
+        )
+
+        let lookupWrapper = OperationCombiningService<SubtensorShieldCarrierLookup>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            do {
+                switch try statusWrapper.targetOperation.extractNoCancellableResultData() {
+                case let .success(carrierSuccess):
+                    return .createWithResult(.found(carrierSuccess))
+                case .failure:
+                    return .createWithResult(.unknown)
+                }
+            } catch ExtrinsicStatusServiceError.extrinsicNotFound(_) {
+                return .createWithResult(.absent)
+            } catch {
+                guard retries > 0 else {
+                    return .createWithResult(.unknown)
+                }
+
+                return try self.createCarrierLookupWrapper(
+                    for: carrier,
+                    inBlock: blockHash,
+                    matchingEvents: matchingEvents,
+                    retries: retries - 1
+                )
+            }
+        }
+
+        lookupWrapper.addDependency(wrapper: statusWrapper)
+
+        return lookupWrapper.insertingHead(operations: statusWrapper.allOperations)
+    }
+
     func createScannedCarrierWrapper(
         for inner: SubstrateExtrinsicStatus,
         carrier: ExtrinsicBuiltModel,
         matchingEvents: ExtrinsicEventsMatching?
     ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let carrierWrapper = try createCarrierStatusWrapper(
+        let lookupWrapper = try createCarrierLookupWrapper(
             for: carrier,
             inBlock: Self.blockHash(of: inner),
-            matchingEvents: matchingEvents
+            matchingEvents: matchingEvents,
+            retries: Constants.carrierLookupRetries
         )
 
         let mapOperation = ClosureOperation<SubtensorShieldedSubmission> {
-            guard case let .success(carrierSuccess)? = try? carrierWrapper.targetOperation
-                .extractNoCancellableResultData() else {
-                return .executed(inner: inner, carrier: nil)
-            }
-
-            return .executed(inner: inner, carrier: carrierSuccess)
+            .executed(inner: inner, carrier: try lookupWrapper.targetOperation.extractNoCancellableResultData())
         }
 
-        mapOperation.addDependency(carrierWrapper.targetOperation)
+        mapOperation.addDependency(lookupWrapper.targetOperation)
 
-        return carrierWrapper.insertingTail(operation: mapOperation)
+        return lookupWrapper.insertingTail(operation: mapOperation)
     }
 
     func createScannedResolutionWrapper(
@@ -168,7 +211,7 @@ private extension SubtensorShieldSubmissionFactory {
                 return .notExecuted(carrier: carrier)
             }
 
-            return .executed(inner: inner, carrier: carrier)
+            return .executed(inner: inner, carrier: .found(carrier))
         }
 
         mapOperation.addDependency(statusWrapper.targetOperation)

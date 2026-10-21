@@ -85,9 +85,16 @@ extension SubtensorSubmissionFinalizer {
         case let .executed(.success(inner), carrier):
             let outcome = complete(operation: operation, success: inner, codingFactory: codingFactory)
 
-            return outcome.addingNetworkFee(
-                carrier.flatMap { carrierFee(of: $0, operation: operation, codingFactory: codingFactory) }
-            )
+            switch carrier {
+            case let .found(carrierSuccess):
+                return outcome.addingNetworkFee(
+                    carrierFee(of: carrierSuccess, operation: operation, codingFactory: codingFactory)
+                )
+            case .absent:
+                return outcome
+            case .unknown:
+                return outcome.withUnknownNetworkFee()
+            }
         case let .executed(.failure(inner), _):
             throw dispatchFailure(for: inner)
         case let .notExecuted(carrier):
@@ -128,6 +135,17 @@ private extension SubtensorSubmissionFinalizer {
 }
 
 private extension SubtensorOperationOutcome {
+    func withUnknownNetworkFee() -> SubtensorOperationOutcome {
+        SubtensorOperationOutcome(
+            executed: executed,
+            novaFeePaid: novaFeePaid,
+            alphaFeePaid: alphaFeePaid,
+            networkFeePaid: nil,
+            extrinsicHash: extrinsicHash,
+            blockHash: blockHash
+        )
+    }
+
     func addingNetworkFee(_ fee: Balance?) -> SubtensorOperationOutcome {
         guard let fee else {
             return self
