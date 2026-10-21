@@ -55,7 +55,11 @@ struct SubtensorGroupUnstakeBasis: Equatable {
             return nil
         }
 
-        if let primary = positions.first, amount <= primary.free, amount < drawable(floor: floor) {
+        if
+            let primary = positions.first,
+            amount <= primary.free,
+            amount < drawable(floor: floor),
+            primary.locked > 0 || primary.alpha - amount >= floor {
             return SubtensorUnstakePlan(
                 exits: [],
                 partials: [SubtensorUnstakeSlice(hotkey: primary.hotkey, alpha: amount)]
@@ -140,23 +144,55 @@ private extension SubtensorGroupUnstakeBasis {
 }
 
 extension SubtensorGroupUnstakeBasis {
+    static let maxLegs = 16
+
     static func make(
         from group: SubtensorPortfolioGroup,
         excluding heldHotkeys: Set<AccountId> = [],
         groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo] = [:]
     ) -> SubtensorGroupUnstakeBasis {
-        let total = group.totalAlpha
+        make(
+            from: group,
+            members: group.positions.filter { !heldHotkeys.contains($0.hotkey) },
+            groupHotkeys: groupHotkeys
+        )
+    }
+
+    static func make(
+        from group: SubtensorPortfolioGroup,
+        selection: SubtensorUnstakeSelection,
+        excluding heldHotkeys: Set<AccountId>,
+        groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]
+    ) -> SubtensorGroupUnstakeBasis {
+        let members = switch selection {
+        case let .validator(hotkey):
+            group.positions.filter { $0.hotkey == hotkey }
+        case .all:
+            Array(group.positions.filter { !heldHotkeys.contains($0.hotkey) }.prefix(maxLegs))
+        }
+
+        return make(from: group, members: members, groupHotkeys: groupHotkeys)
+    }
+
+    static func isLegCapped(_ group: SubtensorPortfolioGroup, excluding heldHotkeys: Set<AccountId>) -> Bool {
+        group.positions.filter { !heldHotkeys.contains($0.hotkey) }.count > maxLegs
+    }
+
+    private static func make(
+        from group: SubtensorPortfolioGroup,
+        members: [SubtensorPosition],
+        groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]
+    ) -> SubtensorGroupUnstakeBasis {
+        let total = members.reduce(Balance.zero) { $0 + $1.stakeAlpha }
         let available = group.availability.map { min(total, $0.available) } ?? total
 
-        let positions = group.positions
-            .filter { !heldHotkeys.contains($0.hotkey) }
-            .map {
-                SubtensorUnstakePosition(
-                    hotkey: $0.hotkey,
-                    alpha: $0.stakeAlpha,
-                    locked: groupHotkeys[$0.hotkey]?.collateral ?? 0
-                )
-            }
+        let positions = members.map {
+            SubtensorUnstakePosition(
+                hotkey: $0.hotkey,
+                alpha: $0.stakeAlpha,
+                locked: groupHotkeys[$0.hotkey]?.collateral ?? 0
+            )
+        }
 
         return SubtensorGroupUnstakeBasis(total: total, available: available, positions: positions)
     }

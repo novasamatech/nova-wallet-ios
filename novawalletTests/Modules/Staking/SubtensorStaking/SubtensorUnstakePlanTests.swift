@@ -97,6 +97,86 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         )
     }
 
+    func testSelectedValidatorMaxIsItsStakeCappedBySubnetAvailability() {
+        let group = makeGroup([primary, second], available: 50_000_000_000)
+
+        let primaryBasis = makeBasis(group, selection: .validator(primary.hotkey))
+        let secondBasis = makeBasis(group, selection: .validator(second.hotkey))
+
+        XCTAssertEqual(primaryBasis.max(floor: floor), 50_000_000_000)
+        XCTAssertEqual(secondBasis.max(floor: floor), second.alpha)
+        XCTAssertNil(secondBasis.plan(for: 41_000_000_000, floor: floor))
+    }
+
+    func testSelectedValidatorDustRemainderSnapsToItsFullExit() {
+        let basis = makeBasis(makeGroup([primary, second]), selection: .validator(primary.hotkey))
+
+        let plan = basis.plan(for: 59_999_900_000, floor: floor)
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(primary)], partials: []))
+    }
+
+    func testAllValidatorsDustyPrimaryRemainderFallsToSmallestFirstSplit() {
+        let plan = makeBasis().plan(for: 59_500_000_000, floor: floor)
+
+        XCTAssertEqual(plan, SubtensorUnstakePlan(exits: [exit(third)], partials: [slice(second, 29_500_000_000)]))
+    }
+
+    func testAllValidatorsKeepTheSixteenLargestPositions() {
+        let positions = (1 ... 18).map { index in
+            SubtensorUnstakePosition(
+                hotkey: Data(repeating: UInt8(index), count: 32),
+                alpha: Balance(index) * floor,
+                locked: 0
+            )
+        }
+        let kept = positions.reversed().prefix(SubtensorGroupUnstakeBasis.maxLegs)
+
+        let basis = makeBasis(makeGroup(Array(positions.reversed())), selection: .all)
+
+        XCTAssertEqual(basis.positions, Array(kept))
+        XCTAssertEqual(basis.max(floor: floor), kept.reduce(0) { $0 + $1.alpha })
+        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floor: floor)?.slices.count, 16)
+    }
+
+    func testHeldValidatorIsLeftOutOfAllAndCannotStaySelected() {
+        let group = makeGroup([primary, second, third])
+        let held: Set<AccountId> = [primary.hotkey]
+
+        let basis = makeBasis(group, selection: .all, excluding: held)
+        let heldSelection = SubtensorUnstakeSelection.resolve(.validator(primary.hotkey), in: group, excluding: held)
+        let soleSellable = SubtensorUnstakeSelection.resolve(.all, in: makeGroup([primary, second]), excluding: held)
+
+        XCTAssertEqual(basis.total, second.alpha + third.alpha)
+        XCTAssertEqual(heldSelection, .validator(second.hotkey))
+        XCTAssertEqual(soleSellable, .validator(second.hotkey))
+    }
+
+    private func makeGroup(
+        _ members: [SubtensorUnstakePosition],
+        available: Balance? = nil
+    ) -> SubtensorPortfolioGroup {
+        let total = members.reduce(Balance.zero) { $0 + $1.alpha }
+
+        return SubtensorPortfolioGroup(
+            netuid: 0,
+            positions: members.map { position($0) },
+            totalAlpha: total,
+            redeemable: 0,
+            taoValue: nil,
+            availability: SubtensorPallet.StakeAvailability(available: available ?? total),
+            primaryHotkey: members[0].hotkey
+        )
+    }
+
+    private func makeBasis(
+        _ group: SubtensorPortfolioGroup,
+        selection: SubtensorUnstakeSelection,
+        excluding held: Set<AccountId> = []
+    ) -> SubtensorGroupUnstakeBasis {
+        SubtensorGroupUnstakeBasis.make(from: group, selection: selection, excluding: held, groupHotkeys: [:])
+    }
+
     private func makeBasis(available: Balance = 130_000_000_000) -> SubtensorGroupUnstakeBasis {
         SubtensorGroupUnstakeBasis(total: 130_000_000_000, available: available, positions: [primary, second, third])
     }
