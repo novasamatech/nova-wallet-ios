@@ -12,13 +12,18 @@ extension SubtensorStakeSetupPresenter {
         return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
     }
 
+    var networkFee: ExtrinsicFeeProtocol? {
+        eligibleShieldQuote?.totalFee ?? fee
+    }
+
     var maxAmount: Balance? {
-        guard let transferable, let fee else {
+        guard let transferable, let networkFee else {
             return nil
         }
 
-        let networkFee = eligibleShieldQuote?.totalFee.amount ?? fee.amountForCurrentAccount ?? 0
-
-        return SubtensorAmountPolicy.maxBuyOrStake(transferable: transferable, networkFee: networkFee)
+        return SubtensorAmountPolicy.maxBuyOrStake(
+            transferable: transferable,
+            networkFee: networkFee.amountForCurrentAccount ?? 0
+        )
     }
 }
