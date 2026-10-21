@@ -172,7 +172,6 @@ private extension SubtensorBaseInteractor {
             shieldQuoteFailures += 1
             logger.warning("Shield quote failed (attempt \(shieldQuoteFailures)): \(error)")
 
-            // an unresolved quote holds the fee; past the cap the order goes out unshielded instead of blocking
             if shieldQuoteFailures >= SubtensorFlowConstants.shieldQuoteAttempts {
                 basePresenter?.didReceiveShieldQuote(nil)
             }
