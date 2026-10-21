@@ -44,11 +44,10 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
     }
 
     func didFailPrices(_ error: Error) {
-        guard state.prices == nil else {
-            return
+        if state.catalogue == nil {
+            dataAnalytics.trackFailure(error, endpoint: .subnets)
         }
 
-        dataAnalytics.trackFailure(error, endpoint: .subnets)
         resolveCatalogue()
     }
 
