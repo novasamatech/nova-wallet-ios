@@ -9,7 +9,7 @@ final class RampPresenter {
     let rampAction: RampAction
 
     let analyticsContent: AnalyticsRampContent?
-    var didTrackCompletion: Bool = false
+    private var didComplete: Bool = false
 
     init(
         wireframe: RampWireframeProtocol!,
@@ -64,6 +64,12 @@ extension RampPresenter: RampInteractorOutputProtocol {
     }
 
     func didCompleteOperation(action: RampAction) {
+        guard !didComplete else {
+            return
+        }
+
+        didComplete = true
+
         trackFlowCompleted(for: action.type)
 
         wireframe.complete(
