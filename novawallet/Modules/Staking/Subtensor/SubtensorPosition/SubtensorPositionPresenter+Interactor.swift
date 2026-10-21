@@ -73,18 +73,18 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         provideViewModel()
     }
 
-    func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId) {
-        guard hotkey == state.group?.primaryHotkey else {
+    func didReceive(validators: [AccountId: SubtensorValidatorDirectoryItem], for hotkeys: [AccountId]) {
+        guard hotkeys == state.validatorHotkeys else {
             return
         }
 
-        state.validatorHotkey = hotkey
-        state.validator = validator
+        state.validators = validators
+        state.resolvedValidatorHotkeys = Set(hotkeys)
         provideViewModel()
     }
 
-    func didFailValidator(for hotkey: AccountId) {
-        guard hotkey == validatorRequest?.hotkey else {
+    func didFailValidators(for hotkeys: [AccountId]) {
+        guard hotkeys == validatorRequest?.hotkeys else {
             return
         }
 

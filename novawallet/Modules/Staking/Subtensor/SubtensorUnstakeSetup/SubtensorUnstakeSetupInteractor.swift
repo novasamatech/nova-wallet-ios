@@ -16,8 +16,10 @@ final class SubtensorUnstakeSetupInteractor: SubtensorBaseInteractor {
     let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let validatorPresetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
     let groupHotkeyOperationFactory: SubtensorGroupHotkeyOperationFactoryProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
 
     private let validatorCallStore = CancellableCallStore()
+    private let validatorsCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
     private let groupHotkeysCallStore = CancellableCallStore()
 
@@ -29,12 +31,14 @@ final class SubtensorUnstakeSetupInteractor: SubtensorBaseInteractor {
         subnetsOperationFactory = state.subnetsOperationFactory
         validatorPresetOperationFactory = state.earnServices.validatorPresetOperationFactory
         groupHotkeyOperationFactory = state.earnServices.groupHotkeyOperationFactory
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
 
     deinit {
         validatorCallStore.cancel()
+        validatorsCallStore.cancel()
         subnetsInfoCallStore.cancel()
         groupHotkeysCallStore.cancel()
     }
@@ -74,6 +78,25 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputP
             case let .failure(error):
                 self?.logger.warning("Subtensor unstake validator unavailable: \(error)")
                 self?.presenter?.didReceiveValidator(nil, hotkey: hotkey)
+            }
+        }
+    }
+
+    func loadValidators(_ hotkeys: [AccountId], on subnet: SubtensorSubnetRef) {
+        validatorsCallStore.cancel()
+
+        executeCancellable(
+            wrapper: directoryOperationFactory.createListedDetailsWrapper(for: hotkeys, subnet: subnet),
+            inOperationQueue: operationQueue,
+            backingCallIn: validatorsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(validators):
+                self?.presenter?.didReceiveValidators(validators, hotkeys: hotkeys)
+            case let .failure(error):
+                self?.logger.warning("Subtensor unstake validators unavailable: \(error)")
+                self?.presenter?.didFailValidators(for: hotkeys)
             }
         }
     }

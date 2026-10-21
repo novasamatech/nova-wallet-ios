@@ -28,7 +28,6 @@ extension SubtensorStakeSetupViewModelFactory {
             validatorRate: input.subnetData.annualRate.map {
                 SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale)
             },
-            isValidatorEditable: !input.mode.isLocked,
             browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             header: createHeader(for: input, locale: locale),
             chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData, locale: locale),

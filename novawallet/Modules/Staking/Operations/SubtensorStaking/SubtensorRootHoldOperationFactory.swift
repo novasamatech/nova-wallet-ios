@@ -15,6 +15,10 @@ extension SubtensorRootHold {
 
         return elapsed >= interval ? 0 : interval - elapsed
     }
+
+    static func formatDuration(blocks: UInt64, blockTime: BlockTime, locale: Locale) -> String {
+        (TimeInterval(blocks) * blockTime.timeInterval).localizedDaysHoursOrFallbackMinutes(for: locale)
+    }
 }
 
 final class SubtensorRootHoldOperationFactory {

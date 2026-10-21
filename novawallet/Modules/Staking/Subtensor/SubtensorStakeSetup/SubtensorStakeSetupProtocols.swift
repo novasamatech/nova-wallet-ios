@@ -30,6 +30,7 @@ protocol SubtensorStakeSetupInteractorInputProtocol: SubtensorBaseInteractorInpu
     func loadBlockTime()
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
     func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
+    func loadHeldValidators(_ hotkeys: [AccountId], on subnet: SubtensorSubnetRef)
     func loadSubnet(netuid: UInt16)
     func loadYields(netuid: UInt16)
     func loadRankingView()
@@ -39,6 +40,8 @@ protocol SubtensorStakeSetupInteractorInputProtocol: SubtensorBaseInteractorInpu
 protocol SubtensorStakeSetupInteractorOutputProtocol: SubtensorBaseInteractorOutputProtocol {
     func didReceiveQuickPickSnapshot(_ result: Result<SubtensorQuickPickSnapshot, Error>)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
+    func didReceiveHeldValidators(_ validators: [AccountId: SubtensorValidatorDirectoryItem], hotkeys: [AccountId])
+    func didFailHeldValidators(for hotkeys: [AccountId])
     func didFailValidator(_ error: Error, on subnet: SubtensorSubnetRef)
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
     func didFailSubnet(_ error: Error)
@@ -49,7 +52,7 @@ protocol SubtensorStakeSetupInteractorOutputProtocol: SubtensorBaseInteractorOut
 
 protocol SubtensorStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, SubtensorErrorPresentable, GetTokenOptionsPresentable, SubtensorInfoSheetPresentable,
-    SubtensorValidatorInfoPresentable {
+    SubtensorValidatorInfoPresentable, CollatorStakingDelegationSelectable {
     func showAllSubnets(
         from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState,
