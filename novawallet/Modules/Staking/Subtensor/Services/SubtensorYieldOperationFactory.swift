@@ -73,10 +73,6 @@ extension SubtensorYieldOperationFactory {
         if count > 0 {
             logger.warning("\(count) alpha yield rows of netuid \(netuid) carry no rate verdict; rates trusted")
         }
-
-        if collection.pageInfo.nextPage != nil {
-            logger.warning("Alpha yields of netuid \(netuid) list \(collection.pageInfo.total) rows; first page kept")
-        }
     }
 
     static func makeRootYields(
