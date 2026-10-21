@@ -85,15 +85,89 @@ private extension SubtensorShieldSubmissionFactory {
         }
     }
 
-    func createInnerResolutionWrapper(
+    static func blockHash(of status: SubstrateExtrinsicStatus) -> BlockHash {
+        switch status {
+        case let .success(success):
+            success.blockHash
+        case let .failure(failure):
+            failure.blockHash
+        }
+    }
+
+    func createCarrierStatusWrapper(
+        for carrier: ExtrinsicBuiltModel,
+        inBlock blockHash: BlockHash,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) throws -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+        let carrierHash = try Data(hexString: carrier.extrinsic).blake2b32().toHex(includePrefix: true)
+
+        return statusService.fetchExtrinsicStatusForHash(
+            carrierHash,
+            inBlock: blockHash,
+            matchingEvents: matchingEvents
+        )
+    }
+
+    func createScannedCarrierWrapper(
+        for inner: SubstrateExtrinsicStatus,
+        carrier: ExtrinsicBuiltModel,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
+        let carrierWrapper = try createCarrierStatusWrapper(
+            for: carrier,
+            inBlock: Self.blockHash(of: inner),
+            matchingEvents: matchingEvents
+        )
+
+        let mapOperation = ClosureOperation<SubtensorShieldedSubmission> {
+            guard case let .success(carrierSuccess)? = try? carrierWrapper.targetOperation
+                .extractNoCancellableResultData() else {
+                return .executed(inner: inner, carrier: nil)
+            }
+
+            return .executed(inner: inner, carrier: carrierSuccess)
+        }
+
+        mapOperation.addDependency(carrierWrapper.targetOperation)
+
+        return carrierWrapper.insertingTail(operation: mapOperation)
+    }
+
+    func createScannedResolutionWrapper(
         for sealedInner: SubtensorSealedInner,
-        in range: SubtensorShieldBlockRange,
-        carrier: SubstrateExtrinsicStatus.SuccessExtrinsic?,
+        carrier: ExtrinsicBuiltModel,
+        eraStart: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
         let statusWrapper = inclusionTracker.createInnerStatusWrapper(
             for: sealedInner.extrinsicHash,
-            in: range,
+            in: .carrierEraFrom(eraStart),
+            matchingEvents: matchingEvents
+        )
+
+        let resolutionWrapper = OperationCombiningService<SubtensorShieldedSubmission>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            guard let inner = try statusWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .createWithResult(.notExecuted(carrier: nil))
+            }
+
+            return try self.createScannedCarrierWrapper(for: inner, carrier: carrier, matchingEvents: matchingEvents)
+        }
+
+        resolutionWrapper.addDependency(wrapper: statusWrapper)
+
+        return resolutionWrapper.insertingHead(operations: statusWrapper.allOperations)
+    }
+
+    func createInnerResolutionWrapper(
+        for sealedInner: SubtensorSealedInner,
+        carrier: SubstrateExtrinsicStatus.SuccessExtrinsic,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
+        let statusWrapper = inclusionTracker.createInnerStatusWrapper(
+            for: sealedInner.extrinsicHash,
+            in: .fromCarrierBlock(carrier.blockHash),
             matchingEvents: matchingEvents
         )
 
@@ -112,6 +186,7 @@ private extension SubtensorShieldSubmissionFactory {
 
     func createRejectedResolutionWrapper(
         for sealedInner: SubtensorSealedInner,
+        carrier: ExtrinsicBuiltModel,
         rejection: Error,
         eraStart: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
@@ -127,10 +202,10 @@ private extension SubtensorShieldSubmissionFactory {
                 throw SubtensorShieldError.carrierRejected(rejection)
             }
 
-            return self.createInnerResolutionWrapper(
+            return self.createScannedResolutionWrapper(
                 for: sealedInner,
-                in: .carrierEraFrom(eraStart),
-                carrier: nil,
+                carrier: carrier,
+                eraStart: eraStart,
                 matchingEvents: matchingEvents
             )
         }
@@ -146,10 +221,8 @@ private extension SubtensorShieldSubmissionFactory {
         blockHash: BlockHash,
         matchingEvents: ExtrinsicEventsMatching?
     ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let carrierHash = try Data(hexString: carrier.extrinsic).blake2b32().toHex(includePrefix: true)
-
-        let statusWrapper = statusService.fetchExtrinsicStatusForHash(
-            carrierHash,
+        let statusWrapper = try createCarrierStatusWrapper(
+            for: carrier,
             inBlock: blockHash,
             matchingEvents: matchingEvents
         )
@@ -161,7 +234,6 @@ private extension SubtensorShieldSubmissionFactory {
             case let .success(carrierSuccess):
                 return self.createInnerResolutionWrapper(
                     for: sealedInner,
-                    in: .fromCarrierBlock(carrierSuccess.blockHash),
                     carrier: carrierSuccess,
                     matchingEvents: matchingEvents
                 )
@@ -258,15 +330,16 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
             case let .rejected(error):
                 return self.createRejectedResolutionWrapper(
                     for: sealedInner,
+                    carrier: carrier,
                     rejection: error,
                     eraStart: eraStart,
                     matchingEvents: matchingEvents
                 )
             case .lost:
-                return self.createInnerResolutionWrapper(
+                return self.createScannedResolutionWrapper(
                     for: sealedInner,
-                    in: .carrierEraFrom(eraStart),
-                    carrier: nil,
+                    carrier: carrier,
+                    eraStart: eraStart,
                     matchingEvents: matchingEvents
                 )
             }
