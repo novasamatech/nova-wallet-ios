@@ -183,6 +183,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             forceQuoteRefresh()
         }
 
+        retryUnresolvedShieldQuote()
         provideViewModel()
     }
 
