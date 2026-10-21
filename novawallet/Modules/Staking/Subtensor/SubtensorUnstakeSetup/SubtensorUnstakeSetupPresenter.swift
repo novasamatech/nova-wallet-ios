@@ -93,25 +93,6 @@ private extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func unstakeFloors() -> SubtensorUnstakeFloors {
-        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
-            return .none
-        }
-
-        return SubtensorUnstakeFloors(
-            yield: SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: preflight.minStake,
-                price: price,
-                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
-            ),
-            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: preflight.effectiveNominatorMinStake,
-                price: price,
-                feeRate: 0
-            )
-        )
-    }
-
     func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorOperation? {
         guard !isRoot else {
             return plan.rootOperation(amount: plan.amount)
@@ -135,6 +116,25 @@ private extension SubtensorUnstakeSetupPresenter {
 extension SubtensorUnstakeSetupPresenter {
     var isRoot: Bool {
         netuid == SubtensorPallet.rootNetuid
+    }
+
+    func unstakeFloors() -> SubtensorUnstakeFloors {
+        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
+            return .none
+        }
+
+        return SubtensorUnstakeFloors(
+            yield: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.minStake,
+                price: price,
+                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+            ),
+            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.effectiveNominatorMinStake,
+                price: price,
+                feeRate: 0
+            )
+        )
     }
 
     var basis: SubtensorGroupUnstakeBasis? {

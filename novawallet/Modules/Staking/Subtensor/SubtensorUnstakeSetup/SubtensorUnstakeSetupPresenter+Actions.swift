@@ -212,6 +212,20 @@ extension SubtensorUnstakeSetupPresenter {
         return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
     }
 
+    var unsellableHotkeys: Set<AccountId> {
+        guard let group else {
+            return []
+        }
+
+        let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(
+            in: group,
+            groupHotkeys: groupHotkeys,
+            floor: unstakeFloors().yield
+        )
+
+        return heldHotkeys.union(undrawable)
+    }
+
     var isLegCapped: Bool {
         guard currentSelection == .all, let group else {
             return false
@@ -221,7 +235,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var currentSelection: SubtensorUnstakeSelection? {
-        group.map { SubtensorUnstakeSelection.resolve(selection, in: $0, excluding: heldHotkeys) }
+        group.map { SubtensorUnstakeSelection.resolve(selection, in: $0, excluding: unsellableHotkeys) }
     }
 
     var anchorHotkey: AccountId? {
@@ -229,9 +243,9 @@ extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        let held = heldHotkeys
+        let unsellable = unsellableHotkeys
 
-        return currentSelection?.hotkey ?? group.positions.first { !held.contains($0.hotkey) }?.hotkey ??
+        return currentSelection?.hotkey ?? group.positions.first { !unsellable.contains($0.hotkey) }?.hotkey ??
             group.primaryHotkey
     }
 
@@ -241,9 +255,9 @@ extension SubtensorUnstakeSetupPresenter {
 
     func createValidatorPickerContent(for group: SubtensorPortfolioGroup) -> CollatorStakingTargetPickerContent {
         let hotkeys = group.positions.map(\.hotkey)
-        let held = heldHotkeys
+        let unsellable = unsellableHotkeys
         let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
-        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: held)
+        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: unsellable)
         let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
 
         return CollatorStakingTargetPickerContent(
@@ -251,7 +265,7 @@ extension SubtensorUnstakeSetupPresenter {
             viewModels: pickerFactory.createViewModels(
                 for: group.positions,
                 names: names,
-                disabled: held,
+                disabled: unsellable,
                 displayInfo: inputDisplayInfo
             ),
             action: hasAllAction ? pickerFactory.createAllValidatorsAction() : nil,
@@ -298,6 +312,11 @@ extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
             return
         }
 
+        guard !unsellableHotkeys.contains(hotkey) else {
+            presentNothingSellable()
+            return
+        }
+
         applySelection(.validator(hotkey))
     }
 
@@ -318,6 +337,17 @@ extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
         provideAmountInputViewModel()
         applyBasisChange(from: previousPlan)
         provideViewModel()
+    }
+
+    private func presentNothingSellable() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        wireframe.present(
+            message: strings.stakingSubtensorUnstakeNothingAvailableHint(),
+            title: strings.stakingSubtensorUnstakeLockedTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
     }
 
     private func presentHold(for hotkey: AccountId) {

@@ -200,6 +200,20 @@ extension SubtensorGroupUnstakeBasis {
         return make(from: group, members: members, groupHotkeys: groupHotkeys, coldkey: coldkey)
     }
 
+    static func undrawableHotkeys(
+        in group: SubtensorPortfolioGroup,
+        groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?,
+        floor: Balance
+    ) -> Set<AccountId> {
+        guard let groupHotkeys else {
+            return []
+        }
+
+        let positions = make(from: group, groupHotkeys: groupHotkeys).positions
+
+        return Set(positions.filter { $0.drawable(floor: floor) == 0 }.map(\.hotkey))
+    }
+
     static func isLegCapped(_ group: SubtensorPortfolioGroup, excluding heldHotkeys: Set<AccountId>) -> Bool {
         group.positions.filter { !heldHotkeys.contains($0.hotkey) }.count > maxLegs
     }
