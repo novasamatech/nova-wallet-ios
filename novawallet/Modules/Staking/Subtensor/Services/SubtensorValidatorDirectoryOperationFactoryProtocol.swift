@@ -17,4 +17,9 @@ protocol SubtensorValidatorDirectoryOperationFactoryProtocol: AnyObject {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
+
+    func createListedDetailsWrapper(
+        for hotkeys: [AccountId],
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<[AccountId: SubtensorValidatorDirectoryItem]>
 }
