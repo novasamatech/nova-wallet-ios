@@ -331,7 +331,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     }
 
     func createValidator(for input: SubtensorUnstakeSetupViewModelInput) -> SubtensorSetupValidatorViewModel {
-        input.primaryHotkey.flatMap { hotkey in
+        input.validatorHotkey.flatMap { hotkey in
             displayAddressFactory.subtensorValidator(
                 hotkey: hotkey, name: input.validatorName, chainFormat: chainAsset.chain.chainFormat
             )

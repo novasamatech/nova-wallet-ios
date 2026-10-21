@@ -1,17 +1,14 @@
 import Foundation
 
-private extension SubtensorUnstakeSetupPresenter {
-    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
-        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
-    }
-
+extension SubtensorUnstakeSetupPresenter {
     func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
-        if group?.primaryHotkey != preflightRequest {
+        if anchorHotkey != preflightRequest {
             preflight = nil
             refreshPreflight()
         }
 
         loadValidatorIfNeeded()
+        loadValidatorsIfNeeded()
         loadGroupHotkeys()
 
         if isRoot, let group, !group.positions.isEmpty {
@@ -24,6 +21,27 @@ private extension SubtensorUnstakeSetupPresenter {
 
         refreshFee()
         updateQuote()
+    }
+
+    func loadValidatorsIfNeeded() {
+        guard let group, group.positions.count > 1, let subnetRef else {
+            return
+        }
+
+        let hotkeys = group.positions.map(\.hotkey)
+
+        guard hotkeys != validatorsRequest else {
+            return
+        }
+
+        validatorsRequest = hotkeys
+        interactor.loadValidators(hotkeys, on: subnetRef)
+    }
+}
+
+private extension SubtensorUnstakeSetupPresenter {
+    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
+        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
     func presentSubnetRetry(tracksRetry: Bool) {
@@ -65,6 +83,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
         loadValidatorIfNeeded()
+        loadValidatorsIfNeeded()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
@@ -100,13 +119,29 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId) {
-        guard hotkey == group?.primaryHotkey else {
+        guard hotkey == anchorHotkey else {
             return
         }
 
         validatorItem = validator
 
         provideViewModel()
+    }
+
+    func didReceiveValidators(_ validators: [AccountId: SubtensorValidatorDirectoryItem], hotkeys: [AccountId]) {
+        guard hotkeys == validatorsRequest else {
+            return
+        }
+
+        validatorItems = validators
+    }
+
+    func didFailValidators(for hotkeys: [AccountId]) {
+        guard hotkeys == validatorsRequest else {
+            return
+        }
+
+        validatorsRequest = nil
     }
 
     func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo]) {

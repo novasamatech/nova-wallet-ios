@@ -37,7 +37,7 @@ struct SubtensorUnstakeSetupViewModelInput {
     let basis: SubtensorGroupUnstakeBasis?
     let maxAmount: Balance?
     let amount: Balance?
-    let primaryHotkey: AccountId?
+    let validatorHotkey: AccountId?
     let validatorName: String?
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?

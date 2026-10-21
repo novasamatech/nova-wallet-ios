@@ -32,14 +32,14 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func showValidatorInfo() {
-        guard let primary = group?.primaryHotkey, let target else {
+        guard let anchorHotkey, let target else {
             return
         }
 
         wireframe.showValidatorInfo(
             from: view,
             target: target,
-            hotkey: primary,
+            hotkey: anchorHotkey,
             detail: validatorItem
         )
     }
@@ -112,7 +112,7 @@ extension SubtensorUnstakeSetupPresenter {
         return SubtensorUnstakeValidatingDependencies(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
-            hotkey: group?.primaryHotkey,
+            hotkey: anchorHotkey,
             amount: amount,
             positionAlpha: plan?.amount ?? maxAmount,
             positions: positions,
@@ -158,10 +158,10 @@ extension SubtensorUnstakeSetupPresenter {
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDependencies) -> SubtensorConfirmModel? {
         guard
             let target,
-            let group,
             let plan = dependencies.plan,
             let groupHotkeys = dependencies.groupHotkeys,
-            let address = try? group.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            let hotkey = Set(plan.hotkeys).count == 1 ? plan.hotkeys.first : anchorHotkey,
+            let validator = createConfirmValidator(for: hotkey) else {
             return nil
         }
 
@@ -169,11 +169,7 @@ extension SubtensorUnstakeSetupPresenter {
             origin: isRoot ? .unstake : .sell,
             account: selectedAccount,
             target: target,
-            validator: SubtensorConfirmValidator(
-                hotkey: group.primaryHotkey,
-                display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
-                annualRate: nil
-            ),
+            validator: validator,
             mode: .unstake(SubtensorUnstakeModel(
                 netuid: netuid,
                 plan: plan,
@@ -182,6 +178,49 @@ extension SubtensorUnstakeSetupPresenter {
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
             hasLockedStake: hasLockedStake
+        )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter {
+    var heldHotkeys: Set<AccountId> {
+        guard isRoot, let group, let holds, let currentBlock else {
+            return []
+        }
+
+        let head = UInt64(currentBlock)
+
+        return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
+    }
+
+    var currentSelection: SubtensorUnstakeSelection? {
+        group.map { SubtensorUnstakeSelection.resolve(selection, in: $0, excluding: heldHotkeys) }
+    }
+
+    var anchorHotkey: AccountId? {
+        guard let group else {
+            return nil
+        }
+
+        let held = heldHotkeys
+
+        return currentSelection?.hotkey ?? group.positions.first { !held.contains($0.hotkey) }?.hotkey ??
+            group.primaryHotkey
+    }
+
+    func validatorName(for hotkey: AccountId) -> String? {
+        validatorItems[hotkey]?.name ?? (validatorItem?.hotkey == hotkey ? validatorItem?.name : nil)
+    }
+
+    func createConfirmValidator(for hotkey: AccountId) -> SubtensorConfirmValidator? {
+        guard let address = try? hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            return nil
+        }
+
+        return SubtensorConfirmValidator(
+            hotkey: hotkey,
+            display: DisplayAddress(address: address, username: validatorName(for: hotkey) ?? ""),
+            annualRate: nil
         )
     }
 }
