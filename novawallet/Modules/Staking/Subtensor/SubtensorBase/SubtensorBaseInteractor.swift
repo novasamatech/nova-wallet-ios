@@ -26,6 +26,8 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private var priceProvider: StreamableProvider<PriceData>?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
+    private var pendingFeeOperation: SubtensorOperation?
+    private var pendingShieldQuoteOperation: SubtensorOperation?
     private let feeCallStore = CancellableCallStore()
     private let shieldQuoteCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
@@ -127,28 +129,11 @@ private extension SubtensorBaseInteractor {
             }
         )
     }
-}
 
-extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
-    func setup() {
-        makeAssetBalanceSubscription()
-        makePriceSubscription()
-        makeBlockNumberSubscription()
-        makePositionsSubscription()
-    }
-
-    func estimateFee(for operation: SubtensorOperation) {
-        feeCallStore.cancel()
-
-        feeDebouncer.debounce { [weak self] in
-            guard let self else {
-                return
-            }
-
-            let wrapper = submissionOperationFactory.createFeeWrapper(for: operation)
-
+    func startPendingEstimates() {
+        if let operation = pendingFeeOperation {
             executeCancellable(
-                wrapper: wrapper,
+                wrapper: submissionOperationFactory.createFeeWrapper(for: operation),
                 inOperationQueue: operationQueue,
                 backingCallIn: feeCallStore,
                 runningCallbackIn: .main
@@ -161,24 +146,52 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
                 }
             }
         }
+
+        if let operation = pendingShieldQuoteOperation {
+            executeCancellable(
+                wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
+                inOperationQueue: operationQueue,
+                backingCallIn: shieldQuoteCallStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(quote):
+                    self?.basePresenter?.didReceiveShieldQuote(quote)
+                case let .failure(error):
+                    self?.logger.warning("Shield quote unavailable: \(error)")
+                    self?.basePresenter?.didReceiveShieldQuote(nil)
+                }
+            }
+        }
+
+        pendingFeeOperation = nil
+        pendingShieldQuoteOperation = nil
+    }
+}
+
+extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
+    func setup() {
+        makeAssetBalanceSubscription()
+        makePriceSubscription()
+        makeBlockNumberSubscription()
+        makePositionsSubscription()
+    }
+
+    func estimateFee(for operation: SubtensorOperation) {
+        feeCallStore.cancel()
+        pendingFeeOperation = operation
+
+        feeDebouncer.debounce { [weak self] in
+            self?.startPendingEstimates()
+        }
     }
 
     func estimateShieldQuote(for operation: SubtensorOperation) {
         shieldQuoteCallStore.cancel()
+        pendingShieldQuoteOperation = operation
 
-        executeCancellable(
-            wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
-            inOperationQueue: operationQueue,
-            backingCallIn: shieldQuoteCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(quote):
-                self?.basePresenter?.didReceiveShieldQuote(quote)
-            case let .failure(error):
-                self?.logger.warning("Shield quote unavailable: \(error)")
-                self?.basePresenter?.didReceiveShieldQuote(nil)
-            }
+        feeDebouncer.debounce { [weak self] in
+            self?.startPendingEstimates()
         }
     }
 
