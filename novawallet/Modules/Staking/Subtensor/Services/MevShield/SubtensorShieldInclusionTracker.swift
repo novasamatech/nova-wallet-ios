@@ -5,12 +5,10 @@ import BigInt
 
 enum SubtensorShieldBlockRange {
     case fromCarrierBlock(BlockHash)
-    case carrierEraFrom(BlockNumber)
+    case innerEra(birth: BlockNumber)
 }
 
 protocol SubtensorShieldInclusionTrackingProtocol {
-    func createFinalizedNumberWrapper() -> CompoundOperationWrapper<BlockNumber>
-
     func createInnerStatusWrapper(
         for innerHash: ExtrinsicHash,
         in range: SubtensorShieldBlockRange,
@@ -94,35 +92,15 @@ private extension SubtensorShieldInclusionTracker {
             startOperation.addDependency(headerWrapper.targetOperation)
 
             return headerWrapper.insertingTail(operation: startOperation)
-        case let .carrierEraFrom(blockNumber):
+        case let .innerEra(birth):
             return .createWithResult(
-                SearchStart(blockNumber: blockNumber, blockHash: nil, deadline: blockNumber + eraPeriod)
+                SearchStart(blockNumber: birth, blockHash: nil, deadline: birth + eraPeriod)
             )
         }
     }
 }
 
 extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProtocol {
-    func createFinalizedNumberWrapper() -> CompoundOperationWrapper<BlockNumber> {
-        let hashOperation = JSONRPCListOperation<String>(engine: connection, method: RPCMethod.getFinalizedBlockHash)
-
-        let headerWrapper = createHeaderWrapper {
-            try hashOperation.extractNoCancellableResultData()
-        }
-
-        headerWrapper.addDependency(operations: [hashOperation])
-
-        let numberOperation = ClosureOperation<BlockNumber> {
-            try Self.blockNumber(of: headerWrapper.targetOperation.extractNoCancellableResultData())
-        }
-
-        numberOperation.addDependency(headerWrapper.targetOperation)
-
-        return headerWrapper
-            .insertingHead(operations: [hashOperation])
-            .insertingTail(operation: numberOperation)
-    }
-
     func createInnerStatusWrapper(
         for innerHash: ExtrinsicHash,
         in range: SubtensorShieldBlockRange,

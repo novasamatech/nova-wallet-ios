@@ -65,19 +65,12 @@ final class SubtensorShieldSubmissionFactory {
 
 private extension SubtensorShieldSubmissionFactory {
     func createWatchWrapper(
-        carrierWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>,
-        eraStartWrapper: CompoundOperationWrapper<BlockNumber>
+        carrierWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>
     ) -> CompoundOperationWrapper<SubtensorShieldCarrierWatchResult> {
         OperationCombiningService<SubtensorShieldCarrierWatchResult>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             let carrier = try carrierWrapper.targetOperation.extractNoCancellableResultData()
-
-            do {
-                _ = try eraStartWrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                throw SubtensorShieldError.carrierNotSent(error)
-            }
 
             let watchOperation = self.carrierWatch.createWatchOperation(for: try Data(hexString: carrier.extrinsic))
 
@@ -136,12 +129,11 @@ private extension SubtensorShieldSubmissionFactory {
     func createScannedResolutionWrapper(
         for sealedInner: SubtensorSealedInner,
         carrier: ExtrinsicBuiltModel,
-        eraStart: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
         let statusWrapper = inclusionTracker.createInnerStatusWrapper(
             for: sealedInner.extrinsicHash,
-            in: .carrierEraFrom(eraStart),
+            in: .innerEra(birth: sealedInner.era.blockNumber),
             matchingEvents: matchingEvents
         )
 
@@ -188,7 +180,6 @@ private extension SubtensorShieldSubmissionFactory {
         for sealedInner: SubtensorSealedInner,
         carrier: ExtrinsicBuiltModel,
         rejection: Error,
-        eraStart: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
         let nonceWrapper = extrinsicFactory.createNonceWrapper()
@@ -205,7 +196,6 @@ private extension SubtensorShieldSubmissionFactory {
             return self.createScannedResolutionWrapper(
                 for: sealedInner,
                 carrier: carrier,
-                eraStart: eraStart,
                 matchingEvents: matchingEvents
             )
         }
@@ -305,11 +295,8 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
 
         carrierWrapper.addDependency(wrapper: sealedWrapper)
 
-        let eraStartWrapper = inclusionTracker.createFinalizedNumberWrapper()
-        eraStartWrapper.addDependency(wrapper: carrierWrapper)
-
-        let watchWrapper = createWatchWrapper(carrierWrapper: carrierWrapper, eraStartWrapper: eraStartWrapper)
-        watchWrapper.addDependency(wrapper: eraStartWrapper)
+        let watchWrapper = createWatchWrapper(carrierWrapper: carrierWrapper)
+        watchWrapper.addDependency(wrapper: carrierWrapper)
 
         let resolutionWrapper = OperationCombiningService<SubtensorShieldedSubmission>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -317,7 +304,6 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
             let sealedInner = try sealedWrapper.targetOperation.extractNoCancellableResultData()
             let carrier = try carrierWrapper.targetOperation.extractNoCancellableResultData()
             let watchResult = try watchWrapper.targetOperation.extractNoCancellableResultData()
-            let eraStart = try eraStartWrapper.targetOperation.extractNoCancellableResultData()
 
             switch watchResult {
             case let .included(blockHash):
@@ -332,14 +318,12 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
                     for: sealedInner,
                     carrier: carrier,
                     rejection: error,
-                    eraStart: eraStart,
                     matchingEvents: matchingEvents
                 )
             case .lost:
                 return self.createScannedResolutionWrapper(
                     for: sealedInner,
                     carrier: carrier,
-                    eraStart: eraStart,
                     matchingEvents: matchingEvents
                 )
             }
@@ -348,7 +332,7 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         resolutionWrapper.addDependency(wrapper: watchWrapper)
 
         let headOperations = sealedWrapper.allOperations + carrierWrapper.allOperations +
-            eraStartWrapper.allOperations + watchWrapper.allOperations
+            watchWrapper.allOperations
 
         return resolutionWrapper.insertingHead(operations: headOperations)
     }

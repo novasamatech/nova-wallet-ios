@@ -67,12 +67,23 @@ extension SubtensorShieldExtrinsicFactory {
         }
     }
 
-    func createOperationFactory(nonce: UInt32) -> ExtrinsicOperationFactoryProtocol {
+    func createOperationFactory(
+        nonce: UInt32,
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = FixedMortalEraOperationFactory(
+            period: SubtensorShieldConstants.eraPeriod
+        )
+    ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicServiceFactory.createOperationFactory(
             account: account,
             chain: chain,
             nonceOperationFactory: PresetNonceOperationFactory(nonce: nonce),
-            eraOperationFactory: FixedMortalEraOperationFactory(period: SubtensorShieldConstants.eraPeriod)
+            eraOperationFactory: eraOperationFactory
+        )
+    }
+
+    func createEraWrapper() -> CompoundOperationWrapper<ExtrinsicEraParameters> {
+        FixedMortalEraOperationFactory(period: SubtensorShieldConstants.eraPeriod).createParametersWrapper(
+            from: connection
         )
     }
 
@@ -137,11 +148,13 @@ private extension SubtensorShieldExtrinsicFactory {
 
     func createSealOperation(
         nonceWrapper: CompoundOperationWrapper<UInt32>,
+        eraWrapper: CompoundOperationWrapper<ExtrinsicEraParameters>,
         innerWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>,
         keyWrapper: CompoundOperationWrapper<Data?>
     ) -> BaseOperation<SubtensorSealedInner> {
         ClosureOperation { [sealer] in
             let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+            let era = try eraWrapper.targetOperation.extractNoCancellableResultData()
             let inner = try Data(hexString: innerWrapper.targetOperation.extractNoCancellableResultData().extrinsic)
 
             guard let key = try keyWrapper.targetOperation.extractNoCancellableResultData() else {
@@ -157,6 +170,7 @@ private extension SubtensorShieldExtrinsicFactory {
 
             return SubtensorSealedInner(
                 carrierNonce: nonce,
+                era: era,
                 extrinsic: inner,
                 extrinsicHash: try inner.blake2b32().toHex(includePrefix: true),
                 ciphertext: ciphertext
@@ -196,13 +210,18 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<SubtensorSealedInner> {
         let nonceWrapper = createNonceWrapper()
+        let eraWrapper = createEraWrapper()
 
         let innerWrapper = OperationCombiningService<ExtrinsicBuiltModel>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+            let era = try eraWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.createOperationFactory(nonce: nonce + 1).buildExtrinsic(
+            return self.createOperationFactory(
+                nonce: nonce + 1,
+                eraOperationFactory: PresetEraOperationFactory(parameters: era)
+            ).buildExtrinsic(
                 Self.shieldedClosure(innerClosure),
                 signer: signer,
                 payingFeeIn: nil
@@ -210,6 +229,7 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
         }
 
         innerWrapper.addDependency(wrapper: nonceWrapper)
+        innerWrapper.addDependency(wrapper: eraWrapper)
 
         let keyWrapper = keyOperationFactory.createNextKeyWrapper()
 
@@ -217,14 +237,17 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
 
         let sealOperation = createSealOperation(
             nonceWrapper: nonceWrapper,
+            eraWrapper: eraWrapper,
             innerWrapper: innerWrapper,
             keyWrapper: keyWrapper
         )
 
         sealOperation.addDependency(keyWrapper.targetOperation)
 
+        let headOperations = nonceWrapper.allOperations + eraWrapper.allOperations + innerWrapper.allOperations
+
         return keyWrapper
-            .insertingHead(operations: nonceWrapper.allOperations + innerWrapper.allOperations)
+            .insertingHead(operations: headOperations)
             .insertingTail(operation: sealOperation)
     }
 
@@ -232,7 +255,10 @@ extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtoc
         for sealedInner: SubtensorSealedInner,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<ExtrinsicBuiltModel> {
-        createOperationFactory(nonce: sealedInner.carrierNonce).buildExtrinsic(
+        createOperationFactory(
+            nonce: sealedInner.carrierNonce,
+            eraOperationFactory: PresetEraOperationFactory(parameters: sealedInner.era)
+        ).buildExtrinsic(
             Self.carrierClosure(ciphertext: sealedInner.ciphertext),
             signer: signer,
             payingFeeIn: nil

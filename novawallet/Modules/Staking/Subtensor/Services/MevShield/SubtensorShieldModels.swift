@@ -25,6 +25,7 @@ struct SubtensorShieldQuote {
 
 struct SubtensorSealedInner {
     let carrierNonce: UInt32
+    let era: ExtrinsicEraParameters
     let extrinsic: Data
     let extrinsicHash: ExtrinsicHash
     let ciphertext: Data
@@ -39,6 +40,5 @@ enum SubtensorShieldedSubmission {
 enum SubtensorShieldError: Error {
     case keyUnavailable
     case ciphertextTooLong(Int)
-    case carrierNotSent(Error)
     case carrierRejected(Error)
 }
