@@ -2361,3 +2361,7 @@
 "staking.subtensor.v22.validators" = "ДОСТУПНЫЕ ВАЛИДАТОРЫ";
 "staking.subtensor.v22.validators.count" = "Валидаторы";
 "staking.subtensor.v22.website" = "Веб-сайт";
+"staking.subtensor.ui.confirm.full.exit" = "Полный выход";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Одна транзакция охватывает до %@ валидаторов. Повторите для остальных.";
+"staking.subtensor.ui.validator.all" = "Все валидаторы";
+"staking.subtensor.ui.validator.new" = "Новый валидатор";

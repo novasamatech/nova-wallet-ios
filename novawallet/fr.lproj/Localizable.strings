@@ -2361,3 +2361,7 @@
 "staking.subtensor.v22.validators" = "VALIDATEURS DISPONIBLES";
 "staking.subtensor.v22.validators.count" = "Validateurs";
 "staking.subtensor.v22.website" = "Site web";
+"staking.subtensor.ui.confirm.full.exit" = "Sortie complète";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Une transaction couvre jusqu’à %@ validateurs. Répétez l’opération pour le reste.";
+"staking.subtensor.ui.validator.all" = "Tous les validateurs";
+"staking.subtensor.ui.validator.new" = "Nouveau validateur";
