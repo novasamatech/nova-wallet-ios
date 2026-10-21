@@ -52,6 +52,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
         }
 
         refreshQuote()
+        retryUnresolvedShieldQuote()
     }
 
     func didReceivePreflight(_ preflight: SubtensorPreflight) {

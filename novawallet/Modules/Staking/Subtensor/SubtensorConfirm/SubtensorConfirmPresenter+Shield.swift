@@ -33,4 +33,12 @@ extension SubtensorConfirmPresenter {
 
         provideViewModel()
     }
+
+    func retryUnresolvedShieldQuote() {
+        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
+            return
+        }
+
+        interactor.estimateShieldQuote(for: shieldQuoteOperation)
+    }
 }
