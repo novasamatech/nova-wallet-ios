@@ -5,8 +5,6 @@ struct SubtensorCostBasisLedger {
     static let atomicScale = 9
     static let priceTolerance = BigRational(numerator: 3, denominator: 2)
     static let nonTradeLabelWords: Set<String> = ["move", "moved", "transfer", "transferred"]
-    static let purchaseLabelWords: Set<String> = ["add", "added", "buy", "bought"]
-    static let saleLabelWords: Set<String> = ["remove", "removed", "unstake", "sell", "sold"]
 
     private let openPositions: [UInt16: SubtensorPurchaseTotals]
     private let unclassifiedNetuids: Set<UInt16>
@@ -18,7 +16,7 @@ struct SubtensorCostBasisLedger {
         var countedOperations: Set<BittensorApi.Operation> = []
 
         for operation in operations.reversed() {
-            guard operation.sourceEventId.isEmpty || countedOperations.insert(operation).inserted else {
+            guard countedOperations.insert(operation).inserted else {
                 continue
             }
 
@@ -64,6 +62,11 @@ struct SubtensorCostBasisLedger {
 }
 
 private extension SubtensorCostBasisLedger {
+    enum TradeEvent: String {
+        case stakeAdded = "StakeAdded"
+        case stakeRemoved = "StakeRemoved"
+    }
+
     enum Classification {
         case purchase(paidTao: BigUInt, receivedAlpha: BigUInt)
         case sale(soldAlpha: BigUInt)
@@ -72,38 +75,33 @@ private extension SubtensorCostBasisLedger {
     }
 
     static func classify(_ operation: BittensorApi.Operation) -> Classification {
-        let labelWords = words(in: operation.sourceOperationType)
-
         guard
             operation.netuid != SubtensorPallet.rootNetuid,
-            labelWords.isDisjoint(with: nonTradeLabelWords) else {
+            let event = TradeEvent(rawValue: operation.sourceEventId),
+            words(in: operation.sourceOperationType).isDisjoint(with: nonTradeLabelWords) else {
             return .ignored
         }
 
         guard
-            let amountIn = atomicMagnitude(of: operation.reportedAmountIn),
-            let amountOut = atomicMagnitude(of: operation.reportedAmountOut),
+            let tao = atomicMagnitude(of: operation.reportedAmountIn),
+            let alpha = atomicMagnitude(of: operation.reportedAmountOut),
             let price = magnitude(of: operation.reportedPrice) else {
             return .unclassified
         }
 
-        guard amountIn > 0, amountOut > 0, price.numerator > 0 else {
+        guard tao > 0, alpha > 0, price.numerator > 0 else {
             return .ignored
         }
 
-        let fitsPurchase = fits(tao: amountIn, alpha: amountOut, price: price)
-        let fitsSale = fits(tao: amountOut, alpha: amountIn, price: price)
-
-        let isPurchase = fitsPurchase && (!fitsSale || !labelWords.isDisjoint(with: purchaseLabelWords))
-        let isSale = fitsSale && (!fitsPurchase || !labelWords.isDisjoint(with: saleLabelWords))
-
-        switch (isPurchase, isSale) {
-        case (true, false):
-            return .purchase(paidTao: amountIn, receivedAlpha: amountOut)
-        case (false, true):
-            return .sale(soldAlpha: amountIn)
-        default:
+        guard fits(tao: tao, alpha: alpha, price: price) else {
             return .unclassified
+        }
+
+        switch event {
+        case .stakeAdded:
+            return .purchase(paidTao: tao, receivedAlpha: alpha)
+        case .stakeRemoved:
+            return .sale(soldAlpha: alpha)
         }
     }
 
