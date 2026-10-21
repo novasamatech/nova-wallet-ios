@@ -41,17 +41,17 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         let held = heldHotkeys
         let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
         let hasAllAction = hotkeys.filter { !held.contains($0) }.count > 1
+        let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
 
         let content = CollatorStakingTargetPickerContent(
-            title: viewModelFactory.createPickerTitle(),
-            viewModels: viewModelFactory.createPickerViewModels(
+            title: pickerFactory.createTitle(),
+            viewModels: pickerFactory.createViewModels(
                 for: group.positions,
                 names: names,
                 disabled: held,
-                netuid: netuid,
-                catalogue: catalogue
+                displayInfo: inputDisplayInfo
             ),
-            action: hasAllAction ? viewModelFactory.createAllValidatorsAction() : nil,
+            action: hasAllAction ? pickerFactory.createAllValidatorsAction() : nil,
             selectedIndex: currentSelection?.hotkey.flatMap { hotkeys.firstIndex(of: $0) } ?? NSNotFound
         )
 

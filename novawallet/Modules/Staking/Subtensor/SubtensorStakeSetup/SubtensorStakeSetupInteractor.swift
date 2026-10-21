@@ -20,12 +20,14 @@ final class SubtensorStakeSetupInteractor: SubtensorBaseInteractor {
     let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
 
     private let quickPickCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
     private let subnetCallStore = CancellableCallStore()
+    private let heldValidatorsCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -39,6 +41,7 @@ final class SubtensorStakeSetupInteractor: SubtensorBaseInteractor {
         maxApyOperationFactory = state.earnServices.maxApyOperationFactory
         subnetsOperationFactory = state.subnetsOperationFactory
         earnSettings = state.earnServices.earnSettings
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
         self.blockTimeOperationFactory = blockTimeOperationFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
@@ -50,6 +53,7 @@ final class SubtensorStakeSetupInteractor: SubtensorBaseInteractor {
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
         subnetCallStore.cancel()
+        heldValidatorsCallStore.cancel()
     }
 }
 
@@ -173,6 +177,25 @@ extension SubtensorStakeSetupInteractor: SubtensorStakeSetupInteractorInputProto
         let wrapper = presetOperationFactory.createLockedWrapper(for: hotkey, subnet: subnet)
 
         provideValidator(using: wrapper, subnet: subnet)
+    }
+
+    func loadHeldValidators(_ hotkeys: [AccountId], on subnet: SubtensorSubnetRef) {
+        heldValidatorsCallStore.cancel()
+
+        executeCancellable(
+            wrapper: directoryOperationFactory.createListedDetailsWrapper(for: hotkeys, subnet: subnet),
+            inOperationQueue: operationQueue,
+            backingCallIn: heldValidatorsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(validators):
+                self?.presenter?.didReceiveHeldValidators(validators, hotkeys: hotkeys)
+            case let .failure(error):
+                self?.logger.warning("Subtensor held validators unavailable: \(error)")
+                self?.presenter?.didFailHeldValidators(for: hotkeys)
+            }
+        }
     }
 
     func loadSubnet(netuid: UInt16) {
