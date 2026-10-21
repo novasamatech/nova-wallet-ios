@@ -235,7 +235,7 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: request.validator.name,
+            validator: request.operation.hotkeyCount > 1 ? nil : request.validator.name,
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )

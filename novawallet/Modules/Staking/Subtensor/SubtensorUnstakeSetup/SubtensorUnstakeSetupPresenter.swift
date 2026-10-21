@@ -92,27 +92,22 @@ private extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func floorAlpha() -> Balance {
-        guard let minStake = preflight?.minStake else {
-            return 0
+    func unstakeFloors() -> SubtensorUnstakeFloors {
+        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
+            return .none
         }
 
-        guard !isRoot else {
-            return SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: minStake,
-                price: SubtensorPallet.alphaPriceScale,
+        return SubtensorUnstakeFloors(
+            yield: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.minStake,
+                price: price,
+                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+            ),
+            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.effectiveNominatorMinStake,
+                price: price,
                 feeRate: 0
             )
-        }
-
-        guard let limitPrice = currentLimitPrice() else {
-            return 0
-        }
-
-        return SubtensorGroupUnstakeBasis.floorAlpha(
-            minTao: minStake,
-            price: limitPrice,
-            feeRate: latestQuote?.quote.feeRate ?? 0
         )
     }
 
@@ -147,7 +142,8 @@ extension SubtensorUnstakeSetupPresenter {
                 from: group,
                 selection: currentSelection,
                 excluding: heldHotkeys,
-                groupHotkeys: groupHotkeys ?? [:]
+                groupHotkeys: groupHotkeys ?? [:],
+                coldkey: selectedAccount.chainAccount.accountId
             )
         }
 
@@ -159,7 +155,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var maxAmount: Balance? {
-        basis?.max(floor: floorAlpha())
+        basis?.max(floor: unstakeFloors().yield)
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
@@ -198,7 +194,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func plan(for amount: Balance) -> SubtensorUnstakePlan? {
-        basis?.plan(for: amount, floor: floorAlpha())
+        basis?.plan(for: amount, floors: unstakeFloors())
     }
 
     func feePlan() -> SubtensorUnstakePlan? {

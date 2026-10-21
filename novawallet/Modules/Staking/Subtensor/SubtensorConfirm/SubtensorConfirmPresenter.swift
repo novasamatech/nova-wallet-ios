@@ -273,7 +273,7 @@ extension SubtensorConfirmPresenter {
             validator: model.validator,
             estimatedNetworkFee: fee,
             stakeBefore: group?.totalAlpha ?? 0,
-            groupHotkeyCount: group?.positions.count ?? 0,
+            groupHotkeyCount: hotkeyCountAfterOperation(in: group),
             emptiesPosition: emptiesPosition(verified.operation, group: group),
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
             costBasis: tracksCostBasis ? costBasis : nil,

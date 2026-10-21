@@ -33,6 +33,16 @@ extension SubtensorConfirmPresenter {
         return SubtensorConfirmStakeChange(before: before, after: before + amount)
     }
 
+    func hotkeyCountAfterOperation(in group: SubtensorPortfolioGroup?) -> Int {
+        let hotkeys = Set(group?.positions.map(\.hotkey) ?? [])
+
+        guard case .stake = model.mode else {
+            return hotkeys.count
+        }
+
+        return hotkeys.union([model.validator.hotkey]).count
+    }
+
     func confirmStake(amount: Balance) {
         var dependencies = SubtensorStakeValidatingDependencies(
             amount: amount,

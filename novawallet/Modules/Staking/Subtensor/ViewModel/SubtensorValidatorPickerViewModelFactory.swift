@@ -49,7 +49,7 @@ struct SubtensorValidatorPickerViewModelFactory {
     func createAllValidatorsAction() -> LocalizableResource<IconWithTitleViewModel> {
         LocalizableResource { locale in
             IconWithTitleViewModel(
-                icon: R.image.iconValidators()?.tinted(with: R.color.colorIconAccent()!),
+                icon: nil,
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorAll()
             )
         }
