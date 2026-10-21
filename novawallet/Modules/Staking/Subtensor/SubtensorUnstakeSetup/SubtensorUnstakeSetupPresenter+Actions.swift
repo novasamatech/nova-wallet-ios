@@ -352,13 +352,31 @@ extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
 
     private func presentHold(for hotkey: AccountId) {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-        let interval = TimeInterval(holds?[hotkey]?.interval ?? 0)
-        let duration = blockTime.map {
-            (interval * $0.timeInterval).localizedDaysHoursOrFallbackMinutes(for: selectedLocale)
-        } ?? ""
+        let locale = selectedLocale
+
+        let message = holds?[hotkey].flatMap { hold in
+            blockTime.map { blockTime in
+                let interval = SubtensorRootHold.formatDuration(
+                    blocks: hold.interval,
+                    blockTime: blockTime,
+                    locale: locale
+                )
+                let timeLeft = currentBlock.map { block in
+                    strings.commonTimeLeftFormat(SubtensorRootHold.formatDuration(
+                        blocks: hold.remainingBlocks(at: UInt64(block)),
+                        blockTime: blockTime,
+                        locale: locale
+                    ))
+                }
+
+                return [strings.stakingSubtensorUiPositionHoldMessageFormat(interval), timeLeft]
+                    .compactMap { $0 }
+                    .joined(separator: "\n")
+            }
+        }
 
         wireframe.present(
-            message: strings.stakingSubtensorUiPositionHoldMessageFormat(duration),
+            message: message,
             title: strings.stakingSubtensorUiPositionHoldTitle(),
             closeAction: strings.commonClose(),
             from: view
