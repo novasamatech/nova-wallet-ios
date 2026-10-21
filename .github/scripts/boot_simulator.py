@@ -36,28 +36,27 @@ def existing_device(runtime_identifier, name):
     return next((device["udid"] for device in devices if device["name"] == name), None)
 
 
-def available_runtime():
+def available_device(name):
     deadline = time.monotonic() + TIMEOUT_SECONDS
+    runtime = None
     while True:
         try:
             runtime = latest_ios_runtime()
+            udid = existing_device(runtime["identifier"], name) if runtime is not None else None
         except subprocess.CalledProcessError as error:
             print(f"simctl is not ready: {error.stderr.strip()}", file=sys.stderr)
-            runtime = None
-        if runtime is not None:
-            return runtime
+            udid = None
+        if udid is not None:
+            return runtime, udid
         if time.monotonic() >= deadline:
-            sys.exit(f"No available iOS simulator runtime after {TIMEOUT_SECONDS} seconds")
+            runtime_name = runtime["name"] if runtime is not None else "no iOS runtime"
+            sys.exit(f"No available {name} simulator on {runtime_name} after {TIMEOUT_SECONDS} seconds")
         time.sleep(POLL_INTERVAL_SECONDS)
 
 
 def main():
     name = sys.argv[1]
-    runtime = available_runtime()
-    identifier = runtime["identifier"]
-    udid = existing_device(identifier, name)
-    if udid is None:
-        sys.exit(f"No available {name} simulator on {runtime['name']} ({identifier})")
+    runtime, udid = available_device(name)
     print(f"Booting {name} ({udid}) on {runtime['name']}", file=sys.stderr)
     subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], check=True, stdout=sys.stderr)
     print(udid)
