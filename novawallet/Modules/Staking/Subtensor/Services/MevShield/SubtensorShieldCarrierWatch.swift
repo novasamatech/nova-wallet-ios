@@ -22,7 +22,7 @@ final class SubtensorShieldCarrierWatch {
 
 private extension SubtensorShieldCarrierWatch {
     enum Constants {
-        static let definitiveRejectionCodes: Set<Int> = [1010, 1011]
+        static let definitiveRejectionCodes: Set<Int> = [1010, 1011, 1012, 1013, 1014, 1016]
     }
 
     static func isDefinitiveRejection(_ error: Error) -> Bool {
