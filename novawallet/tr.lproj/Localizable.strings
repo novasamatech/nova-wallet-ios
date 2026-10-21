@@ -1784,15 +1784,7 @@
 "chart.period.year" = "Geçen Yıl";
 "chart.period.max" = "Tüm Zamanlar";
 "common.pay" = "Öde";
-"common.card.issued" = "Kart verildi";
-"card.top.up.dot.setup.title" = "Kartı DOT ile doldur";
-"common.manage.debit.card" = "Banka Kartını Yönet";
 "common.estimated.timer" = "Tahmini ~%@";
-"card.open.pending.sheet.title" = "Kartınız veriliyor!";
-"card.open.pending.sheet.message" = "Bu işlem %@ kadar sürebilir.\nBu pencere otomatik olarak kapatılacaktır.";
-"card.open.failed.alert.title" = "Destek ile iletişime geçin";
-"card.open.failed.alert.message" = "Lütfen support@novawallet.io ile iletişime geçin. Kartınızı almak için kullandığınız e-posta adresini belirtin.";
-"card.topup.pending.sheet.title" = "Kartınız finanse ediliyor!";
 "staking.restake.message" = "Ödülleriniz staking hesabınıza eklenecektir";
 "unified.address.popup.title" = "Yeni Birleştirilmiş Adres";
 "unified.address.popup.subtitle" = "Bazı borsalar işlemler için hala eski formatı\ngüncelleme yaparken kullanmanızı isteyebilir.";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "Geçersiz arama verisi";
 "enter.call.data" = "Arama verisini girin";
 "multisig.wallet.details.threshold" = "Eşik %li / %li";
-"feature.unsupported.sheet.message.card" = "Debit Kartınızı yönetmek için lütfen farklı bir cüzdan türüne geçin.";
 "feature.unsupported.sheet.message.sell" = "Kriptoyu fiat ile satmak için lütfen farklı bir cüzdan türüne geçin.";
 "multisig.operation.status.created" = "Sizin tarafınızdan oluşturuldu";
 "multisig.operation.signing.progress.format" = "İmzalanıyor (%li / %li)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@, bu işlem ücretini ödemek ve minimum ağ bakiyesinin üzerinde kalmak için en az %@ ihtiyaç duyar. Bakiyenize %@ daha eklemeniz gerekiyor.";
 "multisig.validation.insuffisient.balance.message" = "%@, %@ ağ ücretini ödemek ve %@ çoklu imza depozitosunu yatırmak için yeterli bakiyeye sahip değil. Bakiyenize %@ daha eklemeniz gerekiyor.";
 "feature.unsupported.sheet.title.sell" = "%@ cüzdanları için Satış desteklenmiyor";
-"feature.unsupported.sheet.title.card" = "Banka Kartı, %@ cüzdanları için desteklenmiyor";
 "multisig.transaction.created.sheet.message" = "Diğer imza yetkilileri şimdi işlemi onaylayabilir. Durumunu %@ içinde takip edebilirsiniz.";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova, bekleyen işlemleri görebilmeniz için otomatik olarak çoklu imza cüzdanınıza geçti.";
 "multisig.other.signatories" = "Diğer imza yetkilileri";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "Bu arama verisi, çağrı hash %@ ile başka bir işlem için";
 "call.data.validation.error.message" = "Sağladığınız çağrı verileri geçersiz veya yanlış formatta. Lütfen doğru olduğundan emin olun ve tekrar deneyin.";
 "feature.unsupported.sheet.title.sell.proxied" = "Bu Vekil cüzdan için Satış desteklenmiyor";
-"feature.unsupported.sheet.title.card.proxied" = "Bu Vekil cüzdan için Banka Kartı desteklenmiyor";
 "feature.unsupported.sheet.message.sell.proxied" = "Kriptoyu itibari para ile satmak için lütfen farklı bir cüzdana geçin.";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "Nova’da Trust Wallet hesaplarınızı kullanın";

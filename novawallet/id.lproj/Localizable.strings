@@ -1784,15 +1784,7 @@
 "chart.period.year" = "Tahun Lalu";
 "chart.period.max" = "Sepanjang Masa";
 "common.pay" = "Bayar";
-"common.card.issued" = "Kartu diterbitkan";
-"card.top.up.dot.setup.title" = "Isi ulang kartu dengan DOT";
-"common.manage.debit.card" = "Kelola Kartu Debit";
 "common.estimated.timer" = "Perkiraan ~%@";
-"card.open.pending.sheet.title" = "Kartu Anda sedang diterbitkan!";
-"card.open.pending.sheet.message" = "Ini dapat memakan waktu hingga %@.\nJendela ini akan ditutup secara otomatis.";
-"card.open.failed.alert.title" = "Hubungi dukungan";
-"card.open.failed.alert.message" = "Silakan hubungi support@novawallet.io. Sertakan alamat email yang Anda gunakan untuk menerbitkan kartu.";
-"card.topup.pending.sheet.title" = "Kartu Anda sedang dibiayai!";
 "staking.restake.message" = "Rewards Anda akan ditambahkan ke staking Anda";
 "unified.address.popup.title" = "Alamat Baru Terpadu";
 "unified.address.popup.subtitle" = "Beberapa pertukaran mungkin masih memerlukan format warisan\nuntuk operasi saat mereka memperbarui.";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "Data pemanggilan tidak valid";
 "enter.call.data" = "Masukkan data pemanggilan";
 "multisig.wallet.details.threshold" = "Ambang batas %li dari %li";
-"feature.unsupported.sheet.message.card" = "Untuk mengelola Kartu Debit Anda, silakan beralih ke jenis dompet yang berbeda.";
 "feature.unsupported.sheet.message.sell" = "Untuk menjual crypto untuk fiat, silakan beralih ke jenis dompet yang berbeda.";
 "multisig.operation.status.created" = "Dibuat oleh Anda";
 "multisig.operation.signing.progress.format" = "Menandatangani (%li dari %li)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@ memerlukan setidaknya %@ untuk membayar biaya transaksi ini dan tetap berada di atas saldo minimum jaringan. Anda perlu menambah %@ lagi ke saldo Anda.";
 "multisig.validation.insuffisient.balance.message" = "%@ tidak memiliki saldo yang cukup untuk membayar biaya jaringan sebesar %@ dan menempatkan deposit multisig sebesar %@. Anda perlu menambah %@ lagi ke saldo Anda.";
 "feature.unsupported.sheet.title.sell" = "Jual tidak didukung untuk dompet %@";
-"feature.unsupported.sheet.title.card" = "Kartu Debit tidak didukung untuk dompet %@";
 "multisig.transaction.created.sheet.message" = "Tanda tangan lainnya sekarang dapat mengonfirmasi transaksi. Anda dapat melacak statusnya di %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova secara otomatis beralih ke dompet multisig Anda agar Anda dapat melihat transaksi yang tertunda.";
 "multisig.other.signatories" = "Penandatangan lainnya";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "Data pemanggilan ini untuk operasi lain dengan hash panggilan %@";
 "call.data.validation.error.message" = "Data panggilan yang Anda berikan tidak valid atau memiliki format yang salah. Pastikan data tersebut benar dan coba lagi.";
 "feature.unsupported.sheet.title.sell.proxied" = "Penjualan tidak didukung untuk dompet Proxied ini";
-"feature.unsupported.sheet.title.card.proxied" = "Kartu Debit tidak didukung untuk dompet Proxied ini";
 "feature.unsupported.sheet.message.sell.proxied" = "Untuk menjual kripto menjadi fiat, silakan beralih ke dompet lain.";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "Gunakan akun Trust Wallet Anda di Nova";

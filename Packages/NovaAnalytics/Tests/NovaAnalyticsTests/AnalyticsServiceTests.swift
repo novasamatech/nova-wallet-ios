@@ -34,7 +34,7 @@ final class AnalyticsServiceTests: XCTestCase {
     func testDisabledConsentSkipsTracking() {
         let service = makeService(isEnabled: false)
 
-        service.track(.novaCardOpened())
+        service.track(.featureOpened(.staking))
         operationQueue.waitUntilAllOperationsAreFinished()
 
         XCTAssertTrue(queue.events.isEmpty)
