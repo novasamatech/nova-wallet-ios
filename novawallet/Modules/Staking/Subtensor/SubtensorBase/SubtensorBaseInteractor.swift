@@ -26,9 +26,7 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
     private var priceProvider: StreamableProvider<PriceData>?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
-    private var pendingFeeOperation: SubtensorOperation?
-    private var pendingShieldQuoteOperation: SubtensorOperation?
-    private var shieldQuoteFailures = 0
+    private var pendingEstimates = SubtensorPendingEstimates()
     private let feeCallStore = CancellableCallStore()
     private let shieldQuoteCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
@@ -132,7 +130,9 @@ private extension SubtensorBaseInteractor {
     }
 
     func startPendingEstimates() {
-        if let operation = pendingFeeOperation {
+        let operations = pendingEstimates.take()
+
+        if let operation = operations.fee {
             executeCancellable(
                 wrapper: submissionOperationFactory.createFeeWrapper(for: operation),
                 inOperationQueue: operationQueue,
@@ -148,7 +148,7 @@ private extension SubtensorBaseInteractor {
             }
         }
 
-        if let operation = pendingShieldQuoteOperation {
+        if let operation = operations.shieldQuote {
             executeCancellable(
                 wrapper: submissionOperationFactory.createShieldQuoteWrapper(for: operation),
                 inOperationQueue: operationQueue,
@@ -158,21 +158,17 @@ private extension SubtensorBaseInteractor {
                 self?.deliverShieldQuote(result)
             }
         }
-
-        pendingFeeOperation = nil
-        pendingShieldQuoteOperation = nil
     }
 
     func deliverShieldQuote(_ result: Result<SubtensorShieldQuote?, Error>) {
         switch result {
         case let .success(quote):
-            shieldQuoteFailures = 0
+            pendingEstimates.didResolveShieldQuote()
             basePresenter?.didReceiveShieldQuote(quote)
         case let .failure(error):
-            shieldQuoteFailures += 1
-            logger.warning("Shield quote failed (attempt \(shieldQuoteFailures)): \(error)")
+            logger.warning("Shield quote failed: \(error)")
 
-            if shieldQuoteFailures >= SubtensorFlowConstants.shieldQuoteAttempts {
+            if pendingEstimates.didFailShieldQuote() {
                 basePresenter?.didReceiveShieldQuote(nil)
             }
         }
@@ -189,7 +185,7 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
 
     func estimateFee(for operation: SubtensorOperation) {
         feeCallStore.cancel()
-        pendingFeeOperation = operation
+        pendingEstimates.fee = operation
 
         feeDebouncer.debounce { [weak self] in
             self?.startPendingEstimates()
@@ -198,7 +194,7 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
 
     func estimateShieldQuote(for operation: SubtensorOperation) {
         shieldQuoteCallStore.cancel()
-        pendingShieldQuoteOperation = operation
+        pendingEstimates.shieldQuote = operation
 
         feeDebouncer.debounce { [weak self] in
             self?.startPendingEstimates()

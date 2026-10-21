@@ -21,6 +21,38 @@ enum SubtensorFlowConstants {
     static let shieldQuoteAttempts = 3
 }
 
+struct SubtensorPendingEstimates {
+    var fee: SubtensorOperation?
+    var shieldQuote: SubtensorOperation?
+
+    private var quotedOperation: SubtensorOperation?
+    private var shieldQuoteFailures = 0
+
+    mutating func take() -> (fee: SubtensorOperation?, shieldQuote: SubtensorOperation?) {
+        let operations = (fee: fee, shieldQuote: shieldQuote)
+
+        if let shieldQuote, shieldQuote != quotedOperation {
+            quotedOperation = shieldQuote
+            shieldQuoteFailures = 0
+        }
+
+        fee = nil
+        shieldQuote = nil
+
+        return operations
+    }
+
+    mutating func didResolveShieldQuote() {
+        shieldQuoteFailures = 0
+    }
+
+    mutating func didFailShieldQuote() -> Bool {
+        shieldQuoteFailures += 1
+
+        return shieldQuoteFailures >= SubtensorFlowConstants.shieldQuoteAttempts
+    }
+}
+
 protocol SubtensorBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for operation: SubtensorOperation)
