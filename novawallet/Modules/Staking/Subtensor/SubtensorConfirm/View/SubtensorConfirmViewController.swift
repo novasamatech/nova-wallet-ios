@@ -52,8 +52,8 @@ private extension SubtensorConfirmViewController {
         rootView.avgBuyPriceCell.titleButton.setTitle(strings.stakingSubtensorUiAvgBuyPrice())
         rootView.youWillEarnCell.titleButton.setTitle(strings.stakingSubtensorUiYouWillEarn())
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
-        rootView.shieldCell.titleLabel.text = strings.stakingSubtensorMevProtectionTitle()
-        rootView.shieldCell.subtitleLabel.text = strings.stakingSubtensorMevProtectionDetails()
+        rootView.shieldView.titleLabel.text = strings.stakingSubtensorMevProtectionTitle()
+        rootView.shieldView.subtitleLabel.text = strings.stakingSubtensorMevProtectionDetails()
 
         rootView.walletCell.titleLabel.text = strings.commonWallet()
         rootView.accountCell.titleLabel.text = strings.commonAccount()
@@ -76,7 +76,7 @@ private extension SubtensorConfirmViewController {
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.youWillEarnCell.addTarget(self, action: #selector(actionYouWillEarnInfo), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
-        rootView.shieldCell.switchControl.addTarget(self, action: #selector(actionToggleShield), for: .valueChanged)
+        rootView.shieldView.switchControl.addTarget(self, action: #selector(actionToggleShield), for: .valueChanged)
     }
 
     func bindTile(_ tileView: SwapElementView, state: LoadableViewModelState<BalanceViewModel>) {
@@ -248,8 +248,8 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
     }
 
     func didReceiveShield(isOn: Bool?) {
-        rootView.shieldTableView.isHidden = isOn == nil
-        rootView.shieldCell.switchControl.setOn(isOn ?? false, animated: false)
+        rootView.shieldView.isHidden = isOn == nil
+        rootView.shieldView.switchControl.setOn(isOn ?? false, animated: false)
     }
 
     func didStartLoading() {
