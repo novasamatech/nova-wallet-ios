@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
@@ -103,6 +104,21 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 }
 
 extension SubtensorUnstakeSetupPresenter {
+    var eligibleShieldQuote: SubtensorShieldQuote? {
+        let input = SubtensorShieldEligibilityInput(
+            walletType: selectedAccount.chainAccount.type,
+            quote: shieldQuote,
+            transferable: balance?.transferable,
+            existentialDeposit: existentialDeposit
+        )
+
+        return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
+    }
+
+    var networkFee: ExtrinsicFeeProtocol? {
+        eligibleShieldQuote?.totalFee ?? fee
+    }
+
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDependencies {
         let plan = plan(for: amount)
         let positions = Dictionary((basis?.positions ?? []).map { ($0.hotkey, $0.alpha) }) { first, _ in first }
@@ -118,7 +134,7 @@ extension SubtensorUnstakeSetupPresenter {
             groupHotkeys: groupHotkeys,
             availability: group?.availability,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             existentialDeposit: existentialDeposit,
             preflight: preflight,
             holds: holds,
@@ -179,5 +195,15 @@ extension SubtensorUnstakeSetupPresenter {
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter: Localizable {
+    func applyLocalization() {
+        if let view, view.isSetup {
+            provideAmountInputViewModel()
+            provideAssetViewModel()
+            provideViewModel()
+        }
     }
 }
