@@ -32,11 +32,7 @@ extension BannersViewController {
         pinnedBackgroundItemIndex = nil
         updateBackground()
     }
-}
 
-// MARK: Private
-
-private extension BannersViewController {
     func currentItemPosition(lastItemIndex: Int) -> CGFloat? {
         let collectionView = rootView.collectionView
         let itemWidth = collectionView.bounds.width
@@ -50,7 +46,11 @@ private extension BannersViewController {
             ? nearestItemPosition
             : position
     }
+}
 
+// MARK: Private
+
+private extension BannersViewController {
     func setBackground(
         itemIndex: Int,
         nextItemIndex: Int,
