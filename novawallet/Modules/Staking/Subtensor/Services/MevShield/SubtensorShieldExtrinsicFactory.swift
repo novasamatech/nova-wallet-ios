@@ -26,7 +26,7 @@ final class SubtensorShieldExtrinsicFactory {
     let account: ChainAccountResponse
     let chain: ChainModel
     let connection: JSONRPCEngine
-    let extrinsicServiceFactory: ExtrinsicTimingServiceFactoryProtocol
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let keyOperationFactory: MevShieldOperationFactoryProtocol
     let nonceOperationFactory: TransactionNonceOperationFactoryProtocol
     let sealer: MevShieldSealing
@@ -36,7 +36,7 @@ final class SubtensorShieldExtrinsicFactory {
         account: ChainAccountResponse,
         chain: ChainModel,
         connection: JSONRPCEngine,
-        extrinsicServiceFactory: ExtrinsicTimingServiceFactoryProtocol,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         keyOperationFactory: MevShieldOperationFactoryProtocol,
         sealer: MevShieldSealing,
         operationQueue: OperationQueue,
@@ -76,6 +76,7 @@ extension SubtensorShieldExtrinsicFactory {
         extrinsicServiceFactory.createOperationFactory(
             account: account,
             chain: chain,
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(),
             nonceOperationFactory: PresetNonceOperationFactory(nonce: nonce),
             eraOperationFactory: eraOperationFactory
         )
