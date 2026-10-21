@@ -16,7 +16,15 @@ extension SubtensorConfirmPresenter {
         isShieldOn ? eligibleShieldQuote : nil
     }
 
+    var isShieldable: Bool {
+        !model.target.isRoot && SubtensorShieldEligibility.supports(walletType: model.account.chainAccount.type)
+    }
+
     var networkFee: ExtrinsicFeeProtocol? {
+        guard isShieldable else {
+            return fee
+        }
+
         guard isShieldQuoteResolved else {
             return nil
         }
@@ -32,6 +40,16 @@ extension SubtensorConfirmPresenter {
         isShieldOn.toggle()
 
         provideViewModel()
+    }
+
+    func requestShieldQuote(for operation: SubtensorOperation) {
+        shieldQuoteOperation = operation
+
+        if isShieldable {
+            isShieldQuoteResolved = false
+        }
+
+        interactor.estimateShieldQuote(for: operation)
     }
 
     func retryUnresolvedShieldQuote() {
