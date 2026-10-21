@@ -232,7 +232,7 @@ extension SubtensorUnstakeSetupPresenter {
             return false
         }
 
-        return SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: heldHotkeys)
+        return SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: unsellableHotkeys)
     }
 
     var currentSelection: SubtensorUnstakeSelection? {

@@ -144,6 +144,7 @@ extension SubtensorUnstakeSetupPresenter {
                 selection: currentSelection,
                 excluding: heldHotkeys,
                 groupHotkeys: groupHotkeys ?? [:],
+                floor: unstakeFloors().yield,
                 coldkey: selectedAccount.chainAccount.accountId
             )
         }
