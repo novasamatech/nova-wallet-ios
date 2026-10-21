@@ -29,6 +29,8 @@ extension SubtensorStakeSetupPresenter: SubtensorSubnetSelectDelegate {
 extension SubtensorStakeSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
         if mode.isLocked, target.netuid == mode.netuid {
+            validatorItems[validator.hotkey] = validator
+
             let held = heldPositions().first { $0.hotkey == validator.hotkey }
             applyStakeMore(
                 held ?? SubtensorPosition(
@@ -86,9 +88,12 @@ extension SubtensorStakeSetupPresenter {
             return
         }
 
-        heldValidators = validators
+        validatorItems.merge(validators) { _, new in new }
         heldValidatorsResolved = hotkeys
-        presentPendingStakeMorePicker()
+
+        resolveLockedValidator()
+        refreshValidatorPicker()
+        provideViewModel()
     }
 
     func didFailHeldValidators(for hotkeys: [AccountId]) {
@@ -97,7 +102,54 @@ extension SubtensorStakeSetupPresenter {
         }
 
         heldValidatorsRequest = nil
-        presentPendingStakeMorePicker()
+        heldValidatorsResolved = nil
+
+        resolveLockedValidator()
+        provideViewModel()
+    }
+
+    func refreshValidatorPicker() {
+        guard
+            let picker = validatorPicker,
+            picker.isViewLoaded,
+            let positions = picker.context as? [SubtensorPosition] else {
+            return
+        }
+
+        picker.viewModels = createStakeMorePickerViewModels(for: positions)
+        picker.reload()
+    }
+
+    func resolveLockedValidator() {
+        guard let hotkey = mode.lockedHotkey, let subnetRef else {
+            return
+        }
+
+        if let item = validatorItems[hotkey] {
+            isLockedValidatorPending = false
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: hotkey, name: item.name))
+            return
+        }
+
+        isLockedValidatorPending = true
+
+        let isBatchPending = heldValidatorsRequest != heldValidatorsResolved &&
+            heldValidatorsRequest?.contains(hotkey) == true
+
+        guard !isBatchPending, lockedValidatorRequest != hotkey else {
+            return
+        }
+
+        lockedValidatorRequest = hotkey
+        interactor.loadLockedValidator(hotkey, on: subnetRef)
+    }
+
+    var selectedValidatorItem: SubtensorValidatorDirectoryItem? {
+        guard let hotkey = mode.lockedHotkey else {
+            return validatorItem
+        }
+
+        return validatorItems[hotkey]
     }
 
     func loadHeldValidatorsIfNeeded() {
@@ -132,48 +184,47 @@ private extension SubtensorStakeSetupPresenter {
     }
 
     func showStakeMorePicker() {
-        let hotkeys = heldPositions().map(\.hotkey)
-
-        guard !hotkeys.isEmpty, target != nil else {
+        guard target != nil else {
             return
         }
 
-        isStakeMorePickerPending = true
-
-        if heldValidatorsResolved == hotkeys {
-            presentPendingStakeMorePicker()
-        } else {
-            loadHeldValidatorsIfNeeded()
-        }
-    }
-
-    func presentPendingStakeMorePicker() {
-        guard isStakeMorePickerPending, let netuid = mode.netuid else {
-            return
-        }
-
-        isStakeMorePickerPending = false
+        loadHeldValidatorsIfNeeded()
 
         let positions = heldPositions()
         let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
-        let names = positions.reduce(into: [AccountId: String]()) { names, position in
-            names[position.hotkey] = heldValidators[position.hotkey]?.name ??
-                (validatorItem?.hotkey == position.hotkey ? validatorItem?.name : nil)
-        }
 
         let content = CollatorStakingTargetPickerContent(
             title: pickerFactory.createTitle(),
-            viewModels: pickerFactory.createViewModels(
-                for: positions,
-                names: names,
-                disabled: [],
-                displayInfo: chainAsset.assetDisplayInfo.subtensorAlpha(netuid: netuid, catalogue: catalogue)
-            ),
+            viewModels: createStakeMorePickerViewModels(for: positions),
             action: pickerFactory.createNewValidatorAction(),
-            selectedIndex: positions.firstIndex { $0.hotkey == mode.lockedHotkey } ?? NSNotFound
+            selectedIndex: positions.firstIndex { $0.hotkey == mode.lockedHotkey } ?? NSNotFound,
+            allowsActionOnly: true
         )
 
-        wireframe.showTargetSelection(from: view, content: content, delegate: self, context: positions as NSArray)
+        validatorPicker = wireframe.showTargetSelection(
+            from: view,
+            content: content,
+            delegate: self,
+            context: positions as NSArray,
+            keeping: validatorPicker
+        )
+    }
+
+    func createStakeMorePickerViewModels(for positions: [SubtensorPosition]) -> [AccountDetailsPickerViewModel] {
+        guard let netuid = mode.netuid else {
+            return []
+        }
+
+        let names = positions.reduce(into: [AccountId: String]()) { names, position in
+            names[position.hotkey] = validatorItems[position.hotkey]?.name
+        }
+
+        return SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat).createViewModels(
+            for: positions,
+            names: names,
+            disabled: [],
+            displayInfo: chainAsset.assetDisplayInfo.subtensorAlpha(netuid: netuid, catalogue: catalogue)
+        )
     }
 
     func applyStakeMore(_ position: SubtensorPosition) {
@@ -190,7 +241,15 @@ private extension SubtensorStakeSetupPresenter {
             return
         }
 
-        startMode()
+        validatorState = .selected(
+            SubtensorStakeSetupValidator(hotkey: position.hotkey, name: validatorItems[position.hotkey]?.name)
+        )
+        preflight = nil
+        quoteFlow = SubtensorQuoteFlowModel()
+        isQuoteFailed = false
+        tradesUnavailable = false
+
+        applyTargetIfReady()
     }
 }
 
@@ -222,7 +281,7 @@ extension SubtensorStakeSetupPresenter {
                 self?.refreshPreflight()
             },
             quoteContext: createQuoteContext(),
-            isValidatorInactive: validatorItem?.isInactive == true,
+            isValidatorInactive: selectedValidatorItem?.isInactive == true,
             analytics: createValidationReporter(for: target)
         )
     }

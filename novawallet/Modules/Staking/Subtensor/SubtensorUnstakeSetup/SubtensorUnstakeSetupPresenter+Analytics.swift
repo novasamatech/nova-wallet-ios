@@ -3,13 +3,11 @@ import NovaAnalytics
 
 extension SubtensorUnstakeSetupPresenter: AnalyticsTracking {
     var hasLockedStake: Bool {
-        guard let basis, let group else {
+        guard let basis else {
             return false
         }
 
-        return basis.locked > 0 ||
-            basis.positions.contains { $0.locked > 0 } ||
-            basis.positions.count < group.positions.count
+        return basis.locked > 0 || basis.positions.contains { $0.locked > 0 } || !heldHotkeys.isEmpty
     }
 
     func createValidationReporter() -> SubtensorValidationReporter {

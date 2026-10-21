@@ -37,11 +37,7 @@ final class SubtensorPickCardView: UIView {
 
     func bind(viewModel: SubtensorPickCardViewModel) {
         clipsToBounds = !viewModel.isRoot
-        validatorCell.bind(
-            validator: viewModel.validator,
-            rate: viewModel.validatorRate,
-            isEditable: viewModel.isValidatorEditable
-        )
+        validatorCell.bind(validator: viewModel.validator, rate: viewModel.validatorRate)
         browseView.bind(title: viewModel.browseTitle)
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)

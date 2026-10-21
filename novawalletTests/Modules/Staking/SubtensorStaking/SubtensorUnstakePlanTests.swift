@@ -190,6 +190,26 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floors: floors)?.slices.count, 16)
     }
 
+    func testAllValidatorsSpendTheLegCapOnDrawablePositionsOnly() {
+        let drawable = (1 ... SubtensorGroupUnstakeBasis.maxLegs).map { index in
+            SubtensorUnstakePosition(
+                hotkey: Data(repeating: UInt8(index), count: 32),
+                alpha: Balance(index) * floor,
+                locked: 0
+            )
+        }
+        let collateral = SubtensorUnstakePosition(hotkey: Data(repeating: 0xFF, count: 32), alpha: 100 * floor, locked: 0)
+        let group = makeGroup([collateral] + drawable.reversed())
+        let groupHotkeys = [collateral.hotkey: SubtensorGroupHotkeyInfo(owner: nil, collateral: collateral.alpha)]
+        let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floor: floor)
+
+        let basis = makeBasis(group, selection: .all, groupHotkeys: groupHotkeys)
+
+        XCTAssertFalse(SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: undrawable))
+        XCTAssertEqual(basis.max(floor: floor), drawable.reduce(0) { $0 + $1.alpha })
+        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floors: floors)?.slices.count, drawable.count)
+    }
+
     func testHeldValidatorIsLeftOutOfAllAndCannotStaySelected() {
         let group = makeGroup([primary, second, third])
         let held: Set<AccountId> = [primary.hotkey]
@@ -236,9 +256,16 @@ final class SubtensorUnstakePlanTests: XCTestCase {
     private func makeBasis(
         _ group: SubtensorPortfolioGroup,
         selection: SubtensorUnstakeSelection,
-        excluding held: Set<AccountId> = []
+        excluding held: Set<AccountId> = [],
+        groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo] = [:]
     ) -> SubtensorGroupUnstakeBasis {
-        SubtensorGroupUnstakeBasis.make(from: group, selection: selection, excluding: held, groupHotkeys: [:])
+        SubtensorGroupUnstakeBasis.make(
+            from: group,
+            selection: selection,
+            excluding: held,
+            groupHotkeys: groupHotkeys,
+            floor: floor
+        )
     }
 
     private func makeBasis(available: Balance = 130_000_000_000) -> SubtensorGroupUnstakeBasis {

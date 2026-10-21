@@ -188,20 +188,44 @@ extension SubtensorGroupUnstakeBasis {
         selection: SubtensorUnstakeSelection,
         excluding heldHotkeys: Set<AccountId>,
         groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo],
+        floor: Balance,
         coldkey: AccountId? = nil
     ) -> SubtensorGroupUnstakeBasis {
         let members = switch selection {
         case let .validator(hotkey):
             group.positions.filter { $0.hotkey == hotkey }
         case .all:
-            Array(group.positions.filter { !heldHotkeys.contains($0.hotkey) }.prefix(maxLegs))
+            capLegs(
+                of: group.positions.filter { !heldHotkeys.contains($0.hotkey) },
+                undrawable: undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floor: floor)
+            )
         }
 
         return make(from: group, members: members, groupHotkeys: groupHotkeys, coldkey: coldkey)
     }
 
-    static func isLegCapped(_ group: SubtensorPortfolioGroup, excluding heldHotkeys: Set<AccountId>) -> Bool {
-        group.positions.filter { !heldHotkeys.contains($0.hotkey) }.count > maxLegs
+    static func undrawableHotkeys(
+        in group: SubtensorPortfolioGroup,
+        groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?,
+        floor: Balance
+    ) -> Set<AccountId> {
+        guard let groupHotkeys else {
+            return []
+        }
+
+        let positions = make(from: group, groupHotkeys: groupHotkeys).positions
+
+        return Set(positions.filter { $0.drawable(floor: floor) == 0 }.map(\.hotkey))
+    }
+
+    static func isLegCapped(_ group: SubtensorPortfolioGroup, excluding unsellableHotkeys: Set<AccountId>) -> Bool {
+        group.positions.filter { !unsellableHotkeys.contains($0.hotkey) }.count > maxLegs
+    }
+
+    private static func capLegs(of members: [SubtensorPosition], undrawable: Set<AccountId>) -> [SubtensorPosition] {
+        let legs = Set(members.filter { !undrawable.contains($0.hotkey) }.prefix(maxLegs).map(\.hotkey))
+
+        return members.filter { legs.contains($0.hotkey) || undrawable.contains($0.hotkey) }
     }
 
     private static func make(

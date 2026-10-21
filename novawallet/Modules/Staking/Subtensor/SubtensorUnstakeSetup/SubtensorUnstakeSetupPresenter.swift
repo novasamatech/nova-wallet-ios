@@ -30,10 +30,12 @@ final class SubtensorUnstakeSetupPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
-    var validatorItem: SubtensorValidatorDirectoryItem?
     var validatorRequest: AccountId?
+    var failedValidatorRequest: AccountId?
     var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
     var validatorsRequest: [AccountId]?
+    var validatorsResolved: [AccountId]?
+    weak var validatorPicker: CollatorStakingTargetPicker?
     var selection: SubtensorUnstakeSelection?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
@@ -92,25 +94,6 @@ private extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func unstakeFloors() -> SubtensorUnstakeFloors {
-        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
-            return .none
-        }
-
-        return SubtensorUnstakeFloors(
-            yield: SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: preflight.minStake,
-                price: price,
-                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
-            ),
-            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
-                minTao: preflight.effectiveNominatorMinStake,
-                price: price,
-                feeRate: 0
-            )
-        )
-    }
-
     func feeOperation(for plan: SubtensorUnstakePlan) -> SubtensorOperation? {
         guard !isRoot else {
             return plan.rootOperation(amount: plan.amount)
@@ -136,6 +119,25 @@ extension SubtensorUnstakeSetupPresenter {
         netuid == SubtensorPallet.rootNetuid
     }
 
+    func unstakeFloors() -> SubtensorUnstakeFloors {
+        guard let preflight, let price = isRoot ? SubtensorPallet.alphaPriceScale : currentLimitPrice() else {
+            return .none
+        }
+
+        return SubtensorUnstakeFloors(
+            yield: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.minStake,
+                price: price,
+                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+            ),
+            sweep: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: preflight.effectiveNominatorMinStake,
+                price: price,
+                feeRate: 0
+            )
+        )
+    }
+
     var basis: SubtensorGroupUnstakeBasis? {
         if let group, let currentSelection {
             return SubtensorGroupUnstakeBasis.make(
@@ -143,6 +145,7 @@ extension SubtensorUnstakeSetupPresenter {
                 selection: currentSelection,
                 excluding: heldHotkeys,
                 groupHotkeys: groupHotkeys ?? [:],
+                floor: unstakeFloors().yield,
                 coldkey: selectedAccount.chainAccount.accountId
             )
         }
@@ -276,16 +279,6 @@ extension SubtensorUnstakeSetupPresenter {
         interactor.refreshPreflight(for: anchorHotkey, netuid: netuid)
     }
 
-    func loadValidatorIfNeeded() {
-        guard let anchorHotkey, anchorHotkey != validatorRequest, let subnetRef else {
-            return
-        }
-
-        validatorRequest = anchorHotkey
-        validatorItem = nil
-        interactor.loadValidator(anchorHotkey, on: subnetRef)
-    }
-
     func applyInputChange() {
         refreshFee()
         updateQuote()
@@ -355,7 +348,7 @@ extension SubtensorUnstakeSetupPresenter {
             maxAmount: maxAmount,
             amount: amount,
             validatorHotkey: anchorHotkey,
-            validatorName: validatorItem?.name,
+            validatorName: anchorHotkey.flatMap { validatorName(for: $0) },
             isValidatorSelectable: (group?.positions.count ?? 0) > 1,
             isAllValidators: currentSelection == .all,
             legCap: isLegCapped ? SubtensorGroupUnstakeBasis.maxLegs : nil,

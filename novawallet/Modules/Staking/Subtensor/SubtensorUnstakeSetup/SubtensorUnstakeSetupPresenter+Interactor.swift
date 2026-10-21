@@ -1,14 +1,17 @@
 import Foundation
 
 extension SubtensorUnstakeSetupPresenter {
-    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
-        reconcileAnchor()
+    func reloadGroupData() {
         loadValidatorsIfNeeded()
         loadGroupHotkeys()
 
         if isRoot, let group, !group.positions.isEmpty {
             interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
+    }
+
+    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
+        reconcileAnchor()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
@@ -28,18 +31,40 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func loadValidatorsIfNeeded() {
-        guard let group, group.positions.count > 1, let subnetRef else {
+        guard let group, let subnetRef else {
             return
         }
 
         let hotkeys = group.positions.map(\.hotkey)
 
-        guard hotkeys != validatorsRequest else {
+        guard !hotkeys.isEmpty, hotkeys != validatorsRequest else {
             return
         }
 
         validatorsRequest = hotkeys
         interactor.loadValidators(hotkeys, on: subnetRef)
+    }
+
+    func retryValidatorNames() {
+        failedValidatorRequest = nil
+
+        loadValidatorsIfNeeded()
+        loadValidatorIfNeeded()
+    }
+
+    func loadValidatorIfNeeded() {
+        guard
+            let anchorHotkey,
+            validatorItems[anchorHotkey] == nil,
+            anchorHotkey != validatorRequest,
+            anchorHotkey != failedValidatorRequest,
+            validatorsRequest == validatorsResolved,
+            let subnetRef else {
+            return
+        }
+
+        validatorRequest = anchorHotkey
+        interactor.loadValidator(anchorHotkey, on: subnetRef)
     }
 }
 
@@ -86,8 +111,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
-        loadValidatorIfNeeded()
         loadValidatorsIfNeeded()
+        loadValidatorIfNeeded()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
@@ -123,12 +148,14 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId) {
-        guard hotkey == anchorHotkey else {
-            return
+        if validator == nil, hotkey == validatorRequest {
+            validatorRequest = nil
+            failedValidatorRequest = hotkey
         }
 
-        validatorItem = validator
+        validatorItems[hotkey] = validator ?? validatorItems[hotkey]
 
+        refreshValidatorPicker()
         provideViewModel()
     }
 
@@ -137,7 +164,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             return
         }
 
-        validatorItems = validators
+        validatorItems.merge(validators) { _, new in new }
+        validatorsResolved = hotkeys
+
+        loadValidatorIfNeeded()
+        refreshValidatorPicker()
+        provideViewModel()
     }
 
     func didFailValidators(for hotkeys: [AccountId]) {
@@ -146,6 +178,9 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         }
 
         validatorsRequest = nil
+        validatorsResolved = nil
+
+        loadValidatorIfNeeded()
     }
 
     func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo]) {
@@ -154,6 +189,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         groupHotkeys = info
 
         applyPlanChange(from: previousPlan)
+        refreshValidatorPicker()
         provideViewModel()
     }
 
@@ -163,6 +199,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         self.holds = holds
 
         applyPlanChange(from: previousPlan)
+        refreshValidatorPicker()
         provideViewModel()
     }
 
@@ -189,11 +226,16 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
+        let previousPositions = group?.positions
         let previousBasis = basis
         let previousPlan = feePlan()
 
         positionsState = state
         group = findGroup(in: state)
+
+        if group?.positions != previousPositions {
+            reloadGroupData()
+        }
 
         if basis != previousBasis {
             applyBasisChange(from: previousPlan)

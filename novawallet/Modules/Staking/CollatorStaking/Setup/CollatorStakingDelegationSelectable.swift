@@ -6,6 +6,7 @@ struct CollatorStakingTargetPickerContent {
     let viewModels: [AccountDetailsPickerViewModel]
     let action: LocalizableResource<IconWithTitleViewModel>?
     let selectedIndex: Int
+    var allowsActionOnly = false
 }
 
 protocol CollatorStakingDelegationSelectable {
@@ -74,29 +75,32 @@ extension CollatorStakingDelegationSelectable {
         )
     }
 
+    @discardableResult
     func showTargetSelection(
         from view: ControllerBackedProtocol?,
         content: CollatorStakingTargetPickerContent,
         delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    ) {
-        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
+        context: AnyObject?,
+        keeping current: CollatorStakingTargetPicker? = nil
+    ) -> CollatorStakingTargetPicker? {
+        if let current, current.presentingViewController != nil {
+            return current
+        }
+
+        guard let picker = ModalPickerFactory.createCollatorsPickingList(
             content.viewModels,
             actionViewModel: content.action,
             selectedIndex: content.selectedIndex,
             delegate: delegate,
-            context: context
+            context: context,
+            title: content.title,
+            allowsActionOnly: content.allowsActionOnly
         ) else {
-            return
+            return nil
         }
 
-        if let title = content.title, let picker = infoVew as? ModalPickerViewController<
-            AccountDetailsGenericSelectionCell<AccountDetailsBalanceDecorator>,
-            SelectableViewModel<AccountDetailsSelectionViewModel>
-        > {
-            picker.localizedTitle = title
-        }
+        view?.controller.present(picker, animated: true, completion: nil)
 
-        view?.controller.present(infoVew, animated: true, completion: nil)
+        return picker.presentingViewController != nil ? picker : nil
     }
 }

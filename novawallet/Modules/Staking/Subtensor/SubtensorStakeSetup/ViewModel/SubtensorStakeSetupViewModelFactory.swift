@@ -171,7 +171,6 @@ extension SubtensorStakeSetupViewModelFactory {
             pickCard: isQuickPick ? SubtensorPickCardViewModel(
                 validator: compact,
                 validatorRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
-                isValidatorEditable: true,
                 browseTitle: strings.stakingSubtensorQuickSeeAll(),
                 header: SubtensorPickCardHeaderViewModel(
                     icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
