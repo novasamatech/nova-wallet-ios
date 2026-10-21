@@ -15,10 +15,10 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         let apiOperationFactory = createApiOperationFactory(pages: [
             createPage(1, nextPage: 2, rows: [
                 createOperation(netuid: chutesNetuid, amountIn: "1.25", amountOut: "-25", price: "0.05"),
-                createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "0.512", price: "0.0512"),
+                createOperation(event: "StakeRemoved", netuid: chutesNetuid, amountIn: "0.512", amountOut: "10", price: "0.0512"),
                 createOperation(netuid: 19, amountIn: "2", amountOut: "250", price: "0.008"),
                 createOperation(netuid: chutesNetuid, amountIn: "5", amountOut: "5", price: "0.05", label: " Stake Move "),
-                createOperation(netuid: chutesNetuid, amountIn: "2", amountOut: "40", price: "0.05", label: "StakeMoved")
+                createOperation(event: "StakeMoved", netuid: chutesNetuid, amountIn: "2", amountOut: "40", price: "0.05")
             ]),
             createPage(2, nextPage: nil, rows: [
                 createOperation(netuid: chutesNetuid, amountIn: "3.000000001", amountOut: "50", price: "0.06")
@@ -65,11 +65,11 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         XCTAssertEqual(costBasis, .incompleteHistory)
     }
 
-    func testLabelBreaksTieWhenPriceFitsBothSides() throws {
+    func testEventNameSetsTradeDirection() throws {
         let apiOperationFactory = createApiOperationFactory(pages: [
             createPage(1, nextPage: nil, rows: [
-                createOperation(netuid: chutesNetuid, amountIn: "4", amountOut: "4.6", price: "1.2", label: "remove_stake"),
-                createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "8", price: "1.2", label: "StakeAdded")
+                createOperation(event: "StakeRemoved", netuid: chutesNetuid, amountIn: "4.6", amountOut: "4", price: "1.2"),
+                createOperation(netuid: chutesNetuid, amountIn: "10", amountOut: "8", price: "1.2")
             ])
         ])
         let service = createService(apiOperationFactory)
@@ -219,6 +219,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
     }
 
     private func createOperation(
+        event: String = "StakeAdded",
         netuid: UInt16,
         amountIn: String,
         amountOut: String,
@@ -226,7 +227,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         label: String? = "trade"
     ) -> BittensorApi.Operation {
         BittensorApi.Operation(
-            sourceEventId: "event-\(netuid)-\(amountIn)-\(amountOut)",
+            sourceEventId: event,
             sourceTimestamp: "2026-09-24T09:00:00Z",
             netuid: netuid,
             hotkey: "validator-hotkey",
