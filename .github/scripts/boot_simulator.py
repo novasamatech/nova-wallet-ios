@@ -36,18 +36,6 @@ def existing_device(runtime_identifier, name):
     return next((device["udid"] for device in devices if device["name"] == name), None)
 
 
-def created_device(runtime_identifier, name):
-    device_types = simctl_list("devicetypes")["devicetypes"]
-    device_type = next(
-        (device_type["identifier"] for device_type in device_types if device_type["name"] == name),
-        None,
-    )
-    if device_type is None:
-        sys.exit(f"No simulator device type named {name}")
-    print(f"Creating {name} on {runtime_identifier}", file=sys.stderr)
-    return simctl("create", name, device_type, runtime_identifier).strip()
-
-
 def available_runtime():
     deadline = time.monotonic() + TIMEOUT_SECONDS
     while True:
@@ -67,7 +55,9 @@ def main():
     name = sys.argv[1]
     runtime = available_runtime()
     identifier = runtime["identifier"]
-    udid = existing_device(identifier, name) or created_device(identifier, name)
+    udid = existing_device(identifier, name)
+    if udid is None:
+        sys.exit(f"No available {name} simulator on {runtime['name']} ({identifier})")
     print(f"Booting {name} ({udid}) on {runtime['name']}", file=sys.stderr)
     subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], check=True, stdout=sys.stderr)
     print(udid)
