@@ -167,7 +167,6 @@ private extension SubtensorBaseInteractor {
             basePresenter?.didReceiveShieldQuote(quote)
         case let .failure(error):
             logger.warning("Shield quote failed: \(error)")
-
             if pendingEstimates.didFailShieldQuote() {
                 basePresenter?.didReceiveShieldQuote(nil)
             }
@@ -193,8 +192,9 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
     }
 
     func estimateShieldQuote(for operation: SubtensorOperation) {
+        guard pendingEstimates.scheduleShieldQuote(operation) else { return }
+
         shieldQuoteCallStore.cancel()
-        pendingEstimates.shieldQuote = operation
 
         feeDebouncer.debounce { [weak self] in
             self?.startPendingEstimates()
@@ -203,7 +203,7 @@ extension SubtensorBaseInteractor: SubtensorBaseInteractorInputProtocol {
 
     func cancelShieldQuote() {
         shieldQuoteCallStore.cancel()
-        pendingEstimates.shieldQuote = nil
+        pendingEstimates.cancelShieldQuote()
     }
 
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16) {
