@@ -280,22 +280,17 @@ enum ModalPickerFactory {
         actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
-        let controller: ModalPickerViewController<
-            AccountDetailsGenericSelectionCell<AccountDetailsBalanceDecorator>,
-            SelectableViewModel<AccountDetailsSelectionViewModel>
-        >?
-
-        controller = createGenericCollatorsPickingList(
+        context: AnyObject?,
+        title: LocalizableResource<String>? = nil
+    ) -> CollatorStakingTargetPicker? {
+        createGenericCollatorsPickingList(
             items,
             actionViewModel: actionViewModel,
             selectedIndex: selectedIndex,
             delegate: delegate,
-            context: context
+            context: context,
+            title: title
         )
-
-        return controller
     }
 
     static func createGenericCollatorsPickingList<D: AccountDetailsSelectionDecorator>(
@@ -303,7 +298,8 @@ enum ModalPickerFactory {
         actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
+        context: AnyObject?,
+        title: LocalizableResource<String>? = nil
     ) -> ModalPickerViewController<
         AccountDetailsGenericSelectionCell<D>,
         SelectableViewModel<AccountDetailsSelectionViewModel>
@@ -318,7 +314,7 @@ enum ModalPickerFactory {
         >
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
-        viewController.localizedTitle = LocalizableResource { locale in
+        viewController.localizedTitle = title ?? LocalizableResource { locale in
             R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollator()
         }
 
