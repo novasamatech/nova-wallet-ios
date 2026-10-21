@@ -6714,7 +6714,7 @@
 		C98A02D4DEAC6E4CACB9E47E /* StakingRebagConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C2A8B3F0006DBCB4B7337A /* StakingRebagConfirmProtocols.swift */; };
 		C9931414951375760E5D1C57 /* OperationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCCD837A377C237C18B117E /* OperationDetailsViewController.swift */; };
 		C9F25C75F66E7EFDE71CCF00 /* MythosStkUnstakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDAE49E1AAB3B45CE3CE78DF /* MythosStkUnstakeConfirmProtocols.swift */; };
-		C9F70AF20B1F35A03C4FD338 /* SubtensorBrowseAbandonTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994205745CCDB4FD3A78384F /* SubtensorBrowseAbandonTracker.swift */; };
+		C9F70AF20B1F35A03C4FD338 /* SubtensorValidatorSelectAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994205745CCDB4FD3A78384F /* SubtensorValidatorSelectAnalytics.swift */; };
 		CA1FA362A6C2D0B4E5D1FEFB /* ManualBackupWalletListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C56183BEA8453E1B0CC255A /* ManualBackupWalletListViewFactory.swift */; };
 		CA3C4729115D875D0C80A3E8 /* TokensManageWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA3E7F90F95A6886798A995 /* TokensManageWireframe.swift */; };
 		CA84915D3A442616F9534A59 /* SubtensorPendingRootClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA53563FBE76C80902B0A54 /* SubtensorPendingRootClaims.swift */; };
@@ -13116,7 +13116,7 @@
 		98AA56CC6D93450AAAD9D507 /* SubtensorEarnInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnInfoPresentable.swift; sourceTree = "<group>"; };
 		98B4F8D03DDEFC5EBAFD07C0 /* GenericLedgerAddEvmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAddEvmProtocols.swift; sourceTree = "<group>"; };
 		9925D7FC8A58695700B4A308 /* ParaStkStakeConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkStakeConfirmPresenter.swift; sourceTree = "<group>"; };
-		994205745CCDB4FD3A78384F /* SubtensorBrowseAbandonTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorBrowseAbandonTracker.swift; sourceTree = "<group>"; };
+		994205745CCDB4FD3A78384F /* SubtensorValidatorSelectAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorSelectAnalytics.swift; sourceTree = "<group>"; };
 		994E31F4AE945AF2DE98539C /* ChangeWatchOnlyWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChangeWatchOnlyWireframe.swift; sourceTree = "<group>"; };
 		998CDEAB9F149770B27F5317 /* AssetDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetDetailsProtocols.swift; sourceTree = "<group>"; };
 		99C973B203F72D6233718CD4 /* ParaStkUnstakeConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeConfirmProtocols.swift; sourceTree = "<group>"; };
@@ -30391,7 +30391,7 @@
 				FA7301905CF6B5AC3EC2D972 /* SubtensorValidationReporter.swift */,
 				7D3BD661FDBEA09B9F6EAEF5 /* SubtensorDataAnalytics.swift */,
 				8D16610B55A365746943D7D7 /* SubtensorSlippageAnalytics.swift */,
-				994205745CCDB4FD3A78384F /* SubtensorBrowseAbandonTracker.swift */,
+				994205745CCDB4FD3A78384F /* SubtensorValidatorSelectAnalytics.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -33567,7 +33567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9F70AF20B1F35A03C4FD338 /* SubtensorBrowseAbandonTracker.swift in Sources */,
+				C9F70AF20B1F35A03C4FD338 /* SubtensorValidatorSelectAnalytics.swift in Sources */,
 				42BB620F46E178A21A891BC1 /* SubtensorValidatorSelectPresenter+Analytics.swift in Sources */,
 				7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */,
 				3A27E835B98A131148A47BD8 /* SubtensorSlippageAnalytics.swift in Sources */,

@@ -11,7 +11,7 @@ final class SubtensorSubnetSelectPresenter {
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
     let chainAsset: ChainAsset
 
-    let abandonTracker: SubtensorBrowseAbandonTracker?
+    let abandonTracker: AnalyticsAbandonTracker?
 
     let dataAnalytics = SubtensorDataAnalytics(screen: .subnetSelect)
     let source: SubnetListSource
@@ -46,7 +46,7 @@ final class SubtensorSubnetSelectPresenter {
         self.browseState = browseState
         self.chainAsset = chainAsset
         self.source = source
-        abandonTracker = source == .seeAllOptions ? SubtensorBrowseAbandonTracker() : nil
+        abandonTracker = source == .seeAllOptions ? AnalyticsAbandonTracker(makeEvent: Self.abandonEvent) : nil
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -142,7 +142,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func becomeActive() {
-        abandonTracker?.enter(.subnetSelect, target: nil)
+        abandonTracker?.makeEvent = Self.abandonEvent
         interactor.refreshFavourites()
     }
 

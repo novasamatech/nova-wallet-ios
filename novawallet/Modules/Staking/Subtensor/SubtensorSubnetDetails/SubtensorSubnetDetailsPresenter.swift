@@ -12,7 +12,7 @@ final class SubtensorSubnetDetailsPresenter {
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
     let chainAsset: ChainAsset
-    let abandonTracker: SubtensorBrowseAbandonTracker?
+    let abandonTracker: AnalyticsAbandonTracker?
     let dataAnalytics = SubtensorDataAnalytics(screen: .subnetDetails)
 
     private var state: SubtensorSubnetDetailsState
@@ -33,7 +33,7 @@ final class SubtensorSubnetDetailsPresenter {
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
         chainAsset: ChainAsset,
-        abandonTracker: SubtensorBrowseAbandonTracker?,
+        abandonTracker: AnalyticsAbandonTracker?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -224,7 +224,11 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func becomeActive() {
-        abandonTracker?.enter(.subnetDetails, target: input.target.analyticsTarget)
+        let target = input.target.analyticsTarget
+
+        abandonTracker?.makeEvent = {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetDetails, target: target)
+        }
     }
 
     func retryHistory() {

@@ -145,7 +145,11 @@ extension SubtensorValidatorSelectPresenter: SubtensorValidatorSelectPresenterPr
     }
 
     func becomeActive() {
-        analytics.abandonTracker?.enter(.validatorSelect, target: target.analyticsTarget)
+        let analyticsTarget = target.analyticsTarget
+
+        analytics.abandonTracker?.makeEvent = {
+            AnalyticsEvent.subtensorStakingAbandoned(stage: .validatorSelect, target: analyticsTarget)
+        }
     }
 
     func retry() {

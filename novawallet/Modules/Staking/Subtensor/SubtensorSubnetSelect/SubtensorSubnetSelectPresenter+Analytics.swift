@@ -2,6 +2,10 @@ import Foundation
 import NovaAnalytics
 
 extension SubtensorSubnetSelectPresenter: AnalyticsTracking {
+    static func abandonEvent() -> AnalyticsEvent? {
+        AnalyticsEvent.subtensorStakingAbandoned(stage: .subnetSelect, target: nil)
+    }
+
     func trackRootSelected() {
         abandonTracker?.markProceeded()
 

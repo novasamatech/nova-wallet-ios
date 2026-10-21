@@ -53,7 +53,7 @@ protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresenta
     func showDetails(
         from view: SubtensorSubnetSelectViewProtocol?,
         item: SubtensorSubnetListItem,
-        abandonTracker: SubtensorBrowseAbandonTracker?,
+        abandonTracker: AnalyticsAbandonTracker?,
         delegate: SubtensorSubnetSelectDelegate
     )
 

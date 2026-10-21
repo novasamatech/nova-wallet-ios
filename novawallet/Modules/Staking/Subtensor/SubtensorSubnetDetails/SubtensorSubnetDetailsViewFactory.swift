@@ -6,7 +6,7 @@ enum SubtensorSubnetDetailsViewFactory {
         for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
-        abandonTracker: SubtensorBrowseAbandonTracker?,
+        abandonTracker: AnalyticsAbandonTracker?,
         delegate: SubtensorSubnetSelectDelegate
     ) -> SubtensorSubnetDetailsViewProtocol? {
         guard
