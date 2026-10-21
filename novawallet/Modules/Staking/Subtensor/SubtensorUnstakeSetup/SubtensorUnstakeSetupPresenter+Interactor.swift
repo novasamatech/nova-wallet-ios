@@ -2,12 +2,7 @@ import Foundation
 
 extension SubtensorUnstakeSetupPresenter {
     func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
-        if anchorHotkey != preflightRequest {
-            preflight = nil
-            refreshPreflight()
-        }
-
-        loadValidatorIfNeeded()
+        reconcileAnchor()
         loadValidatorsIfNeeded()
         loadGroupHotkeys()
 
@@ -21,6 +16,15 @@ extension SubtensorUnstakeSetupPresenter {
 
         refreshFee()
         updateQuote()
+    }
+
+    func reconcileAnchor() {
+        if anchorHotkey != preflightRequest {
+            preflight = nil
+            refreshPreflight()
+        }
+
+        loadValidatorIfNeeded()
     }
 
     func loadValidatorsIfNeeded() {

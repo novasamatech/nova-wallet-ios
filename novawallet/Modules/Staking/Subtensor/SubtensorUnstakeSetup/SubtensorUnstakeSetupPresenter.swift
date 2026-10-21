@@ -297,6 +297,8 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func applyPlanChange(from previousPlan: SubtensorUnstakePlan?) {
+        reconcileAnchor()
+
         let plan = feePlan()
 
         guard plan != previousPlan else {
