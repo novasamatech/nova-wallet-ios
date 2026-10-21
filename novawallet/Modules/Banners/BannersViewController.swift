@@ -12,7 +12,8 @@ final class BannersViewController: UIViewController, ViewHolder {
     }()
 
     private var staticState: StaticState?
-    private var dynamicState: DynamicState?
+
+    var pinnedBackgroundItemIndex: Int?
 
     var maxContentHeight = BannersViewLayout.Constants.contentMinHeight
 
@@ -46,6 +47,7 @@ final class BannersViewController: UIViewController, ViewHolder {
         super.viewDidLayoutSubviews()
 
         presenter.setup(with: rootView.availableTextWidth)
+        updateBackground()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +99,7 @@ private extension BannersViewController {
         setupBannersCollection(with: widgetModel.banners)
         setupPageControl()
 
-        rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
+        updateBackground()
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
     }
 
@@ -114,12 +116,24 @@ private extension BannersViewController {
         }
     }
 
+    func updateCurrentPage() {
+        let lastItemIndex = dataSource.numberOfItems() - 1
+
+        guard
+            lastItemIndex >= 0,
+            let position = currentItemPosition(lastItemIndex: lastItemIndex)
+        else { return }
+
+        rootView.pageControl.currentPage = dataSource.pageIndex(for: Int(position.rounded()))
+    }
+
     func setupBannersCollection(with viewModels: [BannerViewModel]) {
         dataSource.update(with: viewModels)
 
         let itemIndex = dataSource.firstShowingItemIndex ?? 0
 
         staticState = .init(itemByActualOffset: itemIndex)
+        pinnedBackgroundItemIndex = itemIndex
         rootView.collectionView.reloadData { [weak self] in
             guard let self else { return }
 
@@ -169,13 +183,6 @@ private extension BannersViewController {
     ) {
         guard staticState != nil else { return }
 
-        if animated {
-            dynamicState = DynamicState(
-                contentOffset: rootView.collectionView.contentOffset.x,
-                itemWidth: rootView.collectionView.bounds.width
-            )
-        }
-
         CATransaction.setCompletionBlock {
             completionBlock?()
         }
@@ -187,78 +194,6 @@ private extension BannersViewController {
         )
 
         CATransaction.commit()
-    }
-
-    func calculateTransitionProgress(
-        for newDynamicState: DynamicState,
-        _ oldDynamicState: DynamicState
-    ) -> CGFloat {
-        guard let staticState else { return .zero }
-
-        let scrollingForward: Bool = oldDynamicState.contentOffset < newDynamicState.contentOffset
-
-        let roundedItemIndex = newDynamicState.rawItemIndex.rounded(.down)
-        let rawProgress = abs(
-            (newDynamicState.contentOffset - roundedItemIndex * newDynamicState.itemWidth) / newDynamicState.itemWidth
-        )
-
-        let draggedToNext = (
-            scrollingForward &&
-                newDynamicState.rawItemIndex > CGFloat(staticState.itemByActualOffset)
-        )
-        let draggedToPrevious = (
-            !scrollingForward &&
-                newDynamicState.rawItemIndex < CGFloat(staticState.itemByActualOffset)
-        )
-        let changesPage: Bool = draggedToNext
-            || draggedToPrevious
-
-        return if changesPage {
-            scrollingForward
-                ? (rawProgress == 0 ? 1.0 : rawProgress)
-                : (1 - rawProgress)
-        } else {
-            scrollingForward
-                ? (rawProgress == 0 ? rawProgress : 1 - rawProgress)
-                : rawProgress
-        }
-    }
-
-    func calculateTargetItemIndex(
-        using dynamicState: DynamicState,
-        staticState: StaticState
-    ) -> Int {
-        let rawItemIndex = dynamicState.rawItemIndex
-
-        let targetItemIndex: Int
-
-        if CGFloat(staticState.itemByActualOffset) == rawItemIndex {
-            targetItemIndex = staticState.itemByActualOffset
-        } else {
-            let newIndex = staticState.itemByActualOffset
-                + (rawItemIndex > CGFloat(staticState.itemByActualOffset) ? 1 : -1)
-            targetItemIndex = abs(Int(rawItemIndex) - staticState.itemByActualOffset) > 1 ? Int(rawItemIndex) : newIndex
-        }
-
-        return targetItemIndex
-    }
-
-    func updateBackground(
-        for newDynamicState: DynamicState,
-        oldDynamicState: DynamicState,
-        targetItemIndex: Int
-    ) {
-        guard let banner = dataSource.getItem(at: targetItemIndex) else { return }
-
-        let progress = calculateTransitionProgress(
-            for: newDynamicState,
-            oldDynamicState
-        )
-
-        rootView.backgroundView.changeBackground(
-            to: banner.backgroundImage,
-            progress: progress
-        )
     }
 
     func changeCurrentOffsetIfNeeded(
@@ -358,45 +293,30 @@ extension BannersViewController: BannersViewProtocol {
 // MARK: UIScrollViewDelegate
 
 extension BannersViewController: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let staticState, let dynamicState else { return }
-
-        let newDynamicState = DynamicState(
-            contentOffset: scrollView.contentOffset.x,
-            itemWidth: scrollView.bounds.width
-        )
-
-        let targetItemIndex = calculateTargetItemIndex(
-            using: newDynamicState,
-            staticState: staticState
-        )
-        let pageIndex = dataSource.pageIndex(for: targetItemIndex)
-
-        rootView.pageControl.currentPage = pageIndex
-
-        updateBackground(
-            for: newDynamicState,
-            oldDynamicState: dynamicState,
-            targetItemIndex: targetItemIndex
-        )
-
-        self.dynamicState = newDynamicState
+    func scrollViewDidScroll(_: UIScrollView) {
+        updateBackground()
+        updateCurrentPage()
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_: UIScrollView) {
         guard staticState != nil else { return }
 
         autoScrollManager.stopScrolling()
+        unpinBackground()
+    }
 
-        let dynamicState = DynamicState(
-            contentOffset: scrollView.contentOffset.x,
-            itemWidth: scrollView.bounds.width
-        )
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
 
-        self.dynamicState = dynamicState
+        scrollViewDidEndDecelerating(scrollView)
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard
+            let position = currentItemPosition(lastItemIndex: dataSource.numberOfItems() - 1),
+            position == position.rounded()
+        else { return }
+
         scrollViewDidEndDecelerating(scrollView)
     }
 
@@ -410,7 +330,7 @@ extension BannersViewController: UIScrollViewDelegate {
             currentItemByOffset: itemByOffsetBeforeChanges
         )
 
-        dynamicState = nil
+        unpinBackground()
     }
 }
 

@@ -23,6 +23,9 @@ final class DAppListViewController: UIViewController, ViewHolder {
     lazy var dataSource = createDataSource()
 
     var sectionViewModels: [DAppListSectionViewModel] = []
+    private var pendingSectionViewModels: [DAppListSectionViewModel]?
+    private var hasPendingRefreshCompletion: Bool = false
+    private var appliedBannerHeight: CGFloat?
     var walletSwitchViewModel: WalletSwitchViewModel?
 
     init(
@@ -107,6 +110,34 @@ private extension DAppListViewController {
     func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
+
+    func updateBannerHeightIfNeeded() {
+        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
+
+        guard bannerHeight != appliedBannerHeight else { return }
+
+        appliedBannerHeight = bannerHeight
+        rootView.collectionView.collectionViewLayout.invalidateLayout()
+    }
+
+    func applyPendingUpdates() {
+        guard !rootView.collectionView.isDragging else { return }
+
+        if let pendingSectionViewModels {
+            self.pendingSectionViewModels = nil
+
+            rootView.sectionViewModels = pendingSectionViewModels
+            sectionViewModels = pendingSectionViewModels
+
+            dataSource.apply(pendingSectionViewModels.models)
+            updateBannerHeightIfNeeded()
+        }
+
+        if hasPendingRefreshCompletion {
+            hasPendingRefreshCompletion = false
+            rootView.collectionView.refreshControl?.endRefreshing()
+        }
+    }
 }
 
 // MARK: Actions
@@ -175,6 +206,10 @@ extension DAppListViewController: UICollectionViewDelegate {
             break
         }
     }
+
+    func scrollViewDidEndDragging(_: UIScrollView, willDecelerate _: Bool) {
+        applyPendingUpdates()
+    }
 }
 
 // MARK: ErrorStateViewDelegate
@@ -202,14 +237,13 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 
 extension DAppListViewController: DAppListViewProtocol {
     func didReceive(_ sections: [DAppListSectionViewModel]) {
-        rootView.sectionViewModels = sections
-        sectionViewModels = sections
-
-        dataSource.apply(sections.models)
+        pendingSectionViewModels = sections
+        applyPendingUpdates()
     }
 
     func didCompleteRefreshing() {
-        rootView.collectionView.refreshControl?.endRefreshing()
+        hasPendingRefreshCompletion = true
+        applyPendingUpdates()
     }
 }
 

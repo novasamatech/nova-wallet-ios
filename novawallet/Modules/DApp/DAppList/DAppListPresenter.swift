@@ -19,6 +19,7 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
     private var pendingStakingSearchResult: DAppSearchResult?
+    private var isRefreshing: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
 
@@ -57,6 +58,13 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
             view?.didReceive([errorSection])
         }
     }
+
+    private func completeRefreshingIfNeeded() {
+        guard isRefreshing else { return }
+
+        isRefreshing = false
+        view?.didCompleteRefreshing()
+    }
 }
 
 // MARK: DAppListPresenterProtocol
@@ -71,6 +79,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func refresh() {
+        isRefreshing = true
         interactor.refresh()
         bannersModule?.refresh()
     }
@@ -124,7 +133,9 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     }
 
     func didReceive(dAppsResult: Result<DAppList, Error>?) {
-        view?.didCompleteRefreshing()
+        defer {
+            completeRefreshingIfNeeded()
+        }
 
         guard dAppsResult != nil else {
             return
