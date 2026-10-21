@@ -11,12 +11,6 @@ extension RampPresenter: AnalyticsTracking {
     }
 
     func trackFlowCompleted(for actionType: RampActionType) {
-        guard !didTrackCompletion else {
-            return
-        }
-
-        didTrackCompletion = true
-
         trackAnalytics(completedEvent(for: actionType))
     }
 

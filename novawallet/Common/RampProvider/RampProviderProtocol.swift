@@ -65,6 +65,10 @@ protocol BaseURLStringProviding {
     var baseUrlString: String { get }
 }
 
+protocol DisplayURLStringProviding {
+    var displayURLString: String { get }
+}
+
 protocol OffRampHookFactoryProviding {
     var offRampHookFactory: OffRampHookFactoryProtocol { get }
 }
@@ -75,13 +79,13 @@ protocol OnRampHookFactoryProviding {
 
 typealias RampHookFactoriesProviding = OffRampHookFactoryProviding & OnRampHookFactoryProviding
 
-extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampHookFactoriesProviding {
+extension RampProviderProtocol where Self: DisplayURLStringProviding, Self: RampHookFactoriesProviding {
     func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
         for delegate: RampHookDelegate
     ) -> [RampHook] {
-        guard baseUrlString.contains(substring: action.displayURLString) else { return [] }
+        guard action.displayURLString == displayURLString else { return [] }
 
         return switch action.type {
         case .onRamp:

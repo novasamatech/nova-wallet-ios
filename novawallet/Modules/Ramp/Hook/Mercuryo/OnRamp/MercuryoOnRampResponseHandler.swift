@@ -1,5 +1,9 @@
 import Foundation
 
+private struct MercuryoBuyStatusData: Decodable {
+    let status: MercuryoStatus
+}
+
 final class MercuryoOnRampResponseHandler {
     weak var delegate: OnRampHookDelegate?
 
@@ -29,7 +33,7 @@ extension MercuryoOnRampResponseHandler: OffRampMessageHandling {
             }
 
             let buyStatusResponse = try JSONDecoder().decode(
-                MercuryoGenericResponse<MercuryoRampResponseData>.self,
+                MercuryoGenericResponse<MercuryoBuyStatusData>.self,
                 from: message
             )
 
