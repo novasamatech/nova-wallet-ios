@@ -24,6 +24,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     var sectionViewModels: [DAppListSectionViewModel] = []
     private var pendingSectionViewModels: [DAppListSectionViewModel]?
+    private var hasPendingRefreshCompletion: Bool = false
     var walletSwitchViewModel: WalletSwitchViewModel?
 
     init(
@@ -109,15 +110,22 @@ private extension DAppListViewController {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 
-    func applyPendingSections() {
-        guard !rootView.collectionView.isDragging, let pendingSectionViewModels else { return }
+    func applyPendingUpdates() {
+        guard !rootView.collectionView.isDragging else { return }
 
-        self.pendingSectionViewModels = nil
+        if let pendingSectionViewModels {
+            self.pendingSectionViewModels = nil
 
-        rootView.sectionViewModels = pendingSectionViewModels
-        sectionViewModels = pendingSectionViewModels
+            rootView.sectionViewModels = pendingSectionViewModels
+            sectionViewModels = pendingSectionViewModels
 
-        dataSource.apply(pendingSectionViewModels.models)
+            dataSource.apply(pendingSectionViewModels.models)
+        }
+
+        if hasPendingRefreshCompletion {
+            hasPendingRefreshCompletion = false
+            rootView.collectionView.refreshControl?.endRefreshing()
+        }
     }
 }
 
@@ -189,7 +197,7 @@ extension DAppListViewController: UICollectionViewDelegate {
     }
 
     func scrollViewDidEndDragging(_: UIScrollView, willDecelerate _: Bool) {
-        applyPendingSections()
+        applyPendingUpdates()
     }
 }
 
@@ -219,11 +227,12 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 extension DAppListViewController: DAppListViewProtocol {
     func didReceive(_ sections: [DAppListSectionViewModel]) {
         pendingSectionViewModels = sections
-        applyPendingSections()
+        applyPendingUpdates()
     }
 
     func didCompleteRefreshing() {
-        rootView.collectionView.refreshControl?.endRefreshing()
+        hasPendingRefreshCompletion = true
+        applyPendingUpdates()
     }
 }
 
