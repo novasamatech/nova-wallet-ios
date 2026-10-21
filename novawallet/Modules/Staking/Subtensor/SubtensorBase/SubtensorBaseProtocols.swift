@@ -22,6 +22,7 @@ enum SubtensorFlowConstants {
 protocol SubtensorBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for operation: SubtensorOperation)
+    func estimateShieldQuote(for operation: SubtensorOperation)
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
     func refreshQuote(for request: SubtensorTradeQuoteRequest)
     func requestValidatingQuote(
@@ -42,6 +43,7 @@ protocol SubtensorBaseInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
+    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?)
     func didReceivePositions(_ state: Multistaking.SubtensorState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)

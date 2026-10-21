@@ -16,6 +16,9 @@ final class SubtensorConfirmPresenter {
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var isShieldQuoteResolved = false
+    var isShieldOn = true
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
@@ -113,13 +116,14 @@ extension SubtensorConfirmPresenter {
             isQuoteFailed: quoteState?.isLatestFailed ?? false,
             isPriceMoved: quoteState?.isPriceMoved ?? false,
             price: price,
-            fee: fee,
+            fee: networkFee,
             stakeChange: createStakeChange(),
             isWatchOnly: isWatchOnly,
             costBasis: tracksCostBasis ? costBasis : nil
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+        provideShieldState()
     }
 
     func createStakeChange() -> SubtensorConfirmStakeChange? {
@@ -148,6 +152,7 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
+        interactor.estimateShieldQuote(for: operation)
     }
 
     func refreshPreflight() {
@@ -251,7 +256,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func handOffAtTap() {
-        guard !isHandingOff, let fee, let preflight, let verified = createVerifiedOperation() else {
+        guard !isHandingOff, let fee = networkFee, let preflight, let verified = createVerifiedOperation() else {
             view?.didStopLoading()
             return
         }
@@ -260,6 +265,7 @@ extension SubtensorConfirmPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
+            shielded: activeShieldQuote != nil,
             origin: model.origin,
             account: model.account,
             target: model.target,

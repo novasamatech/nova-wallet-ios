@@ -2,6 +2,16 @@ import Foundation
 
 enum SubtensorOperationResultConstants {
     static let confirmationCap: TimeInterval = 90
+
+    static func confirmationCap(isShielded: Bool, blockTime: BlockTime) -> TimeInterval {
+        guard isShielded else {
+            return confirmationCap
+        }
+
+        let shieldWindow = TimeInterval(blockTime * SubtensorShieldConstants.confirmationWindowBlocks).seconds
+
+        return max(confirmationCap, shieldWindow)
+    }
 }
 
 enum SubtensorOperationResultState {

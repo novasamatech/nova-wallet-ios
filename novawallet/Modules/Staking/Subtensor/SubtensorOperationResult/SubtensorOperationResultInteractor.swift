@@ -6,6 +6,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
     let operation: SubtensorOperation
+    let shielded: Bool
+    let confirmationCap: TimeInterval
     let coldkey: AccountId
     let loadsSubnetData: Bool
     let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
@@ -23,6 +25,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
 
     init(
         operation: SubtensorOperation,
+        shielded: Bool,
+        confirmationCap: TimeInterval,
         coldkey: AccountId,
         loadsSubnetData: Bool,
         submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol,
@@ -35,6 +39,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         logger: LoggerProtocol
     ) {
         self.operation = operation
+        self.shielded = shielded
+        self.confirmationCap = confirmationCap
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
         self.submissionOperationFactory = submissionOperationFactory
@@ -62,13 +68,16 @@ private extension SubtensorOperationResultInteractor {
 
         let scheduler = schedulerFactory(self)
         confirmationScheduler = scheduler
-        scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap)
+        scheduler.notifyAfter(confirmationCap)
     }
 
     func submit() {
         osMediator.disableScreenSleep()
 
-        let wrapper = submissionOperationFactory.createSubmitWrapper(for: operation) { [weak self] in
+        let wrapper = submissionOperationFactory.createSubmitWrapper(
+            for: operation,
+            shielded: shielded
+        ) { [weak self] in
             DispatchQueue.main.async {
                 self?.startConfirmationCap()
             }

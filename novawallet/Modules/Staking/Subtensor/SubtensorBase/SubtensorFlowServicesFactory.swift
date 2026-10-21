@@ -52,13 +52,12 @@ enum SubtensorFlowServicesFactory {
             operationQueue: operationQueue
         )
 
-        let signer = createSigner(for: account)
-
         guard let submissionOperationFactory = try? state.createSubmissionOperationFactory(
             for: account.chainAccount.accountId,
             extrinsicService: extrinsicService,
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,
-            signer: signer
+            signer: createSigner(for: account),
+            shield: createShieldServices(for: account, state: state, sealer: MevShieldSealer())
         ) else {
             return nil
         }
@@ -101,9 +100,145 @@ enum SubtensorFlowServicesFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
+
+    static func createShieldServices(
+        for account: MetaChainAccountResponse,
+        state: SubtensorSharedStateProtocol,
+        sealer: MevShieldSealing?
+    ) -> SubtensorShieldServices? {
+        createShieldServices(
+            for: account,
+            chainAsset: state.stakingOption.chainAsset,
+            chainRegistry: state.chainRegistry,
+            sealer: sealer
+        )
+    }
+
+    static func createShieldServices(
+        for account: MetaChainAccountResponse,
+        chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        sealer: MevShieldSealing?
+    ) -> SubtensorShieldServices? {
+        let chain = chainAsset.chain
+
+        guard
+            let sealer,
+            SubtensorShieldEligibility.supports(walletType: account.chainAccount.type),
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let statusService = ExtrinsicStatusService(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+
+        let submissionFactory = SubtensorShieldSubmissionFactory(
+            walletType: account.chainAccount.type,
+            extrinsicFactory: createShieldExtrinsicFactory(
+                for: account.chainAccount,
+                chain: chain,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                sealer: sealer
+            ),
+            fundsFactory: createShieldFundsFactory(
+                for: account.chainAccount.accountId,
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry,
+                runtimeProvider: runtimeProvider
+            ),
+            carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
+            inclusionTracker: createShieldInclusionTracker(
+                for: chain,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                statusService: statusService
+            ),
+            statusService: statusService,
+            signerFactory: {
+                SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
+                    for: account.metaId,
+                    accountResponse: account.chainAccount,
+                    signaturesPerAuthorization: SubtensorShieldConstants.signaturesPerOrder
+                )
+            },
+            operationQueue: operationQueue
+        )
+
+        return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
+    }
 }
 
 private extension SubtensorFlowServicesFactory {
+    static func createShieldFundsFactory(
+        for accountId: AccountId,
+        chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> SubtensorShieldFundsFactory {
+        SubtensorShieldFundsFactory(
+            accountId: accountId,
+            chainAsset: chainAsset,
+            balanceQueryFactory: WalletRemoteQueryWrapperFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ),
+            runtimeProvider: runtimeProvider
+        )
+    }
+
+    static func createShieldInclusionTracker(
+        for chain: ChainModel,
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
+        statusService: ExtrinsicStatusServiceProtocol
+    ) -> SubtensorShieldInclusionTracker {
+        SubtensorShieldInclusionTracker(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            statusService: statusService,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    static func createShieldExtrinsicFactory(
+        for account: ChainAccountResponse,
+        chain: ChainModel,
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
+        sealer: MevShieldSealing
+    ) -> SubtensorShieldExtrinsicFactory {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        return SubtensorShieldExtrinsicFactory(
+            account: account,
+            chain: chain,
+            connection: connection,
+            extrinsicServiceFactory: ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: UserDataStorageFacade.shared,
+                substrateStorageFacade: SubstrateDataStorageFacade.shared
+            ),
+            keyOperationFactory: MevShieldOperationFactory(
+                runtimeProvider: runtimeProvider,
+                connection: connection,
+                operationQueue: operationQueue
+            ),
+            sealer: sealer,
+            operationQueue: operationQueue
+        )
+    }
+
     static func createBlockSubscription(
         for chain: ChainModel,
         connection: ChainConnection,

@@ -113,7 +113,7 @@ extension SubtensorConfirmPresenter {
             groupHotkeys: unstakeModel.groupHotkeys,
             availability: group?.availability,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             existentialDeposit: existentialDeposit,
             preflight: preflight,
             holds: holds,

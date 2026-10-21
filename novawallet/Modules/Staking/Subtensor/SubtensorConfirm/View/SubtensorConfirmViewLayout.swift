@@ -45,6 +45,15 @@ final class SubtensorConfirmViewLayout: UIView {
 
     let networkFeeCell = SwapNetworkFeeViewCell()
 
+    let shieldTableView: StackTableView = .create {
+        $0.hasSeparators = false
+        $0.isHidden = true
+    }
+
+    let shieldCell: StackSwitchCell = .create {
+        $0.subtitleLabel.numberOfLines = 0
+    }
+
     let amountView = MultilineBalanceView()
 
     let walletTableView: StackTableView = .create {
@@ -132,6 +141,10 @@ extension SubtensorConfirmViewLayout {
 }
 
 private extension SubtensorConfirmViewLayout {
+    enum Constants {
+        static let shieldRowHeight: CGFloat = 72
+    }
+
     static func createCostBasisCell() -> SwapNetworkFeeViewCell {
         .create {
             $0.rowContentView.valueView.stackView.alignment = .trailing
@@ -179,6 +192,12 @@ private extension SubtensorConfirmViewLayout {
         stackView.setCustomSpacing(8, after: detailsTableView)
 
         rows.forEach { detailsTableView.addArrangedSubview($0) }
+
+        stackView.addArrangedSubview(shieldTableView)
+        stackView.setCustomSpacing(8, after: shieldTableView)
+
+        shieldTableView.addArrangedSubview(shieldCell)
+        shieldTableView.setCustomHeight(Constants.shieldRowHeight, at: 0)
 
         stackView.addArrangedSubview(walletTableView)
         stackView.setCustomSpacing(8, after: walletTableView)

@@ -37,7 +37,7 @@ extension SubtensorConfirmPresenter {
         var dependencies = SubtensorStakeValidatingDependencies(
             amount: amount,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             preflight: preflight,
             netuid: model.target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
