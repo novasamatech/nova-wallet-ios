@@ -108,11 +108,13 @@ jobs:
         with:
           xcode-version: "26.2"
 
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: Run package unit tests
-        working-directory: Packages/${{ matrix.package }}
         run: |
-          xcodebuild test \
-            -scheme "${{ matrix.package }}" \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-            -derivedDataPath "${{ runner.temp }}/DerivedData-${{ matrix.package }}" \
-            -only-testing:"${{ matrix.test-target }}"
+          bundle exec fastlane test_package \
+            package:"${{ matrix.package }}" \
+            test_target:"${{ matrix.test-target }}" \
+            derived_data_path:"${{ runner.temp }}/DerivedData-${{ matrix.package }}"
