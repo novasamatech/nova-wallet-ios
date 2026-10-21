@@ -14,6 +14,8 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
+    var pinnedBackgroundItemIndex: Int?
+
     var maxContentHeight = BannersViewLayout.Constants.contentMinHeight
 
     var maxWidgetHeight: CGFloat {
@@ -46,6 +48,7 @@ final class BannersViewController: UIViewController, ViewHolder {
         super.viewDidLayoutSubviews()
 
         presenter.setup(with: rootView.availableTextWidth)
+        updateBackground()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +100,7 @@ private extension BannersViewController {
         setupBannersCollection(with: widgetModel.banners)
         setupPageControl()
 
-        rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
+        updateBackground()
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
     }
 
@@ -120,6 +123,7 @@ private extension BannersViewController {
         let itemIndex = dataSource.firstShowingItemIndex ?? 0
 
         staticState = .init(itemByActualOffset: itemIndex)
+        pinnedBackgroundItemIndex = itemIndex
         rootView.collectionView.reloadData { [weak self] in
             guard let self else { return }
 
@@ -189,41 +193,6 @@ private extension BannersViewController {
         CATransaction.commit()
     }
 
-    func calculateTransitionProgress(
-        for newDynamicState: DynamicState,
-        _ oldDynamicState: DynamicState
-    ) -> CGFloat {
-        guard let staticState else { return .zero }
-
-        let scrollingForward: Bool = oldDynamicState.contentOffset < newDynamicState.contentOffset
-
-        let roundedItemIndex = newDynamicState.rawItemIndex.rounded(.down)
-        let rawProgress = abs(
-            (newDynamicState.contentOffset - roundedItemIndex * newDynamicState.itemWidth) / newDynamicState.itemWidth
-        )
-
-        let draggedToNext = (
-            scrollingForward &&
-                newDynamicState.rawItemIndex > CGFloat(staticState.itemByActualOffset)
-        )
-        let draggedToPrevious = (
-            !scrollingForward &&
-                newDynamicState.rawItemIndex < CGFloat(staticState.itemByActualOffset)
-        )
-        let changesPage: Bool = draggedToNext
-            || draggedToPrevious
-
-        return if changesPage {
-            scrollingForward
-                ? (rawProgress == 0 ? 1.0 : rawProgress)
-                : (1 - rawProgress)
-        } else {
-            scrollingForward
-                ? (rawProgress == 0 ? rawProgress : 1 - rawProgress)
-                : rawProgress
-        }
-    }
-
     func calculateTargetItemIndex(
         using dynamicState: DynamicState,
         staticState: StaticState
@@ -241,24 +210,6 @@ private extension BannersViewController {
         }
 
         return targetItemIndex
-    }
-
-    func updateBackground(
-        for newDynamicState: DynamicState,
-        oldDynamicState: DynamicState,
-        targetItemIndex: Int
-    ) {
-        guard let banner = dataSource.getItem(at: targetItemIndex) else { return }
-
-        let progress = calculateTransitionProgress(
-            for: newDynamicState,
-            oldDynamicState
-        )
-
-        rootView.backgroundView.changeBackground(
-            to: banner.backgroundImage,
-            progress: progress
-        )
     }
 
     func changeCurrentOffsetIfNeeded(
@@ -359,7 +310,9 @@ extension BannersViewController: BannersViewProtocol {
 
 extension BannersViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let staticState, let dynamicState else { return }
+        updateBackground()
+
+        guard let staticState, dynamicState != nil else { return }
 
         let newDynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
@@ -374,19 +327,14 @@ extension BannersViewController: UIScrollViewDelegate {
 
         rootView.pageControl.currentPage = pageIndex
 
-        updateBackground(
-            for: newDynamicState,
-            oldDynamicState: dynamicState,
-            targetItemIndex: targetItemIndex
-        )
-
-        self.dynamicState = newDynamicState
+        dynamicState = newDynamicState
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard staticState != nil else { return }
 
         autoScrollManager.stopScrolling()
+        unpinBackground()
 
         let dynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
@@ -411,6 +359,7 @@ extension BannersViewController: UIScrollViewDelegate {
         )
 
         dynamicState = nil
+        unpinBackground()
     }
 }
 
