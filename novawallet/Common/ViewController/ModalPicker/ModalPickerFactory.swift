@@ -304,7 +304,7 @@ enum ModalPickerFactory {
         AccountDetailsGenericSelectionCell<D>,
         SelectableViewModel<AccountDetailsSelectionViewModel>
     >? {
-        guard !items.isEmpty else {
+        guard !items.isEmpty || actionViewModel != nil else {
             return nil
         }
 

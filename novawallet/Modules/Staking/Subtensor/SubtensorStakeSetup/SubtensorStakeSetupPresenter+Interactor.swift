@@ -22,6 +22,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
             validatorState = .selected(
                 SubtensorStakeSetupValidator(hotkey: requested, name: validatorItems[requested]?.name)
             )
+            refreshValidatorPicker()
             provideViewModel()
             return
         }
@@ -146,6 +147,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         positionsState = state
 
         requestPresetIfReady()
+        loadHeldValidatorsIfNeeded()
 
         if case .addStake = mode {
             provideViewModel()

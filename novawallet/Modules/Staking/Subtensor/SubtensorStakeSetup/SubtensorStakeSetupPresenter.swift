@@ -45,7 +45,7 @@ final class SubtensorStakeSetupPresenter {
     var lockedValidatorRequest: AccountId?
     var heldValidatorsRequest: [AccountId]?
     var heldValidatorsResolved: [AccountId]?
-    var isStakeMorePickerPending = false
+    weak var validatorPicker: CollatorStakingTargetPicker?
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
     var acceptedQuote: SubtensorTradeQuote?
