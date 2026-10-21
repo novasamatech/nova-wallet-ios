@@ -200,7 +200,8 @@ extension SubtensorUnstakeSetupPresenter {
             mode: .unstake(SubtensorUnstakeModel(
                 netuid: netuid,
                 plan: plan,
-                groupHotkeys: groupHotkeys
+                groupHotkeys: groupHotkeys,
+                validators: plan.hotkeys.reduce(into: [:]) { $0[$1] = createConfirmValidator(for: $1) }
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),

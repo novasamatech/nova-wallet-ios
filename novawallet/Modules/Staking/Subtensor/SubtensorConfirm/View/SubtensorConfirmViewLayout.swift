@@ -39,6 +39,17 @@ final class SubtensorConfirmViewLayout: UIView {
 
     let validatorCell = SubtensorValidatorDetailsCell()
 
+    let validatorsTableView: StackTableView = .create {
+        $0.cellHeight = 44
+        $0.hasSeparators = true
+        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 4, right: 16)
+        $0.isHidden = true
+    }
+
+    let validatorsHeaderCell = StackTableHeaderCell()
+
+    private var legCells: [StackTitleMultiValueCell] = []
+
     let avgBuyPriceCell = SubtensorConfirmViewLayout.createCostBasisCell()
 
     let youWillEarnCell = SubtensorConfirmViewLayout.createCostBasisCell()
@@ -124,6 +135,45 @@ final class SubtensorConfirmViewLayout: UIView {
 }
 
 extension SubtensorConfirmViewLayout {
+    func bind(breakdown: SubtensorConfirmBreakdownViewModel?) {
+        guard breakdown != nil || !validatorsTableView.isHidden else {
+            return
+        }
+
+        validatorsTableView.isHidden = breakdown == nil
+        validatorCell.isHidden = breakdown != nil
+        rootValidatorCell.isHidden = breakdown != nil
+        detailsTableView.updateLayout()
+        rootTableView.updateLayout()
+
+        guard let breakdown else {
+            return
+        }
+
+        validatorsHeaderCell.titleLabel.text = breakdown.title
+
+        while legCells.count < breakdown.legs.count {
+            let cell: StackTitleMultiValueCell = .create { $0.canSelect = false }
+            legCells.append(cell)
+            validatorsTableView.addArrangedSubview(cell)
+        }
+
+        legCells.enumerated().forEach { index, cell in
+            cell.isHidden = index >= breakdown.legs.count
+
+            guard index < breakdown.legs.count else {
+                return
+            }
+
+            let leg = breakdown.legs[index]
+            cell.titleLabel.text = leg.name
+            cell.titleLabel.lineBreakMode = .byTruncatingTail
+            cell.bind(viewModel: BalanceViewModel(amount: leg.amount, price: leg.detail))
+        }
+
+        validatorsTableView.updateLayout()
+    }
+
     enum Mode {
         case swap(SubtensorTradeDirection)
         case rootStake
@@ -180,6 +230,8 @@ private extension SubtensorConfirmViewLayout {
 
         rows.forEach { detailsTableView.addArrangedSubview($0) }
 
+        setupValidatorsTable()
+
         stackView.addArrangedSubview(walletTableView)
         stackView.setCustomSpacing(8, after: walletTableView)
 
@@ -205,7 +257,17 @@ private extension SubtensorConfirmViewLayout {
         walletTableView.addArrangedSubview(rootFeeCell)
 
         stackView.addArrangedSubview(rootTableView)
+        stackView.setCustomSpacing(8, after: rootTableView)
 
         rows.forEach { rootTableView.addArrangedSubview($0) }
+
+        setupValidatorsTable()
+    }
+
+    func setupValidatorsTable() {
+        stackView.addArrangedSubview(validatorsTableView)
+        stackView.setCustomSpacing(8, after: validatorsTableView)
+
+        validatorsTableView.addArrangedSubview(validatorsHeaderCell)
     }
 }
