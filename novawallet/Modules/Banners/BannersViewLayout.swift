@@ -183,10 +183,6 @@ extension BannersViewLayout: SkeletonableView {
 // MARK: Internal
 
 extension BannersViewLayout {
-    func setBackgroundImage(_ image: UIImage?) {
-        backgroundView.setBackground(image)
-    }
-
     func setCloseButton(available: Bool) {
         closeButton.isHidden = !available
     }

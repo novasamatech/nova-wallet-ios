@@ -35,31 +35,13 @@ class BannerBackgroundView: UIView {
         }
     }
 
-    func changeBackground(
-        to image: UIImage?,
+    func setBackground(
+        _ image: UIImage?,
+        blendingTo nextImage: UIImage?,
         progress: CGFloat
     ) {
-        guard progress > 0 else {
-            transitionImageView.image = nil
-            return
-        }
-
-        if progress > 0, progress < 1, transitionImageView.image == nil {
-            transitionImageView.image = image
-        }
-
-        transitionImageView.alpha = progress
-
-        if progress == 1, transitionImageView.image != nil {
-            backgroundImageView.image = image
-            transitionImageView.image = nil
-            transitionImageView.alpha = 0
-        }
-    }
-
-    func setBackground(_ image: UIImage?) {
         backgroundImageView.image = image
-        transitionImageView.image = nil
-        transitionImageView.alpha = 0
+        transitionImageView.image = nextImage
+        transitionImageView.alpha = progress
     }
 }
