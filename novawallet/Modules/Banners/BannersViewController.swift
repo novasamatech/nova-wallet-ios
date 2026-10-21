@@ -306,6 +306,11 @@ extension BannersViewController: UIScrollViewDelegate {
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard
+            let position = currentItemPosition(lastItemIndex: dataSource.numberOfItems() - 1),
+            position == position.rounded()
+        else { return }
+
         scrollViewDidEndDecelerating(scrollView)
     }
 
