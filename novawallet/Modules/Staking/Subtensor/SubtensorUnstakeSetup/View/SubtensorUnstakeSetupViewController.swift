@@ -118,20 +118,25 @@ private extension SubtensorUnstakeSetupViewController {
     }
 
     func applyValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
-        guard isRoot else {
+        guard isRoot || rootView.isValidatorSelectable else {
             applySubnetValidator(viewModel)
             return
         }
 
         let cell = rootView.validatorCell
 
-        if case let .selected(displayAddress) = viewModel {
+        switch viewModel {
+        case let .selected(displayAddress):
             cell.bind(
                 viewModel: StackCellViewModel(
                     details: displayAddress.name ?? displayAddress.address,
                     imageViewModel: displayAddress.imageViewModel
                 )
             )
+        case let .unselected(title):
+            cell.bind(viewModel: StackCellViewModel(details: title, imageViewModel: nil))
+        case .loading:
+            break
         }
 
         rootView.setSkeleton(
@@ -202,7 +207,7 @@ private extension SubtensorUnstakeSetupViewController {
     }
 
     @objc func actionValidatorInfo() {
-        presenter.showValidatorInfo()
+        presenter.selectValidator()
     }
 
     @objc func actionProceed() {
@@ -226,6 +231,7 @@ extension SubtensorUnstakeSetupViewController: SubtensorUnstakeSetupViewProtocol
 
         rootView.amountInputView.bind(priceViewModel: viewModel.inputPrice)
         rootView.setAmountInputEnabled(viewModel.isInputEnabled)
+        rootView.applyValidatorMode(isRoot: isRoot, isSelectable: viewModel.isValidatorSelectable)
 
         applyDetails(viewModel.details)
         applyNotes(viewModel)

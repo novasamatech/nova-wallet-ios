@@ -12,7 +12,7 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
     func updateAmount(_ newValue: Decimal?)
     func selectMax()
     func selectAmountPercentage(_ percentage: Float)
-    func showValidatorInfo()
+    func selectValidator()
     func showSwapRateInfo()
     func showAvgBuyPriceInfo()
     func proceed()

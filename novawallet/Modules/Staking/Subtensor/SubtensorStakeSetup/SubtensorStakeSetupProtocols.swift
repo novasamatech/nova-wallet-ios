@@ -49,7 +49,7 @@ protocol SubtensorStakeSetupInteractorOutputProtocol: SubtensorBaseInteractorOut
 
 protocol SubtensorStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, SubtensorErrorPresentable, GetTokenOptionsPresentable, SubtensorInfoSheetPresentable,
-    SubtensorValidatorInfoPresentable {
+    SubtensorValidatorInfoPresentable, CollatorStakingDelegationSelectable {
     func showAllSubnets(
         from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState,

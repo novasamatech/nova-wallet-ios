@@ -6,6 +6,7 @@ struct SubtensorUnstakeSetupViewModel {
     let header: SubtensorUnstakeHeaderViewModel
     let inputPrice: String?
     let isInputEnabled: Bool
+    let isValidatorSelectable: Bool
     let details: SubtensorUnstakeDetailsViewModel
     let note: String?
     let feeWarning: String?
@@ -39,6 +40,9 @@ struct SubtensorUnstakeSetupViewModelInput {
     let amount: Balance?
     let validatorHotkey: AccountId?
     let validatorName: String?
+    let isValidatorSelectable: Bool
+    let isAllValidators: Bool
+    let legCap: Int?
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?
     let quote: SubtensorTradeQuote?

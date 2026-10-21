@@ -31,6 +31,33 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         forceQuoteRefresh()
     }
 
+    func selectValidator() {
+        guard let group, group.positions.count > 1 else {
+            showValidatorInfo()
+            return
+        }
+
+        let hotkeys = group.positions.map(\.hotkey)
+        let held = heldHotkeys
+        let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
+        let hasAllAction = hotkeys.filter { !held.contains($0) }.count > 1
+
+        let content = CollatorStakingTargetPickerContent(
+            title: viewModelFactory.createPickerTitle(),
+            viewModels: viewModelFactory.createPickerViewModels(
+                for: group.positions,
+                names: names,
+                disabled: held,
+                netuid: netuid,
+                catalogue: catalogue
+            ),
+            action: hasAllAction ? viewModelFactory.createAllValidatorsAction() : nil,
+            selectedIndex: currentSelection?.hotkey.flatMap { hotkeys.firstIndex(of: $0) } ?? NSNotFound
+        )
+
+        wireframe.showTargetSelection(from: view, content: content, delegate: self, context: hotkeys as NSArray)
+    }
+
     func showValidatorInfo() {
         guard let anchorHotkey, let target else {
             return
@@ -193,6 +220,14 @@ extension SubtensorUnstakeSetupPresenter {
         return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
     }
 
+    var isLegCapped: Bool {
+        guard currentSelection == .all, let group else {
+            return false
+        }
+
+        return SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: heldHotkeys)
+    }
+
     var currentSelection: SubtensorUnstakeSelection? {
         group.map { SubtensorUnstakeSelection.resolve(selection, in: $0, excluding: heldHotkeys) }
     }
@@ -221,6 +256,57 @@ extension SubtensorUnstakeSetupPresenter {
             hotkey: hotkey,
             display: DisplayAddress(address: address, username: validatorName(for: hotkey) ?? ""),
             annualRate: nil
+        )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let hotkeys = context as? [AccountId], index < hotkeys.count else {
+            return
+        }
+
+        let hotkey = hotkeys[index]
+
+        guard !heldHotkeys.contains(hotkey) else {
+            presentHold(for: hotkey)
+            return
+        }
+
+        applySelection(.validator(hotkey))
+    }
+
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        applySelection(.all)
+    }
+
+    private func applySelection(_ newSelection: SubtensorUnstakeSelection) {
+        guard newSelection != currentSelection else {
+            return
+        }
+
+        let previousPlan = feePlan()
+
+        selection = newSelection
+        inputResult = nil
+
+        provideAmountInputViewModel()
+        applyBasisChange(from: previousPlan)
+        provideViewModel()
+    }
+
+    private func presentHold(for hotkey: AccountId) {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        let interval = TimeInterval(holds?[hotkey]?.interval ?? 0)
+        let duration = blockTime.map {
+            (interval * $0.timeInterval).localizedDaysHoursOrFallbackMinutes(for: selectedLocale)
+        } ?? ""
+
+        wireframe.present(
+            message: strings.stakingSubtensorUiPositionHoldMessageFormat(duration),
+            title: strings.stakingSubtensorUiPositionHoldTitle(),
+            closeAction: strings.commonClose(),
+            from: view
         )
     }
 }
