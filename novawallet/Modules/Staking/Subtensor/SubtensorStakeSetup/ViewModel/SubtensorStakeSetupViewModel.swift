@@ -59,7 +59,6 @@ struct SubtensorStakeSetupSubnetViewModel {
 struct SubtensorPickCardViewModel {
     let validator: SubtensorSetupValidatorViewModel
     let validatorRate: String?
-    let isValidatorEditable: Bool
     let browseTitle: String?
     let header: SubtensorPickCardHeaderViewModel?
     let chips: [String]

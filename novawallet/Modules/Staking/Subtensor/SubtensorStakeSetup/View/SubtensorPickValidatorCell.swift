@@ -23,8 +23,8 @@ final class SubtensorPickValidatorCell: RowView<
     @available(*, unavailable)
     required init?(coder _: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func bind(validator: SubtensorSetupValidatorViewModel, rate: String?, isEditable: Bool) {
-        let canSelect = isEditable && !validator.isLoading
+    func bind(validator: SubtensorSetupValidatorViewModel, rate: String?) {
+        let canSelect = !validator.isLoading
         isUserInteractionEnabled = canSelect
         accessoryImageView.isHidden = !canSelect
         loadingView.setLoading(validator.isLoading)
