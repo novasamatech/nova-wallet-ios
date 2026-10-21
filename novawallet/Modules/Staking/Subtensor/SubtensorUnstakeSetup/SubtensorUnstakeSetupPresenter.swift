@@ -23,6 +23,10 @@ final class SubtensorUnstakeSetupPresenter {
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var isShieldQuoteResolved = false
+    var shieldQuoteOperation: SubtensorOperation?
+    var shieldQuoteInputs: SubtensorUnstakeShieldQuoteInputs?
     var preflight: SubtensorPreflight?
     var blockTime: BlockTime?
     var existentialDeposit: Balance?
@@ -268,9 +272,11 @@ extension SubtensorUnstakeSetupPresenter {
         if newShape != feeShape {
             feeShape = newShape
             fee = nil
+            resetShieldQuote()
         }
 
         interactor.estimateFee(for: operation)
+        refreshShieldQuote(for: operation)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
@@ -368,7 +374,7 @@ extension SubtensorUnstakeSetupPresenter {
             amount: amount,
             primaryHotkey: group?.primaryHotkey,
             validatorName: validatorItem?.name,
-            fee: fee,
+            fee: networkFee,
             price: price,
             quote: quoteFlow.freshQuote,
             isQuoteFailed: isQuoteFailed,
@@ -387,14 +393,4 @@ extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
     var quoteInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var loadingView: LoadableViewProtocol? { view }
     var alphaDisplayInfo: AssetBalanceDisplayInfo { inputDisplayInfo }
-}
-
-extension SubtensorUnstakeSetupPresenter: Localizable {
-    func applyLocalization() {
-        if let view, view.isSetup {
-            provideAmountInputViewModel()
-            provideAssetViewModel()
-            provideViewModel()
-        }
-    }
 }

@@ -130,6 +130,9 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+
+        refreshShieldQuote(for: shieldQuoteOperation)
+        provideViewModel()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {
@@ -144,7 +147,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         provideViewModel()
     }
 
-    func didReceiveShieldQuote(_: SubtensorShieldQuote?) {}
+    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
+        shieldQuote = quote
+        isShieldQuoteResolved = true
+
+        provideViewModel()
+    }
 
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         let previousBasis = basis
@@ -175,6 +183,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             forceQuoteRefresh()
         }
 
+        retryUnresolvedShieldQuote()
         provideViewModel()
     }
 
@@ -190,5 +199,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+
+        provideViewModel()
     }
 }

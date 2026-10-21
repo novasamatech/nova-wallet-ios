@@ -12,13 +12,37 @@ extension SubtensorStakeSetupPresenter {
         return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
     }
 
-    var maxAmount: Balance? {
-        guard let transferable, let fee else {
+    var networkFee: ExtrinsicFeeProtocol? {
+        guard isShieldQuoteResolved else {
             return nil
         }
 
-        let networkFee = eligibleShieldQuote?.totalFee.amount ?? fee.amountForCurrentAccount ?? 0
+        return eligibleShieldQuote?.totalFee ?? fee
+    }
 
-        return SubtensorAmountPolicy.maxBuyOrStake(transferable: transferable, networkFee: networkFee)
+    var maxAmount: Balance? {
+        guard let transferable, let networkFee else {
+            return nil
+        }
+
+        return SubtensorAmountPolicy.maxBuyOrStake(
+            transferable: transferable,
+            networkFee: networkFee.amountForCurrentAccount ?? 0
+        )
+    }
+
+    func resetShieldQuote() {
+        shieldQuote = nil
+        shieldQuoteOperation = nil
+        isShieldQuoteResolved = false
+        interactor.cancelShieldQuote()
+    }
+
+    func retryUnresolvedShieldQuote() {
+        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
+            return
+        }
+
+        interactor.estimateShieldQuote(for: shieldQuoteOperation)
     }
 }

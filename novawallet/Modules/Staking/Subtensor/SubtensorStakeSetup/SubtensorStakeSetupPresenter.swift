@@ -29,6 +29,8 @@ final class SubtensorStakeSetupPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
+    var shieldQuoteOperation: SubtensorOperation?
+    var isShieldQuoteResolved = false
     var existentialDeposit: Balance?
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
@@ -151,6 +153,7 @@ extension SubtensorStakeSetupPresenter {
         requestPresetIfReady()
         refreshPreflight()
         fee = nil
+        resetShieldQuote()
         refreshFee()
         updateQuote()
         provideViewModel()
@@ -241,6 +244,8 @@ extension SubtensorStakeSetupPresenter {
         }
 
         interactor.estimateFee(for: operation)
+
+        shieldQuoteOperation = operation
         interactor.estimateShieldQuote(for: operation)
     }
 

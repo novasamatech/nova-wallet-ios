@@ -17,6 +17,7 @@ final class SubtensorConfirmPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
+    var shieldQuoteOperation: SubtensorOperation?
     var isShieldQuoteResolved = false
     var isShieldOn = true
     var positionsState: Multistaking.SubtensorState?
@@ -152,6 +153,9 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
+
+        shieldQuoteOperation = operation
+        isShieldQuoteResolved = false
         interactor.estimateShieldQuote(for: operation)
     }
 

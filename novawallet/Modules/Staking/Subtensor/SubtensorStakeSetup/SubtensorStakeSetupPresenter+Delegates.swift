@@ -47,7 +47,7 @@ extension SubtensorStakeSetupPresenter {
         SubtensorStakeValidatingDependencies(
             amount: inputAmount(),
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             preflight: preflight,
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
