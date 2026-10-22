@@ -54,23 +54,26 @@ final class StakingDashboardViewModelFactory {
         self.announcementViewModelFactory = announcementViewModelFactory
     }
 
-    private func createEstimatedEarnings(
+    func createEstimatedEarnings(
         from value: Decimal?,
         isSyncing: Bool,
+        formatter: LocalizableResource<NumberFormatter>? = nil,
         locale: Locale
     ) -> LoadableViewModelState<String?> {
         guard let value = value else {
             return isSyncing ? .loading : .loaded(value: nil)
         }
 
-        guard let valueString = estimatedEarningsFormatter.value(for: locale).stringFromDecimal(value) else {
+        let formatter = formatter ?? estimatedEarningsFormatter
+
+        guard let valueString = formatter.value(for: locale).stringFromDecimal(value) else {
             return isSyncing ? .loading : .loaded(value: nil)
         }
 
         return isSyncing ? .cached(value: valueString) : .loaded(value: valueString)
     }
 
-    private func createAmount(
+    func createAmount(
         for value: BigUInt?,
         priceData: PriceData?,
         assetDisplayInfo: AssetBalanceDisplayInfo,
@@ -97,7 +100,7 @@ final class StakingDashboardViewModelFactory {
         return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)
     }
 
-    private func createStakingStatus(
+    func createStakingStatus(
         for model: StakingDashboardItemModel.Concrete
     ) -> LoadableViewModelState<StakingDashboardEnabledViewModel.Status> {
         guard let dashboardItem = model.dashboardItem else {
@@ -124,7 +127,7 @@ final class StakingDashboardViewModelFactory {
         }
     }
 
-    private func createStakingType(
+    func createStakingType(
         for stakingOption: Multistaking.ChainAssetOption,
         singleActive: Bool,
         locale: Locale
@@ -151,7 +154,7 @@ final class StakingDashboardViewModelFactory {
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingPool().uppercased(),
                 icon: R.image.iconStakingPool()
             )
-        case .parachain, .turing, .mythos, .unsupported:
+        case .parachain, .turing, .mythos, .subtensor, .unsupported:
             return nil
         }
     }
@@ -165,10 +168,23 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         singleActive: Bool,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel {
+        if model.stakingOption.type == .subtensor {
+            return createSubtensorActiveStakingViewModel(
+                for: model,
+                announcement: announcement,
+                privacyModeEnabled: privacyModeEnabled,
+                singleActive: singleActive,
+                locale: locale
+            )
+        }
+
         let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
+
+        let title = [chainAssetViewModel.assetName, strings.commonRewards().lowercased()].joined(with: .space)
 
         let estimatedEarnings = createEstimatedEarnings(
             from: model.dashboardItem?.maxApy,
@@ -202,8 +218,10 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         return .init(
             chainAssetViewModel: chainAssetViewModel,
-            totalRewards: .wrapped(totalRewards, with: privacyModeEnabled),
+            title: title,
+            amount: .wrapped(totalRewards, with: privacyModeEnabled),
             status: status,
+            stakeTitle: strings.stakingYourStake(),
             yourStake: .wrapped(yourStake, with: privacyModeEnabled),
             estimatedEarnings: estimatedEarnings,
             stakingType: stakingType,
@@ -221,11 +239,9 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
 
-        let estimatedEarnings = createEstimatedEarnings(
-            from: model.maxApy,
-            isSyncing: model.isOffchainSync,
-            locale: locale
-        )
+        let estimatedEarnings = chainAsset.asset.hasSubtensorStaking
+            ? createSubtensorMaxApy(from: model.maxApy, isSyncing: model.isOnchainSync, locale: locale)
+            : createEstimatedEarnings(from: model.maxApy, isSyncing: model.isOffchainSync, locale: locale)
 
         let balance = createAmount(
             for: model.availableBalance,
@@ -245,7 +261,8 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             chainAssetViewModel: loadableChainAsset,
             estimatedEarnings: estimatedEarnings,
             balance: .wrapped(balance, with: privacyModeEnabled),
-            stakingType: stakingType
+            stakingType: stakingType,
+            isNew: chainAsset.chain.newFeatures.contains(.staking)
         )
     }
 

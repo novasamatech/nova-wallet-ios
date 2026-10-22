@@ -33,4 +33,34 @@ public enum AnalyticsPropertyKey: String, CaseIterable {
     case screen
     case nftCountBucket = "nft_count_bucket"
     case chain
+    case target
+    case mode
+    case flow
+    case kind
+    case outcome
+    case endpoint
+    case walletType = "wallet_type"
+    case netuid
+    case selectionMethod = "selection_method"
+    case validatorSource = "validator_source"
+    case hasNewBadge = "has_new_badge"
+    case priceMoved = "price_moved"
+    case retryable
+    case action
+    case value
+    case period
+    case chartState = "chart_state"
+    case rewardsState = "rewards_state"
+    case hasHold = "has_hold"
+    case hasLock = "has_lock"
+    case hasLocked = "has_locked"
+    case hotkeyCountBucket = "hotkey_count_bucket"
+    case validatorsCountBucket = "validators_count_bucket"
+    case positionsCountBucket = "positions_count_bucket"
+    case hasRoot = "has_root"
+    case claimedZero = "claimed_zero"
+    case warning
+    case sort
+    case hideThinPools = "hide_thin_pools"
+    case unusualApyFilter = "unusual_apy_filter"
 }

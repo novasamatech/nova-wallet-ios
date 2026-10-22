@@ -8,6 +8,7 @@ protocol FeatureSupportChecking {
         of feature: SupportCheckingFeatureType,
         for metaAccountModel: MetaAccountModel,
         sheetPresentingView: ControllerBackedProtocol?,
+        onRefusal: ((OperationCheckCommonResult) -> Void)?,
         successClosure: @escaping () -> Void
     )
 }
@@ -25,9 +26,22 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
         of feature: SupportCheckingFeatureType,
         for metaAccountModel: MetaAccountModel,
         sheetPresentingView: ControllerBackedProtocol?,
+        onRefusal: ((OperationCheckCommonResult) -> Void)? = nil,
         successClosure: @escaping () -> Void
     ) {
         guard let sheetPresentingView else { return }
+
+        let completion: FeatureSupportCheckerClosure = { [weak self] result in
+            if !result.isAvailable {
+                onRefusal?(result)
+            }
+
+            self?.presentOperationCompletion(
+                on: sheetPresentingView,
+                by: result,
+                successRouteClosure: successClosure
+            )
+        }
 
         switch feature {
         case let .ramp(type, chainAsset, all):
@@ -35,35 +49,19 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
                 wallet: metaAccountModel,
                 rampActions: all,
                 rampType: type,
-                chainAsset: chainAsset
-            ) { [weak self] result in
-                self?.presentOperationCompletion(
-                    on: sheetPresentingView,
-                    by: result,
-                    successRouteClosure: successClosure
-                )
-            }
+                chainAsset: chainAsset,
+                completion: completion
+            )
         case .card:
-            featureSupportChecker.checkCardSupport(
-                for: metaAccountModel
-            ) { [weak self] result in
-                self?.presentOperationCompletion(
-                    on: sheetPresentingView,
-                    by: result,
-                    successRouteClosure: successClosure
-                )
-            }
+            featureSupportChecker.checkCardSupport(for: metaAccountModel, completion: completion)
         case let .gift(chains):
-            featureSupportChecker.checkGiftSupport(
+            featureSupportChecker.checkGiftSupport(for: metaAccountModel, chains: chains, completion: completion)
+        case let .subtensorStaking(chain):
+            featureSupportChecker.checkSubtensorStakingSupport(
                 for: metaAccountModel,
-                chains: chains
-            ) { [weak self] result in
-                self?.presentOperationCompletion(
-                    on: sheetPresentingView,
-                    by: result,
-                    successRouteClosure: successClosure
-                )
-            }
+                chain: chain,
+                completion: completion
+            )
         }
     }
 }

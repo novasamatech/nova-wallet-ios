@@ -110,6 +110,34 @@ Adding a setting = a `SettingsKey` case + a typed accessor. Screens observe sett
 `CrowdloanChainSettings`) is the pattern for a single persisted value that also needs async setup
 and change notification.
 
+### NovaAuth state
+
+NovaAuth stores installation/context, registration state with its pending-probe cooldown, the
+refusal delay and owed bearer deletion in its app settings record; no bearer goes into
+preferences. A retired identity keeps its reason until the replacement client UUID/key are saved
+together after key generation. Deadlines are boot-scoped. Successful bearer installation saves the
+registered state, which clears the refusal delay, immediately before the Keychain write.
+
+State writes use SettingsManager set/read-back. The production manager
+internally calls `UserDefaults.synchronize()`. Matching cached read-back does not acknowledge
+durable persistence: refused disk writes may remain undetected, and no extra commit callback
+changes that. Detected validation/read-back failures close admission and retain the intended
+state for repair; `storageFailed` marks entry to this state. Pending-probe reservations precede
+their send, but survival across relaunch depends on ordinary settings persistence, not a
+fail-closed disk write guarantee. Settings and bearer writes remain separate: an interruption after
+the registered state is saved but before the Keychain write leaves a registered binding without a
+bearer, and the next demand issues one on that binding.
+
+The app's default Keychain access group holds one fingerprint-tagged `current` record, cached
+by the owner under its gate; a flagged one-shot launch migration deletes the record an earlier
+build kept under the App Group, together with the released NovaAppAttest settings keys. The
+settings record also keeps the refusal delay (deadline, tier, app version) beside the
+installation identity. Conditional removal
+matches the fingerprint atomically. Only the main writer under its gate may remove an untagged
+legacy record after conditional removal returns false and reload still equals that record.
+Corrupt reads remain nondestructive.
+See [NovaAuth recovery and storage](../../../Packages/NovaAuth/README.md) for the detailed policy.
+
 ## Caches & Files
 
 - `InMemoryCache` (`Common/Helpers/InMemoryCache/`) for process-lifetime caches.

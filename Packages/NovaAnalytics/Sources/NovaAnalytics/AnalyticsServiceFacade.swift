@@ -3,7 +3,6 @@ import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
 import SDKLogger
-import NovaAppAttest
 
 public final class AnalyticsServiceFacade {
     public let consent: AnalyticsConsentManagerProtocol
@@ -45,13 +44,7 @@ public final class AnalyticsServiceFacade {
             repository: storageFacade.createEventRepository()
         )
 
-        let appAttest = configuration.appAttestService
-
-        let attestationMode = BackendAttestationModeResolver.resolve(
-            isAppAttestSupported: appAttest.isSupported
-        )
-
-        let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
+        let availability = AnalyticsAvailabilityProvider()
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,
@@ -59,12 +52,7 @@ public final class AnalyticsServiceFacade {
         )
 
         let gatewayResolver = AnalyticsGatewayResolver(
-            infraURLProvider: configuration.infraURLProvider,
-            appAttest: appAttest,
-            attestationMode: attestationMode,
-            appIdentity: configuration.appIdentity,
-            settingsManager: settingsManager,
-            operationQueue: configuration.operationQueue,
+            authSource: configuration.authProvider,
             logger: configuration.logger
         )
 
@@ -73,6 +61,7 @@ public final class AnalyticsServiceFacade {
         let uploader = AnalyticsUploader(
             queue: eventQueue,
             identity: identity,
+            isConsentEnabled: { consent.isEnabled },
             gatewayResolver: gatewayResolver,
             operationQueue: configuration.operationQueue,
             appVersion: configuration.appVersion,
@@ -85,7 +74,6 @@ public final class AnalyticsServiceFacade {
             queue: eventQueue,
             identity: identity,
             uploader: uploader,
-            gatewayResolver: gatewayResolver,
             operationQueue: configuration.analyticsOperationQueue,
             uploadOperationQueue: configuration.operationQueue,
             logger: configuration.logger
@@ -106,11 +94,7 @@ public final class AnalyticsServiceFacade {
         logger = configuration.logger
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
-            guard !oldValue, newValue else {
-                return
-            }
-
-            self?.startSessionIfActive()
+            self?.consentChanged(from: oldValue, to: newValue)
         }
 
         applicationHandler.delegate = self
@@ -195,6 +179,11 @@ extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
 // MARK: - Private
 
 private extension AnalyticsServiceFacade {
+    func consentChanged(from oldValue: Bool, to newValue: Bool) {
+        guard newValue, !oldValue else { return }
+        startSessionIfActive()
+    }
+
     func reconcile() {
         mutex.lock()
 

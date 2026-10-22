@@ -24,6 +24,10 @@ protocol AssetBalanceFormatterFactoryProtocol {
     func createInputTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
+
+    func createCompactTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter>
 }
 
 extension AssetBalanceFormatterFactoryProtocol {
@@ -67,13 +71,15 @@ class AssetBalanceFormatterFactory {
         for info: AssetBalanceDisplayInfo,
         roundingMode: NumberFormatter.RoundingMode,
         preferredPrecisionOffset: UInt8 = 0,
-        usesSuffixForBigNumbers: Bool = true
+        usesSuffixForBigNumbers: Bool = true,
+        usesThousandsSuffix: Bool = false
     ) -> LocalizableResource<TokenFormatter> {
         let formatter = createCompoundFormatter(
             for: info.displayPrecision,
             roundingMode: roundingMode,
             prefferedPrecisionOffset: preferredPrecisionOffset,
-            usesSuffixForBigNumber: usesSuffixForBigNumbers
+            usesSuffixForBigNumber: usesSuffixForBigNumbers,
+            usesThousandsSuffix: usesThousandsSuffix
         )
 
         let tokenFormatter = TokenFormatter(
@@ -94,7 +100,8 @@ class AssetBalanceFormatterFactory {
         for preferredPrecision: UInt16,
         roundingMode: NumberFormatter.RoundingMode = .down,
         prefferedPrecisionOffset: UInt8 = 0,
-        usesSuffixForBigNumber: Bool = true
+        usesSuffixForBigNumber: Bool = true,
+        usesThousandsSuffix: Bool = false
     ) -> LocalizableDecimalFormatting {
         var abbreviations: [BigNumberAbbreviation] = [
             BigNumberAbbreviation(
@@ -124,6 +131,21 @@ class AssetBalanceFormatterFactory {
                 formatter: nil
             )
         ]
+
+        if usesThousandsSuffix {
+            abbreviations.append(
+                BigNumberAbbreviation(
+                    threshold: 1000,
+                    divisor: 1000.0,
+                    suffix: "K",
+                    formatter: NumberFormatter.decimalFormatter(
+                        precision: 1,
+                        rounding: roundingMode,
+                        usesIntGrouping: true
+                    )
+                )
+            )
+        }
 
         if usesSuffixForBigNumber {
             abbreviations.append(contentsOf: [
@@ -198,6 +220,17 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
             roundingMode: .down,
             preferredPrecisionOffset: 2,
             usesSuffixForBigNumbers: useSuffixForBigNumbers
+        )
+    }
+
+    func createCompactTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter> {
+        createTokenFormatterCommon(
+            for: info,
+            roundingMode: .down,
+            usesSuffixForBigNumbers: true,
+            usesThousandsSuffix: true
         )
     }
 

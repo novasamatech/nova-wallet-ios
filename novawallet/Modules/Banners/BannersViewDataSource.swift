@@ -90,15 +90,16 @@ extension BannersViewDataSource: BannersViewDataSourceProtocol {
     }
 
     func pageIndex(for itemIndex: Int) -> Int {
-        guard let viewModels else {
+        guard let viewModels, looped else {
             return 0
         }
 
-        return if looped, itemIndex == 0 {
+        return switch itemIndex {
+        case 0:
             viewModels.count - 3
-        } else if !looped, itemIndex == 0 || looped, itemIndex == lastIndex {
+        case viewModels.count - 1:
             0
-        } else {
+        default:
             itemIndex - 1
         }
     }

@@ -50,7 +50,21 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
             hasAssignedStake: entity.hasAssignedStake,
             stake: stake,
             totalRewards: totalRewards,
-            maxApy: maxApy
+            maxApy: maxApy,
+            subtensorDetails: decodeSubtensorDetails(from: entity, stakingType: stakingType)
         )
+    }
+}
+
+private extension StakingDashboardItemMapper {
+    func decodeSubtensorDetails(
+        from entity: CoreDataEntity,
+        stakingType: StakingType
+    ) -> Multistaking.DashboardItemSubtensorDetails? {
+        guard stakingType == .subtensor, let typeDetails = entity.typeDetails else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode(Multistaking.DashboardItemSubtensorDetails.self, from: typeDetails)
     }
 }

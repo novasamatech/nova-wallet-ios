@@ -3,11 +3,12 @@ import Foundation
 public extension AnalyticsEvent {
     static func stakingFlowOpened(
         network: AnalyticsContentValue,
-        source: StakingFlowSource
+        source: StakingFlowSource,
+        hasNewBadge: Bool? = nil
     ) -> AnalyticsEvent {
         AnalyticsEvent(
             name: .stakingFlowOpened,
-            properties: [.network: network, .source: source]
+            properties: [.network: network, .source: source, .hasNewBadge: hasNewBadge]
         )
     }
 

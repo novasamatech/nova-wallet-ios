@@ -26,6 +26,12 @@ protocol FeatureSupportCheckerProtocol {
         chains: [ChainModel],
         completion: @escaping FeatureSupportCheckerClosure
     )
+
+    func checkSubtensorStakingSupport(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        completion: @escaping FeatureSupportCheckerClosure
+    )
 }
 
 extension FeatureSupportCheckerProtocol {
@@ -216,6 +222,31 @@ private extension FeatureSupportChecker {
             .commonResult(.noGiftSupport(wallet))
         }
     }
+
+    static func checkSubtensorStakingByWalletTypeSupported(
+        _ walletType: MetaAccountModelType
+    ) -> FeatureSupportCheckResult {
+        switch walletType {
+        case .secrets, .paritySigner, .polkadotVault, .watchOnly:
+            .commonResult(.available)
+        case .ledger, .genericLedger:
+            .commonResult(.ledgerNotSupported)
+        case .proxied:
+            .commonResult(.noSubtensorStakingSupport(walletType))
+        case .multisig:
+            .delayedExecutionCheckRequired
+        }
+    }
+}
+
+extension FeatureSupportChecker {
+    static func refusesSubtensorStakingSigning(for walletType: MetaAccountModelType) -> Bool {
+        guard case let .commonResult(result) = checkSubtensorStakingByWalletTypeSupported(walletType) else {
+            return false
+        }
+
+        return !result.isAvailable
+    }
 }
 
 // MARK: - FeatureSupportCheckerProtocol
@@ -302,6 +333,30 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
                 chains: chains
             ) { hasSupport in
                 let result: OperationCheckCommonResult = hasSupport ? .available : .noGiftSupport(wallet)
+
+                completion(result)
+            }
+        }
+    }
+
+    func checkSubtensorStakingSupport(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        completion: @escaping FeatureSupportCheckerClosure
+    ) {
+        let checkResult = Self.checkSubtensorStakingByWalletTypeSupported(wallet.type)
+
+        switch checkResult {
+        case let .commonResult(result):
+            completion(result)
+        case .delayedExecutionCheckRequired:
+            executeAccountExistenceAndDelay(
+                wallet: wallet,
+                chain: chain
+            ) { hasSupport in
+                let result: OperationCheckCommonResult = hasSupport
+                    ? .available
+                    : .noSubtensorStakingSupport(wallet.type)
 
                 completion(result)
             }

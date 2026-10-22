@@ -84,8 +84,8 @@ private extension DAppListViewLayout {
                 section = dAppFavoritesSectionLayout()
                 contentInsets.bottom = 24
                 contentInsets.top = 12
-            case .category:
-                section = dAppCategorySectionLayout()
+            case let .category(model):
+                section = dAppCategorySectionLayout(itemsCount: model.cells.count)
                 contentInsets.bottom = 24
                 contentInsets.top = 12
             case .notLoaded:
@@ -165,11 +165,13 @@ private extension DAppListViewLayout {
         return section
     }
 
-    func dAppCategorySectionLayout() -> NSCollectionLayoutSection {
+    func dAppCategorySectionLayout(itemsCount: Int) -> NSCollectionLayoutSection {
+        let rowsCount = max(min(itemsCount, Constants.categoryMaxRowsCount), 1)
+
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
-                heightDimension: .absolute(64)
+                heightDimension: .absolute(Constants.categoryItemHeight)
             )
         )
         let group = NSCollectionLayoutGroup.vertical(
@@ -178,12 +180,12 @@ private extension DAppListViewLayout {
                 heightDimension: .fractionalHeight(1.0)
             ),
             subitem: item,
-            count: 3
+            count: rowsCount
         )
         let containerGroup = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.85),
-                heightDimension: .absolute(item.layoutSize.heightDimension.dimension * 3)
+                heightDimension: .absolute(Constants.categoryItemHeight * CGFloat(rowsCount))
             ),
             subitem: group,
             count: 1
@@ -240,5 +242,14 @@ private extension DAppListViewLayout {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
+    }
+}
+
+// MARK: Constants
+
+private extension DAppListViewLayout {
+    enum Constants {
+        static let categoryItemHeight: CGFloat = 64
+        static let categoryMaxRowsCount = 3
     }
 }

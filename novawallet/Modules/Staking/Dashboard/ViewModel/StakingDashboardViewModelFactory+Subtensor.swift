@@ -1,0 +1,180 @@
+import Foundation
+
+extension StakingDashboardViewModelFactory {
+    func createSubtensorActiveStakingViewModel(
+        for model: StakingDashboardItemModel.Concrete,
+        announcement: AnnouncementViewModel?,
+        privacyModeEnabled: Bool,
+        singleActive: Bool,
+        locale: Locale
+    ) -> StakingDashboardEnabledViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let details = model.dashboardItem?.subtensorDetails
+
+        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: model.chainAsset)
+
+        let composition = details.flatMap { createSubtensorComposition(for: $0, locale: locale) }
+
+        let title = composition.map {
+            strings.stakingSubtensorUiJoinDotFormat(chainAssetViewModel.assetName, $0)
+        } ?? chainAssetViewModel.assetName
+
+        let amount = createSubtensorTotalStake(for: model, details: details, marksEstimate: true, locale: locale)
+
+        let panel: SubtensorPanel
+
+        if let details, details.rootStake == nil, details.subnetCount > 0 {
+            panel = createSubtensorSubnetPanel(for: model, details: details, locale: locale)
+        } else {
+            panel = createSubtensorRootPanel(for: model, details: details, locale: locale)
+        }
+
+        let stakingType = createStakingType(
+            for: model.stakingOption,
+            singleActive: singleActive,
+            locale: locale
+        )
+
+        return .init(
+            chainAssetViewModel: chainAssetViewModel,
+            title: title,
+            amount: .wrapped(amount, with: privacyModeEnabled),
+            status: createStakingStatus(for: model),
+            stakeTitle: panel.title,
+            yourStake: .wrapped(panel.stake, with: privacyModeEnabled),
+            estimatedEarnings: panel.estimatedEarnings,
+            stakingType: stakingType,
+            announcement: announcement
+        )
+    }
+
+    func createSubtensorMaxApy(
+        from maxApy: Decimal?,
+        isSyncing: Bool,
+        locale: Locale
+    ) -> LoadableViewModelState<String?> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return createEstimatedEarnings(
+            from: maxApy,
+            isSyncing: isSyncing,
+            formatter: NumberFormatter.subtensorPercent,
+            locale: locale
+        ).map { $0.map { strings.stakingSubtensorUiDashboardMaxApyFormat($0) } }
+    }
+}
+
+private extension StakingDashboardViewModelFactory {
+    typealias SubtensorPanel = (
+        title: String,
+        stake: LoadableViewModelState<BalanceViewModelProtocol>,
+        estimatedEarnings: LoadableViewModelState<String?>
+    )
+
+    func createSubtensorRootPanel(
+        for model: StakingDashboardItemModel.Concrete,
+        details: Multistaking.DashboardItemSubtensorDetails?,
+        locale: Locale
+    ) -> SubtensorPanel {
+        let rootStake = createAmount(
+            for: details.map { $0.rootStake ?? 0 },
+            priceData: model.price,
+            assetDisplayInfo: model.chainAsset.assetDisplayInfo,
+            isSyncing: model.isOnchainSync,
+            locale: locale
+        )
+
+        let hasRootStake = details.map { $0.rootStake != nil } ?? true
+        let isRootRatePending = details.map { ($0.rootStake ?? 0) > 0 && $0.rootRate == nil } ?? false
+
+        let estimatedEarnings = createEstimatedEarnings(
+            from: hasRootStake ? details?.rootRate : nil,
+            isSyncing: (hasRootStake && model.isOnchainSync) || isRootRatePending,
+            formatter: NumberFormatter.subtensorPercent,
+            locale: locale
+        )
+
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiDashboardRoot()
+
+        return (title, rootStake, estimatedEarnings)
+    }
+
+    func createSubtensorSubnetPanel(
+        for model: StakingDashboardItemModel.Concrete,
+        details: Multistaking.DashboardItemSubtensorDetails,
+        locale: Locale
+    ) -> SubtensorPanel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let title = details.subnetCount == 1
+            ? strings.stakingSubtensorUiDashboardSubnets(format: details.subnetCount)
+            : strings.stakingSubtensorUiDashboardSubnetsTitle()
+
+        let estimatedEarnings = createEstimatedEarnings(
+            from: details.subnetRate,
+            isSyncing: model.isOnchainSync || details.isFullyPriced == nil,
+            formatter: NumberFormatter.subtensorPercent,
+            locale: locale
+        )
+
+        let stake = createSubtensorTotalStake(for: model, details: details, marksEstimate: false, locale: locale)
+
+        return (title, stake, estimatedEarnings)
+    }
+
+    func createSubtensorTotalStake(
+        for model: StakingDashboardItemModel.Concrete,
+        details: Multistaking.DashboardItemSubtensorDetails?,
+        marksEstimate: Bool,
+        locale: Locale
+    ) -> LoadableViewModelState<BalanceViewModelProtocol> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if details?.isFullyPriced == false {
+            let unknownTotal = BalanceViewModel(amount: strings.stakingSubtensorUiValueUnknown(), price: nil)
+
+            return model.isOnchainSync ? .cached(value: unknownTotal) : .loaded(value: unknownTotal)
+        }
+
+        if let details, details.isFullyPriced == nil {
+            return .loading
+        }
+
+        let totalStake = createAmount(
+            for: model.dashboardItem?.stake,
+            priceData: model.price,
+            assetDisplayInfo: model.chainAsset.assetDisplayInfo,
+            isSyncing: model.isOnchainSync,
+            locale: locale
+        )
+
+        guard marksEstimate, (details?.subnetCount ?? 0) > 0 else {
+            return totalStake
+        }
+
+        return totalStake.map { viewModel -> BalanceViewModelProtocol in
+            BalanceViewModel(
+                amount: viewModel.amount,
+                price: viewModel.price.map { strings.stakingSubtensorUiDashboardEstimatedFormat($0) }
+            )
+        }
+    }
+
+    func createSubtensorComposition(
+        for details: Multistaking.DashboardItemSubtensorDetails,
+        locale: Locale
+    ) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        switch (details.rootStake != nil, details.subnetCount > 0) {
+        case (true, true):
+            return strings.stakingSubtensorUiDashboardRootSubnets(format: details.subnetCount)
+        case (true, false):
+            return strings.stakingSubtensorUiDashboardRoot()
+        case (false, true):
+            return strings.stakingSubtensorUiDashboardSubnets(format: details.subnetCount)
+        case (false, false):
+            return nil
+        }
+    }
+}

@@ -35,6 +35,7 @@ enum KnowChainId {
     static let availTuringTestnet = "d3d2f3a3495dc597434a99d7d449ebad6616db45e4e4f178f31cc6fa14378b70"
     static let vara = "fe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763"
     static let mythos = "f6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9"
+    static let bittensor = "2f0555cc76fc2840a25a6ea3b9637146806f1f44b090c175ffde2a7e5ab36c03"
 
     static var kiltOnEnviroment: String {
         #if F_DEV

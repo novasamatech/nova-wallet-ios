@@ -1,0 +1,262 @@
+import Foundation
+
+extension SubtensorOperationResultViewModelFactory {
+    func createSheetViewModel(
+        for state: SubtensorOperationResultState,
+        context: SubtensorResultViewContext,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        switch state {
+        case .progress:
+            createProgressSheet(for: context.request, locale: locale)
+        case let .done(outcome, _) where context.request.origin == .claim:
+            createClaimDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
+        case let .done(outcome, _):
+            createDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
+        case let .failed(failure, _, holdRemaining):
+            createFailedSheet(
+                for: failure,
+                holdRemaining: holdRemaining,
+                request: context.request,
+                locale: locale
+            )
+        case .unconfirmed:
+            createUnconfirmedSheet(for: context.request, locale: locale)
+        }
+    }
+}
+
+private extension SubtensorOperationResultViewModelFactory {
+    func landingActions(
+        for request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> [SubtensorResultActionViewModel] {
+        if request.origin == .newPosition {
+            return [action(.viewPosition, locale: locale)]
+        }
+
+        if request.emptiesPosition {
+            return [action(.yourBittensor, locale: locale)]
+        }
+
+        return [action(.yourBittensor, locale: locale), action(.backToPosition, locale: locale)]
+    }
+
+    func networkFeeRow(
+        for state: SubtensorOperationResultState,
+        request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetRowViewModel {
+        let fee = networkFee(for: state, request: request, locale: locale)
+
+        return SubtensorResultSheetRowViewModel(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),
+            value: fee.amount,
+            fiat: fee.price
+        )
+    }
+
+    func createProgressSheet(
+        for request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let amount = formatAmount(request.payAmount, info: taoInfo, locale: locale)
+
+        let message = switch request.origin {
+        case .addStake:
+            strings.stakingSubtensorResultRootStakingMoreProgressFormat(amount)
+        case .unstake:
+            strings.stakingSubtensorResultRootUnstakingProgressFormat(amount)
+        case .claim:
+            strings.stakingSubtensorResultRootClaimingProgressFormat(amount.approximatelyEqual())
+        case .newPosition, .buyMore, .sell:
+            strings.stakingSubtensorResultRootStakingProgressFormat(amount)
+        }
+
+        let title = switch request.origin {
+        case .newPosition:
+            strings.stakingSubtensorResultStakingTitle()
+        case .claim:
+            strings.stakingSubtensorResultClaimingTitle()
+        case .addStake, .buyMore, .unstake, .sell:
+            strings.stakingSubtensorResultUpdatingTitle()
+        }
+
+        return SubtensorResultSheetViewModel(
+            status: .progress,
+            title: title,
+            message: message,
+            rows: [],
+            reason: nil,
+            actions: []
+        )
+    }
+
+    func createDoneSheet(
+        for outcome: SubtensorOperationOutcome,
+        state: SubtensorOperationResultState,
+        request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let stakeMoved = (outcome.executed?.tao ?? request.payAmount) + (outcome.alphaFeePaid ?? 0)
+        let stakeMovedString = formatAmount(stakeMoved, info: taoInfo, locale: locale)
+        let feeRow = networkFeeRow(for: state, request: request, locale: locale)
+
+        guard request.origin != .newPosition else {
+            let validatorRow = SubtensorResultSheetRowViewModel(
+                title: strings.stakingCommonValidator(),
+                value: request.validator.name,
+                fiat: nil
+            )
+
+            return SubtensorResultSheetViewModel(
+                status: .done,
+                title: strings.stakingSubtensorResultRootStakedFormat(stakeMovedString),
+                message: strings.stakingSubtensorResultRootLiveMessage(),
+                rows: [validatorRow, feeRow],
+                reason: nil,
+                actions: [action(.discoverSubnets, locale: locale), action(.viewPosition, locale: locale)]
+            )
+        }
+
+        let isUnstake = request.origin == .unstake
+        let stakeAfter = isUnstake
+            ? (request.emptiesPosition ? 0 : request.stakeBefore.subtractOrZero(stakeMoved))
+            : request.stakeBefore + stakeMoved
+        let stakeAfterString = formatAmount(stakeAfter, info: taoInfo, locale: locale)
+
+        let title = isUnstake
+            ? strings.stakingSubtensorResultRootUnstakedFormat(stakeMovedString)
+            : strings.stakingSubtensorResultRootStakedMoreFormat(stakeMovedString)
+
+        let message = if isUnstake, request.emptiesPosition {
+            strings.stakingSubtensorResultRootUnstakedAllMessage()
+        } else if isUnstake {
+            strings.stakingSubtensorResultRootUnstakedMessageFormat(stakeAfterString)
+        } else if request.groupHotkeyCount == 1 {
+            strings.stakingSubtensorResultRootStakeNowWithFormat(stakeAfterString, request.validator.name)
+        } else {
+            strings.stakingSubtensorResultRootStakeNowFormat(stakeAfterString)
+        }
+
+        let stakeAfterRow = SubtensorResultSheetRowViewModel(
+            title: strings.stakingSubtensorUiStakeAfter(),
+            value: stakeAfterString,
+            fiat: nil
+        )
+
+        return SubtensorResultSheetViewModel(
+            status: .done,
+            title: title,
+            message: message,
+            rows: [stakeAfterRow, feeRow],
+            reason: nil,
+            actions: landingActions(for: request, locale: locale)
+        )
+    }
+
+    func createFailedSheet(
+        for failure: SubtensorSubmissionFailure,
+        holdRemaining: TimeInterval?,
+        request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let message = switch failure.stage {
+        case .notSubmitted:
+            strings.stakingSubtensorResultNotSubmittedMessage()
+        case .dispatched:
+            strings.stakingSubtensorResultDispatchedMessage()
+        case .unconfirmed:
+            strings.stakingSubtensorResultUnconfirmedMessage()
+        }
+
+        let actions = failure.isRetryable
+            ? [action(.close, locale: locale), action(.tryAgain, locale: locale)]
+            : [action(.close, locale: locale)]
+
+        let title = switch request.origin {
+        case .unstake:
+            strings.stakingSubtensorResultUnstakingFailed()
+        case .claim:
+            strings.stakingSubtensorResultClaimFailed()
+        case .newPosition, .addStake, .buyMore, .sell:
+            strings.stakingSubtensorResultStakingFailed()
+        }
+
+        return SubtensorResultSheetViewModel(
+            status: .failed,
+            title: title,
+            message: message,
+            rows: [],
+            reason: failureReason(for: failure, holdRemaining: holdRemaining, request: request, locale: locale),
+            actions: actions
+        )
+    }
+
+    func createClaimDoneSheet(
+        for outcome: SubtensorOperationOutcome,
+        state: SubtensorOperationResultState,
+        request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let feeRow = networkFeeRow(for: state, request: request, locale: locale)
+        let claimed = outcome.executed?.tao
+
+        if let claimed, claimed == 0 {
+            return SubtensorResultSheetViewModel(
+                status: .failed,
+                title: strings.stakingSubtensorResultNothingClaimed(),
+                message: strings.stakingSubtensorResultFeeCharged(),
+                rows: [feeRow],
+                reason: strings.stakingSubtensorResultClaimBelowMinimumReason(),
+                actions: [action(.close, locale: locale)]
+            )
+        }
+
+        let amount = claimed ?? request.payAmount
+        let amountString = formatAmount(amount, info: taoInfo, locale: locale)
+        let stakeAfterString = formatAmount(request.stakeBefore + amount, info: taoInfo, locale: locale)
+        let shownAmount = claimed == nil ? amountString.approximatelyEqual() : amountString
+        let shownStakeAfter = claimed == nil ? stakeAfterString.approximatelyEqual() : stakeAfterString
+
+        let message = request.groupHotkeyCount == 1
+            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, request.validator.name)
+            : strings.stakingSubtensorResultRootStakeNowFormat(shownStakeAfter)
+
+        let stakeAfterRow = SubtensorResultSheetRowViewModel(
+            title: strings.stakingSubtensorUiStakeAfter(),
+            value: shownStakeAfter,
+            fiat: nil
+        )
+
+        return SubtensorResultSheetViewModel(
+            status: .done,
+            title: strings.stakingSubtensorResultRootClaimedFormat(shownAmount),
+            message: message,
+            rows: [stakeAfterRow, feeRow],
+            reason: nil,
+            actions: landingActions(for: request, locale: locale)
+        )
+    }
+
+    func createUnconfirmedSheet(
+        for request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return SubtensorResultSheetViewModel(
+            status: .pending,
+            title: strings.commonTransactionSubmitted(),
+            message: strings.stakingSubtensorResultUnconfirmedMessage(),
+            rows: [],
+            reason: nil,
+            actions: landingActions(for: request, locale: locale)
+        )
+    }
+}

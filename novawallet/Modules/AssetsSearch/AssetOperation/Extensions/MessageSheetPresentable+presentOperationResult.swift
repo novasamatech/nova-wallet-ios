@@ -37,6 +37,13 @@ extension MessageSheetPresentable {
                 walletType: .init(walletType: wallet.type),
                 completion: {}
             )
+        case let .noSubtensorStakingSupport(walletType):
+            presentFeatureUnsupportedView(
+                from: view,
+                type: .subtensorStaking,
+                walletType: .init(walletType: walletType),
+                completion: {}
+            )
         case .noRampActions:
             break
         case .noSigning:

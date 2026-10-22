@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider: BaseURLStringProviding,
+final class MercuryoProvider: DisplayURLStringProviding,
     RampHookFactoriesProviding,
     FiatPaymentPethodsProviding {
     struct Configuration {
@@ -39,8 +39,8 @@ final class MercuryoProvider: BaseURLStringProviding,
     let onRampHookFactory: OnRampHookFactoryProtocol
     let merchantIdFactory: MerchantTransactionIdFactoryProtocol
 
-    var baseUrlString: String {
-        configuration.baseUrl
+    var displayURLString: String {
+        displayURL
     }
 
     init(

@@ -1,6 +1,5 @@
 import Foundation
 import os
-import NovaAppAttest
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -31,6 +30,7 @@ protocol ApplicationConfigProtocol {
     var globalConfigURL: URL { get }
     var dAppsListURL: URL { get }
     var preferredValidatorsURL: URL { get }
+    var bittensorConfigURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -155,33 +155,33 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/chains_dev.json")!
         #endif
     }
 
     var defaultAssetsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/default_assets.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/default_assets_dev.json")!
         #endif
     }
 
     var preConfiguredLightChainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/preConfigured/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/preConfigured/chains_dev.json")!
         #endif
     }
 
     var preConfiguredChainDirectoryURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/details")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/preConfigured/details")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/detailsDev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/preConfigured/detailsDev")!
         #endif
     }
 
@@ -219,25 +219,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var appAttestAppIdentity: AppAttestAppIdentity? {
-        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
-        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
-
-        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
-            return nil
-        }
-
-        return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
-    }
-
-    private var appAttestEnvironment: String {
-        #if F_DEV
-            "development"
-        #else
-            "production"
-        #endif
-    }
-
     var dAppsListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
@@ -252,6 +233,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/validators/v1/nova_validators_dev.json")!
         #endif
+    }
+
+    var bittensorConfigURL: URL {
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/bittensor/v1/config.json")!
     }
 
     var governanceDAppsListURL: URL {

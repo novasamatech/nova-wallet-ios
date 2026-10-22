@@ -1,0 +1,64 @@
+import Foundation
+
+protocol SubtensorPositionViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: SubtensorPositionViewModel)
+    func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel)
+    func didCompleteRefreshing()
+}
+
+protocol SubtensorPositionPresenterProtocol: AnyObject {
+    func setup()
+    func selectPeriod(at index: Int)
+    func selectAction(_ action: SubtensorPositionAction)
+    func selectValidator(at index: Int)
+    func retrySync()
+    func retryHistory()
+    func refresh()
+    func selectChart(_ selection: SubtensorPriceChartSelection?)
+}
+
+protocol SubtensorPositionInteractorInputProtocol: AnyObject {
+    func setup()
+    func refreshPendingClaims()
+    func refreshPositions()
+    func refreshAll()
+    func loadPrices()
+    func loadSubnetsInfo()
+    func loadValidators(_ hotkeys: [AccountId], on subnet: SubtensorSubnetRef)
+    func loadRootHolds(for hotkeys: [AccountId])
+    func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod)
+}
+
+protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
+    func didReceive(group: SubtensorPortfolioGroup?)
+    func didReceiveSyncFailure(_ error: Error?)
+    func didReceivePositionsSyncing(_ isSyncing: Bool)
+    func didReceive(price: PriceData?)
+    func didChangeCurrency()
+    func didReceive(prices: SubtensorAlphaPrices)
+    func didFailPrices(_ error: Error)
+    func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
+    func didReceive(subnetLogos: SubtensorSubnetLogos?)
+    func didReceive(validators: [AccountId: SubtensorValidatorDirectoryItem], for hotkeys: [AccountId])
+    func didFailValidators(for hotkeys: [AccountId])
+    func didReceive(yields: SubtensorAlphaYields?)
+    func didReceive(costBasis: SubtensorCostBasis?)
+    func didReceiveOwnTradeSettling(_ isSettling: Bool)
+    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
+    func didReceive(pendingClaimHotkeys: Set<AccountId>)
+    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
+    func didFailHolds()
+    func didReceive(blockNumber: BlockNumber)
+    func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod, error: Error)
+    func didBecomeActive()
+}
+
+protocol SubtensorPositionWireframeProtocol: AnyObject, FeatureSupportChecking, MessageSheetPresentable,
+    SubtensorValidatorInfoPresentable {
+    func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
+    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
+    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
+    func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16)
+    func popToPortfolio(from view: SubtensorPositionViewProtocol?)
+}

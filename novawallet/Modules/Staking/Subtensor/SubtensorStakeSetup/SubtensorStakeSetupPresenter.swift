@@ -1,0 +1,381 @@
+import BigInt
+import Foundation
+import Foundation_iOS
+import NovaAnalytics
+
+final class SubtensorStakeSetupPresenter {
+    weak var view: SubtensorStakeSetupViewProtocol?
+    let wireframe: SubtensorStakeSetupWireframeProtocol
+    let interactor: SubtensorStakeSetupInteractorInputProtocol
+    let logger: LoggerProtocol
+
+    let chainAsset: ChainAsset
+    let selectedAccount: MetaChainAccountResponse
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let viewModelFactory: SubtensorStakeSetupViewModelFactory
+    let dataValidationFactory: SubtensorValidationFactoryProtocol
+
+    let quickPickVisit: SubtensorQuickPickVisit?
+    let rootEntryPresentation: SubtensorRootEntryPresentation
+    let browseState: SubtensorSubnetBrowseState
+
+    var mode: SubtensorStakeSetupMode
+    var target: SubtensorStakeTarget?
+    var validatorState: SubtensorStakeSetupValidatorState = .pending
+    var isPresetRequested = false
+    var presetError: Error?
+    var inputResult: AmountInputResult?
+    var balance: AssetBalance?
+    var isBalanceLoaded = false
+    var price: PriceData?
+    var fee: ExtrinsicFeeProtocol?
+    var positionsState: Multistaking.SubtensorState?
+    var isPositionsSyncFailed = false
+    var preflight: SubtensorPreflight?
+    var blockTime: BlockTime?
+    var catalogue: SubtensorSubnetCatalogue?
+    var subnetLogos: SubtensorSubnetLogos?
+    var rankingView: SubtensorRankedSubnets?
+    var yields: SubtensorAlphaYields?
+    var yieldsNetuid: UInt16?
+    var isYieldsResolved = false
+    var isSubnetDataRequested = false
+    var validatorItem: SubtensorValidatorDirectoryItem?
+    var validatorItems: [AccountId: SubtensorValidatorDirectoryItem] = [:]
+    var lockedValidatorRequest: AccountId?
+    var heldValidatorsRequest: [AccountId]?
+    var heldValidatorsResolved: [AccountId]?
+    weak var validatorPicker: CollatorStakingTargetPicker?
+    var slippage: BigRational
+    var quoteFlow = SubtensorQuoteFlowModel()
+    var acceptedQuote: SubtensorTradeQuote?
+    var isQuoteFailed = false
+    var tradesUnavailable = false
+    var costBasis: SubtensorCostBasisState = .loading
+    var novaFeeRate: BigRational?
+    var isConfirmationShown = false
+    var isLockedValidatorPending = false
+    var recommendedHotkey: AccountId?
+    var isNoBalanceTracked = false
+    let abandonTracker = AnalyticsAbandonTracker { nil }
+    let dataAnalytics = SubtensorDataAnalytics(screen: .setup)
+
+    init(
+        interactor: SubtensorStakeSetupInteractorInputProtocol,
+        wireframe: SubtensorStakeSetupWireframeProtocol,
+        mode: SubtensorStakeSetupMode,
+        chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
+        slippage: BigRational,
+        dataValidationFactory: SubtensorValidationFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        viewModelFactory: SubtensorStakeSetupViewModelFactory,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol,
+        browseState: SubtensorSubnetBrowseState,
+        quickPickVisit: SubtensorQuickPickVisit? = nil,
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard,
+        recommendedHotkey: AccountId? = nil
+    ) {
+        self.rootEntryPresentation = rootEntryPresentation
+        self.recommendedHotkey = recommendedHotkey
+        self.browseState = browseState
+        self.quickPickVisit = quickPickVisit
+        self.interactor = interactor
+        self.wireframe = wireframe
+        self.mode = mode
+        self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
+        self.slippage = slippage
+        self.dataValidationFactory = dataValidationFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.viewModelFactory = viewModelFactory
+        self.logger = logger
+        self.localizationManager = localizationManager
+    }
+}
+
+extension SubtensorStakeSetupPresenter {
+    var transferable: Balance? {
+        isBalanceLoaded ? (balance?.transferable ?? 0) : nil
+    }
+
+    var maxAmount: Balance? {
+        guard let transferable, let fee else {
+            return nil
+        }
+
+        return SubtensorAmountPolicy.maxBuyOrStake(
+            transferable: transferable,
+            networkFee: fee.amountForCurrentAccount ?? 0
+        )
+    }
+
+    var subnetRef: SubtensorSubnetRef? {
+        target?.subnetRef
+    }
+
+    func inputDecimal() -> Decimal? {
+        let maxDecimal = (maxAmount ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+        return inputResult?.absoluteValue(from: maxDecimal)
+    }
+
+    func inputAmount() -> Balance? {
+        inputDecimal()?.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision)
+    }
+
+    func startMode() {
+        target = mode.initialTarget
+        resetAnalytics()
+        validatorState = .pending
+        validatorItem = nil
+        isPresetRequested = false
+        presetError = nil
+        preflight = nil
+        quoteFlow = SubtensorQuoteFlowModel()
+        isQuoteFailed = false
+        tradesUnavailable = false
+
+        if case .quickPick = mode {
+            loadQuickPick()
+            return
+        }
+
+        if case let .buyMore(position) = mode {
+            interactor.loadSubnet(netuid: position.netuid)
+            interactor.loadCostBasis(for: position.netuid)
+        }
+
+        loadSubnetDataIfNeeded()
+
+        if let hotkey = mode.lockedHotkey {
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: hotkey, name: nil))
+        } else if let picked = mode.pickedValidator {
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: picked.hotkey, name: picked.name))
+            validatorItem = picked
+        }
+
+        applyTargetIfReady()
+    }
+
+    func applyTargetIfReady() {
+        guard target != nil else {
+            provideViewModel()
+            return
+        }
+
+        if mode.isLocked {
+            loadHeldValidatorsIfNeeded()
+            resolveLockedValidator()
+        }
+
+        requestPresetIfReady()
+        refreshPreflight()
+        fee = nil
+        refreshFee()
+        updateQuote()
+        provideViewModel()
+    }
+
+    func requestPresetIfReady() {
+        guard
+            case .pending = validatorState,
+            !isPresetRequested,
+            positionsState != nil || isPositionsSyncFailed,
+            let subnetRef else {
+            return
+        }
+
+        isPresetRequested = true
+
+        interactor.presetValidator(on: subnetRef, existingHotkey: existingPrimaryHotkey(on: subnetRef.netuid))
+    }
+
+    func retryPreset() {
+        presetError = nil
+        validatorState = .pending
+        isPresetRequested = false
+
+        requestPresetIfReady()
+        provideViewModel()
+    }
+
+    func existingPrimaryHotkey(on netuid: UInt16) -> AccountId? {
+        positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid)?.primaryHotkey }
+    }
+
+    func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
+        validatorState = .selected(SubtensorStakeSetupValidator(hotkey: item.hotkey, name: item.name))
+        validatorItem = item
+        presetError = nil
+        preflight = nil
+
+        refreshPreflight()
+        refreshFee()
+        provideViewModel()
+    }
+
+    func refreshPreflight() {
+        guard let hotkey = validatorState.validator?.hotkey, let target else {
+            return
+        }
+
+        interactor.refreshPreflight(for: hotkey, netuid: target.netuid)
+    }
+
+    func currentLimitPrice() -> Balance? {
+        let spot = quoteFlow.freshQuote?.quote.spotPrice ?? target?.listedPrice
+
+        return target?.stakeLimitPrice(spot: spot, tolerance: slippage)
+    }
+
+    func feeOperation() -> SubtensorOperation? {
+        guard let target else {
+            return nil
+        }
+
+        let hotkey = validatorState.validator?.hotkey ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
+
+        let amount = inputAmountOrPlaceholder()
+
+        switch target {
+        case .root:
+            return .rootStake(hotkey: hotkey, amount: amount)
+        case .subnet:
+            guard let limitPrice = currentLimitPrice() else {
+                return nil
+            }
+
+            return .subnetBuy(
+                hotkey: hotkey,
+                netuid: target.netuid,
+                grossTao: amount,
+                limitPrice: limitPrice,
+                novaFee: nil
+            )
+        }
+    }
+
+    func refreshFee() {
+        guard let operation = feeOperation() else {
+            return
+        }
+
+        interactor.estimateFee(for: operation)
+    }
+
+    func quoteRequest() -> SubtensorTradeQuoteRequest? {
+        guard case let .subnet(info, _) = target else {
+            return nil
+        }
+
+        return .buy(netuid: info.netuid, grossTao: inputAmountOrPlaceholder(), tolerance: slippage)
+    }
+
+    func applyInputChange() {
+        refreshFee()
+        updateQuote()
+        provideAssetViewModel()
+        provideViewModel()
+    }
+
+    func applyMaxChange() {
+        if case .rate = inputResult {
+            provideAmountInputViewModel()
+            updateQuote()
+        }
+
+        provideAssetViewModel()
+        provideViewModel()
+    }
+
+    func provideAmountInputViewModel() {
+        let viewModel = balanceViewModelFactory.createBalanceInputViewModel(inputDecimal()).value(for: selectedLocale)
+
+        view?.didReceiveAmount(inputViewModel: viewModel)
+    }
+
+    func provideAssetViewModel() {
+        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
+            inputDecimal() ?? 0,
+            balance: (transferable ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo),
+            priceData: price
+        ).value(for: selectedLocale)
+
+        view?.didReceiveAmountAsset(viewModel: viewModel)
+    }
+}
+
+extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
+    func setup() {
+        provideAmountInputViewModel()
+        provideAssetViewModel()
+
+        interactor.setup()
+        interactor.loadBlockTime()
+        interactor.loadNovaFeeRate()
+
+        trackScreenOpened()
+        startMode()
+    }
+
+    func didAppear() {
+        guard isConfirmationShown else {
+            return
+        }
+
+        isConfirmationShown = false
+        forceQuoteRefresh()
+    }
+
+    func retry() {
+        if presetError != nil {
+            dataAnalytics.trackRetry(.recommendations)
+            retryPreset()
+        } else {
+            retryQuickPick()
+        }
+    }
+
+    func getTao() {
+        wireframe.showGetTokenOptions(
+            from: view,
+            purchaseHandler: self,
+            destinationChainAsset: chainAsset,
+            locale: selectedLocale
+        )
+    }
+
+    func proceed() {
+        if case .subnetPick = mode, validatorState == .none {
+            selectValidator()
+            return
+        }
+
+        guard
+            let target,
+            validatorState.validator != nil,
+            let amount = inputAmount(), amount > 0 else {
+            return
+        }
+
+        let dependencies = createValidationDependencies(for: target)
+
+        guard var model = createConfirmModel(for: dependencies) else {
+            return
+        }
+
+        dataValidationFactory.validateStake(for: dependencies, locale: selectedLocale) { [weak self] in
+            guard let self else {
+                return
+            }
+
+            view?.didStopLoading()
+            model.acknowledgedQuote = acknowledgedQuote(for: dependencies.quoteContext)
+            trackInitiated(for: model)
+            isConfirmationShown = true
+            wireframe.showConfirmation(from: view, model: model)
+        }
+    }
+}

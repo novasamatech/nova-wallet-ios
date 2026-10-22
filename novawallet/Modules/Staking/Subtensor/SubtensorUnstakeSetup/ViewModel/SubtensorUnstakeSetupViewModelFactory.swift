@@ -1,0 +1,360 @@
+import BigInt
+import Foundation
+
+final class SubtensorUnstakeSetupViewModelFactory {
+    let chainAsset: ChainAsset
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
+
+    private let formatterFactory = AssetBalanceFormatterFactory()
+
+    init(
+        chainAsset: ChainAsset,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
+    ) {
+        self.chainAsset = chainAsset
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.quoteViewModelFactory = quoteViewModelFactory
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
+    }
+
+    func createViewModel(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorUnstakeSetupViewModel {
+        SubtensorUnstakeSetupViewModel(
+            title: createTitle(for: input, locale: locale),
+            header: createHeader(for: input, locale: locale),
+            inputPrice: createInputPrice(for: input, locale: locale),
+            isInputEnabled: !input.isFullyLocked,
+            isValidatorSelectable: input.isValidatorSelectable,
+            details: createDetails(for: input, locale: locale),
+            note: createNote(for: input, locale: locale),
+            feeWarning: createFeeWarning(for: input, locale: locale),
+            holdWarning: createHoldWarning(for: input, locale: locale),
+            action: createAction(for: input, locale: locale)
+        )
+    }
+
+    func createAssetViewModel(
+        for netuid: UInt16,
+        catalogue: SubtensorSubnetCatalogue?,
+        subnetLogos: SubtensorSubnetLogos?,
+        locale: Locale
+    ) -> AssetViewModel {
+        guard netuid != SubtensorPallet.rootNetuid else {
+            let info = chainAsset.assetDisplayInfo
+
+            return AssetViewModel(
+                symbol: info.symbol,
+                imageViewModel: assetIconFactory.createAssetIconViewModel(
+                    for: info.icon?.getPath(),
+                    defaultURL: info.icon?.getURL()
+                )
+            )
+        }
+
+        return AssetViewModel(
+            symbol: SubtensorSubnetNaming.title(for: netuid, in: catalogue, locale: locale),
+            imageViewModel: iconFactory.icon(for: catalogue?.subnet(for: netuid), logos: subnetLogos)
+        )
+    }
+
+    func inputDisplayInfo(for netuid: UInt16, catalogue: SubtensorSubnetCatalogue?) -> AssetBalanceDisplayInfo {
+        chainAsset.assetDisplayInfo.subtensorAlpha(netuid: netuid, catalogue: catalogue)
+    }
+}
+
+private extension SubtensorUnstakeSetupViewModelFactory {
+    func formatAmount(_ amount: Balance, input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String {
+        let displayInfo = inputDisplayInfo(for: input.netuid, catalogue: input.catalogue)
+        let decimal = amount.decimal(assetInfo: displayInfo)
+
+        let formatter = formatterFactory.createTokenFormatter(for: displayInfo).value(for: locale)
+
+        return formatter.stringFromDecimal(decimal) ?? ""
+    }
+
+    func createTitle(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        guard !input.isRoot else {
+            return strings.stakingSubtensorUiUnstakeFromRoot()
+        }
+
+        let subnetTitle = SubtensorSubnetNaming.titleWithSymbol(for: input.netuid, in: input.catalogue, locale: locale)
+
+        return strings.stakingSubtensorUiSellTitleFormat(subnetTitle)
+    }
+
+    func createHeader(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorUnstakeHeaderViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        guard input.isRoot else {
+            return SubtensorUnstakeHeaderViewModel(
+                title: strings.stakingSubtensorUiYouSell(),
+                prefix: strings.swapsSetupAssetMax(),
+                value: input.maxAmount.map {
+                    SubtensorSubnetNaming.isolatedLeftToRight(formatAmount($0, input: input, locale: locale))
+                },
+                link: nil,
+                isEnabled: (input.maxAmount ?? 0) > 0
+            )
+        }
+
+        let link = strings.stakingUnstakeAll()
+
+        return SubtensorUnstakeHeaderViewModel(
+            title: strings.stakingSubtensorUiYouUnstake(),
+            prefix: strings.commonStakedPrefix(),
+            value: input.basis.map { basis in
+                strings.stakingSubtensorUiJoinDotFormat(formatAmount(basis.total, input: input, locale: locale), link)
+            },
+            link: link,
+            isEnabled: (input.maxAmount ?? 0) > 0
+        )
+    }
+
+    func createInputPrice(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        guard let price = input.price else {
+            return nil
+        }
+
+        let amount = input.amount ?? 0
+        let taoAmount: Balance
+
+        if input.isRoot {
+            taoAmount = amount
+        } else {
+            guard let spot = alphaSpotPrice(for: input), spot > 0 else {
+                return nil
+            }
+
+            taoAmount = amount * spot / SubtensorPallet.alphaPriceScale
+        }
+
+        let taoDecimal = taoAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+        return balanceViewModelFactory.balanceFromPrice(taoDecimal, priceData: price).value(for: locale).price
+    }
+
+    func alphaSpotPrice(for input: SubtensorUnstakeSetupViewModelInput) -> Balance? {
+        if let spot = input.quote?.quote.spotPrice {
+            return spot
+        }
+
+        return input.target.flatMap { input.catalogue?.subnet(for: $0.subnetRef)?.freshTaoPerAlpha }
+    }
+
+    func createNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        let capNote = input.legCap.map {
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiUnstakeLegsCapFormat("\($0)")
+        }
+
+        let notes = [capNote, createRootNote(for: input, locale: locale)].compactMap { $0 }
+
+        return notes.isEmpty ? nil : notes.joined(separator: "\n\n")
+    }
+
+    func createRootNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        guard input.isRoot else {
+            return nil
+        }
+
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return input.holdRemainingBlocks == nil
+            ? strings.stakingSubtensorUiUnstakeRootNote()
+            : strings.stakingSubtensorUiUnstakeRootNoteHold()
+    }
+
+    func createFeeWarning(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        guard !input.isRoot, let fee = input.fee else {
+            return nil
+        }
+
+        let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+        let feeText = balanceViewModelFactory.amountFromValue(feeDecimal, roundingMode: .up).value(for: locale)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiSellFeeNoteFormat(feeText)
+    }
+
+    func createHoldWarning(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        guard let blocks = input.holdRemainingBlocks, let blockTime = input.blockTime else {
+            return nil
+        }
+
+        let remaining = TimeInterval(blocks) * blockTime.timeInterval
+        let duration = remaining.localizedDaysHoursOrFallbackMinutes(for: locale)
+        let unlockDate = Date().addingTimeInterval(remaining)
+        let dateText = DateFormatter.shortDateHoursMinutes.value(for: locale).string(from: unlockDate)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiUnstakeRootHoldFormat(
+            duration,
+            dateText
+        )
+    }
+
+    func createAction(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupActionViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if input.isFullyLocked {
+            return SubtensorSetupActionViewModel(
+                title: strings.stakingSubtensorUnstakeNothingAvailableTitle(),
+                isEnabled: false
+            )
+        }
+
+        guard input.hasAmount else {
+            return SubtensorSetupActionViewModel(title: strings.transferSetupEnterAmount(), isEnabled: false)
+        }
+
+        return SubtensorSetupActionViewModel(title: strings.commonContinue(), isEnabled: input.canProceed)
+    }
+
+    func createDetails(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorUnstakeDetailsViewModel {
+        let tradePanel = createTradePanel(for: input, locale: locale)
+
+        return SubtensorUnstakeDetailsViewModel(
+            receive: createReceive(for: input, receive: tradePanel?.receive, locale: locale),
+            swapRate: createSwapRate(for: input, swapRate: tradePanel?.swapRate, locale: locale),
+            avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
+            earned: createEarned(for: input, locale: locale),
+            validator: createValidator(for: input, locale: locale),
+            networkFee: balanceViewModelFactory.subtensorFee(
+                input.fee, info: chainAsset.assetDisplayInfo, price: input.price, locale: locale
+            )
+        )
+    }
+
+    func createAvgBuyPrice(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        return costBasisViewModelFactory.createAvgBuyPrice(
+            for: input.costBasis,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.netuid, in: input.catalogue),
+            locale: locale
+        )
+    }
+
+    func createEarned(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        let proceeds = SubtensorSaleProceeds(
+            quote: input.quote,
+            soldAlpha: input.amount,
+            isQuotePending: isQuotePending(for: input)
+        )
+
+        return costBasisViewModelFactory.createEarned(
+            for: input.costBasis,
+            proceeds: proceeds,
+            taoPrice: input.price,
+            locale: locale
+        )
+    }
+
+    func createTradePanel(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorTradePanelViewModel? {
+        guard !input.isRoot, let target = input.target else {
+            return nil
+        }
+
+        return quoteViewModelFactory.createTradePanel(
+            for: input.quote,
+            amountIn: input.amount,
+            direction: .sell,
+            target: target,
+            catalogue: input.catalogue,
+            taoPrice: input.price,
+            networkFee: input.fee?.amountForCurrentAccount,
+            locale: locale
+        )
+    }
+
+    func isQuotePending(for input: SubtensorUnstakeSetupViewModelInput) -> Bool {
+        input.target == nil || (input.quote == nil && !input.isQuoteFailed)
+    }
+
+    func createReceive(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        receive: BalanceViewModelProtocol?,
+        locale: Locale
+    ) -> SubtensorRowState<BalanceViewModelProtocol> {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        if let receive {
+            let amount = SubtensorSubnetNaming.isolatedLeftToRight(receive.amount)
+
+            return .value(BalanceViewModel(amount: amount, price: receive.price))
+        }
+
+        if isQuotePending(for: input) {
+            return .loading
+        }
+
+        let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
+
+        return .value(BalanceViewModel(amount: unknown, price: nil))
+    }
+
+    func createSwapRate(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        swapRate: String?,
+        locale: Locale
+    ) -> SubtensorRowState<String> {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        return .trade(swapRate.flatMap { $0.isEmpty ? nil : $0 }, isPending: isQuotePending(for: input), locale: locale)
+    }
+
+    func createValidator(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupValidatorViewModel {
+        guard !input.isAllValidators else {
+            return .unselected(
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorAll()
+            )
+        }
+
+        return input.validatorHotkey.flatMap { hotkey in
+            displayAddressFactory.subtensorValidator(
+                hotkey: hotkey, name: input.validatorName, chainFormat: chainAsset.chain.chainFormat
+            )
+        }.map { .selected($0) } ?? .loading
+    }
+}

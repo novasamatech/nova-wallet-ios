@@ -103,7 +103,7 @@ Conventions:
 - `Constants.defaultExpectationDuration` for short waits; longer explicit timeouts where operations
   are involved.
 - The app skips its whole launch sequence when the `-UNITTEST` argument is present
-  (`AppDelegate.isUnitTesting`), so tests never hit the real Root flow.
+  (`EnviromentVariables.isUnitTesting`), so tests never hit the real Root flow.
 
 ## What to Test
 

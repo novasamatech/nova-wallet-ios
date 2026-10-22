@@ -6,7 +6,7 @@ protocol ScreenOpenDelegate: AnyObject {
 }
 
 enum UrlHandlingScreen {
-    case staking
+    case staking(StakingNavigation?)
     case gov(Referenda.ReferendumIndex)
     case dApp(DAppNavigation)
     case card(PayCardNavigation?)
@@ -18,8 +18,8 @@ enum UrlHandlingScreen {
 extension UrlHandlingScreen {
     init?(pendingLink: URLHandlingPendingLink) {
         switch pendingLink {
-        case .staking:
-            self = .staking
+        case let .staking(chainAssetId):
+            self = .staking(chainAssetId.map { StakingNavigation(chainAssetId: $0) })
         case let .governance(referendumIndex):
             self = .gov(referendumIndex)
         case let .dApp(url):
@@ -35,8 +35,8 @@ extension UrlHandlingScreen {
 
     var pendingLink: URLHandlingPendingLink? {
         switch self {
-        case .staking:
-            .staking
+        case let .staking(navigation):
+            .staking(chainAssetId: navigation?.chainAssetId)
         case let .gov(referendumIndex):
             .governance(referendumIndex)
         case let .dApp(navigation):

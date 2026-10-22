@@ -9,14 +9,17 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     private var balance = ""
 
     let themeColor: UIColor
+    let secondaryActionTitle: LocalizableResource<String>?
 
     init(
         presenter: StartStakingInfoPresenterProtocol,
         localizationManager: LocalizationManagerProtocol,
-        themeColor: UIColor
+        themeColor: UIColor,
+        secondaryActionTitle: LocalizableResource<String>? = nil
     ) {
         self.presenter = presenter
         self.themeColor = themeColor
+        self.secondaryActionTitle = secondaryActionTitle
 
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
@@ -33,7 +36,8 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
 
         let layout = StartStakingInfoViewLayout(
             headerStyle: headerStyle,
-            paragraphStyle: paragraphStyle
+            paragraphStyle: paragraphStyle,
+            hasSecondaryAction: secondaryActionTitle != nil
         )
 
         view = layout
@@ -53,12 +57,17 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
             locale: selectedLocale
         )
 
+        if let secondaryActionTitle {
+            rootView.updateSecondaryButton(title: secondaryActionTitle.value(for: selectedLocale))
+        }
+
         guard let viewModel = viewModel?.value else {
             return
         }
 
         rootView.updateContent(
             title: viewModel.title,
+            caption: viewModel.caption,
             paragraphs: viewModel.paragraphs,
             wikiUrl: viewModel.wikiUrl,
             termsUrl: viewModel.termsUrl
@@ -67,6 +76,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.actionView.actionButton.addTarget(self, action: #selector(startStakingAction), for: .touchUpInside)
+        rootView.secondaryButton?.addTarget(self, action: #selector(secondaryAction), for: .touchUpInside)
 
         rootView.onAnnouncementLinkTap = { [weak self] in
             self?.presenter.selectAnnouncementLink()
@@ -85,6 +95,10 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     @objc private func startStakingAction() {
         presenter.startStaking()
     }
+
+    @objc private func secondaryAction() {
+        presenter.selectSecondaryAction()
+    }
 }
 
 extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
@@ -93,11 +107,14 @@ extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
         case .loading:
             rootView.startLoadingIfNeeded()
             rootView.actionView.startLoading()
+            rootView.secondaryButton?.isEnabled = false
         case let .cached(value), let .loaded(value):
             rootView.stopLoadingIfNeeded()
             rootView.actionView.stopLoading()
+            rootView.secondaryButton?.isEnabled = true
             rootView.updateContent(
                 title: value.title,
+                caption: value.caption,
                 paragraphs: value.paragraphs,
                 wikiUrl: value.wikiUrl,
                 termsUrl: value.termsUrl

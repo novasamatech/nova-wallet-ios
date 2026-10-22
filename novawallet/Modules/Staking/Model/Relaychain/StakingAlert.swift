@@ -10,6 +10,7 @@ enum StakingAlert {
     case redeemUnbonded(LocalizableResource<String>)
     case waitingNextEra
     case rebag
+    case chainMaintenance(title: LocalizableResource<String>, details: LocalizableResource<String>)
 }
 
 extension StakingAlert {
@@ -18,7 +19,7 @@ extension StakingAlert {
         case .nominatorLowStake, .nominatorChangeValidators, .redeemUnbonded, .bondedSetValidators,
              .nominatorAllOversubscribed, .rebag:
             return true
-        case .waitingNextEra:
+        case .waitingNextEra, .chainMaintenance:
             return false
         }
     }
@@ -28,7 +29,7 @@ extension StakingAlert {
         case .nominatorChangeValidators, .nominatorLowStake, .redeemUnbonded, .bondedSetValidators,
              .nominatorAllOversubscribed, .rebag:
             return R.image.iconWarning()
-        case .waitingNextEra:
+        case .waitingNextEra, .chainMaintenance:
             return R.image.iconPending()
         }
     }
@@ -51,6 +52,8 @@ extension StakingAlert {
             ).localizable.stakingNominatorStatusAlertWaitingMessage()
         case .rebag:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingImprovements()
+        case let .chainMaintenance(localizedTitle, _):
+            return localizedTitle.value(for: locale)
         }
     }
 
@@ -70,6 +73,8 @@ extension StakingAlert {
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingAlertStartNextEraMessage()
         case .rebag:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebagAlertMessage()
+        case let .chainMaintenance(_, localizedString):
+            return localizedString.value(for: locale)
         }
     }
 }

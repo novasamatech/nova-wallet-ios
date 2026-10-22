@@ -51,14 +51,14 @@ back to whatever is available.
 
 ### Local Package Suites
 
-`NovaAnalytics` and `NovaAppAttest` sources import UIKit/CoreData/DeviceCheck and every SDK
+`NovaAnalytics` and `NovaAuth` sources import UIKit/CoreData/DeviceCheck and every SDK
 dependency is iOS-only, so `swift test` builds for macOS and fails — test them through
 `xcodebuild` against a simulator destination instead. `NovaOperationSupport` has no test target
 (it mirrors app-only helper code — see project-layout.md); build it rather than testing it.
 
 ```bash
-(cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAppAttest)
+(cd Packages/NovaAuth && RUN_IN_CI=true xcodebuild test -scheme NovaAuth \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAuth)
 (cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAnalytics)
 (cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
@@ -77,6 +77,12 @@ Four configurations, each with an xcconfig in `novawallet/Configs/`:
 | `Dev`         | `F_DEV`                                          | Nova Dev           | `io.novafoundation.novawallet.dev`   |
 | `Staging`     | `F_RELEASE`                                      | Nova Early Access  | `io.novafoundation.novawallet.staging` |
 | `Release`     | `F_RELEASE`                                      | Nova               | `io.novafoundation.novawallet`       |
+
+NovaAuth needs no build setting or Info.plist key: the bearer lives in each app's default
+Keychain access group, so Debug/Dev/Staging/Release records are isolated by bundle id, and the
+store deletes the record an earlier build kept under the App Group. Existing App Group
+entitlements remain for other host features. The NovaAuth privacy manifest declares UserDefaults
+(CA92.1) and SystemBootTime (35F9.1).
 
 Flag semantics in code:
 
@@ -129,7 +135,7 @@ Both run pinned versions through Mint, so results match CI and the build phases.
 ## Dependencies
 
 Mostly SPM, remote — plus three local packages under `Packages/`: `NovaAnalytics`,
-`NovaAppAttest`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
+`NovaAuth`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
 one place, `novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`,
 which also carries `logger-ios`, added when the local packages arrived. Testing a package on
 its own makes it write a `Packages/<Name>/Package.resolved`; those are git-ignored

@@ -100,7 +100,10 @@ how the warning/resume behaviour and the localized error copy stay consistent.
 
 - `submitAndWatch` + `ExtrinsicSubmissionMonitor` / `ExtrinsicStatusService` follow the extrinsic to
   inclusion, decode the block events (`BlockEventsQueryFactory`,
-  `ExtrinsicEventsMatching`), and report success/failure with the actual dispatch error.
+  `ExtrinsicEventsMatching`), and report success/failure with the actual dispatch error. An
+  `invalid`, `dropped`, `usurped` or `finalityTimeout` pool status before inclusion ends every
+  monitored submission with `FinalExtrinsicStatusError`, shown as the generic transaction-failed
+  alert; a gift transfer keeps the gift secret on it.
 - `ExtrinsicSubmissionPresenting` (`Common/Protocols/ExtrinsicSubmissionPresentation/`) shows the
   standard "submitted" screen; use `wireframe.presentExtrinsicSubmission(...)` rather than a custom
   alert.

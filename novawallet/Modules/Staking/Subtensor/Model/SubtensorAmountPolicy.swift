@@ -1,0 +1,92 @@
+import BigInt
+import Foundation
+
+struct SubtensorSellPlanInput {
+    let requestedAlpha: Balance
+    let positionAlpha: Balance
+    let availability: SubtensorPallet.StakeAvailability
+    let minimumTaoOut: Balance
+    let sellLimitPrice: Balance
+    let isOwnHotkey: Bool
+    let minStake: Balance
+    let nominatorMinStake: Balance
+}
+
+enum SubtensorAmountPolicy {
+    static func retainedForFees(networkFee: Balance) -> Balance {
+        networkFee + SubtensorNovaFeeConstants.feeReserve
+    }
+
+    static func maxBuyOrStake(transferable: Balance, networkFee: Balance) -> Balance {
+        let retained = retainedForFees(networkFee: networkFee)
+
+        return transferable > retained ? transferable - retained : 0
+    }
+
+    static func paysFeeFromFreeBalance(
+        transferable: Balance,
+        networkFee: Balance,
+        existentialDeposit: Balance
+    ) -> Bool {
+        transferable >= networkFee + existentialDeposit
+    }
+
+    static func rootUnstakeAmount(
+        requested: Balance,
+        transferable: Balance?,
+        networkFee: Balance?,
+        existentialDeposit: Balance?
+    ) -> Balance {
+        guard
+            let transferable,
+            let networkFee,
+            let existentialDeposit,
+            !paysFeeFromFreeBalance(
+                transferable: transferable,
+                networkFee: networkFee,
+                existentialDeposit: existentialDeposit
+            ) else {
+            return requested
+        }
+
+        return requested.subtractOrZero(networkFee)
+    }
+
+    static func maxSell(
+        positionAlpha: Balance,
+        availability: SubtensorPallet.StakeAvailability
+    ) -> Balance {
+        min(positionAlpha, availability.available)
+    }
+
+    static func sellPlan(for input: SubtensorSellPlanInput) -> SubtensorSellPlan {
+        let maxSellable = maxSell(positionAlpha: input.positionAlpha, availability: input.availability)
+
+        guard input.requestedAlpha <= maxSellable else {
+            return .exceedsAvailable
+        }
+
+        guard input.requestedAlpha < input.positionAlpha else {
+            return .sellAll
+        }
+
+        guard input.minimumTaoOut >= input.minStake else {
+            return .belowMinimumOut
+        }
+
+        guard !input.isOwnHotkey else {
+            return .partial
+        }
+
+        let remainder = input.positionAlpha - input.requestedAlpha
+        let remainderValue = remainder * input.sellLimitPrice / SubtensorPallet.alphaPriceScale
+
+        guard remainderValue < input.nominatorMinStake else {
+            return .partial
+        }
+
+        let isRemainderFullyAvailable = input.availability.available >= input.positionAlpha
+
+        return isRemainderFullyAvailable ? .remainderWouldBeSwept : .remainderWouldBeErased
+    }
+}

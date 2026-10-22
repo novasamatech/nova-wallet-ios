@@ -1,0 +1,118 @@
+import Foundation
+import NovaAnalytics
+
+extension SubtensorStakeSetupPresenter: AnalyticsTracking {
+    func trackScreenOpened() {
+        guard rootEntryPresentation == .quickPickRoot else {
+            return
+        }
+
+        trackTypeSelected(.root, method: .quickPickRoot)
+    }
+
+    func trackQuickPickSelected(_ target: SubtensorStakeTarget, order: SubtensorQuickPickOrder) {
+        guard let method = order.analyticsSelectionMethod else {
+            return
+        }
+
+        trackTypeSelected(target, method: method)
+    }
+
+    func resetAnalytics() {
+        let isNewPosition = mode.origin == .newPosition
+        let analyticsTarget = target?.analyticsTarget
+
+        abandonTracker.makeEvent = {
+            isNewPosition ? AnalyticsEvent.subtensorStakingAbandoned(stage: .setup, target: analyticsTarget) : nil
+        }
+    }
+
+    var subnetListSource: SubnetListSource {
+        if case .rootDetails = mode, rootEntryPresentation == .standard {
+            return .seeAllSubnets
+        }
+
+        return .setupCard
+    }
+
+    func createValidationReporter(for target: SubtensorStakeTarget) -> SubtensorValidationReporter {
+        SubtensorValidationReporter(
+            flow: .stake,
+            stage: .setup,
+            target: target.analyticsTarget,
+            walletType: selectedAccount.chainAccount.type.analyticsWalletType
+        )
+    }
+
+    func trackNoBalanceIfNeeded(_ amountState: SubtensorStakeSetupAmountState) {
+        guard !isNoBalanceTracked, !mode.isLocked, amountState == .noTao else {
+            return
+        }
+
+        isNoBalanceTracked = true
+
+        trackAnalytics(
+            .subtensorStakingBlocked(
+                flow: .stake,
+                reason: .noBalance,
+                walletType: selectedAccount.chainAccount.type.analyticsWalletType,
+                target: target?.analyticsTarget
+            )
+        )
+    }
+
+    func trackInitiated(for model: SubtensorConfirmModel) {
+        abandonTracker.markProceeded()
+
+        guard
+            let mode = model.origin.analyticsStakingMode,
+            let subject = chainAsset.subtensorAnalyticsSubject(for: model.target) else {
+            return
+        }
+
+        trackAnalytics(
+            .subtensorStakingInitiated(
+                subject: subject,
+                mode: mode,
+                validatorSource: validatorSource(for: model),
+                slippage: model.tolerance?.analyticsSlippageBucket,
+                amount: chainAsset.subtensorAmountBucket(model.amount, price: price)
+            )
+        )
+    }
+}
+
+private extension SubtensorStakeSetupPresenter {
+    func trackTypeSelected(_ target: SubtensorStakeTarget, method: StakingAnalyticsSelectionMethod) {
+        let event = chainAsset.subtensorAnalyticsSubject(for: target).map { subject in
+            AnalyticsEvent.subtensorTypeSelected(subject: subject, method: method, netuid: target.analyticsNetuid)
+        }
+
+        trackAnalytics(event)
+    }
+
+    func validatorSource(for model: SubtensorConfirmModel) -> StakingValidatorSource {
+        let group = positionsState.flatMap {
+            SubtensorPortfolioBuilder.build(state: $0).group(netuid: model.target.netuid)
+        }
+
+        let positions = (group?.positions ?? []) + [mode.lockedPosition].compactMap { $0 }
+
+        if positions.contains(where: { $0.hotkey == model.validator.hotkey && $0.stakeAlpha > 0 }) {
+            return .existingHotkey
+        }
+
+        return model.validator.hotkey == recommendedHotkey ? .recommended : .manual
+    }
+}
+
+private extension SubtensorQuickPickOrder {
+    var analyticsSelectionMethod: StakingAnalyticsSelectionMethod? {
+        switch self {
+        case .poolSize: .quickPickPoolSize
+        case .age: .quickPickAge
+        case .apy: .quickPickApy
+        case .root: nil
+        }
+    }
+}

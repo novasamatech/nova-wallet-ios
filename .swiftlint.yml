@@ -4,8 +4,8 @@ excluded:
   - R.generated.swift
   - novawalletTests
   - novawalletIntegrationTests
-  - Packages/NovaAppAttest/Tests
-  - Packages/NovaAppAttest/.build
+  - Packages/NovaAuth/Tests
+  - Packages/NovaAuth/.build
   - Packages/NovaAnalytics/Tests
   - Packages/NovaAnalytics/.build
   - Packages/NovaOperationSupport/Tests

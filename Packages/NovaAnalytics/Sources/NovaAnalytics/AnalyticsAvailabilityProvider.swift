@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAppAttest
 
 public final class AnalyticsAvailabilityProvider {
     private struct ObserverWrapper {
@@ -10,20 +9,17 @@ public final class AnalyticsAvailabilityProvider {
     }
 
     private let mutex = NSLock()
-    private let attestationMode: BackendAttestationMode
 
     private var observers: [ObserverWrapper] = []
 
-    public init(attestationMode: BackendAttestationMode) {
-        self.attestationMode = attestationMode
-    }
+    public init() {}
 }
 
 // MARK: - AnalyticsAvailabilityProviderProtocol
 
 extension AnalyticsAvailabilityProvider: AnalyticsAvailabilityProviderProtocol {
     public var isAvailable: Bool {
-        attestationMode != .unavailable
+        true
     }
 
     public func addObserver(
