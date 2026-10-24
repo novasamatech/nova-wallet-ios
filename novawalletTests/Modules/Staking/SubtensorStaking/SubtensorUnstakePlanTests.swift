@@ -210,6 +210,38 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         XCTAssertEqual(basis.plan(for: basis.max(floors: floors), floors: floors)?.slices.count, drawable.count)
     }
 
+    func testAllValidatorsSkipAPositionWhoseFullSaleWouldPayNoTao() {
+        let limitPrice: Balance = 24_121_195
+        let feeRate = SubtensorPallet.defaultFeeRate
+        let floors = SubtensorUnstakeFloors(
+            yield: SubtensorGroupUnstakeBasis.floorAlpha(minTao: 2_000_000, price: limitPrice, feeRate: feeRate),
+            sweep: SubtensorGroupUnstakeBasis.floorAlpha(minTao: 2_000_000, price: limitPrice, feeRate: 0),
+            exit: SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: SubtensorGroupUnstakeBasis.minExitTao,
+                price: limitPrice,
+                feeRate: feeRate
+            )
+        )
+        let staked = SubtensorUnstakePosition(hotkey: Data(repeating: 0xE8, count: 32), alpha: 1_437_781_835, locked: 0)
+        let dust = SubtensorUnstakePosition(hotkey: Data(repeating: 0xA4, count: 32), alpha: 1, locked: 0)
+        let group = makeGroup([staked, dust])
+
+        let unsellable = SubtensorGroupUnstakeBasis.undrawableHotkeys(in: group, groupHotkeys: [:], floors: floors)
+        let basis = SubtensorGroupUnstakeBasis.make(
+            from: group,
+            selection: .all,
+            excluding: [],
+            groupHotkeys: [:],
+            floors: floors
+        )
+
+        XCTAssertEqual(unsellable, [dust.hotkey])
+        XCTAssertEqual(
+            basis.plan(for: basis.max(floors: floors), floors: floors),
+            SubtensorUnstakePlan(exits: [exit(staked)], partials: [])
+        )
+    }
+
     func testHeldValidatorIsLeftOutOfAllAndCannotStaySelected() {
         let group = makeGroup([primary, second, third])
         let held: Set<AccountId> = [primary.hotkey]
