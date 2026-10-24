@@ -66,10 +66,9 @@ struct SubtensorGroupUnstakeBasis: Equatable {
     }
 
     func plan(for amount: Balance, floors: SubtensorUnstakeFloors) -> SubtensorUnstakePlan? {
-        guard
-            amount > 0,
-            amount <= max(floors: floors),
-            let primary = positions.first(where: { !$0.isDust(floors: floors) }) else {
+        let sellable = positions.filter { !$0.isDust(floors: floors) }
+
+        guard amount > 0, amount <= max(floors: floors), let primary = sellable.first else {
             return nil
         }
 
@@ -80,7 +79,7 @@ struct SubtensorGroupUnstakeBasis: Equatable {
             )
         }
 
-        if positions.count == 1 || primaryCovers(amount, primary: primary, floors: floors) {
+        if sellable.count == 1 || primaryCovers(amount, primary: primary, floors: floors) {
             return SubtensorUnstakePlan(
                 exits: [],
                 partials: [SubtensorUnstakeSlice(hotkey: primary.hotkey, alpha: amount)]
