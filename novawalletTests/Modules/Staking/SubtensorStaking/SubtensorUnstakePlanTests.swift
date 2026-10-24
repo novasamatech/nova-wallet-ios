@@ -71,7 +71,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
 
         let basis = SubtensorGroupUnstakeBasis.make(from: group, excluding: [primary.hotkey])
 
-        XCTAssertEqual(basis.max(floor: floor), second.alpha)
+        XCTAssertEqual(basis.max(floors: floors), second.alpha)
         XCTAssertEqual(
             basis.plan(for: second.alpha, floors: floors),
             SubtensorUnstakePlan(exits: [exit(second)], partials: [])
@@ -114,8 +114,8 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let primaryBasis = makeBasis(group, selection: .validator(primary.hotkey))
         let secondBasis = makeBasis(group, selection: .validator(second.hotkey))
 
-        XCTAssertEqual(primaryBasis.max(floor: floor), 50_000_000_000)
-        XCTAssertEqual(secondBasis.max(floor: floor), second.alpha)
+        XCTAssertEqual(primaryBasis.max(floors: floors), 50_000_000_000)
+        XCTAssertEqual(secondBasis.max(floors: floors), second.alpha)
         XCTAssertNil(secondBasis.plan(for: 41_000_000_000, floors: floors))
     }
 
@@ -186,8 +186,8 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let basis = makeBasis(makeGroup(Array(positions.reversed())), selection: .all)
 
         XCTAssertEqual(basis.positions, Array(kept))
-        XCTAssertEqual(basis.max(floor: floor), kept.reduce(0) { $0 + $1.alpha })
-        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floors: floors)?.slices.count, 16)
+        XCTAssertEqual(basis.max(floors: floors), kept.reduce(0) { $0 + $1.alpha })
+        XCTAssertEqual(basis.plan(for: basis.max(floors: floors), floors: floors)?.slices.count, 16)
     }
 
     func testAllValidatorsSpendTheLegCapOnDrawablePositionsOnly() {
@@ -201,13 +201,13 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let collateral = SubtensorUnstakePosition(hotkey: Data(repeating: 0xFF, count: 32), alpha: 100 * floor, locked: 0)
         let group = makeGroup([collateral] + drawable.reversed())
         let groupHotkeys = [collateral.hotkey: SubtensorGroupHotkeyInfo(owner: nil, collateral: collateral.alpha)]
-        let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floor: floor)
+        let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floors: floors)
 
         let basis = makeBasis(group, selection: .all, groupHotkeys: groupHotkeys)
 
         XCTAssertFalse(SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: undrawable))
-        XCTAssertEqual(basis.max(floor: floor), drawable.reduce(0) { $0 + $1.alpha })
-        XCTAssertEqual(basis.plan(for: basis.max(floor: floor), floors: floors)?.slices.count, drawable.count)
+        XCTAssertEqual(basis.max(floors: floors), drawable.reduce(0) { $0 + $1.alpha })
+        XCTAssertEqual(basis.plan(for: basis.max(floors: floors), floors: floors)?.slices.count, drawable.count)
     }
 
     func testHeldValidatorIsLeftOutOfAllAndCannotStaySelected() {
@@ -264,7 +264,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
             selection: selection,
             excluding: held,
             groupHotkeys: groupHotkeys,
-            floor: floor
+            floors: floors
         )
     }
 

@@ -4,6 +4,7 @@ import Foundation
 struct SubtensorUnstakeFloors: Equatable {
     let yield: Balance
     let sweep: Balance
+    var exit: Balance = 0
 
     static let none = SubtensorUnstakeFloors(yield: 0, sweep: 0)
 }
@@ -18,12 +19,16 @@ struct SubtensorUnstakePosition: Equatable {
         alpha.subtractOrZero(locked)
     }
 
-    func drawable(floor: Balance) -> Balance {
+    func isDust(floors: SubtensorUnstakeFloors) -> Bool {
+        locked == 0 && alpha < floors.exit
+    }
+
+    func drawable(floors: SubtensorUnstakeFloors) -> Balance {
         guard locked > 0 else {
-            return alpha
+            return isDust(floors: floors) ? 0 : alpha
         }
 
-        return free >= floor ? free : 0
+        return free >= floors.yield ? free : 0
     }
 
     func leavesSweepFloor(after slice: Balance, floors: SubtensorUnstakeFloors) -> Bool {
@@ -52,16 +57,19 @@ struct SubtensorGroupUnstakeBasis: Equatable {
         positions.first { $0.hotkey == hotkey }?.alpha
     }
 
-    func drawable(floor: Balance) -> Balance {
-        positions.reduce(0) { $0 + $1.drawable(floor: floor) }
+    func drawable(floors: SubtensorUnstakeFloors) -> Balance {
+        positions.reduce(0) { $0 + $1.drawable(floors: floors) }
     }
 
-    func max(floor: Balance) -> Balance {
-        min(available, drawable(floor: floor))
+    func max(floors: SubtensorUnstakeFloors) -> Balance {
+        min(available, drawable(floors: floors))
     }
 
     func plan(for amount: Balance, floors: SubtensorUnstakeFloors) -> SubtensorUnstakePlan? {
-        guard amount > 0, amount <= max(floor: floors.yield), let primary = positions.first else {
+        guard
+            amount > 0,
+            amount <= max(floors: floors),
+            let primary = positions.first(where: { !$0.isDust(floors: floors) }) else {
             return nil
         }
 
@@ -84,7 +92,7 @@ struct SubtensorGroupUnstakeBasis: Equatable {
         var needed = amount
 
         for position in positions.reversed() where needed > 0 {
-            let drawable = position.drawable(floor: floors.yield)
+            let drawable = position.drawable(floors: floors)
 
             guard drawable > 0 else {
                 continue
@@ -116,7 +124,7 @@ private extension SubtensorGroupUnstakeBasis {
         floors: SubtensorUnstakeFloors
     ) -> Bool {
         amount <= primary.free &&
-            amount < drawable(floor: floors.yield) &&
+            amount < drawable(floors: floors) &&
             primary.leavesSweepFloor(after: amount, floors: floors)
     }
 
@@ -128,8 +136,8 @@ private extension SubtensorGroupUnstakeBasis {
         floors: SubtensorUnstakeFloors
     ) -> SubtensorUnstakePlan? {
         let drawn = (exits + partials).reduce(0) { $0 + $1.alpha }
-        let drawable = position.drawable(floor: floors.yield)
-        let max = max(floor: floors.yield)
+        let drawable = position.drawable(floors: floors)
+        let max = max(floors: floors)
 
         func fits(_ slice: Balance) -> Bool {
             guard slice > 0, slice < drawable else {
@@ -188,7 +196,7 @@ extension SubtensorGroupUnstakeBasis {
         selection: SubtensorUnstakeSelection,
         excluding heldHotkeys: Set<AccountId>,
         groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo],
-        floor: Balance,
+        floors: SubtensorUnstakeFloors,
         coldkey: AccountId? = nil
     ) -> SubtensorGroupUnstakeBasis {
         let members = switch selection {
@@ -197,7 +205,7 @@ extension SubtensorGroupUnstakeBasis {
         case .all:
             capLegs(
                 of: group.positions.filter { !heldHotkeys.contains($0.hotkey) },
-                undrawable: undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floor: floor)
+                undrawable: undrawableHotkeys(in: group, groupHotkeys: groupHotkeys, floors: floors)
             )
         }
 
@@ -207,7 +215,7 @@ extension SubtensorGroupUnstakeBasis {
     static func undrawableHotkeys(
         in group: SubtensorPortfolioGroup,
         groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?,
-        floor: Balance
+        floors: SubtensorUnstakeFloors
     ) -> Set<AccountId> {
         guard let groupHotkeys else {
             return []
@@ -215,7 +223,7 @@ extension SubtensorGroupUnstakeBasis {
 
         let positions = make(from: group, groupHotkeys: groupHotkeys).positions
 
-        return Set(positions.filter { $0.drawable(floor: floor) == 0 }.map(\.hotkey))
+        return Set(positions.filter { $0.drawable(floors: floors) == 0 }.map(\.hotkey))
     }
 
     static func isLegCapped(_ group: SubtensorPortfolioGroup, excluding unsellableHotkeys: Set<AccountId>) -> Bool {
@@ -250,6 +258,7 @@ extension SubtensorGroupUnstakeBasis {
     }
 
     static let floorMargin = BigRational.percent(of: 1)
+    static let minExitTao: Balance = 1
 
     static func floorAlpha(minTao: Balance, price: Balance, feeRate: UInt16) -> Balance {
         let denominator = BigUInt(SubtensorPallet.perU16Denominator)

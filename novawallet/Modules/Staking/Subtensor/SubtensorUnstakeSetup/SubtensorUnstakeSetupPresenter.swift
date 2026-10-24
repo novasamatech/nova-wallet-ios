@@ -124,16 +124,23 @@ extension SubtensorUnstakeSetupPresenter {
             return .none
         }
 
+        let feeRate = isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+
         return SubtensorUnstakeFloors(
             yield: SubtensorGroupUnstakeBasis.floorAlpha(
                 minTao: preflight.minStake,
                 price: price,
-                feeRate: isRoot ? 0 : latestQuote?.quote.feeRate ?? 0
+                feeRate: feeRate
             ),
             sweep: SubtensorGroupUnstakeBasis.floorAlpha(
                 minTao: preflight.effectiveNominatorMinStake,
                 price: price,
                 feeRate: 0
+            ),
+            exit: isRoot ? 0 : SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: SubtensorGroupUnstakeBasis.minExitTao,
+                price: price,
+                feeRate: feeRate
             )
         )
     }
@@ -145,7 +152,7 @@ extension SubtensorUnstakeSetupPresenter {
                 selection: currentSelection,
                 excluding: heldHotkeys,
                 groupHotkeys: groupHotkeys ?? [:],
-                floor: unstakeFloors().yield,
+                floors: unstakeFloors(),
                 coldkey: selectedAccount.chainAccount.accountId
             )
         }
@@ -158,7 +165,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var maxAmount: Balance? {
-        basis?.max(floor: unstakeFloors().yield)
+        basis?.max(floors: unstakeFloors())
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
