@@ -19,8 +19,8 @@ final class SubtensorValidatorInfoViewLayout: UIView {
 
     let coverageCell: StackTitleMultiValueCell = .create { $0.canSelect = false }
 
-    let statusCell: StackTableCell = .create { cell in
-        cell.isUserInteractionEnabled = false
+    let statusCell: StackTitleMultiValueCell = .create { cell in
+        cell.canSelect = false
     }
 
     let stakeCell = StackTitleMultiValueCell()
@@ -65,8 +65,8 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         stakingTitleLabel.isHidden = false
         stakingTableView.isHidden = false
 
-        statusCell.detailsLabel.text = staking.status
-        statusCell.detailsLabel.textColor = staking.isActive
+        statusCell.bind(loadableViewModel: staking.status)
+        statusCell.rowContentView.valueView.valueTop.textColor = staking.isActive
             ? R.color.colorTextPositive()
             : R.color.colorTextSecondary()
 
