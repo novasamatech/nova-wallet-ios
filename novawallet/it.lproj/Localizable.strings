@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "Una transazione copre fino a %@ validatori. Ripeti per i rimanenti.";
 "staking.subtensor.ui.validator.all" = "Tutti i validatori";
 "staking.subtensor.ui.validator.new" = "Nuovo validatore";
+"staking.subtensor.validator.status.via.child.key" = "Attivo tramite chiave figlia";

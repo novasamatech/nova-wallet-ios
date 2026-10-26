@@ -7,7 +7,7 @@ struct SubtensorValidatorInfoViewModel {
     }
 
     struct Staking {
-        let status: String
+        let status: LoadableViewModelState<String>
         let isActive: Bool
         let stake: LoadableViewModelState<Stake>
         let take: String
@@ -21,7 +21,7 @@ struct SubtensorValidatorInfoViewModel {
     let staking: Staking?
 }
 
-protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorValidatorInfoViewModel)
 }
 

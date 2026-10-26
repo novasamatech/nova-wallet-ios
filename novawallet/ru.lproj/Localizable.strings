@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "Одна транзакция охватывает до %@ валидаторов. Повторите для остальных.";
 "staking.subtensor.ui.validator.all" = "Все валидаторы";
 "staking.subtensor.ui.validator.new" = "Новый валидатор";
+"staking.subtensor.validator.status.via.child.key" = "Активен через дочерний ключ";
