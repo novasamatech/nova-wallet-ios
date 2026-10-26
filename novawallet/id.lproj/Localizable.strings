@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "Satu transaksi mencakup hingga %@ validator. Ulangi untuk sisanya.";
 "staking.subtensor.ui.validator.all" = "Semua validator";
 "staking.subtensor.ui.validator.new" = "Validator baru";
+"staking.subtensor.validator.status.via.child.key" = "Aktif melalui Kunci Anak";

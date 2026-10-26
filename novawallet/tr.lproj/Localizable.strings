@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "Bir işlem en fazla %@ doğrulayıcıyı kapsar. Geri kalanlar için tekrarlayın.";
 "staking.subtensor.ui.validator.all" = "Tüm doğrulayıcılar";
 "staking.subtensor.ui.validator.new" = "Yeni doğrulayıcı";
+"staking.subtensor.validator.status.via.child.key" = "Alt Anahtar Üzerinden Aktif";
