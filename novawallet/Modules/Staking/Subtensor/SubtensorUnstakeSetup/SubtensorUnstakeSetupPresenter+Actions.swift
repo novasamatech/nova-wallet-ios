@@ -221,7 +221,7 @@ extension SubtensorUnstakeSetupPresenter {
         let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(
             in: group,
             groupHotkeys: groupHotkeys,
-            floor: unstakeFloors().yield
+            floors: unstakeFloors()
         )
 
         return heldHotkeys.union(undrawable)
