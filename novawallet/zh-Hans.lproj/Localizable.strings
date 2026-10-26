@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "一笔交易最多可处理 %@ 个验证者。其余验证者请重复操作。";
 "staking.subtensor.ui.validator.all" = "所有验证者";
 "staking.subtensor.ui.validator.new" = "新验证者";
+"staking.subtensor.validator.status.via.child.key" = "通过子密钥激活";

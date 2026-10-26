@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "1回のトランザクションで最大%@人のバリデーターを処理できます。残りについて繰り返してください。";
 "staking.subtensor.ui.validator.all" = "すべてのバリデーター";
 "staking.subtensor.ui.validator.new" = "新しいバリデーター";
+"staking.subtensor.validator.status.via.child.key" = "子キー経由でアクティブ";
