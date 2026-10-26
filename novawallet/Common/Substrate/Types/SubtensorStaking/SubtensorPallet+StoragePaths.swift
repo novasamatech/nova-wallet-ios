@@ -66,6 +66,14 @@ extension SubtensorPallet {
         StorageCodingPath(moduleName: name, itemName: "Uids")
     }
 
+    static var parentKeysPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "ParentKeys")
+    }
+
+    static var childKeysPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "ChildKeys")
+    }
+
     static var validatorPermitPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "ValidatorPermit")
     }

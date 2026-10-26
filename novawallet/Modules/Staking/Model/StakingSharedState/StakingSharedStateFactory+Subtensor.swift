@@ -102,6 +102,7 @@ extension StakingSharedStateFactory {
             ),
             recommendationOperationFactory: recommendationOperationFactory,
             validatorDirectoryOperationFactory: validatorDirectoryOperationFactory,
+            validatorChainOperationFactory: validatorChainOperationFactory,
             priceHistoryOperationFactory: createSubtensorPriceHistoryOperationFactory(
                 for: stakingOption, flowState: flowState
             ),
