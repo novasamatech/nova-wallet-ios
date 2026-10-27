@@ -5,6 +5,7 @@ import SubstrateSdk
 protocol SubtensorShieldSubmissionFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
+        keyRetry: SubtensorShieldKeyRetry,
         innerClosure: @escaping ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
 
@@ -266,9 +267,10 @@ private extension SubtensorShieldSubmissionFactory {
 extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
+        keyRetry: SubtensorShieldKeyRetry,
         innerClosure: @escaping ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
-        let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation) { innerClosure }
+        let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation, keyRetry: keyRetry) { innerClosure }
         let fundsWrapper = fundsFactory.createFundsWrapper()
 
         let readinessOperation = ClosureOperation<SubtensorShieldQuote?> { [walletType] in

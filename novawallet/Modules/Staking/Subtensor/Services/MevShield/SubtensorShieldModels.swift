@@ -23,6 +23,11 @@ struct SubtensorShieldQuote {
     }
 }
 
+struct SubtensorShieldKeyRetry {
+    let interval: TimeInterval
+    let willRetry: () -> Void
+}
+
 struct SubtensorSealedInner {
     let carrierNonce: UInt32
     let era: ExtrinsicEraParameters
@@ -44,6 +49,7 @@ enum SubtensorShieldedSubmission {
 
 enum SubtensorShieldError: Error {
     case keyUnavailable
+    case notReady
     case ciphertextTooLong(Int)
     case carrierRejected(Error)
 }

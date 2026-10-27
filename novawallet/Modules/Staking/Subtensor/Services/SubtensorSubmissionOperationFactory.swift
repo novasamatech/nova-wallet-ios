@@ -140,11 +140,13 @@ private extension SubtensorSubmissionOperationFactory {
         )
     }
 
+    // swiftlint:disable:next function_parameter_count
     func createRoutedSubmissionWrapper(
         for operation: SubtensorOperation,
         builderClosure: @escaping ExtrinsicBuilderClosure,
         clearSigner: SubtensorRecordingSigner,
         shieldSigners: SubtensorShieldSigners?,
+        keyRetry: SubtensorShieldKeyRetry,
         finalizer: SubtensorSubmissionFinalizer
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         guard let shield, let shieldSigners else {
@@ -158,19 +160,16 @@ private extension SubtensorSubmissionOperationFactory {
 
         let readinessWrapper = shield.submissionFactory.createReadinessWrapper(
             for: operation,
+            keyRetry: keyRetry,
             innerClosure: builderClosure
         )
 
         let submissionWrapper = OperationCombiningService<SubtensorOperationOutcome>.compoundNonOptionalWrapper(
             operationQueue: shield.operationQueue
         ) {
-            guard let quote = try readinessWrapper.targetOperation.extractNoCancellableResultData() else {
-                return self.createSubmissionWrapper(
-                    for: operation,
-                    builderClosure: builderClosure,
-                    signer: clearSigner,
-                    finalizer: finalizer
-                )
+            // an order the user chose to shield is never sent in the clear: without a ready quote nothing is signed
+            guard let quote = try? readinessWrapper.targetOperation.extractNoCancellableResultData() else {
+                throw finalizer.shieldedFailure(for: SubtensorShieldError.notReady)
             }
 
             return self.createShieldedOutcomeWrapper(
@@ -188,6 +187,32 @@ private extension SubtensorSubmissionOperationFactory {
         submissionWrapper.addDependency(wrapper: readinessWrapper)
 
         return submissionWrapper.insertingHead(operations: readinessWrapper.allOperations)
+    }
+
+    func createResultOperation(
+        for submissionWrapper: CompoundOperationWrapper<SubtensorOperationOutcome>,
+        claimMarker: SubtensorPendingRootClaimMarker?,
+        finalizer: SubtensorSubmissionFinalizer
+    ) -> BaseOperation<SubtensorOperationOutcome> {
+        ClosureOperation { [sharedOperation] in
+            do {
+                let outcome = try submissionWrapper.targetOperation.extractNoCancellableResultData()
+                claimMarker?.finish()
+                return outcome
+            } catch {
+                let failure = finalizer.failure(for: error)
+
+                claimMarker?.finish(failedAt: failure.stage)
+
+                if failure.stage.revertsSharedOperation {
+                    DispatchQueue.main.async {
+                        sharedOperation?.markComposing()
+                    }
+                }
+
+                throw failure
+            }
+        }
     }
 }
 
@@ -229,6 +254,8 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
     func createSubmitWrapper(
         for operation: SubtensorOperation,
         shielded: Bool,
+        blockTime: BlockTime,
+        keyRetryClosure: @escaping () -> Void,
         signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         let builderClosure: ExtrinsicBuilderClosure
@@ -266,30 +293,17 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
             builderClosure: builderClosure,
             clearSigner: recordingSigner,
             shieldSigners: shieldSigners,
+            keyRetry: SubtensorShieldKeyRetry(interval: TimeInterval(blockTime).seconds, willRetry: keyRetryClosure),
             finalizer: finalizer
         )
 
         submissionWrapper.addDependency(operations: [markSentOperation])
 
-        let resultOperation = ClosureOperation<SubtensorOperationOutcome> { [sharedOperation] in
-            do {
-                let outcome = try submissionWrapper.targetOperation.extractNoCancellableResultData()
-                claimMarker?.finish()
-                return outcome
-            } catch {
-                let failure = finalizer.failure(for: error)
-
-                claimMarker?.finish(failedAt: failure.stage)
-
-                if failure.stage.revertsSharedOperation {
-                    DispatchQueue.main.async {
-                        sharedOperation?.markComposing()
-                    }
-                }
-
-                throw failure
-            }
-        }
+        let resultOperation = createResultOperation(
+            for: submissionWrapper,
+            claimMarker: claimMarker,
+            finalizer: finalizer
+        )
 
         resultOperation.addDependency(submissionWrapper.targetOperation)
 

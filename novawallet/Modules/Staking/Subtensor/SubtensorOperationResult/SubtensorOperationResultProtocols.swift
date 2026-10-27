@@ -21,6 +21,7 @@ protocol SubtensorOperationResultInteractorInputProtocol: AnyObject {
 
 protocol SubtensorOperationResultInteractorOutputProtocol: AnyObject {
     func didReceiveSubmission(result: Result<SubtensorOperationOutcome, SubtensorSubmissionFailure>)
+    func didPostponeSigning()
     func didSelectRoute(_ route: SubtensorSubmissionRoute)
     func didReachConfirmationCap()
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash)

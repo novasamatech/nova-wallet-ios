@@ -73,17 +73,32 @@ private extension SubtensorOperationResultInteractor {
         scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap(for: route, blockTime: blockTime))
     }
 
+    func postponeSigning() {
+        guard !isSubmissionFinished else {
+            return
+        }
+
+        presenter?.didPostponeSigning()
+    }
+
     func submit() {
         osMediator.disableScreenSleep()
 
         let wrapper = submissionOperationFactory.createSubmitWrapper(
             for: operation,
-            shielded: shielded
-        ) { [weak self] route in
-            DispatchQueue.main.async {
-                self?.startConfirmationCap(for: route)
+            shielded: shielded,
+            blockTime: blockTime,
+            keyRetryClosure: { [weak self] in
+                DispatchQueue.main.async {
+                    self?.postponeSigning()
+                }
+            },
+            signedClosure: { [weak self] route in
+                DispatchQueue.main.async {
+                    self?.startConfirmationCap(for: route)
+                }
             }
-        }
+        )
 
         execute(
             wrapper: wrapper,

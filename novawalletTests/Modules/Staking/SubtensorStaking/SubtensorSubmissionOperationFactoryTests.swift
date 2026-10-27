@@ -11,6 +11,7 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
     private let beneficiary = Data(repeating: 0xBB, count: 32)
     private let extrinsicHash = "0x" + String(repeating: "07", count: 32)
     private let blockHash = "0x" + String(repeating: "08", count: 32)
+    private let blockTime: BlockTime = 1
 
     func testSuccessfulSellReturnsOutcomeRefreshesPositionsAndPostsStakingChanged() throws {
         let events = try SubtensorFixtureDecoding.decodeEvents(
@@ -166,7 +167,13 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             quotedTaoOut: 4_145_000_000,
             novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: Data(repeating: 0xBB, count: 32))
         )
-        let wrapper = context.operationFactory.createSubmitWrapper(for: operation, shielded: false) { _ in }
+        let wrapper = context.operationFactory.createSubmitWrapper(
+            for: operation,
+            shielded: false,
+            blockTime: blockTime,
+            keyRetryClosure: {},
+            signedClosure: { _ in }
+        )
         let completed = expectation(description: "submission completed")
         wrapper.targetOperation.completionBlock = { DispatchQueue.main.async { completed.fulfill() } }
 
