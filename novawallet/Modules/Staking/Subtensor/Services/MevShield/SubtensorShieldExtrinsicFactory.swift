@@ -271,10 +271,6 @@ private extension SubtensorShieldExtrinsicFactory {
             // the plaintext is the whole signed inner with its compact length prefix, decoded as an UncheckedExtrinsic
             let ciphertext = try sealer.seal(plaintext: inner, publicKey: key)
 
-            guard ciphertext.count <= MevShieldPallet.maxCiphertextLength else {
-                throw SubtensorShieldError.ciphertextTooLong(ciphertext.count)
-            }
-
             return SubtensorSealedInner(
                 carrierNonce: timing.nonce,
                 era: timing.era,

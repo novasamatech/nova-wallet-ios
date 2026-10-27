@@ -48,7 +48,7 @@ extension MevShieldSealer: MevShieldSealing {
             authenticationHeader: []
         )
 
-        let kemLength = withUnsafeBytes(of: UInt16(MevShieldPallet.kemCiphertextLength).littleEndian) { Data($0) }
+        let kemLength = Data(UInt16(MevShieldPallet.kemCiphertextLength).littleEndianBytes)
 
         let payload = publicKey.twox128() + kemLength + encapsulation.ciphertext + nonce +
             Data(sealed.cipherText) + Data(sealed.authenticationTag)

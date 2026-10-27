@@ -175,7 +175,7 @@ private extension SubtensorOperationResultViewModelFactory {
             [
                 failureReason(for: failure, holdRemaining: holdRemaining, request: request, locale: locale),
                 strings.stakingSubtensorResultFeeMayBeCharged()
-            ].joined(separator: " ")
+            ].joined(with: .space)
         case .unconfirmed:
             strings.stakingSubtensorResultUnconfirmedMessage()
         }
