@@ -79,9 +79,8 @@ public final class ModalCardPresentationController: UIPresentationController {
         )
     }
 
-    /// The card height comes from the presentation container, never from the presenting view:
+    /// The height comes from the presentation container, never from the presenting view:
     /// a presenting bottom sheet owns only its pane, so its view height would clip the card (NW-2379).
-    /// A card nested in another card keeps the parent's height; a first-level card leaves the top offset.
     static func presentedViewFrame(
         containerBounds: CGRect,
         safeAreaTop: CGFloat,

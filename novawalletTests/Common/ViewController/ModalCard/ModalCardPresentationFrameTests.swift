@@ -5,6 +5,8 @@ final class ModalCardPresentationFrameTests: XCTestCase {
     private let container = CGRect(x: 0, y: 0, width: 390, height: 844)
 
     func testFirstLevelCardFillsContainerBelowTopOffset() {
+        // The container, not the presenting view, sizes the card: a presenting bottom sheet
+        // owns only its pane and must still get a full-height card (NW-2379).
         let frame = ModalCardPresentationController.presentedViewFrame(
             containerBounds: container,
             safeAreaTop: 47,
@@ -22,18 +24,5 @@ final class ModalCardPresentationFrameTests: XCTestCase {
         )
 
         XCTAssertEqual(frame, CGRect(x: 0, y: 12, width: 390, height: 832))
-    }
-
-    func testCardPresentedFromBottomSheetIsStillFullHeight() {
-        // A bottom sheet's view is only the pane, but the card lives in the full-size container,
-        // so the frame must come from the container, never from the presenting view (NW-2379).
-        let frame = ModalCardPresentationController.presentedViewFrame(
-            containerBounds: container,
-            safeAreaTop: 47,
-            presentedByModalCard: false
-        )
-
-        XCTAssertEqual(frame.height, container.height - 47 - 12)
-        XCTAssertEqual(frame.maxY, container.height)
     }
 }
