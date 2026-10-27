@@ -121,7 +121,7 @@ extension SubtensorConfirmPresenter {
             assetDisplayInfo: viewModelFactory.amountDisplayInfo(for: model.target, catalogue: catalogue),
             syncFailed: isPositionsSyncFailed || positionsState == nil,
             onFeeRefresh: { [weak self] in
-                self?.refreshFee()
+                self?.refreshFeeKeepingAcknowledgement()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()

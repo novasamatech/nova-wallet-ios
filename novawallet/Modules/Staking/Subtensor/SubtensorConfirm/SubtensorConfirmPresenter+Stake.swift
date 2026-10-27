@@ -61,7 +61,7 @@ extension SubtensorConfirmPresenter {
             netuid: model.target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
-                self?.refreshFee()
+                self?.refreshFeeKeepingAcknowledgement()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()

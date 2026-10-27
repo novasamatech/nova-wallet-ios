@@ -60,6 +60,14 @@ final class SubtensorConfirmAnalytics {
         isAcknowledgementHeld = heldForNextTap
     }
 
+    func holdPriceMoveAcknowledgement() {
+        guard priceMoveBanner == .acknowledged else {
+            return
+        }
+
+        isAcknowledgementHeld = true
+    }
+
     func takePriceMoveAcknowledgement() -> Bool {
         guard priceMoveBanner == .acknowledged else {
             return false

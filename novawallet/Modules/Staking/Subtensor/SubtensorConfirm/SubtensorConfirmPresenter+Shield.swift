@@ -52,6 +52,14 @@ extension SubtensorConfirmPresenter {
         interactor.estimateShieldQuote(for: operation)
     }
 
+    func refreshFeeKeepingAcknowledgement() {
+        if isShieldable {
+            analytics.holdPriceMoveAcknowledgement()
+        }
+
+        refreshFee()
+    }
+
     func retryUnresolvedShieldQuote() {
         guard !isShieldQuoteResolved, let shieldQuoteOperation else {
             return
