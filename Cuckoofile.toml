@@ -143,6 +143,8 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorRecommendationOperationFactoryProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorYieldOperationFactoryProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetCatalogueOperationFactoryProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/MevShield/MevShieldOperationFactory.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/MevShield/SubtensorShieldFundsFactory.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/ExtrinsicStatusService/ExtrinsicSubmissionMonitor.swift",
     "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
 ]

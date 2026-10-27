@@ -73,21 +73,7 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
     }
 
     func testErrorAfterSignatureIsUnconfirmedAndRefreshes() throws {
-        let submitMonitor = MockExtrinsicSubmitMonitorFactoryProtocol()
-        stub(submitMonitor) { stub in
-            when(stub.submitAndMonitorWrapper(
-                extrinsicBuilderClosure: any(),
-                payingIn: any(),
-                signer: any(),
-                matchingEvents: any()
-            )).then { _, _, signer, _ in
-                CompoundOperationWrapper(targetOperation: ClosureOperation<ExtrinsicMonitorSubmission> {
-                    _ = try signer.sign(Data(repeating: 1, count: 32), context: .rawBytes)
-                    throw JSONRPCEngineError.clientCancelled
-                })
-            }
-        }
-        let context = try setupContext(submitMonitor: submitMonitor)
+        let context = try setupContext(submitMonitor: createSigningThenFailingSubmitMonitor())
 
         let failure = try performFailingSubmit(with: context)
 
@@ -113,6 +99,25 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
         )
     }
 
+    func testShieldedSellWithoutNextKeyFailsAsNotExecutedWithoutClearSigning() throws {
+        let nextKeyFactory = MockMevShieldOperationFactoryProtocol()
+        stub(nextKeyFactory) { stub in
+            when(stub.createNextKeyWrapper()).then { .createWithResult(nil) }
+        }
+        let context = try setupContext(
+            submitMonitor: createSigningThenFailingSubmitMonitor(),
+            nextKeyFactory: nextKeyFactory
+        )
+        var signedRoutes: [SubtensorSubmissionRoute] = []
+
+        let failure = try performFailingSubmit(with: context, shielded: true) { signedRoutes.append($0) }
+
+        XCTAssertEqual(failure.stage, .notSubmitted)
+        XCTAssertEqual(failure.error as? SubtensorSubmissionError, .shieldedNotExecuted)
+        XCTAssertEqual(signedRoutes, [])
+        verify(nextKeyFactory, times(3)).createNextKeyWrapper()
+    }
+
     private struct Context {
         let operationFactory: SubtensorSubmissionOperationFactory
         let eventCenter: MockEventCenterProtocol
@@ -121,7 +126,8 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
 
     private func setupContext(
         submitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
-        beneficiary: AccountId? = Data(repeating: 0xBB, count: 32)
+        beneficiary: AccountId? = Data(repeating: 0xBB, count: 32),
+        nextKeyFactory: MevShieldOperationFactoryProtocol? = nil
     ) throws -> Context {
         let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42)
         let chainAsset = try XCTUnwrap(chain.utilityChainAsset())
@@ -138,7 +144,8 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
             configProvider: MockSubtensorConfigProviding(),
-            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary)
+            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary),
+            shield: nextKeyFactory.map { createShield(on: chain, nextKeyFactory: $0) }
         )
 
         return Context(
@@ -158,7 +165,81 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
         return ExtrinsicSubmitMonitorFactoryStub(submission: submission)
     }
 
-    private func performSubmit(with context: Context) -> Result<SubtensorOperationOutcome, Error> {
+    private func createSigningThenFailingSubmitMonitor() -> ExtrinsicSubmitMonitorFactoryProtocol {
+        let submitMonitor = MockExtrinsicSubmitMonitorFactoryProtocol()
+        stub(submitMonitor) { stub in
+            when(stub.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: any(),
+                payingIn: any(),
+                signer: any(),
+                matchingEvents: any()
+            )).then { _, _, signer, _ in
+                CompoundOperationWrapper(targetOperation: ClosureOperation<ExtrinsicMonitorSubmission> {
+                    _ = try signer.sign(Data(repeating: 1, count: 32), context: .rawBytes)
+                    throw JSONRPCEngineError.clientCancelled
+                })
+            }
+        }
+
+        return submitMonitor
+    }
+
+    private func createShield(
+        on chain: ChainModel,
+        nextKeyFactory: MevShieldOperationFactoryProtocol
+    ) -> SubtensorShieldServices {
+        let connection = TestJSONRPCEngine()
+        let runtimeProvider = MockRuntimeProviderProtocol()
+        let operationQueue = OperationQueue()
+        let statusService = ExtrinsicStatusService(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            logger: Logger.shared
+        )
+        let fundsFactory = MockSubtensorShieldFundsFactoryProtocol()
+        stub(fundsFactory) { stub in
+            when(stub.createFundsWrapper()).then {
+                .createWithResult(SubtensorShieldFunds(transferable: 1_000_000_000_000, existentialDeposit: 500))
+            }
+        }
+
+        let extrinsicFactory = SubtensorShieldExtrinsicFactory(
+            account: AccountGenerator.generateSubstrateChainAccountResponse(for: chain.chainId),
+            chain: chain,
+            connection: connection,
+            extrinsicServiceFactory: ExtrinsicServiceFactoryStub(),
+            keyOperationFactory: nextKeyFactory,
+            sealer: MevShieldSealer(),
+            operationQueue: operationQueue,
+            nonceOperationFactory: PresetNonceOperationFactory(nonce: 0)
+        )
+
+        let submissionFactory = SubtensorShieldSubmissionFactory(
+            walletType: .secrets,
+            extrinsicFactory: extrinsicFactory,
+            fundsFactory: fundsFactory,
+            carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
+            inclusionTracker: SubtensorShieldInclusionTracker(
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                statusService: statusService,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                operationQueue: operationQueue
+            ),
+            statusService: statusService,
+            signerFactory: { try? DummySigner(cryptoType: .sr25519) },
+            operationQueue: operationQueue
+        )
+
+        return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
+    }
+
+    private func performSubmit(
+        with context: Context,
+        shielded: Bool = false,
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void = { _ in }
+    ) -> Result<SubtensorOperationOutcome, Error> {
         let operation = SubtensorOperation.subnetSell(
             hotkey: hotkey,
             netuid: 64,
@@ -169,10 +250,10 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
         )
         let wrapper = context.operationFactory.createSubmitWrapper(
             for: operation,
-            shielded: false,
+            shielded: shielded,
             blockTime: blockTime,
             keyRetryClosure: {},
-            signedClosure: { _ in }
+            signedClosure: signedClosure
         )
         let completed = expectation(description: "submission completed")
         wrapper.targetOperation.completionBlock = { DispatchQueue.main.async { completed.fulfill() } }
@@ -183,10 +264,14 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
         return wrapper.targetOperation.result ?? .failure(BaseOperationError.parentOperationCancelled)
     }
 
-    private func performFailingSubmit(with context: Context) throws -> SubtensorSubmissionFailure {
+    private func performFailingSubmit(
+        with context: Context,
+        shielded: Bool = false,
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void = { _ in }
+    ) throws -> SubtensorSubmissionFailure {
         var failure: SubtensorSubmissionFailure?
 
-        if case let .failure(error) = performSubmit(with: context) {
+        if case let .failure(error) = performSubmit(with: context, shielded: shielded, signedClosure: signedClosure) {
             failure = error as? SubtensorSubmissionFailure
         }
 
