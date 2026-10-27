@@ -16,6 +16,7 @@ final class SubtensorSubmissionOperationFactory {
     let errorMapper: SubtensorErrorMapping = SubtensorErrorMapper()
     let feeCalculator: SubtensorNovaFeeCalculator
     let shield: SubtensorShieldServices?
+    let logger: LoggerProtocol
     let workingQueue = DispatchQueue.global(qos: .userInitiated)
 
     init(
@@ -30,7 +31,8 @@ final class SubtensorSubmissionOperationFactory {
         configProvider: SubtensorConfigProviding,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
-        shield: SubtensorShieldServices? = nil
+        shield: SubtensorShieldServices? = nil,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.chainAsset = chainAsset
         self.accountId = accountId
@@ -44,6 +46,7 @@ final class SubtensorSubmissionOperationFactory {
         self.pendingRootClaims = pendingRootClaims
         self.feeCalculator = feeCalculator
         self.shield = shield
+        self.logger = logger
     }
 }
 
@@ -168,7 +171,7 @@ private extension SubtensorSubmissionOperationFactory {
             operationQueue: shield.operationQueue
         ) {
             // an order the user chose to shield is never sent in the clear: without a ready quote nothing is signed
-            guard let quote = try? readinessWrapper.targetOperation.extractNoCancellableResultData() else {
+            guard let quote = self.extractReadyQuote(from: readinessWrapper) else {
                 throw finalizer.shieldedFailure(for: SubtensorShieldError.notReady)
             }
 
@@ -187,6 +190,17 @@ private extension SubtensorSubmissionOperationFactory {
         submissionWrapper.addDependency(wrapper: readinessWrapper)
 
         return submissionWrapper.insertingHead(operations: readinessWrapper.allOperations)
+    }
+
+    func extractReadyQuote(
+        from readinessWrapper: CompoundOperationWrapper<SubtensorShieldQuote?>
+    ) -> SubtensorShieldQuote? {
+        do {
+            return try readinessWrapper.targetOperation.extractNoCancellableResultData()
+        } catch {
+            logger.warning("Shield readiness failed: \(error)")
+            return nil
+        }
     }
 
     func createResultOperation(

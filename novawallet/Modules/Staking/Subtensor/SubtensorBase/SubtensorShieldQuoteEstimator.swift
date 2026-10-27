@@ -7,6 +7,7 @@ enum SubtensorShieldQuoteEstimatorError: Error {
 
 final class SubtensorShieldQuoteEstimator {
     var onQuote: ((SubtensorShieldQuote?, SubtensorOperation) -> Void)?
+    var onFallback: ((SubtensorOperation) -> Void)?
 
     private let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
     private let operationQueue: OperationQueue
@@ -108,7 +109,7 @@ private extension SubtensorShieldQuoteEstimator {
             logger.warning("Shield quote failed: \(error)")
 
             if failures >= SubtensorFlowConstants.shieldQuoteAttempts {
-                onQuote?(nil, operation)
+                onFallback?(operation)
             }
         }
     }

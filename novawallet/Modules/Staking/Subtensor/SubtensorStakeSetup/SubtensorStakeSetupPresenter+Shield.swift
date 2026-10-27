@@ -7,6 +7,11 @@ extension SubtensorStakeSetupPresenter: SubtensorShieldQuoteHandling {
     func applyShieldQuoteChange() {
         applyMaxChange()
     }
+
+    func applyShieldQuoteFallback() {
+        maxRefreshTransferable = transferable
+        applyMaxChange()
+    }
 }
 
 extension SubtensorStakeSetupPresenter {

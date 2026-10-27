@@ -72,6 +72,10 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
         shieldQuoteEstimator.onQuote = { [weak self] quote, operation in
             self?.basePresenter?.didReceiveShieldQuote(quote, for: operation)
         }
+
+        shieldQuoteEstimator.onFallback = { [weak self] operation in
+            self?.basePresenter?.didReceiveShieldQuoteFallback(for: operation)
+        }
     }
 
     deinit {

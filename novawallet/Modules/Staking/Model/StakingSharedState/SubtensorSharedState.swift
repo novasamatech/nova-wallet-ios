@@ -228,7 +228,8 @@ extension SubtensorSharedState: SubtensorSharedStateProtocol {
             configProvider: earnServices.subnetLogosProvider,
             pendingRootClaims: flowState.pendingRootClaims,
             feeCalculator: novaFeeCalculator,
-            shield: shield
+            shield: shield,
+            logger: logger
         )
     }
 }

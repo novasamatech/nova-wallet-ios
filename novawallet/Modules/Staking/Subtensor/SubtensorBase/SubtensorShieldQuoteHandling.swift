@@ -14,6 +14,7 @@ protocol SubtensorShieldQuoteHandling: AnyObject {
     var waitsForShieldQuote: Bool { get }
 
     func applyShieldQuoteChange()
+    func applyShieldQuoteFallback()
 }
 
 extension SubtensorShieldQuoteHandling {
@@ -46,6 +47,10 @@ extension SubtensorShieldQuoteHandling {
         }
 
         return activeShieldQuote?.totalFee ?? fee
+    }
+
+    func applyShieldQuoteFallback() {
+        applyShieldQuoteChange()
     }
 
     func requestShieldQuote(for operation: SubtensorOperation) {
@@ -81,5 +86,16 @@ extension SubtensorShieldQuoteHandling {
         isShieldQuoteResolved = true
 
         applyShieldQuoteChange()
+    }
+
+    func didReceiveShieldQuoteFallback(for operation: SubtensorOperation) {
+        guard operation == shieldQuoteOperation else {
+            return
+        }
+
+        shieldQuote = nil
+        isShieldQuoteResolved = true
+
+        applyShieldQuoteFallback()
     }
 }

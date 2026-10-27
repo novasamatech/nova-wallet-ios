@@ -49,6 +49,7 @@ protocol SubtensorBaseInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?, for operation: SubtensorOperation)
+    func didReceiveShieldQuoteFallback(for operation: SubtensorOperation)
     func didReceivePositions(_ state: Multistaking.SubtensorState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)

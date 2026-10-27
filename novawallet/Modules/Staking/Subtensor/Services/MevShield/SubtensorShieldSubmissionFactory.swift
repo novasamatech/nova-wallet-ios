@@ -270,28 +270,45 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         keyRetry: SubtensorShieldKeyRetry,
         innerClosure: @escaping ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
-        let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation, keyRetry: keyRetry) { innerClosure }
+        let quoteWrapper = extrinsicFactory.createUnkeyedQuoteWrapper(for: operation, innerClosure: innerClosure)
         let fundsWrapper = fundsFactory.createFundsWrapper()
 
-        let readinessOperation = ClosureOperation<SubtensorShieldQuote?> { [walletType] in
+        let eligibilityOperation = ClosureOperation<Bool> { [walletType] in
             let funds = try fundsWrapper.targetOperation.extractNoCancellableResultData()
-            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
             let input = SubtensorShieldEligibilityInput(
                 walletType: walletType,
-                quote: quote,
+                quote: try quoteWrapper.targetOperation.extractNoCancellableResultData(),
                 transferable: funds.transferable,
                 existentialDeposit: funds.existentialDeposit
             )
 
-            return SubtensorShieldEligibility.isEligible(input) ? quote : nil
+            return SubtensorShieldEligibility.isEligible(input)
+        }
+
+        eligibilityOperation.addDependency(quoteWrapper.targetOperation)
+        eligibilityOperation.addDependency(fundsWrapper.targetOperation)
+
+        let keyWrapper = extrinsicFactory.createKeyWrapper(keyRetry: keyRetry, retryCondition: eligibilityOperation)
+
+        let readinessOperation = ClosureOperation<SubtensorShieldQuote?> {
+            guard
+                try eligibilityOperation.extractNoCancellableResultData(),
+                try keyWrapper.targetOperation.extractNoCancellableResultData() != nil else {
+                return nil
+            }
+
+            return try quoteWrapper.targetOperation.extractNoCancellableResultData()
         }
 
         readinessOperation.addDependency(quoteWrapper.targetOperation)
-        readinessOperation.addDependency(fundsWrapper.targetOperation)
+        readinessOperation.addDependency(eligibilityOperation)
+        readinessOperation.addDependency(keyWrapper.targetOperation)
 
-        return quoteWrapper
-            .insertingHead(operations: fundsWrapper.allOperations)
+        let headOperations = quoteWrapper.allOperations + fundsWrapper.allOperations + [eligibilityOperation]
+
+        return keyWrapper
+            .insertingHead(operations: headOperations)
             .insertingTail(operation: readinessOperation)
     }
 

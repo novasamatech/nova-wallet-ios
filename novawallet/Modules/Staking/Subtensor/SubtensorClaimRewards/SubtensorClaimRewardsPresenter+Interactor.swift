@@ -59,6 +59,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
 
     func didReceiveShieldQuote(_: SubtensorShieldQuote?, for _: SubtensorOperation) {}
 
+    func didReceiveShieldQuoteFallback(for _: SubtensorOperation) {}
+
     func didReceiveCostBasis(_: SubtensorCostBasis?) {}
 
     func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
