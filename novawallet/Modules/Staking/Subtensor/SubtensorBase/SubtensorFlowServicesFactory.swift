@@ -124,7 +124,7 @@ private extension SubtensorFlowServicesFactory {
         let walletType = account.chainAccount.type
 
         guard !FeatureSupportChecker.refusesSubtensorStakingSigning(for: walletType) else {
-            return NoSigningSupportWrapper(type: walletType == .proxied ? .proxy : .ledger)
+            return NoSigningSupportWrapper(type: .proxy)
         }
 
         return SigningWrapperFactory().createSigningWrapper(
