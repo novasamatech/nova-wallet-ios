@@ -2838,6 +2838,7 @@
 		3B7EEC888C19F954B5EB1012 /* OnChainTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9871C4FF3B05F6055AF82F14 /* OnChainTransferSetupWireframe.swift */; };
 		3B87871B471FF8BA84DC7910 /* ParaStkYieldBoostStopWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285212895DBAB0098F302DF9 /* ParaStkYieldBoostStopWireframe.swift */; };
 		3BB4C7A5F2A2A056AD119A40 /* FixedMortalEraOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F641D1C93864CD13747FEB /* FixedMortalEraOperationFactory.swift */; };
+		9C4A1E7D3B2F5A8E6D0C1B29 /* FinalizedHeaderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */; };
 		3BFD635E852E4D395025BEE8 /* CollatorStakingSelectSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C602661DE4D6CAC482AF721 /* CollatorStakingSelectSearchViewFactory.swift */; };
 		3C219894A8E0598486B2D285 /* SwapFeeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FC3C19F3DEE499283E6468 /* SwapFeeDetailsViewController.swift */; };
 		3C33AD1392D3C7C964848763 /* MythosStkUnstakeSetupPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BBEC6691DFE307281FC2C5 /* MythosStkUnstakeSetupPresenter+Analytics.swift */; };
@@ -12752,6 +12753,7 @@
 		87A05F26D92F01581E5BA44B /* HydraFeeConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraFeeConversion.swift; sourceTree = "<group>"; };
 		87CD8C618D61C78EA8C58532 /* ParitySignerTxScanViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanViewLayout.swift; sourceTree = "<group>"; };
 		87F641D1C93864CD13747FEB /* FixedMortalEraOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedMortalEraOperationFactory.swift; sourceTree = "<group>"; };
+		5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizedHeaderOperationFactory.swift; sourceTree = "<group>"; };
 		880059D728EEBC0200E87B9B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		880059D928EF092800E87B9B /* ThumbView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbView.swift; sourceTree = "<group>"; };
 		880059DB28EF092F00E87B9B /* SegmentedSliderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegmentedSliderView.swift; sourceTree = "<group>"; };
@@ -27456,6 +27458,7 @@
 				0C5C96282E2DD6D700F1448B /* TransactionNonceOperationFactory.swift */,
 				ED0DC29AE2918DB25794E5F3 /* PresetNonceOperationFactory.swift */,
 				87F641D1C93864CD13747FEB /* FixedMortalEraOperationFactory.swift */,
+				5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */,
 				498246414B54F829F80956BD /* PresetEraOperationFactory.swift */,
 			);
 			path = Substrate;
@@ -40018,6 +40021,7 @@
 				32399C8F7BD64D5489374618 /* MevShieldOperationFactory.swift in Sources */,
 				1A600375C5572298E8573E4D /* PresetNonceOperationFactory.swift in Sources */,
 				3BB4C7A5F2A2A056AD119A40 /* FixedMortalEraOperationFactory.swift in Sources */,
+				9C4A1E7D3B2F5A8E6D0C1B29 /* FinalizedHeaderOperationFactory.swift in Sources */,
 				9D1D620F1D45B25DAF0305E0 /* AuthorizeOnceSigningWrapper.swift in Sources */,
 				6482AE6A1C99542F5AC78389 /* SubtensorShieldEligibility.swift in Sources */,
 				B9F92FAE51A97D45AEDED60D /* MevShieldSealing.swift in Sources */,

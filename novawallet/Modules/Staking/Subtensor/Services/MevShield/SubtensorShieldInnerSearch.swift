@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
 
 enum SubtensorShieldInnerSearchError: Error {
     case windowUnfinished(BlockNumber)
@@ -29,6 +28,7 @@ final class SubtensorShieldInnerSearch {
     let operationQueue: OperationQueue
 
     private let blockHashOperationFactory = BlockHashOperationFactory()
+    private let finalizedHeaderOperationFactory = FinalizedHeaderOperationFactory()
     private let workingQueue = DispatchQueue(label: "io.novawallet.mevshield.search.\(UUID().uuidString)")
     private let callStore = CancellableCallStore()
     private let mutex = NSLock()
@@ -91,40 +91,6 @@ private extension SubtensorShieldInnerSearch {
         return completion != nil
     }
 
-    func createFinalizedNumberWrapper() -> CompoundOperationWrapper<BlockNumber> {
-        let hashOperation = JSONRPCListOperation<String>(engine: connection, method: RPCMethod.getFinalizedBlockHash)
-        let headerOperation = JSONRPCListOperation<Block.Header>(engine: connection, method: RPCMethod.getBlockHeader)
-
-        headerOperation.configurationBlock = {
-            do {
-                headerOperation.parameters = [try hashOperation.extractNoCancellableResultData()]
-            } catch {
-                headerOperation.result = .failure(error)
-            }
-        }
-
-        headerOperation.addDependency(hashOperation)
-
-        let numberOperation = ClosureOperation<BlockNumber> {
-            let header = try headerOperation.extractNoCancellableResultData()
-
-            guard
-                let number = BigUInt.fromHexString(header.number),
-                let blockNumber = BlockNumber(exactly: number) else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
-
-            return blockNumber
-        }
-
-        numberOperation.addDependency(headerOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: numberOperation,
-            dependencies: [hashOperation, headerOperation]
-        )
-    }
-
     func visit(_ blockNumber: BlockNumber) {
         guard isActive else {
             return
@@ -140,7 +106,7 @@ private extension SubtensorShieldInnerSearch {
 
     func refreshFinalized(waitingFor blockNumber: BlockNumber) {
         executeCancellable(
-            wrapper: createFinalizedNumberWrapper(),
+            wrapper: finalizedHeaderOperationFactory.createBlockNumberWrapper(from: connection),
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: workingQueue

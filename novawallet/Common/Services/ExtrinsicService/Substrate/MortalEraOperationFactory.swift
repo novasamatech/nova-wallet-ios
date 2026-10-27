@@ -13,39 +13,10 @@ final class MortalEraOperationFactory {
     static let mortalPeriod: UInt64 = 5 * 60 * 1000
 
     private let blockTimeOperationFactory: BlockTimeOperationFactory
+    private let finalizedHeaderOperationFactory = FinalizedHeaderOperationFactory()
 
     init(chain: ChainModel) {
         blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
-    }
-
-    private func createFinalizedHeaderOperation(
-        from connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<Block.Header> {
-        let finalizedBlockHashOperation: JSONRPCListOperation<String> = JSONRPCListOperation(
-            engine: connection,
-            method: RPCMethod.getFinalizedBlockHash
-        )
-
-        let finalizedHeaderOperation: JSONRPCListOperation<Block.Header> = JSONRPCListOperation(
-            engine: connection,
-            method: RPCMethod.getBlockHeader
-        )
-
-        finalizedHeaderOperation.configurationBlock = {
-            do {
-                let blockHash = try finalizedBlockHashOperation.extractNoCancellableResultData()
-                finalizedHeaderOperation.parameters = [blockHash]
-            } catch {
-                finalizedHeaderOperation.result = .failure(error)
-            }
-        }
-
-        finalizedHeaderOperation.addDependency(finalizedBlockHashOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: finalizedHeaderOperation,
-            dependencies: [finalizedBlockHashOperation]
-        )
     }
 
     private func createBestHeaderOperation(
@@ -86,7 +57,7 @@ final class MortalEraOperationFactory {
     private func createFinalizationModelWrapper(
         from connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<FinalizationModel> {
-        let finalizedHeaderWrapper = createFinalizedHeaderOperation(from: connection)
+        let finalizedHeaderWrapper = finalizedHeaderOperationFactory.createHeaderWrapper(from: connection)
         let bestHeaderWrapper = createBestHeaderOperation(from: connection)
 
         let mapOperation = ClosureOperation<FinalizationModel> {
