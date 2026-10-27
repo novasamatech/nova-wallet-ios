@@ -2365,3 +2365,4 @@
 "staking.subtensor.ui.unstake.legs.cap.format" = "Egy tranzakció legfeljebb %@ validátort kezel. Ismételd meg a fennmaradó validátoroknál.";
 "staking.subtensor.ui.validator.all" = "Összes validátor";
 "staking.subtensor.ui.validator.new" = "Új validátor";
+"staking.subtensor.validator.status.via.child.key" = "Aktív gyermekkulcson keresztül";

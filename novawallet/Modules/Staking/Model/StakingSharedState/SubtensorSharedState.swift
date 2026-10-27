@@ -11,6 +11,7 @@ struct SubtensorEarnServices {
     let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let validatorDirectoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let validatorChainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactoryProtocol
     let rootHoldOperationFactory: SubtensorRootHoldOperationFactoryProtocol

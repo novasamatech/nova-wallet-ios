@@ -58,7 +58,6 @@ private extension SubtensorValidatorInfoPresenter {
     }
 
     func loadDetail() {
-        view?.didStartLoading()
         interactor.loadDetail()
     }
 }
@@ -103,16 +102,12 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoInteractorOutpu
     }
 
     func didReceive(detail: SubtensorValidatorDirectoryItem) {
-        view?.didStopLoading()
-
         self.detail = detail
         needsChainDetail = false
         provideViewModel()
     }
 
     func didFailDetail(_: Error) {
-        view?.didStopLoading()
-
         wireframe.presentRequestStatus(
             on: view,
             locale: selectedLocale,
