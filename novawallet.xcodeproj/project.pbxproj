@@ -736,6 +736,7 @@
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
 		0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104682C2966C000487E64 /* LedgerConversionTests.swift */; };
+		739614033BFA025619428726 /* ModalCardPresentationFrameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30252BE561B5E09E15E30D2B /* ModalCardPresentationFrameTests.swift */; };
 		04011BF67D24214FC080AC40 /* FeatureSupportCheckerSubtensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE65B9CCC2BC3CED8F756B2 /* FeatureSupportCheckerSubtensorTests.swift */; };
 		0C71046B2C29815600487E64 /* MockKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046A2C29815600487E64 /* MockKeychainStore.swift */; };
 		0C71046D2C29B3D200487E64 /* MetadataHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */; };
@@ -7933,6 +7934,7 @@
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
 		0C7104682C2966C000487E64 /* LedgerConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerConversionTests.swift; sourceTree = "<group>"; };
+		30252BE561B5E09E15E30D2B /* ModalCardPresentationFrameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationFrameTests.swift; sourceTree = "<group>"; };
 		DEE65B9CCC2BC3CED8F756B2 /* FeatureSupportCheckerSubtensorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureSupportCheckerSubtensorTests.swift; sourceTree = "<group>"; };
 		0C71046A2C29815600487E64 /* MockKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockKeychainStore.swift; sourceTree = "<group>"; };
 		0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashOperationFactory.swift; sourceTree = "<group>"; };
@@ -23511,6 +23513,7 @@
 				77A6F5D32A31E033004AFD1A /* JsonCanonicalizer */,
 				8846F73629D6F4FB00B8B776 /* Multibase */,
 				844DAAE228AD24E0008E11DA /* Ledger */,
+				6AC1E8A3F8DF294022847B8D /* ViewController */,
 				E6817346708CE473C9FBB418 /* Protocols */,
 				8836AF4228AA290300A94EDD /* Currency */,
 				8489EDD8264DE40800FF997E /* Migration */,
@@ -24332,6 +24335,22 @@
 				0CE9B7192DE74165007C7F5A /* LedgerEvmSignatureTest.swift */,
 			);
 			path = Ledger;
+			sourceTree = "<group>";
+		};
+		6AC1E8A3F8DF294022847B8D /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C5DDFB2D5976491042D02595 /* ModalCard */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		C5DDFB2D5976491042D02595 /* ModalCard */ = {
+			isa = PBXGroup;
+			children = (
+				30252BE561B5E09E15E30D2B /* ModalCardPresentationFrameTests.swift */,
+			);
+			path = ModalCard;
 			sourceTree = "<group>";
 		};
 		E6817346708CE473C9FBB418 /* Protocols */ = {
@@ -40135,6 +40154,7 @@
 				0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */,
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
 				0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */,
+				739614033BFA025619428726 /* ModalCardPresentationFrameTests.swift in Sources */,
 				04011BF67D24214FC080AC40 /* FeatureSupportCheckerSubtensorTests.swift in Sources */,
 				0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */,
 				7325015D1978CE6497546CB2 /* XcmUniLocationTests.swift in Sources */,
