@@ -6,7 +6,7 @@ enum SubtensorShieldQuoteEstimatorError: Error {
 }
 
 final class SubtensorShieldQuoteEstimator {
-    var onQuote: ((SubtensorShieldQuote?) -> Void)?
+    var onQuote: ((SubtensorShieldQuote?, SubtensorOperation) -> Void)?
 
     private let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
     private let operationQueue: OperationQueue
@@ -72,12 +72,12 @@ final class SubtensorShieldQuoteEstimator {
             backingCallIn: callStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.complete(with: result)
+            self?.complete(with: result, for: operation)
         }
     }
 
     func didReceiveBlock(_ blockNumber: BlockNumber) {
-        guard isInFlight else {
+        guard isInFlight, let quotedOperation else {
             return
         }
 
@@ -91,24 +91,24 @@ final class SubtensorShieldQuoteEstimator {
         }
 
         callStore.cancel()
-        complete(with: .failure(SubtensorShieldQuoteEstimatorError.timedOut))
+        complete(with: .failure(SubtensorShieldQuoteEstimatorError.timedOut), for: quotedOperation)
     }
 }
 
 private extension SubtensorShieldQuoteEstimator {
-    func complete(with result: Result<SubtensorShieldQuote?, Error>) {
+    func complete(with result: Result<SubtensorShieldQuote?, Error>, for operation: SubtensorOperation) {
         isInFlight = false
 
         switch result {
         case let .success(quote):
             failures = 0
-            onQuote?(quote)
+            onQuote?(quote, operation)
         case let .failure(error):
             failures += 1
             logger.warning("Shield quote failed: \(error)")
 
             if failures >= SubtensorFlowConstants.shieldQuoteAttempts {
-                onQuote?(nil)
+                onQuote?(nil, operation)
             }
         }
     }

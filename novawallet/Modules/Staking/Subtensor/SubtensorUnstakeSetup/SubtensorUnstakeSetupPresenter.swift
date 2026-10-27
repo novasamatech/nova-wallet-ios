@@ -269,6 +269,7 @@ extension SubtensorUnstakeSetupPresenter {
             feeShape = newShape
             fee = nil
             resetShieldQuote()
+            shieldQuoteInputs = nil
         }
 
         interactor.estimateFee(for: operation)

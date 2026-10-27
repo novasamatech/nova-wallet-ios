@@ -1,25 +1,15 @@
 import Foundation
 
+extension SubtensorStakeSetupPresenter: SubtensorShieldQuoteHandling {
+    var shieldWalletType: MetaAccountModelType { selectedAccount.chainAccount.type }
+    var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
+
+    func applyShieldQuoteChange() {
+        applyMaxChange()
+    }
+}
+
 extension SubtensorStakeSetupPresenter {
-    var eligibleShieldQuote: SubtensorShieldQuote? {
-        let input = SubtensorShieldEligibilityInput(
-            walletType: selectedAccount.chainAccount.type,
-            quote: shieldQuote,
-            transferable: transferable,
-            existentialDeposit: existentialDeposit
-        )
-
-        return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
-    }
-
-    var networkFee: ExtrinsicFeeProtocol? {
-        guard isShieldQuoteResolved else {
-            return nil
-        }
-
-        return eligibleShieldQuote?.totalFee ?? fee
-    }
-
     var maxAmount: Balance? {
         guard let transferable, let networkFee else {
             return nil
@@ -31,18 +21,28 @@ extension SubtensorStakeSetupPresenter {
         )
     }
 
-    func resetShieldQuote() {
-        shieldQuote = nil
-        shieldQuoteOperation = nil
-        isShieldQuoteResolved = false
-        interactor.cancelShieldQuote()
-    }
-
-    func retryUnresolvedShieldQuote() {
-        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
+    // Max depends on the quote and the quote on the amount: one re-request per transferable
+    // between fee requests, so a quote that moves Max again settles instead of ping-ponging
+    func refreshFeeForNewMax() {
+        guard
+            maxAmount != nil,
+            transferable != maxRefreshTransferable,
+            inputAmountOrPlaceholder() != requestedFeeAmount else {
             return
         }
 
-        interactor.estimateShieldQuote(for: shieldQuoteOperation)
+        refreshFee()
+        maxRefreshTransferable = transferable
+    }
+}
+
+private extension SubtensorStakeSetupPresenter {
+    var requestedFeeAmount: Balance? {
+        switch shieldQuoteOperation {
+        case let .rootStake(_, amount), let .subnetBuy(_, _, amount, _, _):
+            amount
+        case .rootUnstake, .rootUnstakeGroup, .subnetSell, .subnetSellGroup, .rootClaim, nil:
+            nil
+        }
     }
 }

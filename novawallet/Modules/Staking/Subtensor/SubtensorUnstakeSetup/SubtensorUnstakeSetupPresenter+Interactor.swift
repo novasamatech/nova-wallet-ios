@@ -228,13 +228,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         provideViewModel()
     }
 
-    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
-        shieldQuote = quote
-        isShieldQuoteResolved = true
-
-        provideViewModel()
-    }
-
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         let previousPositions = group?.positions
         let previousBasis = basis

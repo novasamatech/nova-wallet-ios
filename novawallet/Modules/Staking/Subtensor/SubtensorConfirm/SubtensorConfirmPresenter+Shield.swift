@@ -1,37 +1,19 @@
 import Foundation
 
+extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
+    var transferable: Balance? { balance?.transferable }
+    var isRoot: Bool { model.target.isRoot }
+    var shieldWalletType: MetaAccountModelType { model.account.chainAccount.type }
+    var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
+    var activeShieldQuote: SubtensorShieldQuote? { isShieldOn ? eligibleShieldQuote : nil }
+    var waitsForShieldQuote: Bool { isShieldable && isShieldOn }
+
+    func applyShieldQuoteChange() {
+        provideViewModel()
+    }
+}
+
 extension SubtensorConfirmPresenter {
-    var eligibleShieldQuote: SubtensorShieldQuote? {
-        let input = SubtensorShieldEligibilityInput(
-            walletType: model.account.chainAccount.type,
-            quote: shieldQuote,
-            transferable: balance?.transferable,
-            existentialDeposit: existentialDeposit
-        )
-
-        return SubtensorShieldEligibility.isEligible(input) ? shieldQuote : nil
-    }
-
-    var activeShieldQuote: SubtensorShieldQuote? {
-        isShieldOn ? eligibleShieldQuote : nil
-    }
-
-    var isShieldable: Bool {
-        !model.target.isRoot && SubtensorShieldEligibility.supports(walletType: model.account.chainAccount.type)
-    }
-
-    var networkFee: ExtrinsicFeeProtocol? {
-        guard isShieldable else {
-            return fee
-        }
-
-        guard isShieldQuoteResolved else {
-            return nil
-        }
-
-        return activeShieldQuote?.totalFee ?? fee
-    }
-
     func provideShieldState() {
         view?.didReceiveShield(isOn: eligibleShieldQuote != nil ? isShieldOn : nil)
     }
@@ -42,14 +24,12 @@ extension SubtensorConfirmPresenter {
         provideViewModel()
     }
 
-    func requestShieldQuote(for operation: SubtensorOperation) {
-        shieldQuoteOperation = operation
-
+    func requestFreshShieldQuote(for operation: SubtensorOperation) {
         if isShieldable {
             isShieldQuoteResolved = false
         }
 
-        interactor.estimateShieldQuote(for: operation)
+        requestShieldQuote(for: operation)
     }
 
     func keepPriceMoveAcknowledgement() {
@@ -61,13 +41,5 @@ extension SubtensorConfirmPresenter {
     func refreshFeeKeepingAcknowledgement() {
         keepPriceMoveAcknowledgement()
         refreshFee()
-    }
-
-    func retryUnresolvedShieldQuote() {
-        guard !isShieldQuoteResolved, let shieldQuoteOperation else {
-            return
-        }
-
-        interactor.estimateShieldQuote(for: shieldQuoteOperation)
     }
 }

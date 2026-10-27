@@ -147,7 +147,7 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.estimateFee(for: operation)
-        requestShieldQuote(for: operation)
+        requestFreshShieldQuote(for: operation)
     }
 
     func refreshPreflight() {

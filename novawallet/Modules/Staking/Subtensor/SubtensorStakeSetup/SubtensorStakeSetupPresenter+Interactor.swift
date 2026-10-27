@@ -143,13 +143,6 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         applyMaxChange()
     }
 
-    func didReceiveShieldQuote(_ quote: SubtensorShieldQuote?) {
-        shieldQuote = quote
-        isShieldQuoteResolved = true
-
-        applyMaxChange()
-    }
-
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
         positionsState = state
 
@@ -187,6 +180,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+        maxRefreshTransferable = nil
 
         applyMaxChange()
     }

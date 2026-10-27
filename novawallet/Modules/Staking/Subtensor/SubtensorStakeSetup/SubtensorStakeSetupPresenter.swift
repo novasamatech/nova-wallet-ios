@@ -32,6 +32,8 @@ final class SubtensorStakeSetupPresenter {
     var shieldQuote: SubtensorShieldQuote?
     var shieldQuoteOperation: SubtensorOperation?
     var isShieldQuoteResolved = false
+    var lastMaxAmount: Balance?
+    var maxRefreshTransferable: Balance?
     var existentialDeposit: Balance?
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
@@ -109,7 +111,7 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func inputDecimal() -> Decimal? {
-        let maxDecimal = (maxAmount ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo)
+        let maxDecimal = (maxAmount ?? lastMaxAmount ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo)
 
         return inputResult?.absoluteValue(from: maxDecimal)
     }
@@ -256,10 +258,9 @@ extension SubtensorStakeSetupPresenter {
             return
         }
 
+        maxRefreshTransferable = nil
         interactor.estimateFee(for: operation)
-
-        shieldQuoteOperation = operation
-        interactor.estimateShieldQuote(for: operation)
+        requestShieldQuote(for: operation)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
@@ -278,9 +279,14 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func applyMaxChange() {
+        if let maxAmount {
+            lastMaxAmount = maxAmount
+        }
+
         if case .rate = inputResult {
             provideAmountInputViewModel()
             updateQuote()
+            refreshFeeForNewMax()
         }
 
         provideAssetViewModel()

@@ -69,8 +69,8 @@ class SubtensorBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
 
         currencyManager = flowServices.currencyManager
 
-        shieldQuoteEstimator.onQuote = { [weak self] quote in
-            self?.basePresenter?.didReceiveShieldQuote(quote)
+        shieldQuoteEstimator.onQuote = { [weak self] quote, operation in
+            self?.basePresenter?.didReceiveShieldQuote(quote, for: operation)
         }
     }
 
