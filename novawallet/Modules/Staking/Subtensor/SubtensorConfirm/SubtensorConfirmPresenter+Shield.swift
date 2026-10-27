@@ -52,11 +52,14 @@ extension SubtensorConfirmPresenter {
         interactor.estimateShieldQuote(for: operation)
     }
 
-    func refreshFeeKeepingAcknowledgement() {
+    func keepPriceMoveAcknowledgement() {
         if isShieldable {
             analytics.holdPriceMoveAcknowledgement()
         }
+    }
 
+    func refreshFeeKeepingAcknowledgement() {
+        keepPriceMoveAcknowledgement()
         refreshFee()
     }
 

@@ -148,6 +148,7 @@ private extension SubtensorClaimRewardsPresenter {
             dataValidationFactory.positionsAreFresh(
                 syncFailed: isPositionsSyncFailed || positionsState?.isRootRedeemableStale == true,
                 locale: locale,
+                onStale: nil,
                 onRetry: { [weak self] in
                     self?.interactor.refreshPositions()
                 }

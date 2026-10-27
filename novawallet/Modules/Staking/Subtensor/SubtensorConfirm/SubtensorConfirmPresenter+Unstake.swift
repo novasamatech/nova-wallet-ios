@@ -128,6 +128,9 @@ extension SubtensorConfirmPresenter {
             },
             onPositionsRefresh: { [weak self] in
                 self?.interactor.refreshPositions()
+            },
+            onPositionsStale: { [weak self] in
+                self?.keepPriceMoveAcknowledgement()
             }
         )
 
