@@ -174,28 +174,36 @@ private extension SubtensorShieldInnerSearch {
 
             switch result {
             case let .success(statuses):
-                record(carrierStatus: statuses[carrierHash])
-
-                if let innerStatus = statuses[innerHash] {
-                    finish(with: .success(.found(innerStatus, carrier: carrier)))
-                } else {
-                    advance(from: blockNumber)
-                }
+                handle(statuses: statuses, at: blockNumber)
             case .failure:
                 waitAndRevisit(blockNumber)
             }
         }
     }
 
-    func record(carrierStatus: SubstrateExtrinsicStatus?) {
-        guard case .absent = carrier, let carrierStatus else {
+    func handle(statuses: [ExtrinsicHash: Result<SubstrateExtrinsicStatus, Error>], at blockNumber: BlockNumber) {
+        record(carrierLookup: statuses[carrierHash])
+
+        switch statuses[innerHash] {
+        case let .success(innerStatus):
+            finish(with: .success(.found(innerStatus, carrier: carrier)))
+        case .failure:
+            // an inner whose status cannot be built may have executed, so its height is never passed as absent
+            waitAndRevisit(blockNumber)
+        case .none:
+            advance(from: blockNumber)
+        }
+    }
+
+    func record(carrierLookup: Result<SubstrateExtrinsicStatus, Error>?) {
+        guard case .absent = carrier, let carrierLookup else {
             return
         }
 
-        carrier = switch carrierStatus {
-        case let .success(carrierSuccess):
+        carrier = switch carrierLookup {
+        case let .success(.success(carrierSuccess)):
             .found(carrierSuccess)
-        case .failure:
+        case .success(.failure), .failure:
             .unknown
         }
     }

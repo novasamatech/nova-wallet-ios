@@ -13,7 +13,7 @@ protocol ExtrinsicStatusServiceProtocol {
         _ extrinsicHashes: [String],
         inBlock blockHash: String,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]>
+    ) -> CompoundOperationWrapper<[String: Result<SubstrateExtrinsicStatus, Error>]>
 }
 
 enum ExtrinsicStatusServiceError: Error {
@@ -152,24 +152,22 @@ private extension ExtrinsicStatusService {
     func createMultiMatchingWrapper(
         dependingOn queryOperation: BaseOperation<SubstrateBlockDetails>,
         inputs: [String: ExtrinsicStatusServiceInput]
-    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]> {
+    ) -> CompoundOperationWrapper<[String: Result<SubstrateExtrinsicStatus, Error>]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let mappingOperation = ClosureOperation<[String: SubstrateExtrinsicStatus]> {
+        let mappingOperation = ClosureOperation<[String: Result<SubstrateExtrinsicStatus, Error>]> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let extrinsicEventsList = try queryOperation.extractNoCancellableResultData().extrinsicsWithEvents
 
-            return try inputs.reduce(into: [:]) { statuses, item in
+            return inputs.reduce(into: [:]) { statuses, item in
                 guard let extrinsicEvents = extrinsicEventsList
                     .first(where: { $0.extrinsicHash == item.value.extrinsicHash }) else {
                     return
                 }
 
-                statuses[item.key] = try self.createStatus(
-                    from: extrinsicEvents,
-                    input: item.value,
-                    codingFactory: codingFactory
-                )
+                statuses[item.key] = Result {
+                    try self.createStatus(from: extrinsicEvents, input: item.value, codingFactory: codingFactory)
+                }
             }
         }
 
@@ -222,7 +220,7 @@ extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
         _ extrinsicHashes: [String],
         inBlock blockHash: String,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]> {
+    ) -> CompoundOperationWrapper<[String: Result<SubstrateExtrinsicStatus, Error>]> {
         do {
             let inputs = try extrinsicHashes.reduce(into: [String: ExtrinsicStatusServiceInput]()) { inputs, hash in
                 inputs[hash] = ExtrinsicStatusServiceInput(
