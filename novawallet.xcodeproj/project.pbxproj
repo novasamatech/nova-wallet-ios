@@ -6929,6 +6929,7 @@
 		E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */; };
 		E5528BE6A0BD2D2C53C6F5F8 /* DAppWalletAuthPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C56F2A76BA8745F1F708D4 /* DAppWalletAuthPresenter.swift */; };
 		E56512781A31C18CFB0FBBA3 /* SubtensorShieldExtrinsicFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242899F89B03A3B528B422F /* SubtensorShieldExtrinsicFactory.swift */; };
+		69E6E10EFCA5F2C8F54B38B6 /* SubtensorShieldExtrinsicFactory+Timing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4CCE4BCB18861D557FC421 /* SubtensorShieldExtrinsicFactory+Timing.swift */; };
 		E5D70F938521E6F43EE3187A /* GiftClaimViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A5CE2B4700FE36919B523 /* GiftClaimViewController.swift */; };
 		E5DC2660D78D3CC9FC48E748 /* LedgerAccountConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04CDB05A013ED57D3DEA3 /* LedgerAccountConfirmationViewController.swift */; };
 		E5F3DF66415E54AE04D0C9A9 /* StakingMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A05EB4FAF2FDE7DECEA93E4 /* StakingMainViewController.swift */; };
@@ -13742,6 +13743,7 @@
 		D1DA749830B44614FC5C8E26 /* StakingDashboardViewModelFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDashboardViewModelFactory+Subtensor.swift"; sourceTree = "<group>"; };
 		D20F07FA0A20885454D9C001 /* MythosStakingSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStakingSetupWireframe.swift; sourceTree = "<group>"; };
 		D242899F89B03A3B528B422F /* SubtensorShieldExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorShieldExtrinsicFactory.swift; sourceTree = "<group>"; };
+		5B4CCE4BCB18861D557FC421 /* SubtensorShieldExtrinsicFactory+Timing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorShieldExtrinsicFactory+Timing.swift"; sourceTree = "<group>"; };
 		D248CA0D5DEDA9B425FB1A51 /* GiftPrepareShareProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GiftPrepareShareProtocols.swift; sourceTree = "<group>"; };
 		D256E075B9F6E26225C20B8C /* NPoolsRedeemPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsRedeemPresenter.swift; sourceTree = "<group>"; };
 		D263BE30EEADF30E4AEB31B9 /* DAppBrowserWidgetInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetInteractor.swift; sourceTree = "<group>"; };
@@ -30509,6 +30511,7 @@
 				1B9170368D4E3F5BC3E125D6 /* MevShieldSealing.swift */,
 				AC7A0377D1D3A7B6BE0CE022 /* SubtensorShieldModels.swift */,
 				D242899F89B03A3B528B422F /* SubtensorShieldExtrinsicFactory.swift */,
+				5B4CCE4BCB18861D557FC421 /* SubtensorShieldExtrinsicFactory+Timing.swift */,
 				A314C22C8E6A129B8ADDEC21 /* SubtensorShieldInclusionTracker.swift */,
 				F48F83C1B12089068493481A /* SubtensorShieldInnerSearch.swift */,
 				0E267480E0CFE8C6AD88949C /* SubtensorShieldSubmissionFactory.swift */,
@@ -40030,6 +40033,7 @@
 				B9F92FAE51A97D45AEDED60D /* MevShieldSealing.swift in Sources */,
 				A4A78F6E674A1981C050EDAA /* SubtensorShieldModels.swift in Sources */,
 				E56512781A31C18CFB0FBBA3 /* SubtensorShieldExtrinsicFactory.swift in Sources */,
+				69E6E10EFCA5F2C8F54B38B6 /* SubtensorShieldExtrinsicFactory+Timing.swift in Sources */,
 				A1B810C4ED55833502016726 /* SubtensorShieldInclusionTracker.swift in Sources */,
 				DB5CDDD114C2A6080BE61C7F /* SubtensorShieldInnerSearch.swift in Sources */,
 				4891E3F90215E7DEAE090C62 /* SubtensorShieldSubmissionFactory.swift in Sources */,

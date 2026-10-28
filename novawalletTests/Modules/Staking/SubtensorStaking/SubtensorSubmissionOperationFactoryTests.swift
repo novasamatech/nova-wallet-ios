@@ -227,7 +227,6 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
                 operationQueue: operationQueue
             ),
-            statusService: statusService,
             signerFactory: { try? DummySigner(cryptoType: .sr25519) },
             operationQueue: operationQueue
         )

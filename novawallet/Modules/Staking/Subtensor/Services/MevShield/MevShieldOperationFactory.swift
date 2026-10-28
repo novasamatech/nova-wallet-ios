@@ -7,6 +7,7 @@ protocol MevShieldOperationFactoryProtocol {
 }
 
 enum MevShieldOperationFactoryError: Error {
+    case palletMissing
     case unexpectedKeyLength(Int)
 }
 
@@ -74,7 +75,7 @@ extension MevShieldOperationFactory: MevShieldOperationFactoryProtocol {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             guard Self.supportsShielding(codingFactory) else {
-                return nil
+                throw MevShieldOperationFactoryError.palletMissing
             }
 
             return self.createKeyQueryWrapper(using: codingFactory)

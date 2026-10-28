@@ -29,12 +29,13 @@ extension SubtensorSubmissionOperationFactory {
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let outcomeOperation = ClosureOperation<SubtensorOperationOutcome> {
+        let outcomeOperation = ClosureOperation<SubtensorOperationOutcome> { [logger] in
             let submission: SubtensorShieldedSubmission
 
             do {
                 submission = try submissionWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
+                logger.warning("Shielded submission failed: \(error)")
                 throw finalizer.shieldedFailure(for: error)
             }
 

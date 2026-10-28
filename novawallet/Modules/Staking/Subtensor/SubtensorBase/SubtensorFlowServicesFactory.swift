@@ -173,7 +173,6 @@ private extension SubtensorFlowServicesFactory {
                 runtimeProvider: runtimeProvider,
                 statusService: statusService
             ),
-            statusService: statusService,
             signerFactory: {
                 SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
                     for: account.metaId,

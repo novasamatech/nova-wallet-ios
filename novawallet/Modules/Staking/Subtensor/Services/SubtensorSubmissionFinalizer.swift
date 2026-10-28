@@ -76,16 +76,8 @@ struct SubtensorSubmissionFinalizer {
 
 extension SubtensorSubmissionFinalizer {
     func shieldedFailure(for error: Error) -> SubtensorSubmissionFailure {
-        guard let shieldError = error as? SubtensorShieldError else {
+        guard error is SubtensorShieldError else {
             return failure(for: error)
-        }
-
-        if case let .carrierRejected(rejection) = shieldError {
-            let mappedRejection = errorMapper.mapSubmission(error: rejection)
-
-            if Self.isFirstSendRejection(mappedRejection) {
-                return SubtensorSubmissionFailure(stage: .notSubmitted, error: mappedRejection)
-            }
         }
 
         return SubtensorSubmissionFailure(stage: .notSubmitted, error: SubtensorSubmissionError.shieldedNotExecuted)
@@ -114,8 +106,14 @@ extension SubtensorSubmissionFinalizer {
             }
         case let .executed(.failure(inner), _):
             throw dispatchFailure(for: inner)
-        case let .notExecuted(carrier):
-            throw notExecutedFailure(for: carrier, operation: operation, quote: quote, codingFactory: codingFactory)
+        case let .notExecuted(carrier, rejection):
+            throw notExecutedFailure(
+                for: carrier,
+                rejection: rejection,
+                operation: operation,
+                quote: quote,
+                codingFactory: codingFactory
+            )
         }
     }
 }
@@ -123,6 +121,7 @@ extension SubtensorSubmissionFinalizer {
 private extension SubtensorSubmissionFinalizer {
     func notExecutedFailure(
         for carrier: SubtensorShieldCarrierLookup,
+        rejection: Error?,
         operation: SubtensorOperation,
         quote: SubtensorShieldQuote,
         codingFactory: RuntimeCoderFactoryProtocol?
@@ -138,7 +137,7 @@ private extension SubtensorSubmissionFinalizer {
                 estimatedNetworkFee: quote.carrierFee.amount
             )
         case .absent:
-            return SubtensorSubmissionFailure(stage: .notSubmitted, error: error)
+            return SubtensorSubmissionFailure(stage: .notSubmitted, error: provenAbsentError(for: rejection))
         case .unknown:
             return SubtensorSubmissionFailure(
                 stage: .notExecutedFeeUnknown,
@@ -146,6 +145,16 @@ private extension SubtensorSubmissionFinalizer {
                 estimatedNetworkFee: quote.carrierFee.amount
             )
         }
+    }
+
+    func provenAbsentError(for rejection: Error?) -> Error {
+        guard
+            let mappedRejection = rejection.map({ errorMapper.mapSubmission(error: $0) }),
+            Self.isFirstSendRejection(mappedRejection) else {
+            return SubtensorSubmissionError.shieldedNotExecuted
+        }
+
+        return mappedRejection
     }
 
     static func isFirstSendRejection(_ error: Error) -> Bool {

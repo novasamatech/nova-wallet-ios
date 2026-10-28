@@ -5,6 +5,7 @@ import SubstrateSdk
 protocol SubtensorShieldInclusionTrackingProtocol {
     func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
+        carrierHash: ExtrinsicHash,
         eraBirth: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldInnerScan>
@@ -42,6 +43,7 @@ private extension SubtensorShieldInclusionTracker {
 extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProtocol {
     func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
+        carrierHash: ExtrinsicHash,
         eraBirth: BlockNumber,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldInnerScan> {
@@ -49,6 +51,7 @@ extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProto
 
         let search = SubtensorShieldInnerSearch(
             innerHash: innerHash,
+            carrierHash: carrierHash,
             matchingEvents: matchingEvents,
             connection: connection,
             statusService: statusService,

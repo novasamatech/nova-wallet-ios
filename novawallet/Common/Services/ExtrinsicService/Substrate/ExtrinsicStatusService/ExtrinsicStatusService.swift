@@ -8,6 +8,12 @@ protocol ExtrinsicStatusServiceProtocol {
         inBlock blockHash: String,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
+
+    func fetchExtrinsicStatusesForHashes(
+        _ extrinsicHashes: [String],
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]>
 }
 
 enum ExtrinsicStatusServiceError: Error {
@@ -92,6 +98,31 @@ private extension ExtrinsicStatusService {
         return .failure(.init(extrinsicHash: extString, blockHash: input.blockHash, error: dispatchError))
     }
 
+    func createStatus(
+        from extrinsicEvents: SubstrateExtrinsicEvents,
+        input: ExtrinsicStatusServiceInput,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> SubstrateExtrinsicStatus {
+        let successMatcher = ExtrinsicSuccessEventMatcher()
+        let isSuccess = extrinsicEvents.eventRecords.contains(
+            where: { successMatcher.match(event: $0.event, using: codingFactory) }
+        )
+
+        if isSuccess {
+            return createSuccessStatus(
+                from: extrinsicEvents,
+                input: input,
+                codingFactory: codingFactory
+            )
+        } else {
+            return try createFailureStatus(
+                from: extrinsicEvents,
+                input: input,
+                codingFactory: codingFactory
+            )
+        }
+    }
+
     func createMatchingWrapper(
         dependingOn queryOperation: BaseOperation<SubstrateBlockDetails>,
         input: ExtrinsicStatusServiceInput
@@ -107,21 +138,36 @@ private extension ExtrinsicStatusService {
                 throw ExtrinsicStatusServiceError.extrinsicNotFound(input.extrinsicHash)
             }
 
-            let successMatcher = ExtrinsicSuccessEventMatcher()
-            let isSuccess = extrinsicEvents.eventRecords.contains(
-                where: { successMatcher.match(event: $0.event, using: codingFactory) }
-            )
+            return try self.createStatus(from: extrinsicEvents, input: input, codingFactory: codingFactory)
+        }
 
-            if isSuccess {
-                return self.createSuccessStatus(
+        mappingOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: [codingFactoryOperation]
+        )
+    }
+
+    func createMultiMatchingWrapper(
+        dependingOn queryOperation: BaseOperation<SubstrateBlockDetails>,
+        inputs: [String: ExtrinsicStatusServiceInput]
+    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let mappingOperation = ClosureOperation<[String: SubstrateExtrinsicStatus]> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let extrinsicEventsList = try queryOperation.extractNoCancellableResultData().extrinsicsWithEvents
+
+            return try inputs.reduce(into: [:]) { statuses, item in
+                guard let extrinsicEvents = extrinsicEventsList
+                    .first(where: { $0.extrinsicHash == item.value.extrinsicHash }) else {
+                    return
+                }
+
+                statuses[item.key] = try self.createStatus(
                     from: extrinsicEvents,
-                    input: input,
-                    codingFactory: codingFactory
-                )
-            } else {
-                return try self.createFailureStatus(
-                    from: extrinsicEvents,
-                    input: input,
+                    input: item.value,
                     codingFactory: codingFactory
                 )
             }
@@ -167,6 +213,39 @@ extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
 
             return statusWrapper.insertingHead(operations: eventsQueryWrapper.allOperations)
 
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    func fetchExtrinsicStatusesForHashes(
+        _ extrinsicHashes: [String],
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<[String: SubstrateExtrinsicStatus]> {
+        do {
+            let inputs = try extrinsicHashes.reduce(into: [String: ExtrinsicStatusServiceInput]()) { inputs, hash in
+                inputs[hash] = ExtrinsicStatusServiceInput(
+                    extrinsicHash: try Data(hexString: hash),
+                    blockHash: blockHash,
+                    matchingEvents: matchingEvents
+                )
+            }
+
+            let eventsQueryWrapper = eventsQueryFactory.queryBlockDetailsWrapper(
+                from: connection,
+                runtimeProvider: runtimeProvider,
+                blockHash: try Data(hexString: blockHash)
+            )
+
+            let statusesWrapper = createMultiMatchingWrapper(
+                dependingOn: eventsQueryWrapper.targetOperation,
+                inputs: inputs
+            )
+
+            statusesWrapper.addDependency(wrapper: eventsQueryWrapper)
+
+            return statusesWrapper.insertingHead(operations: eventsQueryWrapper.allOperations)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }

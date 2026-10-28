@@ -193,7 +193,7 @@ private extension SubtensorSubmissionOperationFactory {
     }
 
     func extractReadyQuote(
-        from readinessWrapper: CompoundOperationWrapper<SubtensorShieldQuote?>
+        from readinessWrapper: CompoundOperationWrapper<SubtensorShieldQuote>
     ) -> SubtensorShieldQuote? {
         do {
             return try readinessWrapper.targetOperation.extractNoCancellableResultData()

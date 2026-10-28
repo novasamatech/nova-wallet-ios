@@ -7,8 +7,8 @@ enum SubtensorShieldInnerSearchError: Error {
 }
 
 enum SubtensorShieldInnerScan {
-    case found(SubstrateExtrinsicStatus)
-    case absent(scannedBlocks: [BlockHash])
+    case found(SubstrateExtrinsicStatus, carrier: SubtensorShieldCarrierLookup)
+    case absent(carrier: SubtensorShieldCarrierLookup)
 }
 
 final class SubtensorShieldInnerSearch {
@@ -22,6 +22,7 @@ final class SubtensorShieldInnerSearch {
     typealias Completion = (Result<SubtensorShieldInnerScan, Error>) -> Void
 
     let innerHash: ExtrinsicHash
+    let carrierHash: ExtrinsicHash
     let matchingEvents: ExtrinsicEventsMatching?
     let connection: JSONRPCEngine
     let statusService: ExtrinsicStatusServiceProtocol
@@ -37,16 +38,18 @@ final class SubtensorShieldInnerSearch {
     private var pollsLeft = 0
     private var completion: Completion?
     private var finalizedNumber: BlockNumber?
-    private var scannedBlocks: [BlockHash] = []
+    private var carrier: SubtensorShieldCarrierLookup = .absent
 
     init(
         innerHash: ExtrinsicHash,
+        carrierHash: ExtrinsicHash,
         matchingEvents: ExtrinsicEventsMatching?,
         connection: JSONRPCEngine,
         statusService: ExtrinsicStatusServiceProtocol,
         operationQueue: OperationQueue
     ) {
         self.innerHash = innerHash
+        self.carrierHash = carrierHash
         self.matchingEvents = matchingEvents
         self.connection = connection
         self.statusService = statusService
@@ -153,8 +156,8 @@ private extension SubtensorShieldInnerSearch {
             return
         }
 
-        let wrapper = statusService.fetchExtrinsicStatusForHash(
-            innerHash,
+        let wrapper = statusService.fetchExtrinsicStatusesForHashes(
+            [innerHash, carrierHash],
             inBlock: blockHash,
             matchingEvents: matchingEvents
         )
@@ -165,23 +168,41 @@ private extension SubtensorShieldInnerSearch {
             backingCallIn: callStore,
             runningCallbackIn: workingQueue
         ) { [weak self] result in
-            switch result {
-            case let .success(status):
-                self?.finish(with: .success(.found(status)))
-            case let .failure(error):
-                if case ExtrinsicStatusServiceError.extrinsicNotFound = error {
-                    self?.scannedBlocks.append(blockHash)
-                    self?.advance(from: blockNumber)
-                } else {
-                    self?.waitAndRevisit(blockNumber)
-                }
+            guard let self else {
+                return
             }
+
+            switch result {
+            case let .success(statuses):
+                record(carrierStatus: statuses[carrierHash])
+
+                if let innerStatus = statuses[innerHash] {
+                    finish(with: .success(.found(innerStatus, carrier: carrier)))
+                } else {
+                    advance(from: blockNumber)
+                }
+            case .failure:
+                waitAndRevisit(blockNumber)
+            }
+        }
+    }
+
+    func record(carrierStatus: SubstrateExtrinsicStatus?) {
+        guard case .absent = carrier, let carrierStatus else {
+            return
+        }
+
+        carrier = switch carrierStatus {
+        case let .success(carrierSuccess):
+            .found(carrierSuccess)
+        case .failure:
+            .unknown
         }
     }
 
     func advance(from blockNumber: BlockNumber) {
         guard let deadline = currentWindow()?.deadline, blockNumber < deadline else {
-            finish(with: .success(.absent(scannedBlocks: scannedBlocks)))
+            finish(with: .success(.absent(carrier: carrier)))
             return
         }
 
