@@ -1,6 +1,7 @@
-import XCTest
+import Cuckoo
 @testable import novawallet
 import SubstrateSdk
+import XCTest
 
 final class MevShieldSealerTests: XCTestCase {
     func testSealMatchesSdkVectorForSignedExtrinsicSizedPlaintext() throws {
@@ -16,7 +17,12 @@ private extension MevShieldSealerTests {
     func assertSealMatchesSdkVector(caseName: String) throws {
         let vector = try MevShieldSealVector.load()
         let sample = try XCTUnwrap(vector.cases.first { $0.name == caseName })
-        let randomness = try MevShieldScriptedRandomness(draws: [Data(hexString: sample.m), Data(hexString: sample.nonce)])
+        let kemRandomness = try Data(hexString: sample.m)
+        let nonce = try Data(hexString: sample.nonce)
+        let randomness = MockMevShieldRandomnessSourceProtocol()
+        stub(randomness) { stub in
+            when(stub.randomBytes(count: any())).thenReturn(kemRandomness, nonce)
+        }
 
         let payload = try MevShieldSealer(randomness: randomness).seal(
             plaintext: Data(hexString: sample.plaintext),
@@ -31,7 +37,9 @@ private extension MevShieldSealerTests {
             payload.dropFirst(kemCiphertextOffset).prefix(MevShieldPallet.kemCiphertextLength),
             try Data(hexString: sample.kemCt)
         )
-        XCTAssertTrue(randomness.isExhausted)
+        let drawSizes = ArgumentCaptor<Int>()
+        verify(randomness, times(2)).randomBytes(count: drawSizes.capture())
+        XCTAssertEqual(drawSizes.allValues, [kemRandomness.count, nonce.count])
     }
 }
 
@@ -58,27 +66,5 @@ private struct MevShieldSealVector: Decodable {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         return try decoder.decode(MevShieldSealVector.self, from: Data(contentsOf: url))
-    }
-}
-
-private final class MevShieldScriptedRandomness: MevShieldRandomnessSourceProtocol {
-    private var draws: [Data]
-
-    init(draws: [Data]) {
-        self.draws = draws
-    }
-
-    var isExhausted: Bool {
-        draws.isEmpty
-    }
-
-    func randomBytes(count: Int) throws -> Data {
-        guard let draw = draws.first, draw.count == count else {
-            throw MevShieldSealerError.randomnessUnavailable
-        }
-
-        draws.removeFirst()
-
-        return draw
     }
 }

@@ -19446,6 +19446,7 @@
 				A0FEAAB728E99A23F1DFDAED /* SubtensorYieldOperationFactoryTests.swift */,
 				7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceOperationFactoryTests.swift */,
 				9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */,
+				F3496723425F117A7E577904 /* MevShieldSealerTests.swift */,
 			);
 			path = SubtensorStaking;
 			sourceTree = "<group>";
@@ -24961,7 +24962,6 @@
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
 				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
-				F3496723425F117A7E577904 /* MevShieldSealerTests.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
