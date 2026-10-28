@@ -255,7 +255,7 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorO
         }
     }
 
-    func didSelectRoute(_ route: SubtensorSubmissionRoute) {
+    func didReceive(route: SubtensorSubmissionRoute) {
         self.route = route
 
         provideViewModel()

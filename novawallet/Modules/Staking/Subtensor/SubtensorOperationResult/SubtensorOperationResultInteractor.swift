@@ -66,7 +66,7 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        presenter?.didSelectRoute(route)
+        presenter?.didReceive(route: route)
 
         let scheduler = schedulerFactory(self)
         confirmationScheduler = scheduler

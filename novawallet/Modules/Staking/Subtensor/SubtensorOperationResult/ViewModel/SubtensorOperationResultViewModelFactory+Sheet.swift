@@ -172,10 +172,7 @@ private extension SubtensorOperationResultViewModelFactory {
         case .dispatched:
             strings.stakingSubtensorResultDispatchedMessage()
         case .notExecutedFeeUnknown:
-            [
-                failureReason(for: failure, holdRemaining: holdRemaining, request: request, locale: locale),
-                strings.stakingSubtensorResultFeeMayBeCharged()
-            ].joined(with: .space)
+            strings.stakingSubtensorResultFeeMayBeCharged()
         case .unconfirmed:
             strings.stakingSubtensorResultUnconfirmedMessage()
         }
