@@ -252,7 +252,6 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             for: operation,
             shielded: shielded,
             blockTime: blockTime,
-            keyRetryClosure: {},
             signedClosure: signedClosure
         )
         let completed = expectation(description: "submission completed")

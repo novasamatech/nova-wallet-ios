@@ -141,8 +141,6 @@ private extension SubtensorShieldExtrinsicFactory {
                 return nil
             }
 
-            keyRetry.willRetry()
-
             let delayOperation = Self.createDelayOperation(for: keyRetry.interval)
             let nextWrapper = self.createKeyWrapper(
                 retries: retries - 1,

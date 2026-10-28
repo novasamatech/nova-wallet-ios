@@ -16,7 +16,6 @@ final class SubtensorOperationResultPresenter {
     private var catalogue: SubtensorSubnetCatalogue?
     private var subnetLogos: SubtensorSubnetLogos?
     private var countdownTimer: CountdownTimer?
-    private var pendingKeyRetries = 0
     private(set) var progressStartedAt = Date()
     var isOutcomeTracked = false
 
@@ -46,10 +45,14 @@ private extension SubtensorOperationResultPresenter {
         request.blockTime.timeInterval
     }
 
+    var expectedRoute: SubtensorSubmissionRoute {
+        route ?? (request.shieldQuote != nil ? .shielded : .clear)
+    }
+
     func provideViewModel() {
         let context = SubtensorResultViewContext(
             request: request,
-            route: route ?? (request.shieldQuote != nil ? .shielded : .clear),
+            route: expectedRoute,
             catalogue: catalogue,
             subnetLogos: subnetLogos,
             remainedTime: countdownTimer?.remainedInterval ?? 0
@@ -61,25 +64,24 @@ private extension SubtensorOperationResultPresenter {
     }
 
     func startCountdown() {
+        clearCountdown()
+
+        let blocks = SubtensorOperationResultConstants.expectedResultBlocks(for: expectedRoute)
         let elapsed = Date().timeIntervalSince(progressStartedAt)
-        let timer = countdownTimer ?? CountdownTimer()
+        let timer = CountdownTimer()
 
-        timer.stop()
         timer.delegate = self
-        timer.start(with: max(0, expectedBlockDuration - elapsed))
-
         countdownTimer = timer
+
+        timer.start(with: max(0, TimeInterval(blocks) * expectedBlockDuration - elapsed))
     }
 
-    func extendCountdownForKeyRetry() {
-        pendingKeyRetries -= 1
-
+    func extendCountdown() {
         countdownTimer?.start(with: expectedBlockDuration)
         view?.didUpdateCountdown(remainedTime: UInt(expectedBlockDuration.rounded(.up)))
     }
 
     func clearCountdown() {
-        pendingKeyRetries = 0
         countdownTimer?.delegate = nil
         countdownTimer?.stop()
         countdownTimer = nil
@@ -253,21 +255,8 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorO
         }
     }
 
-    func didPostponeSigning() {
-        guard case .progress = state, let countdownTimer else {
-            return
-        }
-
-        pendingKeyRetries += 1
-
-        if case .stopped = countdownTimer.state {
-            extendCountdownForKeyRetry()
-        }
-    }
-
     func didSelectRoute(_ route: SubtensorSubmissionRoute) {
         self.route = route
-        pendingKeyRetries = 0
 
         provideViewModel()
     }
@@ -323,8 +312,8 @@ extension SubtensorOperationResultPresenter: CountdownTimerDelegate {
     }
 
     func didStop(with remainedInterval: TimeInterval) {
-        if pendingKeyRetries > 0 {
-            extendCountdownForKeyRetry()
+        if case .progress = state, expectedRoute == .shielded, expectedBlockDuration > 0 {
+            extendCountdown()
         } else {
             view?.didUpdateCountdown(remainedTime: UInt(remainedInterval.rounded(.up)))
         }

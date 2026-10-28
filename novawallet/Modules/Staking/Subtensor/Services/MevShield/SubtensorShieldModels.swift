@@ -25,7 +25,6 @@ struct SubtensorShieldQuote {
 
 struct SubtensorShieldKeyRetry {
     let interval: TimeInterval
-    let willRetry: () -> Void
 }
 
 struct SubtensorSealedInner {

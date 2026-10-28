@@ -2,6 +2,12 @@ import Foundation
 
 enum SubtensorOperationResultConstants {
     static let confirmationCap: TimeInterval = 90
+    static let shieldedLandingBlocks = 2
+    static let shieldedFinalityBlocks = 2
+
+    static func expectedResultBlocks(for route: SubtensorSubmissionRoute) -> Int {
+        route == .shielded ? shieldedLandingBlocks + shieldedFinalityBlocks : 1
+    }
 
     static func confirmationCap(for route: SubtensorSubmissionRoute, blockTime: BlockTime) -> TimeInterval {
         guard route == .shielded else {

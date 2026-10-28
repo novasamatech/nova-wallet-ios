@@ -269,7 +269,6 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
         for operation: SubtensorOperation,
         shielded: Bool,
         blockTime: BlockTime,
-        keyRetryClosure: @escaping () -> Void,
         signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         let builderClosure: ExtrinsicBuilderClosure
@@ -307,7 +306,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
             builderClosure: builderClosure,
             clearSigner: recordingSigner,
             shieldSigners: shieldSigners,
-            keyRetry: SubtensorShieldKeyRetry(interval: TimeInterval(blockTime).seconds, willRetry: keyRetryClosure),
+            keyRetry: SubtensorShieldKeyRetry(interval: TimeInterval(blockTime).seconds),
             finalizer: finalizer
         )
 

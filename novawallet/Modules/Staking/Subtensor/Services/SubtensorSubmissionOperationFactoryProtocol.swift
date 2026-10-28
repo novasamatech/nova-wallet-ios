@@ -14,7 +14,6 @@ protocol SubtensorSubmissionOperationFactoryProtocol: AnyObject {
         for operation: SubtensorOperation,
         shielded: Bool,
         blockTime: BlockTime,
-        keyRetryClosure: @escaping () -> Void,
         signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome>
 }
