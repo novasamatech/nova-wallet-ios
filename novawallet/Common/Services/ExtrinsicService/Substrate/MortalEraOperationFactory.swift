@@ -179,23 +179,7 @@ extension MortalEraOperationFactory: ExtrinsicEraOperationFactoryProtocol {
             let mortalLength = try mortalLengthWrapper.targetOperation.extractNoCancellableResultData()
             let blockNumber = try finalizationModelWrapper.targetOperation.extractNoCancellableResultData().blockNumber
 
-            let constrainedPeriod: UInt64 = min(1 << 16, max(4, mortalLength))
-            var period: UInt64 = 1
-
-            while period < constrainedPeriod {
-                period = period << 1
-            }
-
-            let unquantizedPhase = blockNumber % period
-            let quantizeFactor = max(period >> 12, 1)
-            let phase = (unquantizedPhase / quantizeFactor) * quantizeFactor
-
-            let eraBlockNumber = ((blockNumber - phase) / period) * period + phase
-
-            return ExtrinsicEraParameters(
-                blockNumber: BlockNumber(eraBlockNumber),
-                extrinsicEra: .mortal(period: period, phase: phase)
-            )
+            return .mortal(blockNumber: blockNumber, period: mortalLength)
         }
 
         mapOperation.addDependency(mortalLengthWrapper.targetOperation)

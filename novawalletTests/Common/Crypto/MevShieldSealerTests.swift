@@ -61,7 +61,7 @@ private struct MevShieldSealVector: Decodable {
     }
 }
 
-private final class MevShieldScriptedRandomness: MevShieldRandomnessSource {
+private final class MevShieldScriptedRandomness: MevShieldRandomnessSourceProtocol {
     private var draws: [Data]
 
     init(draws: [Data]) {

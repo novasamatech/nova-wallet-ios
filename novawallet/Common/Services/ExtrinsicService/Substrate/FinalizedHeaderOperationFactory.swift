@@ -37,8 +37,14 @@ extension FinalizedHeaderOperationFactory: FinalizedHeaderOperationFactoryProtoc
     }
 
     func createBlockNumberWrapper(from connection: JSONRPCEngine) -> CompoundOperationWrapper<BlockNumber> {
-        let headerWrapper = createHeaderWrapper(from: connection)
+        Self.createBlockNumberWrapper(for: createHeaderWrapper(from: connection))
+    }
+}
 
+extension FinalizedHeaderOperationFactory {
+    static func createBlockNumberWrapper(
+        for headerWrapper: CompoundOperationWrapper<Block.Header>
+    ) -> CompoundOperationWrapper<BlockNumber> {
         let numberOperation = ClosureOperation<BlockNumber> {
             let header = try headerWrapper.targetOperation.extractNoCancellableResultData()
 

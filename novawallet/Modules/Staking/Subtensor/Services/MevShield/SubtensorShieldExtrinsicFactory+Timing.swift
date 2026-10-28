@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
 
 extension SubtensorShieldExtrinsicFactory {
     struct Timing {
@@ -55,20 +54,8 @@ private extension SubtensorShieldExtrinsicFactory {
     func createBestNumberWrapper() -> CompoundOperationWrapper<BlockNumber> {
         let headerOperation = JSONRPCListOperation<Block.Header>(engine: connection, method: RPCMethod.getBlockHeader)
 
-        let numberOperation = ClosureOperation<BlockNumber> {
-            let header = try headerOperation.extractNoCancellableResultData()
-
-            guard
-                let number = BigUInt.fromHexString(header.number),
-                let blockNumber = BlockNumber(exactly: number) else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
-
-            return blockNumber
-        }
-
-        numberOperation.addDependency(headerOperation)
-
-        return CompoundOperationWrapper(targetOperation: numberOperation, dependencies: [headerOperation])
+        return FinalizedHeaderOperationFactory.createBlockNumberWrapper(
+            for: CompoundOperationWrapper(targetOperation: headerOperation)
+        )
     }
 }

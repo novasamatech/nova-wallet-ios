@@ -127,51 +127,58 @@ private extension SubtensorFlowServicesFactory {
             shield: createShieldServices(
                 for: account,
                 state: state,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
                 extrinsicServiceFactory: extrinsicServiceFactory,
-                statusService: statusService
+                statusService: statusService,
+                operationQueue: operationQueue
             )
         )
     }
 
+    // swiftlint:disable:next function_parameter_count
     static func createShieldServices(
         for account: MetaChainAccountResponse,
         state: SubtensorSharedStateProtocol,
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
-        statusService: ExtrinsicStatusServiceProtocol
+        statusService: ExtrinsicStatusServiceProtocol,
+        operationQueue: OperationQueue
     ) -> SubtensorShieldServices? {
-        let chainAsset = state.stakingOption.chainAsset
-        let chain = chainAsset.chain
-
-        guard
-            SubtensorShieldEligibility.supports(walletType: account.chainAccount.type),
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+        guard SubtensorShieldEligibility.supports(walletType: account.chainAccount.type) else {
             return nil
         }
 
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let chainAsset = state.stakingOption.chainAsset
 
         let submissionFactory = SubtensorShieldSubmissionFactory(
             walletType: account.chainAccount.type,
-            extrinsicFactory: createShieldExtrinsicFactory(
-                for: account.chainAccount,
-                chain: chain,
+            extrinsicFactory: SubtensorShieldExtrinsicFactory(
+                account: account.chainAccount,
+                chain: chainAsset.chain,
                 connection: connection,
-                runtimeProvider: runtimeProvider,
-                extrinsicServiceFactory: extrinsicServiceFactory
+                extrinsicServiceFactory: extrinsicServiceFactory,
+                keyOperationFactory: MevShieldOperationFactory(
+                    runtimeProvider: runtimeProvider,
+                    connection: connection,
+                    operationQueue: operationQueue
+                ),
+                sealer: MevShieldSealer(),
+                operationQueue: operationQueue
             ),
             fundsFactory: createShieldFundsFactory(
                 for: account.chainAccount.accountId,
                 chainAsset: chainAsset,
                 chainRegistry: state.chainRegistry,
-                runtimeProvider: runtimeProvider
+                runtimeProvider: runtimeProvider,
+                operationQueue: operationQueue
             ),
             carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
-            inclusionTracker: createShieldInclusionTracker(
-                for: chain,
+            inclusionTracker: SubtensorShieldInclusionTracker(
                 connection: connection,
-                runtimeProvider: runtimeProvider,
-                statusService: statusService
+                statusService: statusService,
+                operationQueue: operationQueue
             ),
             signerFactory: {
                 SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
@@ -190,55 +197,17 @@ private extension SubtensorFlowServicesFactory {
         for accountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeProviderProtocol,
+        operationQueue: OperationQueue
     ) -> SubtensorShieldFundsFactory {
         SubtensorShieldFundsFactory(
             accountId: accountId,
             chainAsset: chainAsset,
             balanceQueryFactory: WalletRemoteQueryWrapperFactory(
                 chainRegistry: chainRegistry,
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
-            ),
-            runtimeProvider: runtimeProvider
-        )
-    }
-
-    static func createShieldInclusionTracker(
-        for chain: ChainModel,
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol,
-        statusService: ExtrinsicStatusServiceProtocol
-    ) -> SubtensorShieldInclusionTracker {
-        SubtensorShieldInclusionTracker(
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            statusService: statusService,
-            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-    }
-
-    static func createShieldExtrinsicFactory(
-        for account: ChainAccountResponse,
-        chain: ChainModel,
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
-    ) -> SubtensorShieldExtrinsicFactory {
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        return SubtensorShieldExtrinsicFactory(
-            account: account,
-            chain: chain,
-            connection: connection,
-            extrinsicServiceFactory: extrinsicServiceFactory,
-            keyOperationFactory: MevShieldOperationFactory(
-                runtimeProvider: runtimeProvider,
-                connection: connection,
                 operationQueue: operationQueue
             ),
-            sealer: MevShieldSealer(),
-            operationQueue: operationQueue
+            runtimeProvider: runtimeProvider
         )
     }
 

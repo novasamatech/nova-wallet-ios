@@ -8,6 +8,8 @@ enum SubtensorShieldConstants {
     static let keyActivationDelay: BlockNumber = 2
     static let maxFinalityLag = BlockNumber(eraPeriod) - 1 - keyActivationDelay
 
+    static let scanWaitBlocks = BlockNumber(eraPeriod) + maxFinalityLag
+
     static let signaturesPerOrder = 2
 
     static let confirmationWindowBlocks = 2 * eraPeriod + 1
@@ -27,8 +29,12 @@ struct SubtensorShieldQuote {
     }
 }
 
-struct SubtensorShieldKeyRetry {
-    let interval: TimeInterval
+struct SubtensorShieldBlockTiming {
+    let blockTime: BlockTime
+
+    var blockInterval: TimeInterval {
+        TimeInterval(blockTime).seconds
+    }
 }
 
 struct SubtensorSealedInner {
@@ -55,6 +61,5 @@ enum SubtensorShieldError: Error {
     case fundsShort
     case quoteUnavailable
     case notReady
-    case ciphertextTooLong(Int)
     case finalityLag(BlockNumber)
 }

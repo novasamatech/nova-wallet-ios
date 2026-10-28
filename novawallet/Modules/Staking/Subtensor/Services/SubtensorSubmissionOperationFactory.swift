@@ -149,7 +149,7 @@ private extension SubtensorSubmissionOperationFactory {
         builderClosure: @escaping ExtrinsicBuilderClosure,
         clearSigner: SubtensorRecordingSigner,
         shieldSigners: SubtensorShieldSigners?,
-        keyRetry: SubtensorShieldKeyRetry,
+        blockTiming: SubtensorShieldBlockTiming,
         finalizer: SubtensorSubmissionFinalizer
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
         guard let shield, let shieldSigners else {
@@ -163,7 +163,7 @@ private extension SubtensorSubmissionOperationFactory {
 
         let readinessWrapper = shield.submissionFactory.createReadinessWrapper(
             for: operation,
-            keyRetry: keyRetry,
+            blockTiming: blockTiming,
             innerClosure: builderClosure
         )
 
@@ -180,6 +180,7 @@ private extension SubtensorSubmissionOperationFactory {
                 submissionWrapper: shield.submissionFactory.createSubmissionWrapper(
                     for: builderClosure,
                     signers: shieldSigners,
+                    blockTiming: blockTiming,
                     matchingEvents: SubtensorEventMatcher()
                 ),
                 quote: quote,
@@ -306,7 +307,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
             builderClosure: builderClosure,
             clearSigner: recordingSigner,
             shieldSigners: shieldSigners,
-            keyRetry: SubtensorShieldKeyRetry(interval: TimeInterval(blockTime).seconds),
+            blockTiming: SubtensorShieldBlockTiming(blockTime: blockTime),
             finalizer: finalizer
         )
 

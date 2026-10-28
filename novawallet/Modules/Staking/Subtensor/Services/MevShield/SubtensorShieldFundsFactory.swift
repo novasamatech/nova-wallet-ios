@@ -33,31 +33,23 @@ extension SubtensorShieldFundsFactory: SubtensorShieldFundsFactoryProtocol {
     func createFundsWrapper() -> CompoundOperationWrapper<SubtensorShieldFunds> {
         let balanceWrapper = balanceQueryFactory.queryBalance(for: accountId, chainAsset: chainAsset)
 
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let depositOperation = PrimitiveConstantOperation<Balance>(path: .existentialDeposit)
-
-        depositOperation.configurationBlock = {
-            do {
-                depositOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                depositOperation.result = .failure(error)
-            }
-        }
-
-        depositOperation.addDependency(codingFactoryOperation)
+        let depositWrapper = PrimitiveConstantOperation<Balance>.wrapper(
+            for: .existentialDeposit,
+            runtimeService: runtimeProvider
+        )
 
         let fundsOperation = ClosureOperation<SubtensorShieldFunds> {
             SubtensorShieldFunds(
                 transferable: try balanceWrapper.targetOperation.extractNoCancellableResultData().transferable,
-                existentialDeposit: try depositOperation.extractNoCancellableResultData()
+                existentialDeposit: try depositWrapper.targetOperation.extractNoCancellableResultData()
             )
         }
 
         fundsOperation.addDependency(balanceWrapper.targetOperation)
-        fundsOperation.addDependency(depositOperation)
+        fundsOperation.addDependency(depositWrapper.targetOperation)
 
         return balanceWrapper
-            .insertingHead(operations: [codingFactoryOperation, depositOperation])
+            .insertingHead(operations: depositWrapper.allOperations)
             .insertingTail(operation: fundsOperation)
     }
 }

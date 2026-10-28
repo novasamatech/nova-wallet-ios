@@ -6,16 +6,12 @@ import BigInt
 protocol SubtensorShieldExtrinsicFactoryProtocol {
     func createQuoteWrapper(
         for operation: SubtensorOperation,
+        requiresKey: Bool,
         innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
 
-    func createUnkeyedQuoteWrapper(
-        for operation: SubtensorOperation,
-        innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
-
     func createKeyWrapper(
-        keyRetry: SubtensorShieldKeyRetry,
+        blockTiming: SubtensorShieldBlockTiming,
         retryCondition: BaseOperation<Bool>
     ) -> CompoundOperationWrapper<Data?>
 
@@ -127,7 +123,7 @@ private extension SubtensorShieldExtrinsicFactory {
 
     func createKeyWrapper(
         retries: Int,
-        keyRetry: SubtensorShieldKeyRetry,
+        blockTiming: SubtensorShieldBlockTiming,
         retryCondition: BaseOperation<Bool>
     ) -> CompoundOperationWrapper<Data?> {
         let keyWrapper = keyOperationFactory.createNextKeyWrapper()
@@ -147,10 +143,10 @@ private extension SubtensorShieldExtrinsicFactory {
                 return nil
             }
 
-            let delayOperation = Self.createDelayOperation(for: keyRetry.interval)
+            let delayOperation = Self.createDelayOperation(for: blockTiming.blockInterval)
             let nextWrapper = self.createKeyWrapper(
                 retries: retries - 1,
-                keyRetry: keyRetry,
+                blockTiming: blockTiming,
                 retryCondition: retryCondition
             )
 
@@ -165,7 +161,7 @@ private extension SubtensorShieldExtrinsicFactory {
         return retryWrapper.insertingHead(operations: keyWrapper.allOperations)
     }
 
-    func createQuoteWrapper(
+    func createFeeQuoteWrapper(
         for operation: SubtensorOperation,
         innerClosure: @escaping ExtrinsicBuilderClosure,
         nonce: UInt32
@@ -248,53 +244,40 @@ private extension SubtensorShieldExtrinsicFactory {
 extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol {
     func createQuoteWrapper(
         for operation: SubtensorOperation,
+        requiresKey: Bool,
         innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
-        let keyWrapper = keyOperationFactory.createNextKeyWrapper()
+        let keyWrapper = requiresKey ? keyOperationFactory.createNextKeyWrapper() : nil
         let nonceWrapper = createNonceWrapper()
 
         let quoteWrapper = OperationCombiningService<SubtensorShieldQuote>.compoundOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
-            guard try Self.extractSupportedKey(from: keyWrapper) != nil else {
+            if let keyWrapper, try Self.extractSupportedKey(from: keyWrapper) == nil {
                 return nil
             }
 
             let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try self.createQuoteWrapper(for: operation, innerClosure: innerClosure(), nonce: nonce)
+            return try self.createFeeQuoteWrapper(for: operation, innerClosure: innerClosure(), nonce: nonce)
         }
 
-        quoteWrapper.addDependency(wrapper: keyWrapper)
-        quoteWrapper.addDependency(wrapper: nonceWrapper)
-
-        return quoteWrapper.insertingHead(operations: keyWrapper.allOperations + nonceWrapper.allOperations)
-    }
-
-    func createUnkeyedQuoteWrapper(
-        for operation: SubtensorOperation,
-        innerClosure: @escaping ExtrinsicBuilderClosure
-    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
-        let nonceWrapper = createNonceWrapper()
-
-        let quoteWrapper = OperationCombiningService<SubtensorShieldQuote>.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try self.createQuoteWrapper(for: operation, innerClosure: innerClosure, nonce: nonce)
+        if let keyWrapper {
+            quoteWrapper.addDependency(wrapper: keyWrapper)
         }
 
         quoteWrapper.addDependency(wrapper: nonceWrapper)
 
-        return quoteWrapper.insertingHead(operations: nonceWrapper.allOperations)
+        let headOperations = (keyWrapper?.allOperations ?? []) + nonceWrapper.allOperations
+
+        return quoteWrapper.insertingHead(operations: headOperations)
     }
 
     func createKeyWrapper(
-        keyRetry: SubtensorShieldKeyRetry,
+        blockTiming: SubtensorShieldBlockTiming,
         retryCondition: BaseOperation<Bool>
     ) -> CompoundOperationWrapper<Data?> {
-        createKeyWrapper(retries: Constants.keyReadRetries, keyRetry: keyRetry, retryCondition: retryCondition)
+        createKeyWrapper(retries: Constants.keyReadRetries, blockTiming: blockTiming, retryCondition: retryCondition)
     }
 
     func createSealedInnerWrapper(

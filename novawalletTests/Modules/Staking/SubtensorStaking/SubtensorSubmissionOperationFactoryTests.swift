@@ -222,9 +222,7 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
             inclusionTracker: SubtensorShieldInclusionTracker(
                 connection: connection,
-                runtimeProvider: runtimeProvider,
                 statusService: statusService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
                 operationQueue: operationQueue
             ),
             signerFactory: { try? DummySigner(cryptoType: .sr25519) },

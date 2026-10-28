@@ -75,21 +75,7 @@ extension AuthorizeOnceSigningWrapper: SigningPreauthorizing {
             return
         }
 
-        let semaphore = DispatchSemaphore(value: 0)
-        var isAuthorized = false
-
-        DispatchQueue.main.async {
-            self.authorize(animated: true, cancellable: true) { completed in
-                isAuthorized = completed
-                semaphore.signal()
-            }
-        }
-
-        semaphore.wait()
-
-        guard isAuthorized else {
-            throw SigningWrapperError.pinCheckNotPassed
-        }
+        try authorizeSynchronously { _ in }
 
         grantAuthorizedSignatures(count: signaturesPerAuthorization)
     }

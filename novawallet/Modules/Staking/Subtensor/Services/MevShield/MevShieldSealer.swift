@@ -3,11 +3,11 @@ import CryptoSwift
 import MLKEMNative
 import SubstrateSdk
 
-protocol MevShieldRandomnessSource {
+protocol MevShieldRandomnessSourceProtocol {
     func randomBytes(count: Int) throws -> Data
 }
 
-struct MevShieldSecureRandomness: MevShieldRandomnessSource {
+struct MevShieldSecureRandomness: MevShieldRandomnessSourceProtocol {
     func randomBytes(count: Int) throws -> Data {
         guard let bytes = Data.random(of: count) else {
             throw MevShieldSealerError.randomnessUnavailable
@@ -20,12 +20,13 @@ struct MevShieldSecureRandomness: MevShieldRandomnessSource {
 enum MevShieldSealerError: Error {
     case randomnessUnavailable
     case unexpectedKemCiphertextLength(Int)
+    case ciphertextTooLong(Int)
 }
 
 final class MevShieldSealer {
-    let randomness: MevShieldRandomnessSource
+    let randomness: MevShieldRandomnessSourceProtocol
 
-    init(randomness: MevShieldRandomnessSource = MevShieldSecureRandomness()) {
+    init(randomness: MevShieldRandomnessSourceProtocol = MevShieldSecureRandomness()) {
         self.randomness = randomness
     }
 }
@@ -54,7 +55,7 @@ extension MevShieldSealer: MevShieldSealing {
             Data(sealed.cipherText) + Data(sealed.authenticationTag)
 
         guard payload.count <= MevShieldPallet.maxCiphertextLength else {
-            throw SubtensorShieldError.ciphertextTooLong(payload.count)
+            throw MevShieldSealerError.ciphertextTooLong(payload.count)
         }
 
         return payload

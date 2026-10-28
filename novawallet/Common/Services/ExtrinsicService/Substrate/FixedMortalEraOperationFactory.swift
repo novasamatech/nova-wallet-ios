@@ -8,23 +8,7 @@ final class FixedMortalEraOperationFactory {
     private let finalizedHeaderOperationFactory = FinalizedHeaderOperationFactory()
 
     init(period: UInt64) {
-        self.period = Self.encodablePeriod(for: period)
-    }
-}
-
-private extension FixedMortalEraOperationFactory {
-    static let minPeriod: UInt64 = 4
-    static let maxPeriod: UInt64 = 1 << 16
-
-    static func encodablePeriod(for period: UInt64) -> UInt64 {
-        let target = min(period, maxPeriod)
-        var encodable = minPeriod
-
-        while encodable < target {
-            encodable <<= 1
-        }
-
-        return encodable
+        self.period = period
     }
 }
 
@@ -37,10 +21,7 @@ extension FixedMortalEraOperationFactory {
         let mapOperation = ClosureOperation<ExtrinsicEraParameters> {
             let blockNumber = try numberWrapper.targetOperation.extractNoCancellableResultData()
 
-            return ExtrinsicEraParameters(
-                blockNumber: blockNumber,
-                extrinsicEra: .mortal(period: period, phase: UInt64(blockNumber) % period)
-            )
+            return .mortal(blockNumber: UInt64(blockNumber), period: period)
         }
 
         mapOperation.addDependency(numberWrapper.targetOperation)
