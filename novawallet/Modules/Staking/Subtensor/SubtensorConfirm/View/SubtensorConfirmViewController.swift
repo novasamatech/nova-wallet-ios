@@ -54,6 +54,7 @@ private extension SubtensorConfirmViewController {
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
         rootView.shieldCell.titleLabel.text = strings.stakingSubtensorMevProtectionTitle()
         rootView.shieldCell.subtitleLabel.text = strings.stakingSubtensorMevProtectionDetails()
+        rootView.shieldAlertView.contentView.detailsLabel.text = strings.stakingSubtensorMevProtectionUnavailable()
 
         rootView.walletCell.titleLabel.text = strings.commonWallet()
         rootView.accountCell.titleLabel.text = strings.commonAccount()
@@ -251,9 +252,17 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
         bindSigningHint(viewModel.signingHint)
     }
 
-    func didReceiveShield(isOn: Bool?) {
-        rootView.shieldTableView.isHidden = isOn == nil
-        rootView.shieldCell.switchControl.setOn(isOn ?? false, animated: false)
+    func didReceiveShield(viewModel: SubtensorConfirmShieldViewModel?) {
+        rootView.shieldTableView.isHidden = viewModel == nil
+        rootView.shieldAlertView.isHidden = viewModel != .unavailable
+        rootView.shieldCell.switchControl.isEnabled = viewModel != .unavailable
+
+        switch viewModel {
+        case let .available(isOn):
+            rootView.shieldCell.switchControl.setOn(isOn, animated: false)
+        case .unavailable, nil:
+            rootView.shieldCell.switchControl.setOn(false, animated: false)
+        }
     }
 
     func didStartLoading() {

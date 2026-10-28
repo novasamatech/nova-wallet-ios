@@ -19,6 +19,7 @@ final class SubtensorConfirmPresenter {
     var shieldQuote: SubtensorShieldQuote?
     var shieldQuoteOperation: SubtensorOperation?
     var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
     var isShieldOn = true
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
@@ -52,6 +53,8 @@ final class SubtensorConfirmPresenter {
         self.chainAsset = chainAsset
         self.model = model
         isWatchOnly = model.account.chainAccount.type == .watchOnly
+        isShieldQuoteResolved = model.isShieldQuoteFallback
+        isShieldQuoteFallback = model.isShieldQuoteFallback
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
@@ -215,14 +218,14 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
-            analytics.acknowledgePriceMove(heldForNextTap: isShieldable)
+            analytics.acknowledgePriceMove(heldForNextTap: waitsForShieldQuote)
             state.acknowledgeLatest()
             quoteState = state
 
             refreshFee()
             provideViewModel()
 
-            return !isShieldable
+            return !waitsForShieldQuote
         }
 
         guard !state.raisePriceMovedIfCrossed() else {

@@ -40,6 +40,11 @@ struct SubtensorConfirmBreakdownViewModel {
     let legs: [SubtensorConfirmLegViewModel]
 }
 
+enum SubtensorConfirmShieldViewModel: Equatable {
+    case available(isOn: Bool)
+    case unavailable
+}
+
 struct SubtensorConfirmViewModel {
     let title: String
     let content: SubtensorConfirmContentViewModel

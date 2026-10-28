@@ -6,7 +6,7 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
     var shieldWalletType: MetaAccountModelType { model.account.chainAccount.type }
     var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var activeShieldQuote: SubtensorShieldQuote? { isShieldOn ? eligibleShieldQuote : nil }
-    var waitsForShieldQuote: Bool { isShieldable && isShieldOn }
+    var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldQuoteFallback }
 
     func applyShieldQuoteChange() {
         provideViewModel()
@@ -15,7 +15,13 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
 
 extension SubtensorConfirmPresenter {
     func provideShieldState() {
-        view?.didReceiveShield(isOn: eligibleShieldQuote != nil ? isShieldOn : nil)
+        if eligibleShieldQuote != nil {
+            view?.didReceiveShield(viewModel: .available(isOn: isShieldOn))
+        } else if isShieldUnavailable {
+            view?.didReceiveShield(viewModel: .unavailable)
+        } else {
+            view?.didReceiveShield(viewModel: nil)
+        }
     }
 
     func toggleShield() {
@@ -25,6 +31,10 @@ extension SubtensorConfirmPresenter {
     }
 
     func requestFreshShieldQuote(for operation: SubtensorOperation) {
+        guard !isShieldQuoteFallback else {
+            return
+        }
+
         if isShieldable {
             isShieldQuoteResolved = false
         }
@@ -33,7 +43,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func keepPriceMoveAcknowledgement() {
-        if isShieldable {
+        if waitsForShieldQuote {
             analytics.holdPriceMoveAcknowledgement()
         }
     }

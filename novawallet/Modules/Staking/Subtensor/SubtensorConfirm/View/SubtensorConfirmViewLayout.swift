@@ -65,6 +65,12 @@ final class SubtensorConfirmViewLayout: UIView {
         $0.subtitleLabel.numberOfLines = 0
     }
 
+    let shieldAlertView: InlineAlertView = {
+        let view = InlineAlertView.warning()
+        view.isHidden = true
+        return view
+    }()
+
     let amountView = MultilineBalanceView()
 
     let walletTableView: StackTableView = .create {
@@ -250,6 +256,9 @@ private extension SubtensorConfirmViewLayout {
 
         shieldTableView.addArrangedSubview(shieldCell)
         shieldTableView.setCustomHeight(Constants.shieldRowHeight, at: 0)
+
+        stackView.addArrangedSubview(shieldAlertView)
+        stackView.setCustomSpacing(8, after: shieldAlertView)
 
         stackView.addArrangedSubview(walletTableView)
         stackView.setCustomSpacing(8, after: walletTableView)

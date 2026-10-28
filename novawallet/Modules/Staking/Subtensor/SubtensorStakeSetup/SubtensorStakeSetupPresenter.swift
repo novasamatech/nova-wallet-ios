@@ -32,6 +32,7 @@ final class SubtensorStakeSetupPresenter {
     var shieldQuote: SubtensorShieldQuote?
     var shieldQuoteOperation: SubtensorOperation?
     var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
     var lastMaxAmount: Balance?
     var maxRefreshTransferable: Balance?
     var existentialDeposit: Balance?

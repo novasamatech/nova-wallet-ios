@@ -198,7 +198,8 @@ extension SubtensorUnstakeSetupPresenter {
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
-            hasLockedStake: hasLockedStake
+            hasLockedStake: hasLockedStake,
+            isShieldQuoteFallback: isShieldUnavailable
         )
     }
 }

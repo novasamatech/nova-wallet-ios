@@ -25,6 +25,7 @@ final class SubtensorUnstakeSetupPresenter {
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
     var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
     var shieldQuoteOperation: SubtensorOperation?
     var shieldQuoteInputs: SubtensorUnstakeShieldQuoteInputs?
     var preflight: SubtensorPreflight?

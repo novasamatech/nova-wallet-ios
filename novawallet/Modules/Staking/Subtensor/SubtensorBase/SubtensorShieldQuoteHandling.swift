@@ -4,6 +4,7 @@ protocol SubtensorShieldQuoteHandling: AnyObject {
     var shieldQuote: SubtensorShieldQuote? { get set }
     var shieldQuoteOperation: SubtensorOperation? { get set }
     var isShieldQuoteResolved: Bool { get set }
+    var isShieldQuoteFallback: Bool { get set }
     var fee: ExtrinsicFeeProtocol? { get }
     var transferable: Balance? { get }
     var existentialDeposit: Balance? { get }
@@ -31,6 +32,10 @@ extension SubtensorShieldQuoteHandling {
 
     var isShieldable: Bool {
         !isRoot && SubtensorShieldEligibility.supports(walletType: shieldWalletType)
+    }
+
+    var isShieldUnavailable: Bool {
+        isShieldable && isShieldQuoteFallback
     }
 
     var activeShieldQuote: SubtensorShieldQuote? { eligibleShieldQuote }
@@ -66,6 +71,7 @@ extension SubtensorShieldQuoteHandling {
         shieldQuote = nil
         shieldQuoteOperation = nil
         isShieldQuoteResolved = false
+        isShieldQuoteFallback = false
         shieldInteractor.cancelShieldQuote()
     }
 
@@ -84,6 +90,7 @@ extension SubtensorShieldQuoteHandling {
 
         shieldQuote = quote
         isShieldQuoteResolved = true
+        isShieldQuoteFallback = false
 
         applyShieldQuoteChange()
     }
@@ -95,6 +102,7 @@ extension SubtensorShieldQuoteHandling {
 
         shieldQuote = nil
         isShieldQuoteResolved = true
+        isShieldQuoteFallback = true
 
         applyShieldQuoteFallback()
     }

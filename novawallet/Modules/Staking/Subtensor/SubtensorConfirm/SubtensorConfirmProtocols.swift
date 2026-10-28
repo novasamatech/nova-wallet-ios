@@ -6,7 +6,7 @@ protocol SubtensorConfirmViewProtocol: ControllerBackedProtocol, LoadableViewPro
     func didReceiveValidator(viewModel: DisplayAddressViewModel)
     func didReceiveTileIcons(viewModel: SubtensorConfirmTileIconsViewModel)
     func didReceive(viewModel: SubtensorConfirmViewModel)
-    func didReceiveShield(isOn: Bool?)
+    func didReceiveShield(viewModel: SubtensorConfirmShieldViewModel?)
 }
 
 protocol SubtensorConfirmPresenterProtocol: AnyObject {
