@@ -270,7 +270,7 @@ extension SubtensorStakeSetupPresenter {
         SubtensorStakeValidatingDependencies(
             amount: inputAmount(),
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             preflight: preflight,
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
@@ -306,7 +306,8 @@ extension SubtensorStakeSetupPresenter {
             ),
             mode: .stake(amount: amount),
             tolerance: target.isRoot ? nil : slippage,
-            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
+            isShieldQuoteFallback: carriesShieldQuoteFallback
         )
     }
 }

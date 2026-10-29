@@ -147,4 +147,27 @@ extension SigningWrapperFactory {
             accountResponse: metaAccountResponse.chainAccount
         )
     }
+
+    func createAuthorizeOnceSigningWrapper(
+        for metaId: String,
+        accountResponse: ChainAccountResponse,
+        signaturesPerAuthorization: Int
+    ) -> SigningWrapperProtocol? {
+        guard accountResponse.type == .secrets else {
+            return nil
+        }
+
+        let signer = SigningWrapper(
+            keystore: keystore,
+            metaId: metaId,
+            accountResponse: accountResponse,
+            settingsManager: settingsManager
+        )
+
+        return AuthorizeOnceSigningWrapper(
+            signer: signer,
+            signaturesPerAuthorization: signaturesPerAuthorization,
+            settingsManager: settingsManager
+        )
+    }
 }

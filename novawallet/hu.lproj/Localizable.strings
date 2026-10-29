@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Összes validátor";
 "staking.subtensor.ui.validator.new" = "Új validátor";
 "staking.subtensor.validator.status.via.child.key" = "Aktív gyermekkulcson keresztül";
+"staking.subtensor.error.shielded.not.executed" = "A megrendelése nem teljesült. A tétje változatlan, kérjük, próbálja újra.";
+"staking.subtensor.mev.protection.details" = "A front-running megelőzésének elősegítése érdekében titkosítva tartja a megrendelését a nyilvános mempoolban.";
+"staking.subtensor.mev.protection.title" = "MEV-védelem";
+"staking.subtensor.mev.protection.unavailable" = "A MEV-védelem ehhez a megrendeléshez nem érhető el.";
+"staking.subtensor.result.fee.may.be.charged" = "Hálózati díj kerülhetett felszámításra.";

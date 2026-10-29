@@ -148,6 +148,7 @@ private extension SubtensorClaimRewardsPresenter {
             dataValidationFactory.positionsAreFresh(
                 syncFailed: isPositionsSyncFailed || positionsState?.isRootRedeemableStale == true,
                 locale: locale,
+                onStale: nil,
                 onRetry: { [weak self] in
                     self?.interactor.refreshPositions()
                 }
@@ -244,6 +245,7 @@ private extension SubtensorClaimRewardsPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: .rootClaim(hotkey: preview.hotkey),
+            shieldQuote: nil,
             origin: .claim,
             account: model.account,
             target: .root,

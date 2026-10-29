@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Semua validator";
 "staking.subtensor.ui.validator.new" = "Validator baru";
 "staking.subtensor.validator.status.via.child.key" = "Aktif melalui Kunci Anak";
+"staking.subtensor.error.shielded.not.executed" = "Pesanan Anda tidak dieksekusi. Stake Anda tidak berubah, silakan coba lagi.";
+"staking.subtensor.mev.protection.details" = "Menjaga pesanan Anda tetap terenkripsi di mempool publik untuk membantu mencegah front-running.";
+"staking.subtensor.mev.protection.title" = "Perlindungan MEV";
+"staking.subtensor.mev.protection.unavailable" = "Perlindungan MEV tidak tersedia untuk pesanan ini.";
+"staking.subtensor.result.fee.may.be.charged" = "Biaya jaringan mungkin telah dibebankan.";

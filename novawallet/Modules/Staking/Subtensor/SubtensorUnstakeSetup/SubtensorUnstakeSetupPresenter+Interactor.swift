@@ -211,6 +211,9 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+
+        refreshShieldQuote(for: shieldQuoteOperation, plan: shieldQuoteInputs?.plan)
+        provideViewModel()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {
@@ -259,6 +262,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             forceQuoteRefresh()
         }
 
+        retryUnresolvedShieldQuote()
         provideViewModel()
     }
 
@@ -274,5 +278,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+
+        provideViewModel()
     }
 }

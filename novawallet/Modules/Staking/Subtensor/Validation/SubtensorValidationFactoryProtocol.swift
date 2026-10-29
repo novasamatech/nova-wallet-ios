@@ -58,6 +58,7 @@ protocol SubtensorValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func positionsAreFresh(
         syncFailed: Bool,
         locale: Locale,
+        onStale: (() -> Void)?,
         onRetry: @escaping () -> Void
     ) -> DataValidating
 

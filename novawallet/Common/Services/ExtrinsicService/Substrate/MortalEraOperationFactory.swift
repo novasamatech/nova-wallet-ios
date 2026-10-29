@@ -13,39 +13,10 @@ final class MortalEraOperationFactory {
     static let mortalPeriod: UInt64 = 5 * 60 * 1000
 
     private let blockTimeOperationFactory: BlockTimeOperationFactory
+    private let finalizedHeaderOperationFactory = FinalizedHeaderOperationFactory()
 
     init(chain: ChainModel) {
         blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
-    }
-
-    private func createFinalizedHeaderOperation(
-        from connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<Block.Header> {
-        let finalizedBlockHashOperation: JSONRPCListOperation<String> = JSONRPCListOperation(
-            engine: connection,
-            method: RPCMethod.getFinalizedBlockHash
-        )
-
-        let finalizedHeaderOperation: JSONRPCListOperation<Block.Header> = JSONRPCListOperation(
-            engine: connection,
-            method: RPCMethod.getBlockHeader
-        )
-
-        finalizedHeaderOperation.configurationBlock = {
-            do {
-                let blockHash = try finalizedBlockHashOperation.extractNoCancellableResultData()
-                finalizedHeaderOperation.parameters = [blockHash]
-            } catch {
-                finalizedHeaderOperation.result = .failure(error)
-            }
-        }
-
-        finalizedHeaderOperation.addDependency(finalizedBlockHashOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: finalizedHeaderOperation,
-            dependencies: [finalizedBlockHashOperation]
-        )
     }
 
     private func createBestHeaderOperation(
@@ -86,7 +57,7 @@ final class MortalEraOperationFactory {
     private func createFinalizationModelWrapper(
         from connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<FinalizationModel> {
-        let finalizedHeaderWrapper = createFinalizedHeaderOperation(from: connection)
+        let finalizedHeaderWrapper = finalizedHeaderOperationFactory.createHeaderWrapper(from: connection)
         let bestHeaderWrapper = createBestHeaderOperation(from: connection)
 
         let mapOperation = ClosureOperation<FinalizationModel> {
@@ -208,23 +179,7 @@ extension MortalEraOperationFactory: ExtrinsicEraOperationFactoryProtocol {
             let mortalLength = try mortalLengthWrapper.targetOperation.extractNoCancellableResultData()
             let blockNumber = try finalizationModelWrapper.targetOperation.extractNoCancellableResultData().blockNumber
 
-            let constrainedPeriod: UInt64 = min(1 << 16, max(4, mortalLength))
-            var period: UInt64 = 1
-
-            while period < constrainedPeriod {
-                period = period << 1
-            }
-
-            let unquantizedPhase = blockNumber % period
-            let quantizeFactor = max(period >> 12, 1)
-            let phase = (unquantizedPhase / quantizeFactor) * quantizeFactor
-
-            let eraBlockNumber = ((blockNumber - phase) / period) * period + phase
-
-            return ExtrinsicEraParameters(
-                blockNumber: BlockNumber(eraBlockNumber),
-                extrinsicEra: .mortal(period: period, phase: phase)
-            )
+            return .mortal(blockNumber: blockNumber, period: mortalLength)
         }
 
         mapOperation.addDependency(mortalLengthWrapper.targetOperation)

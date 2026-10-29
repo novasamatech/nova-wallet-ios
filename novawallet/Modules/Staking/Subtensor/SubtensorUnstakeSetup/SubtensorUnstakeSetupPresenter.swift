@@ -23,6 +23,11 @@ final class SubtensorUnstakeSetupPresenter {
     var balance: AssetBalance?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
+    var shieldQuoteOperation: SubtensorOperation?
+    var shieldQuoteInputs: SubtensorUnstakeShieldQuoteInputs?
     var preflight: SubtensorPreflight?
     var blockTime: BlockTime?
     var existentialDeposit: Balance?
@@ -264,9 +269,12 @@ extension SubtensorUnstakeSetupPresenter {
         if newShape != feeShape {
             feeShape = newShape
             fee = nil
+            resetShieldQuote()
+            shieldQuoteInputs = nil
         }
 
         interactor.estimateFee(for: operation)
+        refreshShieldQuote(for: operation, plan: plan)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
@@ -359,7 +367,7 @@ extension SubtensorUnstakeSetupPresenter {
             isValidatorSelectable: (group?.positions.count ?? 0) > 1,
             isAllValidators: currentSelection == .all,
             legCap: isLegCapped ? SubtensorGroupUnstakeBasis.maxLegs : nil,
-            fee: fee,
+            fee: networkFee,
             price: price,
             quote: quoteFlow.freshQuote,
             isQuoteFailed: isQuoteFailed,

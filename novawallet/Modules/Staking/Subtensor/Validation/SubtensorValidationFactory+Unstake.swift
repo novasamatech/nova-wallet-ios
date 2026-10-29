@@ -5,9 +5,14 @@ extension SubtensorValidationFactory {
     func positionsAreFresh(
         syncFailed: Bool,
         locale: Locale,
+        onStale: (() -> Void)?,
         onRetry: @escaping () -> Void
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
+            defer {
+                onStale?()
+            }
+
             guard let self, let view else {
                 return
             }

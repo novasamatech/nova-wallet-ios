@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Все валидаторы";
 "staking.subtensor.ui.validator.new" = "Новый валидатор";
 "staking.subtensor.validator.status.via.child.key" = "Активен через дочерний ключ";
+"staking.subtensor.error.shielded.not.executed" = "Ваш ордер не был исполнен. Ваш Stake не изменился, попробуйте ещё раз.";
+"staking.subtensor.mev.protection.details" = "Сохраняет ваш ордер зашифрованным в публичном мемпуле, помогая предотвратить опережающее исполнение транзакций.";
+"staking.subtensor.mev.protection.title" = "Защита от MEV";
+"staking.subtensor.mev.protection.unavailable" = "Защита от MEV недоступна для этого ордера.";
+"staking.subtensor.result.fee.may.be.charged" = "С вас могла быть списана комиссия сети.";

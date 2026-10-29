@@ -6,6 +6,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
     let operation: SubtensorOperation
+    let shielded: Bool
+    let blockTime: BlockTime
     let coldkey: AccountId
     let loadsSubnetData: Bool
     let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
@@ -23,6 +25,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
 
     init(
         operation: SubtensorOperation,
+        shielded: Bool,
+        blockTime: BlockTime,
         coldkey: AccountId,
         loadsSubnetData: Bool,
         submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol,
@@ -35,6 +39,8 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
         logger: LoggerProtocol
     ) {
         self.operation = operation
+        self.shielded = shielded
+        self.blockTime = blockTime
         self.coldkey = coldkey
         self.loadsSubnetData = loadsSubnetData
         self.submissionOperationFactory = submissionOperationFactory
@@ -55,24 +61,31 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
 }
 
 private extension SubtensorOperationResultInteractor {
-    func startConfirmationCap() {
+    func startConfirmationCap(for route: SubtensorSubmissionRoute) {
         guard confirmationScheduler == nil, !isSubmissionFinished else {
             return
         }
 
+        presenter?.didReceive(route: route)
+
         let scheduler = schedulerFactory(self)
         confirmationScheduler = scheduler
-        scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap)
+        scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap(for: route, blockTime: blockTime))
     }
 
     func submit() {
         osMediator.disableScreenSleep()
 
-        let wrapper = submissionOperationFactory.createSubmitWrapper(for: operation) { [weak self] in
-            DispatchQueue.main.async {
-                self?.startConfirmationCap()
+        let wrapper = submissionOperationFactory.createSubmitWrapper(
+            for: operation,
+            shielded: shielded,
+            blockTime: blockTime,
+            signedClosure: { [weak self] route in
+                DispatchQueue.main.async {
+                    self?.startConfirmationCap(for: route)
+                }
             }
-        }
+        )
 
         execute(
             wrapper: wrapper,

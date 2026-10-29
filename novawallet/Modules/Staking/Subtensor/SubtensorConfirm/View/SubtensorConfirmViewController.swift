@@ -52,6 +52,9 @@ private extension SubtensorConfirmViewController {
         rootView.avgBuyPriceCell.titleButton.setTitle(strings.stakingSubtensorUiAvgBuyPrice())
         rootView.youWillEarnCell.titleButton.setTitle(strings.stakingSubtensorUiYouWillEarn())
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
+        rootView.shieldCell.titleLabel.text = strings.stakingSubtensorMevProtectionTitle()
+        rootView.shieldCell.subtitleLabel.text = strings.stakingSubtensorMevProtectionDetails()
+        rootView.shieldAlertView.contentView.detailsLabel.text = strings.stakingSubtensorMevProtectionUnavailable()
 
         rootView.walletCell.titleLabel.text = strings.commonWallet()
         rootView.accountCell.titleLabel.text = strings.commonAccount()
@@ -74,6 +77,7 @@ private extension SubtensorConfirmViewController {
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.youWillEarnCell.addTarget(self, action: #selector(actionYouWillEarnInfo), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
+        rootView.shieldCell.switchControl.addTarget(self, action: #selector(actionToggleShield), for: .valueChanged)
     }
 
     func bindTile(_ tileView: SwapElementView, state: LoadableViewModelState<BalanceViewModel>) {
@@ -196,6 +200,10 @@ private extension SubtensorConfirmViewController {
     @objc func actionNetworkFeeInfo() {
         presenter.showNetworkFeeInfo()
     }
+
+    @objc func actionToggleShield() {
+        presenter.toggleShield()
+    }
 }
 
 extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
@@ -242,6 +250,25 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
 
         bindAction(viewModel.action)
         bindSigningHint(viewModel.signingHint)
+    }
+
+    func didReceiveShield(viewModel: SubtensorConfirmShieldViewModel?) {
+        rootView.shieldTableView.isHidden = viewModel == nil
+        rootView.shieldAlertView.isHidden = viewModel != .unavailable
+
+        let switchControl = rootView.shieldCell.switchControl
+
+        switch viewModel {
+        case let .available(isOn):
+            switchControl.isEnabled = true
+            switchControl.setOn(isOn, animated: false)
+        case .loading:
+            switchControl.isEnabled = false
+            switchControl.setOn(true, animated: false)
+        case .unavailable, nil:
+            switchControl.isEnabled = false
+            switchControl.setOn(false, animated: false)
+        }
     }
 
     func didStartLoading() {

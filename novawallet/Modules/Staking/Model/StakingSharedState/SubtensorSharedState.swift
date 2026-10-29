@@ -42,7 +42,8 @@ protocol SubtensorSharedStateProtocol: AnyObject {
         for accountId: AccountId,
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        shield: SubtensorShieldServices?
     ) throws -> SubtensorSubmissionOperationFactoryProtocol
 }
 
@@ -206,7 +207,8 @@ extension SubtensorSharedState: SubtensorSharedStateProtocol {
         for accountId: AccountId,
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        shield: SubtensorShieldServices?
     ) throws -> SubtensorSubmissionOperationFactoryProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
@@ -225,7 +227,9 @@ extension SubtensorSharedState: SubtensorSharedStateProtocol {
             eventCenter: eventCenter,
             configProvider: earnServices.subnetLogosProvider,
             pendingRootClaims: flowState.pendingRootClaims,
-            feeCalculator: novaFeeCalculator
+            feeCalculator: novaFeeCalculator,
+            shield: shield,
+            logger: logger
         )
     }
 }

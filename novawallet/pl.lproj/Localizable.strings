@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Wszyscy walidatorzy";
 "staking.subtensor.ui.validator.new" = "Nowy walidator";
 "staking.subtensor.validator.status.via.child.key" = "Aktywny za pośrednictwem klucza podrzędnego";
+"staking.subtensor.error.shielded.not.executed" = "Twoje zlecenie nie zostało zrealizowane. Twój Stake pozostaje bez zmian. Spróbuj ponownie.";
+"staking.subtensor.mev.protection.details" = "Utrzymuje Twoje zlecenie zaszyfrowane w publicznym mempoolu, pomagając zapobiegać front-runningowi.";
+"staking.subtensor.mev.protection.title" = "Ochrona MEV";
+"staking.subtensor.mev.protection.unavailable" = "Ochrona MEV jest niedostępna dla tego zlecenia.";
+"staking.subtensor.result.fee.may.be.charged" = "Mogła zostać naliczona opłata sieciowa.";

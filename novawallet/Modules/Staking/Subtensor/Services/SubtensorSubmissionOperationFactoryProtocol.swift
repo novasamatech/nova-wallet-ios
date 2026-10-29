@@ -6,8 +6,14 @@ protocol SubtensorSubmissionOperationFactoryProtocol: AnyObject {
         for operation: SubtensorOperation
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol>
 
+    func createShieldQuoteWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?>
+
     func createSubmitWrapper(
         for operation: SubtensorOperation,
-        signedClosure: @escaping () -> Void
+        shielded: Bool,
+        blockTime: BlockTime,
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome>
 }
