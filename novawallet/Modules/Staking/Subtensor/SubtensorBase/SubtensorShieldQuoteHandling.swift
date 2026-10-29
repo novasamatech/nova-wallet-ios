@@ -35,7 +35,7 @@ extension SubtensorShieldQuoteHandling {
         !isRoot && SubtensorShieldEligibility.supports(walletType: shieldWalletType)
     }
 
-    var isShieldUnavailable: Bool {
+    var carriesShieldQuoteFallback: Bool {
         isShieldable && isShieldQuoteFallback
     }
 

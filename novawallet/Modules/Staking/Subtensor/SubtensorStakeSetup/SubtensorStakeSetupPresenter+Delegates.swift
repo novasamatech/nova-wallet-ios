@@ -307,7 +307,7 @@ extension SubtensorStakeSetupPresenter {
             mode: .stake(amount: amount),
             tolerance: target.isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
-            isShieldQuoteFallback: isShieldUnavailable
+            isShieldQuoteFallback: carriesShieldQuoteFallback
         )
     }
 }

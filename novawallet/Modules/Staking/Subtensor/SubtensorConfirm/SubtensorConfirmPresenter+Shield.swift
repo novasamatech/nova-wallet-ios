@@ -6,7 +6,7 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
     var shieldWalletType: MetaAccountModelType { model.account.chainAccount.type }
     var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var activeShieldQuote: SubtensorShieldQuote? { isShieldOn ? eligibleShieldQuote : nil }
-    var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldInactive }
+    var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldUnavailable }
 
     var isShieldQuotePending: Bool {
         let isDepositPending = existentialDeposit == nil && !isExistentialDepositFailed
@@ -20,7 +20,7 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
 }
 
 extension SubtensorConfirmPresenter {
-    var isShieldInactive: Bool {
+    var isShieldUnavailable: Bool {
         isShieldable && !isShieldQuotePending && eligibleShieldQuote == nil
     }
 
@@ -30,7 +30,7 @@ extension SubtensorConfirmPresenter {
             return
         }
 
-        if isShieldInactive {
+        if isShieldUnavailable {
             view?.didReceiveShield(viewModel: .unavailable)
         } else if isShieldOn, isShieldQuotePending {
             view?.didReceiveShield(viewModel: .loading)
@@ -50,7 +50,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func refreshFeeAtTap() {
-        refreshFee(requotingShield: !isShieldInactive)
+        refreshFee(requotingShield: !isShieldUnavailable)
     }
 
     func requestFreshShieldQuote(for operation: SubtensorOperation) {
