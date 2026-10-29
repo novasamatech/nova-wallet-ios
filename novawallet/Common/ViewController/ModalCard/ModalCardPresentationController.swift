@@ -70,7 +70,34 @@ public final class ModalCardPresentationController: UIPresentationController {
     override public var frameOfPresentedViewInContainerView: CGRect {
         guard let containerView else { return .zero }
 
-        return calculatePresentedViewFrame(in: containerView)
+        let presentedByModalCard = presentingViewController.presentationController is ModalCardPresentationController
+
+        return Self.presentedViewFrame(
+            containerBounds: containerView.bounds,
+            safeAreaTop: containerView.safeAreaInsets.top,
+            presentedByModalCard: presentedByModalCard
+        )
+    }
+
+    /// The height comes from the presentation container, never from the presenting view:
+    /// a presenting bottom sheet owns only its pane, so its view height would clip the card (NW-2379).
+    static func presentedViewFrame(
+        containerBounds: CGRect,
+        safeAreaTop: CGFloat,
+        presentedByModalCard: Bool
+    ) -> CGRect {
+        let topOffset = safeAreaTop + Constants.topOffset
+
+        let height = presentedByModalCard
+            ? containerBounds.height
+            : containerBounds.height - topOffset
+
+        return CGRect(
+            x: containerBounds.minX,
+            y: containerBounds.minY + topOffset,
+            width: containerBounds.width,
+            height: height
+        )
     }
 }
 
@@ -102,38 +129,6 @@ private extension ModalCardPresentationController {
         panGestureRecognizer.cancelsTouchesInView = false
         containerView?.addGestureRecognizer(panGestureRecognizer)
         panGestureRecognizer.delegate = self
-    }
-
-    func calculatePresentedViewFrame(in containerView: UIView) -> CGRect {
-        let finalFrame: CGRect
-
-        let topOffset: CGFloat = containerView.safeAreaInsets.top + Constants.topOffset
-
-        let finalOrigin = containerView.bounds.offsetBy(
-            dx: 0,
-            dy: topOffset
-        ).origin
-
-        let presentationController = presentingViewController.presentationController
-        let presentedByModalCardController = presentationController is ModalCardPresentationController
-
-        let finalHeight: CGFloat = if presentedByModalCardController {
-            presentingViewController.view.bounds.height
-        } else {
-            presentingViewController.view.bounds.height - topOffset
-        }
-
-        let finalFrameSize = CGSize(
-            width: containerView.bounds.width,
-            height: finalHeight
-        )
-
-        finalFrame = CGRect(
-            origin: finalOrigin,
-            size: finalFrameSize
-        )
-
-        return finalFrame
     }
 
     func dismiss(animated: Bool) {

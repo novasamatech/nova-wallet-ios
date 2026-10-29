@@ -227,10 +227,8 @@ private extension FeatureSupportChecker {
         _ walletType: MetaAccountModelType
     ) -> FeatureSupportCheckResult {
         switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .watchOnly:
+        case .secrets, .paritySigner, .polkadotVault, .watchOnly, .ledger, .genericLedger:
             .commonResult(.available)
-        case .ledger, .genericLedger:
-            .commonResult(.ledgerNotSupported)
         case .proxied:
             .commonResult(.noSubtensorStakingSupport(walletType))
         case .multisig:
