@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Tüm doğrulayıcılar";
 "staking.subtensor.ui.validator.new" = "Yeni doğrulayıcı";
 "staking.subtensor.validator.status.via.child.key" = "Alt Anahtar Üzerinden Aktif";
+"staking.subtensor.error.shielded.not.executed" = "Emriniz gerçekleştirilmedi. Stake bakiyeniz değişmedi, lütfen tekrar deneyin.";
+"staking.subtensor.mev.protection.details" = "Önden işlem yapılmasını önlemeye yardımcı olmak için emrinizi herkese açık mempool'da şifreli olarak tutar.";
+"staking.subtensor.mev.protection.title" = "MEV koruması";
+"staking.subtensor.mev.protection.unavailable" = "Bu emir için MEV koruması kullanılamıyor.";
+"staking.subtensor.result.fee.may.be.charged" = "Ağ ücreti tahsil edilmiş olabilir.";

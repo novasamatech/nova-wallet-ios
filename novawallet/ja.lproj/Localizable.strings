@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "すべてのバリデーター";
 "staking.subtensor.ui.validator.new" = "新しいバリデーター";
 "staking.subtensor.validator.status.via.child.key" = "子キー経由でアクティブ";
+"staking.subtensor.error.shielded.not.executed" = "注文は実行されませんでした。ステークは変更されていません。もう一度お試しください。";
+"staking.subtensor.mev.protection.details" = "フロントランニングの防止に役立つよう、公開メンプール内で注文を暗号化したままにします。";
+"staking.subtensor.mev.protection.title" = "MEV保護";
+"staking.subtensor.mev.protection.unavailable" = "この注文ではMEV保護を利用できません。";
+"staking.subtensor.result.fee.may.be.charged" = "ネットワーク手数料が請求されている場合があります。";

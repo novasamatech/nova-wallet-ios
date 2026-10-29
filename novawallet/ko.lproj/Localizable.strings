@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "모든 검증인";
 "staking.subtensor.ui.validator.new" = "새 검증인";
 "staking.subtensor.validator.status.via.child.key" = "자식 키를 통한 활성 상태";
+"staking.subtensor.error.shielded.not.executed" = "주문이 실행되지 않았습니다. stake는 변경되지 않았습니다. 다시 시도해 주세요.";
+"staking.subtensor.mev.protection.details" = "프런트러닝을 방지하는 데 도움이 되도록 공개 멤풀에서 주문을 암호화된 상태로 유지합니다.";
+"staking.subtensor.mev.protection.title" = "MEV 보호";
+"staking.subtensor.mev.protection.unavailable" = "이 주문에는 MEV 보호를 사용할 수 없습니다.";
+"staking.subtensor.result.fee.may.be.charged" = "네트워크 수수료가 부과되었을 수 있습니다.";

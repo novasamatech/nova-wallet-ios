@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Todos os validadores";
 "staking.subtensor.ui.validator.new" = "Novo validador";
 "staking.subtensor.validator.status.via.child.key" = "Ativo via chave secundária";
+"staking.subtensor.error.shielded.not.executed" = "Seu pedido não foi executado. Seu stake permanece inalterado. Tente novamente.";
+"staking.subtensor.mev.protection.details" = "Mantém seu pedido criptografado na mempool pública para ajudar a evitar frontrunning.";
+"staking.subtensor.mev.protection.title" = "Proteção contra MEV";
+"staking.subtensor.mev.protection.unavailable" = "A proteção contra MEV não está disponível para este pedido.";
+"staking.subtensor.result.fee.may.be.charged" = "Uma taxa de rede pode ter sido cobrada.";
