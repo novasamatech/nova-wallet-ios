@@ -76,7 +76,7 @@ struct SubtensorSubmissionFinalizer {
 
 extension SubtensorSubmissionFinalizer {
     func shieldedFailure(for error: Error) -> SubtensorSubmissionFailure {
-        guard error is SubtensorShieldError else {
+        guard error is SubtensorShieldError || Self.isOversizedSeal(error) else {
             return failure(for: error)
         }
 
@@ -160,6 +160,15 @@ private extension SubtensorSubmissionFinalizer {
     static func isFirstSendRejection(_ error: Error) -> Bool {
         switch error as? SubtensorSubmissionError {
         case .feeUnpayable, .coldkeySwapInProgress:
+            true
+        default:
+            false
+        }
+    }
+
+    static func isOversizedSeal(_ error: Error) -> Bool {
+        switch error as? MevShieldSealerError {
+        case .ciphertextTooLong:
             true
         default:
             false

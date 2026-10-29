@@ -1,9 +1,8 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
 
-protocol SubtensorShieldExtrinsicFactoryProtocol {
+protocol SubtensorShieldExtrinsicOperationFactoryProtocol {
     func createQuoteWrapper(
         for operation: SubtensorOperation,
         requiresKey: Bool,
@@ -27,7 +26,7 @@ protocol SubtensorShieldExtrinsicFactoryProtocol {
     ) -> CompoundOperationWrapper<ExtrinsicBuiltModel>
 }
 
-final class SubtensorShieldExtrinsicFactory {
+final class SubtensorShieldExtrinsicOperationFactory {
     let account: ChainAccountResponse
     let chain: ChainModel
     let connection: JSONRPCEngine
@@ -58,7 +57,7 @@ final class SubtensorShieldExtrinsicFactory {
     }
 }
 
-extension SubtensorShieldExtrinsicFactory {
+extension SubtensorShieldExtrinsicOperationFactory {
     static func shieldedClosure(_ closure: @escaping ExtrinsicBuilderClosure) -> ExtrinsicBuilderClosure {
         { builder in
             try closure(builder.with(tip: 0))
@@ -100,7 +99,7 @@ extension SubtensorShieldExtrinsicFactory {
     }
 }
 
-private extension SubtensorShieldExtrinsicFactory {
+private extension SubtensorShieldExtrinsicOperationFactory {
     enum Constants {
         static let keyReadRetries = 2
     }
@@ -241,7 +240,7 @@ private extension SubtensorShieldExtrinsicFactory {
     }
 }
 
-extension SubtensorShieldExtrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol {
+extension SubtensorShieldExtrinsicOperationFactory: SubtensorShieldExtrinsicOperationFactoryProtocol {
     func createQuoteWrapper(
         for operation: SubtensorOperation,
         requiresKey: Bool,

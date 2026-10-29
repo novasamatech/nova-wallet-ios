@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 
 final class FixedMortalEraOperationFactory {
-    let period: UInt64
+    private let period: UInt64
 
     private let finalizedHeaderOperationFactory = FinalizedHeaderOperationFactory()
 

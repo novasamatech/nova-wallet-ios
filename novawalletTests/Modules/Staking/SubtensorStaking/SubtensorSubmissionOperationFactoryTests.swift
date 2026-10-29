@@ -197,14 +197,14 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
             logger: Logger.shared
         )
-        let fundsFactory = MockSubtensorShieldFundsFactoryProtocol()
-        stub(fundsFactory) { stub in
+        let fundsOperationFactory = MockSubtensorShieldFundsOperationFactoryProtocol()
+        stub(fundsOperationFactory) { stub in
             when(stub.createFundsWrapper()).then {
                 .createWithResult(SubtensorShieldFunds(transferable: 1_000_000_000_000, existentialDeposit: 500))
             }
         }
 
-        let extrinsicFactory = SubtensorShieldExtrinsicFactory(
+        let extrinsicOperationFactory = SubtensorShieldExtrinsicOperationFactory(
             account: AccountGenerator.generateSubstrateChainAccountResponse(for: chain.chainId),
             chain: chain,
             connection: connection,
@@ -215,12 +215,12 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             nonceOperationFactory: PresetNonceOperationFactory(nonce: 0)
         )
 
-        let submissionFactory = SubtensorShieldSubmissionFactory(
+        let submissionOperationFactory = SubtensorShieldSubmissionOperationFactory(
             walletType: .secrets,
-            extrinsicFactory: extrinsicFactory,
-            fundsFactory: fundsFactory,
+            extrinsicOperationFactory: extrinsicOperationFactory,
+            fundsOperationFactory: fundsOperationFactory,
             carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
-            inclusionTracker: SubtensorShieldInclusionTracker(
+            inclusionOperationFactory: SubtensorShieldInclusionOperationFactory(
                 connection: connection,
                 statusService: statusService,
                 operationQueue: operationQueue
@@ -229,7 +229,10 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             operationQueue: operationQueue
         )
 
-        return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
+        return SubtensorShieldServices(
+            submissionOperationFactory: submissionOperationFactory,
+            operationQueue: operationQueue
+        )
     }
 
     private func performSubmit(

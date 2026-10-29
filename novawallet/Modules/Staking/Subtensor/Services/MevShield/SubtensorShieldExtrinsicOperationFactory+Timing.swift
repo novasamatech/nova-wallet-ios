@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-extension SubtensorShieldExtrinsicFactory {
+extension SubtensorShieldExtrinsicOperationFactory {
     struct Timing {
         let nonce: UInt32
         let era: ExtrinsicEraParameters
@@ -50,11 +50,11 @@ extension SubtensorShieldExtrinsicFactory {
     }
 }
 
-private extension SubtensorShieldExtrinsicFactory {
+private extension SubtensorShieldExtrinsicOperationFactory {
     func createBestNumberWrapper() -> CompoundOperationWrapper<BlockNumber> {
         let headerOperation = JSONRPCListOperation<Block.Header>(engine: connection, method: RPCMethod.getBlockHeader)
 
-        return FinalizedHeaderOperationFactory.createBlockNumberWrapper(
+        return BlockNumberOperationFactory.createWrapper(
             for: CompoundOperationWrapper(targetOperation: headerOperation)
         )
     }

@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorShieldSubmissionFactoryProtocol {
+protocol SubtensorShieldSubmissionOperationFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         blockTiming: SubtensorShieldBlockTiming,
@@ -31,39 +31,39 @@ struct SubtensorShieldSigners {
 }
 
 struct SubtensorShieldServices {
-    let submissionFactory: SubtensorShieldSubmissionFactoryProtocol
+    let submissionOperationFactory: SubtensorShieldSubmissionOperationFactoryProtocol
     let operationQueue: OperationQueue
 }
 
-final class SubtensorShieldSubmissionFactory {
+final class SubtensorShieldSubmissionOperationFactory {
     let walletType: MetaAccountModelType
-    let extrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol
-    let fundsFactory: SubtensorShieldFundsFactoryProtocol
+    let extrinsicOperationFactory: SubtensorShieldExtrinsicOperationFactoryProtocol
+    let fundsOperationFactory: SubtensorShieldFundsOperationFactoryProtocol
     let carrierWatch: SubtensorShieldCarrierWatchingProtocol
-    let inclusionTracker: SubtensorShieldInclusionTrackingProtocol
+    let inclusionOperationFactory: SubtensorShieldInclusionOperationFactoryProtocol
     let signerFactory: () -> SigningWrapperProtocol?
     let operationQueue: OperationQueue
 
     init(
         walletType: MetaAccountModelType,
-        extrinsicFactory: SubtensorShieldExtrinsicFactoryProtocol,
-        fundsFactory: SubtensorShieldFundsFactoryProtocol,
+        extrinsicOperationFactory: SubtensorShieldExtrinsicOperationFactoryProtocol,
+        fundsOperationFactory: SubtensorShieldFundsOperationFactoryProtocol,
         carrierWatch: SubtensorShieldCarrierWatchingProtocol,
-        inclusionTracker: SubtensorShieldInclusionTrackingProtocol,
+        inclusionOperationFactory: SubtensorShieldInclusionOperationFactoryProtocol,
         signerFactory: @escaping () -> SigningWrapperProtocol?,
         operationQueue: OperationQueue
     ) {
         self.walletType = walletType
-        self.extrinsicFactory = extrinsicFactory
-        self.fundsFactory = fundsFactory
+        self.extrinsicOperationFactory = extrinsicOperationFactory
+        self.fundsOperationFactory = fundsOperationFactory
         self.carrierWatch = carrierWatch
-        self.inclusionTracker = inclusionTracker
+        self.inclusionOperationFactory = inclusionOperationFactory
         self.signerFactory = signerFactory
         self.operationQueue = operationQueue
     }
 }
 
-private extension SubtensorShieldSubmissionFactory {
+private extension SubtensorShieldSubmissionOperationFactory {
     func createWatchWrapper(
         carrierWrapper: CompoundOperationWrapper<ExtrinsicBuiltModel>
     ) -> CompoundOperationWrapper<SubtensorShieldCarrierWatchResult> {
@@ -85,7 +85,7 @@ private extension SubtensorShieldSubmissionFactory {
         blockTiming: SubtensorShieldBlockTiming,
         matchingEvents: ExtrinsicEventsMatching?
     ) throws -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let scanWrapper = inclusionTracker.createInnerScanWrapper(
+        let scanWrapper = inclusionOperationFactory.createInnerScanWrapper(
             for: sealedInner.extrinsicHash,
             carrierHash: try Data(hexString: carrier.extrinsic).blake2b32().toHex(includePrefix: true),
             eraBirth: sealedInner.era.blockNumber,
@@ -108,14 +108,17 @@ private extension SubtensorShieldSubmissionFactory {
     }
 }
 
-extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProtocol {
+extension SubtensorShieldSubmissionOperationFactory: SubtensorShieldSubmissionOperationFactoryProtocol {
     func createReadinessWrapper(
         for operation: SubtensorOperation,
         blockTiming: SubtensorShieldBlockTiming,
         innerClosure: @escaping ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote> {
-        let quoteWrapper = extrinsicFactory.createQuoteWrapper(for: operation, requiresKey: false) { innerClosure }
-        let fundsWrapper = fundsFactory.createFundsWrapper()
+        let quoteWrapper = extrinsicOperationFactory.createQuoteWrapper(
+            for: operation,
+            requiresKey: false
+        ) { innerClosure }
+        let fundsWrapper = fundsOperationFactory.createFundsWrapper()
 
         let eligibilityOperation = ClosureOperation<Bool> { [walletType] in
             let funds = try fundsWrapper.targetOperation.extractNoCancellableResultData()
@@ -133,7 +136,7 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         eligibilityOperation.addDependency(quoteWrapper.targetOperation)
         eligibilityOperation.addDependency(fundsWrapper.targetOperation)
 
-        let keyWrapper = extrinsicFactory.createKeyWrapper(
+        let keyWrapper = extrinsicOperationFactory.createKeyWrapper(
             blockTiming: blockTiming,
             retryCondition: eligibilityOperation
         )
@@ -171,7 +174,7 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         for operation: SubtensorOperation,
         innerClosure: @escaping () throws -> ExtrinsicBuilderClosure
     ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
-        extrinsicFactory.createQuoteWrapper(for: operation, requiresKey: true, innerClosure: innerClosure)
+        extrinsicOperationFactory.createQuoteWrapper(for: operation, requiresKey: true, innerClosure: innerClosure)
     }
 
     func createSigner() -> SigningWrapperProtocol? {
@@ -184,7 +187,7 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         blockTiming: SubtensorShieldBlockTiming,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubtensorShieldedSubmission> {
-        let sealedWrapper = extrinsicFactory.createSealedInnerWrapper(
+        let sealedWrapper = extrinsicOperationFactory.createSealedInnerWrapper(
             for: innerClosure,
             signer: signers.inner,
             authorization: { try signers.authorizer?.preauthorize() }
@@ -195,7 +198,7 @@ extension SubtensorShieldSubmissionFactory: SubtensorShieldSubmissionFactoryProt
         ) {
             let sealedInner = try sealedWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.extrinsicFactory.createCarrierWrapper(for: sealedInner, signer: signers.carrier)
+            return self.extrinsicOperationFactory.createCarrierWrapper(for: sealedInner, signer: signers.carrier)
         }
 
         carrierWrapper.addDependency(wrapper: sealedWrapper)

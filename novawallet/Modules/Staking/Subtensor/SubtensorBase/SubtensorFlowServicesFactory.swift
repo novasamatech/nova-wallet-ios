@@ -152,9 +152,9 @@ private extension SubtensorFlowServicesFactory {
 
         let chainAsset = state.stakingOption.chainAsset
 
-        let submissionFactory = SubtensorShieldSubmissionFactory(
+        let submissionOperationFactory = SubtensorShieldSubmissionOperationFactory(
             walletType: account.chainAccount.type,
-            extrinsicFactory: SubtensorShieldExtrinsicFactory(
+            extrinsicOperationFactory: SubtensorShieldExtrinsicOperationFactory(
                 account: account.chainAccount,
                 chain: chainAsset.chain,
                 connection: connection,
@@ -167,7 +167,7 @@ private extension SubtensorFlowServicesFactory {
                 sealer: MevShieldSealer(),
                 operationQueue: operationQueue
             ),
-            fundsFactory: createShieldFundsFactory(
+            fundsOperationFactory: createShieldFundsOperationFactory(
                 for: account.chainAccount.accountId,
                 chainAsset: chainAsset,
                 chainRegistry: state.chainRegistry,
@@ -175,7 +175,7 @@ private extension SubtensorFlowServicesFactory {
                 operationQueue: operationQueue
             ),
             carrierWatch: SubtensorShieldCarrierWatch(connection: connection),
-            inclusionTracker: SubtensorShieldInclusionTracker(
+            inclusionOperationFactory: SubtensorShieldInclusionOperationFactory(
                 connection: connection,
                 statusService: statusService,
                 operationQueue: operationQueue
@@ -190,17 +190,20 @@ private extension SubtensorFlowServicesFactory {
             operationQueue: operationQueue
         )
 
-        return SubtensorShieldServices(submissionFactory: submissionFactory, operationQueue: operationQueue)
+        return SubtensorShieldServices(
+            submissionOperationFactory: submissionOperationFactory,
+            operationQueue: operationQueue
+        )
     }
 
-    static func createShieldFundsFactory(
+    static func createShieldFundsOperationFactory(
         for accountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue
-    ) -> SubtensorShieldFundsFactory {
-        SubtensorShieldFundsFactory(
+    ) -> SubtensorShieldFundsOperationFactory {
+        SubtensorShieldFundsOperationFactory(
             accountId: accountId,
             chainAsset: chainAsset,
             balanceQueryFactory: WalletRemoteQueryWrapperFactory(

@@ -6,11 +6,11 @@ struct SubtensorShieldFunds {
     let existentialDeposit: Balance
 }
 
-protocol SubtensorShieldFundsFactoryProtocol {
+protocol SubtensorShieldFundsOperationFactoryProtocol {
     func createFundsWrapper() -> CompoundOperationWrapper<SubtensorShieldFunds>
 }
 
-final class SubtensorShieldFundsFactory {
+final class SubtensorShieldFundsOperationFactory {
     let accountId: AccountId
     let chainAsset: ChainAsset
     let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
@@ -29,7 +29,7 @@ final class SubtensorShieldFundsFactory {
     }
 }
 
-extension SubtensorShieldFundsFactory: SubtensorShieldFundsFactoryProtocol {
+extension SubtensorShieldFundsOperationFactory: SubtensorShieldFundsOperationFactoryProtocol {
     func createFundsWrapper() -> CompoundOperationWrapper<SubtensorShieldFunds> {
         let balanceWrapper = balanceQueryFactory.queryBalance(for: accountId, chainAsset: chainAsset)
 

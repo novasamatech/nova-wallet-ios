@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
 
 protocol FinalizedHeaderOperationFactoryProtocol {
     func createHeaderWrapper(from connection: JSONRPCEngine) -> CompoundOperationWrapper<Block.Header>
@@ -37,28 +36,6 @@ extension FinalizedHeaderOperationFactory: FinalizedHeaderOperationFactoryProtoc
     }
 
     func createBlockNumberWrapper(from connection: JSONRPCEngine) -> CompoundOperationWrapper<BlockNumber> {
-        Self.createBlockNumberWrapper(for: createHeaderWrapper(from: connection))
-    }
-}
-
-extension FinalizedHeaderOperationFactory {
-    static func createBlockNumberWrapper(
-        for headerWrapper: CompoundOperationWrapper<Block.Header>
-    ) -> CompoundOperationWrapper<BlockNumber> {
-        let numberOperation = ClosureOperation<BlockNumber> {
-            let header = try headerWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard
-                let number = BigUInt.fromHexString(header.number),
-                let blockNumber = BlockNumber(exactly: number) else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
-
-            return blockNumber
-        }
-
-        numberOperation.addDependency(headerWrapper.targetOperation)
-
-        return headerWrapper.insertingTail(operation: numberOperation)
+        BlockNumberOperationFactory.createWrapper(for: createHeaderWrapper(from: connection))
     }
 }

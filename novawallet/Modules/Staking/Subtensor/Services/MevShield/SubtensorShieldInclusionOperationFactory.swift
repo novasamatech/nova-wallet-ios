@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorShieldInclusionTrackingProtocol {
+protocol SubtensorShieldInclusionOperationFactoryProtocol {
     func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
         carrierHash: ExtrinsicHash,
@@ -12,7 +12,7 @@ protocol SubtensorShieldInclusionTrackingProtocol {
     ) -> CompoundOperationWrapper<SubtensorShieldInnerScan>
 }
 
-final class SubtensorShieldInclusionTracker {
+final class SubtensorShieldInclusionOperationFactory {
     let connection: JSONRPCEngine
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
@@ -28,13 +28,13 @@ final class SubtensorShieldInclusionTracker {
     }
 }
 
-private extension SubtensorShieldInclusionTracker {
+private extension SubtensorShieldInclusionOperationFactory {
     enum Constants {
         static let pollsPerBlock = 2
     }
 }
 
-extension SubtensorShieldInclusionTracker: SubtensorShieldInclusionTrackingProtocol {
+extension SubtensorShieldInclusionOperationFactory: SubtensorShieldInclusionOperationFactoryProtocol {
     func createInnerScanWrapper(
         for innerHash: ExtrinsicHash,
         carrierHash: ExtrinsicHash,

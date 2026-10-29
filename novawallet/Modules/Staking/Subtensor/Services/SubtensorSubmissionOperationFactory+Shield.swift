@@ -10,7 +10,7 @@ extension SubtensorSubmissionOperationFactory {
         guard
             let shield,
             SubtensorShieldEligibility.supports(operation: operation),
-            let signer = shield.submissionFactory.createSigner() else {
+            let signer = shield.submissionOperationFactory.createSigner() else {
             return nil
         }
 

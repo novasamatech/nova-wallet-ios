@@ -1,6 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 protocol BlockNumberOperationFactoryProtocol {
     func createWrapper(
@@ -71,5 +72,27 @@ extension BlockNumberOperationFactory: BlockNumberOperationFactoryProtocol {
         } catch {
             return .createWithError(error)
         }
+    }
+}
+
+extension BlockNumberOperationFactory {
+    static func createWrapper(
+        for headerWrapper: CompoundOperationWrapper<Block.Header>
+    ) -> CompoundOperationWrapper<BlockNumber> {
+        let numberOperation = ClosureOperation<BlockNumber> {
+            let header = try headerWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard
+                let number = BigUInt.fromHexString(header.number),
+                let blockNumber = BlockNumber(exactly: number) else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return blockNumber
+        }
+
+        numberOperation.addDependency(headerWrapper.targetOperation)
+
+        return headerWrapper.insertingTail(operation: numberOperation)
     }
 }

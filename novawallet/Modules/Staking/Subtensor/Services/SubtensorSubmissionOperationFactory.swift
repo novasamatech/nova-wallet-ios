@@ -161,7 +161,7 @@ private extension SubtensorSubmissionOperationFactory {
             )
         }
 
-        let readinessWrapper = shield.submissionFactory.createReadinessWrapper(
+        let readinessWrapper = shield.submissionOperationFactory.createReadinessWrapper(
             for: operation,
             blockTiming: blockTiming,
             innerClosure: builderClosure
@@ -177,7 +177,7 @@ private extension SubtensorSubmissionOperationFactory {
 
             return self.createShieldedOutcomeWrapper(
                 for: operation,
-                submissionWrapper: shield.submissionFactory.createSubmissionWrapper(
+                submissionWrapper: shield.submissionOperationFactory.createSubmissionWrapper(
                     for: builderClosure,
                     signers: shieldSigners,
                     blockTiming: blockTiming,
@@ -255,7 +255,7 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
 
         let pricedWrapper = createPricedOperationWrapper(for: operation)
 
-        let quoteWrapper = shield.submissionFactory.createQuoteWrapper(for: operation) { [feeCalculator] in
+        let quoteWrapper = shield.submissionOperationFactory.createQuoteWrapper(for: operation) { [feeCalculator] in
             try pricedWrapper.targetOperation.extractNoCancellableResultData().extrinsicBuilderClosure(
                 novaFeeBeneficiary: feeCalculator.beneficiary
             )
