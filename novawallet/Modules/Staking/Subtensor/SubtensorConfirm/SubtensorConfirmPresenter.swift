@@ -142,18 +142,6 @@ extension SubtensorConfirmPresenter {
         interactor.refreshQuote(for: request)
     }
 
-    func refreshFee() {
-        let acknowledged = quoteState?.acknowledged
-
-        guard let operation = createOperation(limitPrice: acknowledged?.limitPrice, quote: acknowledged) else {
-            refreshQuote()
-            return
-        }
-
-        interactor.estimateFee(for: operation)
-        requestFreshShieldQuote(for: operation)
-    }
-
     func refreshPreflight() {
         interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
     }
@@ -223,7 +211,7 @@ extension SubtensorConfirmPresenter {
             state.acknowledgeLatest()
             quoteState = state
 
-            refreshFee()
+            refreshFeeAtTap()
             provideViewModel()
 
             return !waitsForShieldQuote

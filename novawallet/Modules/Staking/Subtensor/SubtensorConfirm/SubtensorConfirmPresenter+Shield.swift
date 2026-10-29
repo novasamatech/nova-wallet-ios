@@ -6,7 +6,7 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
     var shieldWalletType: MetaAccountModelType { model.account.chainAccount.type }
     var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var activeShieldQuote: SubtensorShieldQuote? { isShieldOn ? eligibleShieldQuote : nil }
-    var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldQuoteFallback }
+    var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldInactive }
 
     var isShieldQuotePending: Bool {
         !isShieldQuoteResolved || (shieldQuote != nil && (transferable == nil || existentialDeposit == nil))
@@ -43,6 +43,14 @@ extension SubtensorConfirmPresenter {
         provideViewModel()
     }
 
+    func refreshFee() {
+        refreshFee(requotingShield: true)
+    }
+
+    func refreshFeeAtTap() {
+        refreshFee(requotingShield: !isShieldInactive)
+    }
+
     func requestFreshShieldQuote(for operation: SubtensorOperation) {
         guard !isShieldQuoteFallback else {
             return
@@ -63,6 +71,23 @@ extension SubtensorConfirmPresenter {
 
     func refreshFeeKeepingAcknowledgement() {
         keepPriceMoveAcknowledgement()
-        refreshFee()
+        refreshFeeAtTap()
+    }
+}
+
+private extension SubtensorConfirmPresenter {
+    func refreshFee(requotingShield: Bool) {
+        let acknowledged = quoteState?.acknowledged
+
+        guard let operation = createOperation(limitPrice: acknowledged?.limitPrice, quote: acknowledged) else {
+            refreshQuote()
+            return
+        }
+
+        interactor.estimateFee(for: operation)
+
+        if requotingShield {
+            requestFreshShieldQuote(for: operation)
+        }
     }
 }
