@@ -13,6 +13,7 @@ protocol SubtensorShieldQuoteHandling: AnyObject {
     var shieldInteractor: SubtensorBaseInteractorInputProtocol { get }
     var activeShieldQuote: SubtensorShieldQuote? { get }
     var waitsForShieldQuote: Bool { get }
+    var isShieldQuotePending: Bool { get }
 
     func applyShieldQuoteChange()
     func applyShieldQuoteFallback()
@@ -42,12 +43,14 @@ extension SubtensorShieldQuoteHandling {
 
     var waitsForShieldQuote: Bool { isShieldable }
 
+    var isShieldQuotePending: Bool { !isShieldQuoteResolved }
+
     var networkFee: ExtrinsicFeeProtocol? {
         guard waitsForShieldQuote else {
             return fee
         }
 
-        guard isShieldQuoteResolved else {
+        guard !isShieldQuotePending else {
             return nil
         }
 

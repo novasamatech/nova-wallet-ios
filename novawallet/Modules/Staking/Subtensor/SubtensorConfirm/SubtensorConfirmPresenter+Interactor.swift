@@ -14,6 +14,7 @@ extension SubtensorConfirmPresenter {
 extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+        isBalanceLoaded = true
 
         provideViewModel()
     }

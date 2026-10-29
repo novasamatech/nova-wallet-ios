@@ -41,6 +41,7 @@ struct SubtensorConfirmBreakdownViewModel {
 }
 
 enum SubtensorConfirmShieldViewModel: Equatable {
+    case loading
     case available(isOn: Bool)
     case unavailable
 }

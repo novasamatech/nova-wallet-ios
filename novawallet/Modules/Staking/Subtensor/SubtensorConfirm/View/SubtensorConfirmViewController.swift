@@ -255,13 +255,19 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
     func didReceiveShield(viewModel: SubtensorConfirmShieldViewModel?) {
         rootView.shieldTableView.isHidden = viewModel == nil
         rootView.shieldAlertView.isHidden = viewModel != .unavailable
-        rootView.shieldCell.switchControl.isEnabled = viewModel != .unavailable
+
+        let switchControl = rootView.shieldCell.switchControl
 
         switch viewModel {
         case let .available(isOn):
-            rootView.shieldCell.switchControl.setOn(isOn, animated: false)
+            switchControl.isEnabled = true
+            switchControl.setOn(isOn, animated: false)
+        case .loading:
+            switchControl.isEnabled = false
+            switchControl.setOn(true, animated: false)
         case .unavailable, nil:
-            rootView.shieldCell.switchControl.setOn(false, animated: false)
+            switchControl.isEnabled = false
+            switchControl.setOn(false, animated: false)
         }
     }
 

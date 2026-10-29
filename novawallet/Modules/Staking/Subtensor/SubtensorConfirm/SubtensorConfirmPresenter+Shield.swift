@@ -1,12 +1,16 @@
 import Foundation
 
 extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
-    var transferable: Balance? { balance?.transferable }
+    var transferable: Balance? { isBalanceLoaded ? (balance?.transferable ?? 0) : nil }
     var isRoot: Bool { model.target.isRoot }
     var shieldWalletType: MetaAccountModelType { model.account.chainAccount.type }
     var shieldInteractor: SubtensorBaseInteractorInputProtocol { interactor }
     var activeShieldQuote: SubtensorShieldQuote? { isShieldOn ? eligibleShieldQuote : nil }
     var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldQuoteFallback }
+
+    var isShieldQuotePending: Bool {
+        !isShieldQuoteResolved || (shieldQuote != nil && (transferable == nil || existentialDeposit == nil))
+    }
 
     func applyShieldQuoteChange() {
         provideViewModel()
@@ -14,13 +18,22 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
 }
 
 extension SubtensorConfirmPresenter {
+    var isShieldInactive: Bool {
+        isShieldable && !isShieldQuotePending && eligibleShieldQuote == nil
+    }
+
     func provideShieldState() {
-        if eligibleShieldQuote != nil {
-            view?.didReceiveShield(viewModel: .available(isOn: isShieldOn))
-        } else if isShieldUnavailable {
-            view?.didReceiveShield(viewModel: .unavailable)
-        } else {
+        guard isShieldable else {
             view?.didReceiveShield(viewModel: nil)
+            return
+        }
+
+        if isShieldInactive {
+            view?.didReceiveShield(viewModel: .unavailable)
+        } else if isShieldOn, isShieldQuotePending {
+            view?.didReceiveShield(viewModel: .loading)
+        } else {
+            view?.didReceiveShield(viewModel: .available(isOn: isShieldOn))
         }
     }
 

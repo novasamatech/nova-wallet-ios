@@ -14,6 +14,7 @@ final class SubtensorConfirmPresenter {
     let logger: LoggerProtocol
 
     var balance: AssetBalance?
+    var isBalanceLoaded = false
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var shieldQuote: SubtensorShieldQuote?
