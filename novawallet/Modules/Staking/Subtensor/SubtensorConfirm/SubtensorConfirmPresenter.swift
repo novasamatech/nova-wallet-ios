@@ -26,6 +26,7 @@ final class SubtensorConfirmPresenter {
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
+    var isExistentialDepositFailed = false
     var currentBlock: BlockNumber?
     var holds: [AccountId: SubtensorRootHold]?
     var quoteState: SubtensorConfirmQuoteState?

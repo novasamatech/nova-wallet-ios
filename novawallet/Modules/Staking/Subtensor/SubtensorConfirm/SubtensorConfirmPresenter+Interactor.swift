@@ -83,6 +83,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+        isExistentialDepositFailed = false
 
         provideViewModel()
     }
@@ -96,6 +97,11 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
             quoteState?.invalidateLatest()
             provideViewModel()
             return
+        }
+
+        if case .existentialDepositFailed = error {
+            isExistentialDepositFailed = true
+            provideViewModel()
         }
 
         guard case .quoteFailed = error else {

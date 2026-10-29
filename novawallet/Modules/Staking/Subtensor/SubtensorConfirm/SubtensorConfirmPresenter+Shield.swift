@@ -9,7 +9,9 @@ extension SubtensorConfirmPresenter: SubtensorShieldQuoteHandling {
     var waitsForShieldQuote: Bool { isShieldable && isShieldOn && !isShieldInactive }
 
     var isShieldQuotePending: Bool {
-        !isShieldQuoteResolved || (shieldQuote != nil && (transferable == nil || existentialDeposit == nil))
+        let isDepositPending = existentialDeposit == nil && !isExistentialDepositFailed
+
+        return !isShieldQuoteResolved || (shieldQuote != nil && (transferable == nil || isDepositPending))
     }
 
     func applyShieldQuoteChange() {
