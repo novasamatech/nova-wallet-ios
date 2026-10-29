@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "Tất cả validator";
 "staking.subtensor.ui.validator.new" = "Validator mới";
 "staking.subtensor.validator.status.via.child.key" = "Đang hoạt động thông qua Khóa con";
+"staking.subtensor.error.shielded.not.executed" = "Lệnh của bạn chưa được thực thi. Stake của bạn không thay đổi, vui lòng thử lại.";
+"staking.subtensor.mev.protection.details" = "Giữ lệnh của bạn ở dạng mã hóa trong mempool công khai để giúp ngăn chặn việc thực thi trước.";
+"staking.subtensor.mev.protection.title" = "Bảo vệ MEV";
+"staking.subtensor.mev.protection.unavailable" = "Bảo vệ MEV không khả dụng cho lệnh này.";
+"staking.subtensor.result.fee.may.be.charged" = "Có thể bạn đã bị tính phí mạng lưới.";

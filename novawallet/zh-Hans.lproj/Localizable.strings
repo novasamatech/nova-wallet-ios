@@ -2366,3 +2366,8 @@
 "staking.subtensor.ui.validator.all" = "所有验证者";
 "staking.subtensor.ui.validator.new" = "新验证者";
 "staking.subtensor.validator.status.via.child.key" = "通过子密钥激活";
+"staking.subtensor.error.shielded.not.executed" = "您的订单未执行。您的质押没有变化，请重试。";
+"staking.subtensor.mev.protection.details" = "将您的订单加密保存在公共内存池中，以帮助防止抢先交易。";
+"staking.subtensor.mev.protection.title" = "MEV 保护";
+"staking.subtensor.mev.protection.unavailable" = "此订单无法使用 MEV 保护。";
+"staking.subtensor.result.fee.may.be.charged" = "可能已向您收取网络费用。";
