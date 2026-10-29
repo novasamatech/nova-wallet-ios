@@ -20,7 +20,12 @@ enum SubtensorShieldEligibility {
     }
 
     static func supports(walletType: MetaAccountModelType) -> Bool {
-        walletType == .secrets
+        switch walletType {
+        case .secrets, .ledger, .genericLedger:
+            true
+        case .watchOnly, .paritySigner, .polkadotVault, .proxied, .multisig:
+            false
+        }
     }
 
     static func canPayShieldedFees(

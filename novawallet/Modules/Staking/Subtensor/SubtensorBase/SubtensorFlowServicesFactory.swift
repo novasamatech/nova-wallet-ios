@@ -180,13 +180,7 @@ private extension SubtensorFlowServicesFactory {
                 statusService: statusService,
                 operationQueue: operationQueue
             ),
-            signerFactory: {
-                SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
-                    for: account.metaId,
-                    accountResponse: account.chainAccount,
-                    signaturesPerAuthorization: SubtensorShieldConstants.signaturesPerOrder
-                )
-            },
+            signerFactory: { createShieldSigner(for: account) },
             operationQueue: operationQueue
         )
 
@@ -240,6 +234,22 @@ private extension SubtensorFlowServicesFactory {
         return SigningWrapperFactory().createSigningWrapper(
             for: account.metaId,
             accountResponse: account.chainAccount
+        )
+    }
+
+    static func createShieldSigner(for account: MetaChainAccountResponse) -> SigningWrapperProtocol? {
+        // Ledger has no single authorization: the order and the carrier are confirmed on the device one by one
+        guard account.chainAccount.type == .secrets else {
+            return SigningWrapperFactory().createSigningWrapper(
+                for: account.metaId,
+                accountResponse: account.chainAccount
+            )
+        }
+
+        return SigningWrapperFactory().createAuthorizeOnceSigningWrapper(
+            for: account.metaId,
+            accountResponse: account.chainAccount,
+            signaturesPerAuthorization: SubtensorShieldConstants.signaturesPerOrder
         )
     }
 
