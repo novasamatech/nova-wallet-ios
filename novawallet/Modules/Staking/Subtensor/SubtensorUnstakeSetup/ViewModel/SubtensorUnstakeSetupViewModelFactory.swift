@@ -254,7 +254,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
 
         return costBasisViewModelFactory.createAvgBuyPrice(
             for: input.costBasis,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.netuid, in: input.catalogue),
+            taoPrice: input.price,
             locale: locale
         )
     }

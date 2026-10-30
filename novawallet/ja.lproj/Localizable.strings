@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@あたり%1$@から";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "購入履歴なし";
 "staking.subtensor.ui.avg.buy.price.not.available" = "利用できません";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@あたり";
 "staking.subtensor.ui.avg.buy.price.rising" = "上昇中";
 "staking.subtensor.ui.buy.more.format" = "%@を追加購入";
 "staking.subtensor.ui.chart.unavailable" = "チャートを利用できません";

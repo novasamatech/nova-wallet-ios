@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "mulai dari %1$@ per %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "tidak ada pembelian";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Tidak tersedia";
-"staking.subtensor.ui.avg.buy.price.per.format" = "per %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Meningkat";
 "staking.subtensor.ui.buy.more.format" = "Beli lebih banyak %@";
 "staking.subtensor.ui.chart.unavailable" = "Grafik tidak tersedia";

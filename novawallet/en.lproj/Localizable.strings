@@ -2271,7 +2271,6 @@ Do you want to continue?";
 "staking.subtensor.ui.sell.title.format" = "Sell %@";
 "staking.subtensor.ui.sell.fee.note.format" = "The network fee ≈ %@ is taken from the sale, not from your free balance. Selling is instant, no waiting period.";
 "staking.subtensor.ui.avg.buy.price" = "Avg buy price";
-"staking.subtensor.ui.avg.buy.price.per.format" = "per %@";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Not available";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "no purchases";
 "staking.subtensor.ui.avg.buy.chart.format" = "Avg buy %@";

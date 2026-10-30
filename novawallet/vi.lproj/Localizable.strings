@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "từ %1$@ mỗi %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "không có giao dịch mua";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Không khả dụng";
-"staking.subtensor.ui.avg.buy.price.per.format" = "mỗi %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Đang tăng";
 "staking.subtensor.ui.buy.more.format" = "Mua thêm %@";
 "staking.subtensor.ui.chart.unavailable" = "Biểu đồ không khả dụng";

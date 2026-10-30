@@ -99,7 +99,6 @@ private extension SubtensorConfirmViewModelFactory {
         return costBasisViewModelFactory.createSale(
             for: input.costBasis,
             proceeds: proceeds,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
             taoPrice: input.price,
             locale: locale
         )
@@ -123,6 +122,7 @@ private extension SubtensorConfirmViewModelFactory {
             for: input.costBasis,
             after: purchase,
             alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
+            taoPrice: input.price,
             locale: locale
         )
 

@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@당 %1$@부터";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "구매 내역 없음";
 "staking.subtensor.ui.avg.buy.price.not.available" = "이용 불가";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@당";
 "staking.subtensor.ui.avg.buy.price.rising" = "상승 중";
 "staking.subtensor.ui.buy.more.format" = "%@ 추가 구매";
 "staking.subtensor.ui.chart.unavailable" = "차트 이용 불가";

@@ -67,7 +67,7 @@ private extension SubtensorCostBasisViewModelFactory {
 
     func createAverageValue(
         for totals: SubtensorPurchaseTotals,
-        alphaSymbol: String,
+        taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         let formatter = formatterFactory.createTokenFormatter(for: taoInfo).value(for: locale)
@@ -76,11 +76,9 @@ private extension SubtensorCostBasisViewModelFactory {
             return createUnknownValue(locale: locale)
         }
 
-        let perAlpha = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.stakingSubtensorUiAvgBuyPricePerFormat(alphaSymbol)
+        let fiat = taoPrice.map { balanceViewModelFactory.priceFromAmount(average, priceData: $0).value(for: locale) }
 
-        return .value(SubtensorCostBasisValueViewModel(amount: price, detail: perAlpha, tone: .neutral))
+        return .value(SubtensorCostBasisValueViewModel(amount: price, detail: fiat, tone: .neutral))
     }
 
     func createProjectedAverageValue(
@@ -151,7 +149,7 @@ private extension SubtensorCostBasisViewModelFactory {
 extension SubtensorCostBasisViewModelFactory {
     func createAvgBuyPrice(
         for costBasis: SubtensorCostBasisState,
-        alphaSymbol: String,
+        taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         switch costBasis {
@@ -162,7 +160,7 @@ extension SubtensorCostBasisViewModelFactory {
         case .resolved(.noPurchases):
             return createNoPurchasesValue(locale: locale)
         case let .resolved(.average(totals)):
-            return createAverageValue(for: totals, alphaSymbol: alphaSymbol, locale: locale)
+            return createAverageValue(for: totals, taoPrice: taoPrice, locale: locale)
         }
     }
 
@@ -170,6 +168,7 @@ extension SubtensorCostBasisViewModelFactory {
         for costBasis: SubtensorCostBasisState?,
         after purchase: SubtensorPurchaseQuote,
         alphaSymbol: String,
+        taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard let costBasis else {
@@ -177,12 +176,12 @@ extension SubtensorCostBasisViewModelFactory {
         }
 
         guard case let .resolved(.average(totals)) = costBasis else {
-            return createAvgBuyPrice(for: costBasis, alphaSymbol: alphaSymbol, locale: locale)
+            return createAvgBuyPrice(for: costBasis, taoPrice: taoPrice, locale: locale)
         }
 
         switch purchase {
         case .empty, .unknown:
-            return createAverageValue(for: totals, alphaSymbol: alphaSymbol, locale: locale)
+            return createAverageValue(for: totals, taoPrice: taoPrice, locale: locale)
         case .pending:
             return .loading
         case let .quoted(tao, alpha):
@@ -216,7 +215,6 @@ extension SubtensorCostBasisViewModelFactory {
     func createSale(
         for costBasis: SubtensorCostBasisState?,
         proceeds: SubtensorSaleProceeds,
-        alphaSymbol: String,
         taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorSaleCostBasisViewModel {
@@ -225,7 +223,7 @@ extension SubtensorCostBasisViewModelFactory {
         }
 
         return SubtensorSaleCostBasisViewModel(
-            avgBuyPrice: createAvgBuyPrice(for: costBasis, alphaSymbol: alphaSymbol, locale: locale),
+            avgBuyPrice: createAvgBuyPrice(for: costBasis, taoPrice: taoPrice, locale: locale),
             earned: createEarned(for: costBasis, proceeds: proceeds, taoPrice: taoPrice, locale: locale),
             isEarnedEstimated: costBasis.earnedTao(from: proceeds) != nil
         )

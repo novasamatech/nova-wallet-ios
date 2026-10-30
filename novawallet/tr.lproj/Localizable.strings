@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@ başına %1$@'dan itibaren";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "satın alma yok";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Mevcut değil";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@ başına";
 "staking.subtensor.ui.avg.buy.price.rising" = "Yükseliyor";
 "staking.subtensor.ui.buy.more.format" = "Daha fazla %@ satın al";
 "staking.subtensor.ui.chart.unavailable" = "Grafik kullanılamıyor";

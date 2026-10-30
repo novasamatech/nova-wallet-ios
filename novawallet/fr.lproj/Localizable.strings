@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "à partir de %1$@ par %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "aucun achat";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Indisponible";
-"staking.subtensor.ui.avg.buy.price.per.format" = "par %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "En hausse";
 "staking.subtensor.ui.buy.more.format" = "Acheter davantage de %@";
 "staking.subtensor.ui.chart.unavailable" = "Graphique indisponible";

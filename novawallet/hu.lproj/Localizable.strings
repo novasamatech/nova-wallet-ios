@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%1$@-tól %2$@-onként";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "nincs vásárlás";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Nem érhető el";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@-onként";
 "staking.subtensor.ui.avg.buy.price.rising" = "Emelkedő";
 "staking.subtensor.ui.buy.more.format" = "További %@ vásárlása";
 "staking.subtensor.ui.chart.unavailable" = "A grafikon nem érhető el";

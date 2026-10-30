@@ -2210,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "每 %2$@ 起价为 %1$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "暂无购买记录";
 "staking.subtensor.ui.avg.buy.price.not.available" = "不可用";
-"staking.subtensor.ui.avg.buy.price.per.format" = "每 %@ 授";
 "staking.subtensor.ui.avg.buy.price.rising" = "上升";
 "staking.subtensor.ui.buy.more.format" = "购买更多 %@";
 "staking.subtensor.ui.chart.unavailable" = "图表不可用";
