@@ -96,6 +96,19 @@ final class SubtensorPortfolioHeaderView: UIView {
         periodControl.selectedSegmentIndex = viewModel.periods.selectedIndex
     }
 
+    func bind(ratesAlert text: String) {
+        let label = ratesAlertView.contentView.detailsLabel
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = Constants.alertLineHeight
+        paragraph.maximumLineHeight = Constants.alertLineHeight
+
+        label.attributedText = NSAttributedString(string: text, attributes: [
+            .paragraphStyle: paragraph,
+            .baselineOffset: (Constants.alertLineHeight - label.font.lineHeight) / 2
+        ])
+    }
+
     func bind(isRatesUnavailable: Bool) {
         ratesAlertView.isHidden = !isRatesUnavailable
         let spacing = isRatesUnavailable ? Constants.alertSpacing : Constants.chartSpacing
@@ -114,6 +127,7 @@ private extension SubtensorPortfolioHeaderView {
         static let chartSkeletonInset: CGFloat = 12
         static let bottomInset: CGFloat = 12
         static let alertBottomInset: CGFloat = 16
+        static let alertLineHeight: CGFloat = 16
     }
 
     func bind(fiat: SubtensorRowState<String>) {
