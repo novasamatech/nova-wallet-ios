@@ -73,7 +73,9 @@ private extension SubtensorOperationResultViewModelFactory {
             let pay = outcome.novaFeePaid.map { executed.tao + $0 } ?? request.payAmount
             return SubtensorResultTradeAmounts(pay: pay, receive: executed.alpha)
         case .sell:
-            let networkFee = outcome.alphaFeePaid == nil ? (outcome.networkFeePaid ?? 0) : 0
+            let networkFee = outcome.alphaFeePaid == nil
+                ? (outcome.networkFeePaid ?? 0) + (outcome.unconfirmedNetworkFee ?? 0)
+                : 0
             let receive = executed.tao.subtractOrZero((outcome.novaFeePaid ?? 0) + networkFee)
             return SubtensorResultTradeAmounts(pay: executed.alpha, receive: receive)
         }
@@ -194,6 +196,8 @@ private extension SubtensorOperationResultViewModelFactory {
             strings.stakingSubtensorResultNothingSpent()
         case .dispatched:
             strings.stakingSubtensorResultFeeCharged()
+        case .notExecutedFeeUnknown:
+            strings.stakingSubtensorResultFeeMayBeCharged()
         case .unconfirmed:
             nil
         }
@@ -235,8 +239,10 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: request.validator.name,
-            networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
+            validator: request.operation.hotkeyCount > 1 ? nil : request.validator.name,
+            networkFee: showsNetworkFee(in: state)
+                ? networkFee(for: state, request: request, route: context.route, locale: locale)
+                : nil,
             isExpanded: isDone
         )
     }
@@ -281,6 +287,7 @@ private extension SubtensorOperationResultViewModelFactory {
                     for: settledCostBasis,
                     after: purchase ?? .unknown,
                     alphaSymbol: SubtensorSubnetNaming.symbol(for: request.target.netuid, in: context.catalogue),
+                    taoPrice: request.prices.taoPrice,
                     locale: locale
                 )
             )
@@ -292,11 +299,12 @@ private extension SubtensorOperationResultViewModelFactory {
             return true
         }
 
-        if case .dispatched = failure.stage {
+        switch failure.stage {
+        case .dispatched, .notExecutedFeeUnknown:
             return true
+        case .notSubmitted, .unconfirmed:
+            return false
         }
-
-        return false
     }
 
     func createPageAction(

@@ -1,22 +1,17 @@
 import Foundation
 
-private extension SubtensorUnstakeSetupPresenter {
-    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
-        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
-    }
-
-    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
-        if group?.primaryHotkey != preflightRequest {
-            preflight = nil
-            refreshPreflight()
-        }
-
-        loadValidatorIfNeeded()
+extension SubtensorUnstakeSetupPresenter {
+    func reloadGroupData() {
+        loadValidatorsIfNeeded()
         loadGroupHotkeys()
 
         if isRoot, let group, !group.positions.isEmpty {
             interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
+    }
+
+    func applyBasisChange(from previousPlan: SubtensorUnstakePlan?) {
+        reconcileAnchor()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
@@ -24,6 +19,58 @@ private extension SubtensorUnstakeSetupPresenter {
 
         refreshFee()
         updateQuote()
+    }
+
+    func reconcileAnchor() {
+        if anchorHotkey != preflightRequest {
+            preflight = nil
+            refreshPreflight()
+        }
+
+        loadValidatorIfNeeded()
+    }
+
+    func loadValidatorsIfNeeded() {
+        guard let group, let subnetRef else {
+            return
+        }
+
+        let hotkeys = group.positions.map(\.hotkey)
+
+        guard !hotkeys.isEmpty, hotkeys != validatorsRequest else {
+            return
+        }
+
+        validatorsRequest = hotkeys
+        interactor.loadValidators(hotkeys, on: subnetRef)
+    }
+
+    func retryValidatorNames() {
+        failedValidatorRequest = nil
+
+        loadValidatorsIfNeeded()
+        loadValidatorIfNeeded()
+    }
+
+    func loadValidatorIfNeeded() {
+        guard
+            let anchorHotkey,
+            validatorItems[anchorHotkey] == nil,
+            anchorHotkey != validatorRequest,
+            anchorHotkey != failedValidatorRequest,
+            validatorsRequest == validatorsResolved,
+            let subnetRef else {
+            return
+        }
+
+        validatorRequest = anchorHotkey
+        interactor.loadValidator(anchorHotkey, on: subnetRef)
+    }
+}
+
+private extension SubtensorUnstakeSetupPresenter {
+    func findGroup(in state: Multistaking.SubtensorState?) -> SubtensorPortfolioGroup? {
+        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
     func presentSubnetRetry(tracksRetry: Bool) {
@@ -64,6 +111,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
+        loadValidatorsIfNeeded()
         loadValidatorIfNeeded()
 
         if case .rate = inputResult, feePlan()?.amount != previousPlan?.amount {
@@ -100,13 +148,39 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId) {
-        guard hotkey == group?.primaryHotkey else {
+        if validator == nil, hotkey == validatorRequest {
+            validatorRequest = nil
+            failedValidatorRequest = hotkey
+        }
+
+        validatorItems[hotkey] = validator ?? validatorItems[hotkey]
+
+        refreshValidatorPicker()
+        provideViewModel()
+    }
+
+    func didReceiveValidators(_ validators: [AccountId: SubtensorValidatorDirectoryItem], hotkeys: [AccountId]) {
+        guard hotkeys == validatorsRequest else {
             return
         }
 
-        validatorItem = validator
+        validatorItems.merge(validators) { _, new in new }
+        validatorsResolved = hotkeys
 
+        loadValidatorIfNeeded()
+        refreshValidatorPicker()
         provideViewModel()
+    }
+
+    func didFailValidators(for hotkeys: [AccountId]) {
+        guard hotkeys == validatorsRequest else {
+            return
+        }
+
+        validatorsRequest = nil
+        validatorsResolved = nil
+
+        loadValidatorIfNeeded()
     }
 
     func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo]) {
@@ -115,6 +189,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         groupHotkeys = info
 
         applyPlanChange(from: previousPlan)
+        refreshValidatorPicker()
         provideViewModel()
     }
 
@@ -124,6 +199,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         self.holds = holds
 
         applyPlanChange(from: previousPlan)
+        refreshValidatorPicker()
         provideViewModel()
     }
 
@@ -135,6 +211,9 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+
+        refreshShieldQuote(for: shieldQuoteOperation, plan: shieldQuoteInputs?.plan)
+        provideViewModel()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {
@@ -150,11 +229,16 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
     }
 
     func didReceivePositions(_ state: Multistaking.SubtensorState?) {
+        let previousPositions = group?.positions
         let previousBasis = basis
         let previousPlan = feePlan()
 
         positionsState = state
         group = findGroup(in: state)
+
+        if group?.positions != previousPositions {
+            reloadGroupData()
+        }
 
         if basis != previousBasis {
             applyBasisChange(from: previousPlan)
@@ -178,6 +262,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             forceQuoteRefresh()
         }
 
+        retryUnresolvedShieldQuote()
         provideViewModel()
     }
 
@@ -193,5 +278,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+
+        provideViewModel()
     }
 }

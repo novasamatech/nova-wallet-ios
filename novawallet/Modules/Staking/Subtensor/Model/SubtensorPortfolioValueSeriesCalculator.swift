@@ -167,8 +167,7 @@ enum SubtensorPriceSeries {
 
             return SubtensorPricePoint(
                 date: Date(timeIntervalSince1970: time),
-                taoPerAlpha: item.value / sortedTao[index].value,
-                fiatPerAlpha: item.value
+                taoPerAlpha: item.value / sortedTao[index].value
             )
         }
     }
@@ -182,22 +181,19 @@ enum SubtensorPortfolioValueSeriesCalculator {
         precision: Int16,
         now: Date = Date()
     ) -> SubtensorPortfolioValueSeries {
-        let taoFiat = histories.taoFiat?.items.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
-        let taoFiatTimes = taoFiat?.map { TimeInterval($0.startedAt) } ?? []
-
-        var points = histories.portfolio.points.filter(\.completed).compactMap { point in
-            valuePoint(
-                for: point,
-                taoFiat: taoFiat,
-                taoFiatTimes: taoFiatTimes,
-                tolerance: histories.period.coverageTolerance
-            )
+        let taoFiat = histories.taoFiat.map { history in
+            TaoFiatSeries(history: history, tolerance: histories.period.coverageTolerance)
         }
+
+        let completed = histories.portfolio.points.filter(\.completed).compactMap { point in
+            valuePoint(for: point, taoFiat: taoFiat)
+        }
+
+        var points = gridPoints(from: completed, history: histories.portfolio, taoFiat: taoFiat, before: now)
 
         if
             portfolio.isFullyPriced,
-            let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision),
-            points.last.map({ $0.date < now }) ?? true {
+            let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision) {
             let livePrice = histories.taoFiat == nil
                 ? reportedUsdPerTao(in: histories, now: now) ?? currentTaoPrice
                 : currentTaoPrice
@@ -205,19 +201,34 @@ enum SubtensorPortfolioValueSeriesCalculator {
             points.append(SubtensorPortfolioValuePoint(date: now, taoValue: totalTao, fiatValue: totalTao * livePrice))
         }
 
-        return SubtensorPortfolioValueSeries(
-            points: points,
-            changeInFiat: change(of: points, in: histories.portfolio)
-        )
+        return SubtensorPortfolioValueSeries(points: points, changeInFiat: change(of: points))
     }
 }
 
 private extension SubtensorPortfolioValueSeriesCalculator {
+    struct TaoFiatSeries {
+        let items: [PriceHistoryItem]
+        let times: [TimeInterval]
+        let tolerance: TimeInterval
+
+        init(history: PriceHistory, tolerance: TimeInterval) {
+            items = history.items.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
+            times = items.map { TimeInterval($0.startedAt) }
+            self.tolerance = tolerance
+        }
+
+        func price(at date: Date) -> Decimal? {
+            SubtensorPriceSeries.nearestIndex(
+                to: date.timeIntervalSince1970,
+                in: times,
+                tolerance: tolerance
+            ).map { items[$0].value }
+        }
+    }
+
     static func valuePoint(
         for point: BittensorApi.PortfolioHistoryPoint,
-        taoFiat: [PriceHistoryItem]?,
-        taoFiatTimes: [TimeInterval],
-        tolerance: TimeInterval
+        taoFiat: TaoFiatSeries?
     ) -> SubtensorPortfolioValuePoint? {
         guard
             let date = BittensorApi.instant(from: point.timestamp),
@@ -231,10 +242,33 @@ private extension SubtensorPortfolioValueSeriesCalculator {
             }
         }
 
-        let time = date.timeIntervalSince1970
+        return taoFiat.price(at: date).map { price in
+            SubtensorPortfolioValuePoint(date: date, taoValue: taoValue, fiatValue: taoValue * price)
+        }
+    }
 
-        return SubtensorPriceSeries.nearestIndex(to: time, in: taoFiatTimes, tolerance: tolerance).map { index in
-            SubtensorPortfolioValuePoint(date: date, taoValue: taoValue, fiatValue: taoValue * taoFiat[index].value)
+    static func gridPoints(
+        from completed: [SubtensorPortfolioValuePoint],
+        history: BittensorApi.PortfolioHistoryCollection,
+        taoFiat: TaoFiatSeries?,
+        before now: Date
+    ) -> [SubtensorPortfolioValuePoint] {
+        guard
+            let start = BittensorApi.instant(from: history.window.start),
+            let end = BittensorApi.instant(from: history.window.end) else {
+            return []
+        }
+
+        let instants = stride(from: start, through: end, by: history.period.sampleStep).prefix { $0 < now }
+
+        return instants.map { instant in
+            guard let last = completed.last(where: { $0.date <= instant }) else {
+                return SubtensorPortfolioValuePoint(date: instant, taoValue: 0, fiatValue: 0)
+            }
+
+            let fiatValue = taoFiat?.price(at: instant).map { last.taoValue * $0 } ?? last.fiatValue
+
+            return SubtensorPortfolioValuePoint(date: instant, taoValue: last.taoValue, fiatValue: fiatValue)
         }
     }
 
@@ -254,17 +288,12 @@ private extension SubtensorPortfolioValueSeriesCalculator {
         }.first
     }
 
-    static func change(
-        of points: [SubtensorPortfolioValuePoint],
-        in history: BittensorApi.PortfolioHistoryCollection
-    ) -> Decimal? {
+    static func change(of points: [SubtensorPortfolioValuePoint]) -> Decimal? {
         guard
             points.count > 1,
             let first = points.first,
             let last = points.last,
-            first.fiatValue > 0,
-            let windowStart = BittensorApi.instant(from: history.window.start),
-            first.date.timeIntervalSince(windowStart) <= 2 * history.period.sampleStep else {
+            first.fiatValue > 0 else {
             return nil
         }
 

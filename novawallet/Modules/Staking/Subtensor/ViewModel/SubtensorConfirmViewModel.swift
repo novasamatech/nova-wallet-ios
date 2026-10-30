@@ -29,9 +29,27 @@ enum SubtensorConfirmContentViewModel {
     case root(SubtensorConfirmRootViewModel)
 }
 
+struct SubtensorConfirmLegViewModel {
+    let name: String
+    let amount: String
+    let detail: String?
+}
+
+struct SubtensorConfirmBreakdownViewModel {
+    let title: String
+    let legs: [SubtensorConfirmLegViewModel]
+}
+
+enum SubtensorConfirmShieldViewModel: Equatable {
+    case loading
+    case available(isOn: Bool)
+    case unavailable
+}
+
 struct SubtensorConfirmViewModel {
     let title: String
     let content: SubtensorConfirmContentViewModel
+    let breakdown: SubtensorConfirmBreakdownViewModel?
     let networkFee: BalanceViewModelProtocol?
     let isPriceMoved: Bool
     let action: SubtensorSetupActionViewModel

@@ -13,6 +13,7 @@ struct SubtensorValidatorChainQuery: Equatable {
 struct SubtensorValidatorChainStatus: Equatable {
     let hasPermit: Bool?
     let isActive: Bool?
+    var isViaChildKeys = false
 }
 
 struct SubtensorValidatorChainSnapshot {
@@ -22,6 +23,7 @@ struct SubtensorValidatorChainSnapshot {
     let lastUpdates: [UInt16: [UInt64]]
     let effectiveActivityCutoffs: [UInt16: UInt64]
     let takes: [AccountId: UInt16]
+    var childKeyPairs: Set<SubtensorHotkeySubnet> = []
 
     var takeFractions: [AccountId: Decimal] {
         takes.mapValues { Decimal($0) / Decimal(SubtensorPallet.perU16Denominator) }
@@ -30,6 +32,7 @@ struct SubtensorValidatorChainSnapshot {
 
 extension SubtensorValidatorChainStatus {
     static let unregistered = SubtensorValidatorChainStatus(hasPermit: false, isActive: false)
+    static let viaChildKeys = SubtensorValidatorChainStatus(hasPermit: nil, isActive: nil, isViaChildKeys: true)
 
     static func effectiveActivityCutoff(factorMilli: UInt64, tempo: UInt64) -> UInt64 {
         let (product, didOverflow) = factorMilli.multipliedReportingOverflow(by: tempo)
@@ -45,7 +48,9 @@ extension SubtensorValidatorChainStatus {
         let isRoot = pair.netuid == SubtensorPallet.rootNetuid
 
         guard let uid = snapshot.uids[pair] else {
-            return isRoot ? nil : .unregistered
+            guard !isRoot else { return nil }
+
+            return snapshot.childKeyPairs.contains(pair) ? .viaChildKeys : .unregistered
         }
 
         guard !isRoot else {

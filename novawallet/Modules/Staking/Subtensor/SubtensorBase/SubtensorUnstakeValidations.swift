@@ -21,6 +21,7 @@ struct SubtensorUnstakeValidatingDependencies {
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
     let onPositionsRefresh: () -> Void
+    var onPositionsStale: (() -> Void)?
     var onGroupHotkeysRefresh: (() -> Void)?
     var onUnstakeAll: (() -> Void)?
     var quoteContext: SubtensorQuoteValidatingContext?
@@ -210,6 +211,7 @@ private extension SubtensorValidationFactoryProtocol {
             positionsAreFresh(
                 syncFailed: dependencies.syncFailed,
                 locale: locale,
+                onStale: dependencies.onPositionsStale,
                 onRetry: { dependencies.onPositionsRefresh() }
             ).reporting(.staleData, to: dependencies.analytics),
 

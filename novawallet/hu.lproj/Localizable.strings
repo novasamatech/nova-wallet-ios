@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "Közvetlen és hatékony KYC folyamat";
 "transak.buy.action.description" = "Kriptovásárlás már $5-tól";
 "transak.sell.action.description" = "Kripto eladás már $10-től";
-"mercuryo.buy.action.description" = "Legjobb ár akár 3,95% díjakkal";
-"mercuryo.sell.action.description" = "Legjobb ár akár 3,95% díjakkal";
+"mercuryo.buy.action.description" = "Legjobb ár akár 3,95%% díjakkal";
+"mercuryo.sell.action.description" = "Legjobb ár akár 3,95%% díjakkal";
 "select.buy.provider.title" = "Válasszon szolgáltatót a(z) %@ token vásárlásához";
 "select.sell.provider.title" = "Válasszon szolgáltatót a(z) %@ token eladásához";
 "select.provider.disclaimer.text" = "A fizetési módok, díjak és korlátok szolgáltatónként eltérőek. Hasonlítsa össze az ajánlatukat, hogy megtalálja a legjobb lehetőséget.";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "Hiányzik egy token?";
 "analytics.details.ip" = "Az IP-címedet egyszer használjuk fel az országod megállapításához, majd töröljük – soha nem jut el az analitikai szolgáltatónkhoz";
 "common.new.badge" = "Új";
-"common.period.90d" = "90 nap";
 "deeplink.error.staking.not.supported.message" = "A stakingelés nem támogatott ennél az eszköznél";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO stakeléséhez váltson más típusú tárcára.";
 "feature.unsupported.sheet.title.subtensor.staking" = "A Bittensor-stakelés nem támogatott a %@ tárcák esetében";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%1$@-tól %2$@-onként";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "nincs vásárlás";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Nem érhető el";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@-onként";
 "staking.subtensor.ui.avg.buy.price.rising" = "Emelkedő";
 "staking.subtensor.ui.buy.more.format" = "További %@ vásárlása";
 "staking.subtensor.ui.chart.unavailable" = "A grafikon nem érhető el";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "ELÉRHETŐ VALIDÁTOROK";
 "staking.subtensor.v22.validators.count" = "Validátorok";
 "staking.subtensor.v22.website" = "Webhely";
+"staking.subtensor.ui.confirm.full.exit" = "Teljes kilépés";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Egy tranzakció legfeljebb %@ validátort kezel. Ismételd meg a fennmaradó validátoroknál.";
+"staking.subtensor.ui.validator.all" = "Összes validátor";
+"staking.subtensor.ui.validator.new" = "Új validátor";
+"staking.subtensor.validator.status.via.child.key" = "Aktív gyermekkulcson keresztül";
+"staking.subtensor.error.shielded.not.executed" = "A megrendelése nem teljesült. A tétje változatlan, kérjük, próbálja újra.";
+"staking.subtensor.mev.protection.details" = "A front-running megelőzésének elősegítése érdekében titkosítva tartja a megrendelését a nyilvános mempoolban.";
+"staking.subtensor.mev.protection.title" = "MEV-védelem";
+"staking.subtensor.mev.protection.unavailable" = "A MEV-védelem ehhez a megrendeléshez nem érhető el.";
+"staking.subtensor.result.fee.may.be.charged" = "Hálózati díj kerülhetett felszámításra.";

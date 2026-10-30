@@ -12,22 +12,19 @@ final class SubtensorPriceWidgetView: UIView {
         label.minimumScaleFactor = 0.5
     }
 
+    let fiatLabel: UILabel = .create { label in
+        label.apply(style: .regularSubhedlineSecondary)
+    }
+
     let changeLabel: UILabel = .create { label in
         label.apply(style: .footnotePositive)
     }
 
     let changeSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
-    let currencyControl: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
-        view.backgroundView.cornerRadius = Constants.currencyCornerRadius
-        view.contentInsets = UIEdgeInsets(inset: Constants.currencyInset)
-        view.selectionCornerRadius = Constants.tabCornerRadius
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .semiBoldFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
-        view.layoutStrategy = SubtensorSpacedLayoutStrategy(margin: Constants.currencyTabInset)
+    let dateLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
+        label.isHidden = true
     }
 
     let chartView = SubtensorSubnetPriceChartView(style: .price)
@@ -74,6 +71,8 @@ final class SubtensorPriceWidgetView: UIView {
     func bind(header viewModel: SubtensorSubnetPriceHeaderViewModel) {
         captionLabel.apply(text: viewModel.caption, lineHeight: Constants.footnoteLineHeight)
         priceLabel.apply(text: viewModel.price, lineHeight: Constants.priceLineHeight)
+        fiatLabel.text = viewModel.fiat
+        fiatLabel.isHidden = viewModel.fiat == nil
 
         switch viewModel.change {
         case .loading:
@@ -82,29 +81,17 @@ final class SubtensorPriceWidgetView: UIView {
         case .hidden:
             changeLabel.text = nil
             changeSkeletonView.setLoading(false)
-        case let .date(text):
-            changeLabel.apply(text: text, lineHeight: Constants.footnoteLineHeight)
-            changeLabel.textColor = R.color.colorTextSecondary()
-            changeSkeletonView.setLoading(false)
         case let .value(text, isRising):
             changeLabel.apply(text: text, lineHeight: Constants.footnoteLineHeight)
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
             changeSkeletonView.setLoading(false)
         }
 
-        currencyControl.isHidden = viewModel.currency == nil
+        dateLabel.isHidden = viewModel.date == nil
 
-        guard let currency = viewModel.currency else {
-            return
+        if let date = viewModel.date {
+            dateLabel.apply(text: date, lineHeight: Constants.dateLineHeight)
         }
-
-        if currencyControl.titles != currency.titles {
-            currencyControl.titles = currency.titles
-            updateCurrencyWidth()
-        }
-
-        currencyControl.selectedSegmentIndex = currency.selectedIndex
-        currencyControl.isEnabled = currency.isEnabled
     }
 }
 
@@ -113,17 +100,14 @@ private extension SubtensorPriceWidgetView {
         static let chartHeight: CGFloat = 208
         static let chartCornerRadius: CGFloat = 16
         static let sectionSpacing: CGFloat = 12
-        static let headerSpacing: CGFloat = 12
         static let priceSpacing: CGFloat = 4
+        static let fiatSpacing: CGFloat = 8
+        static let dateSpacing: CGFloat = 4
         static let footnoteLineHeight: CGFloat = 18
         static let priceLineHeight: CGFloat = 28
+        static let dateLineHeight: CGFloat = 16
         static let changeSkeletonSize = CGSize(width: 90, height: 12)
         static let tabCornerRadius: CGFloat = 8
-        static let currencyCornerRadius: CGFloat = 10
-        static let currencyInset: CGFloat = 2
-        static let currencyTabInset: CGFloat = 14
-        static let currencyTabSpacing: CGFloat = 2
-        static let currencyHeight: CGFloat = 34
         static let periodInset: CGFloat = 4
         static let periodTabInset: CGFloat = 12
         static let periodSize = CGSize(width: 311, height: 32)
@@ -169,19 +153,6 @@ private extension SubtensorPriceWidgetView {
         periodControl.alpha = viewModel.isEnabled ? 1 : Constants.disabledAlpha
     }
 
-    func updateCurrencyWidth() {
-        let font = currencyControl.titleFont ?? .semiBoldFootnote
-        let tabsWidth = currencyControl.titles.reduce(CGFloat(0)) { width, title in
-            width + ceil((title as NSString).size(withAttributes: [.font: font]).width) +
-                2 * Constants.currencyTabInset
-        }
-        let spacing = CGFloat(max(currencyControl.numberOfSegments - 1, 0)) * Constants.currencyTabSpacing
-
-        currencyControl.snp.updateConstraints { make in
-            make.width.equalTo(tabsWidth + spacing + 2 * Constants.currencyInset)
-        }
-    }
-
     func setupLayout() {
         let periodsView = UIView()
         periodsView.addSubview(periodControl)
@@ -201,21 +172,28 @@ private extension SubtensorPriceWidgetView {
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        addSubview(dateLabel)
+        dateLabel.snp.makeConstraints { make in
+            make.top.equalTo(changeLabel.snp.bottom).offset(Constants.dateSpacing)
+            make.leading.equalToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
+        }
     }
 
     func setupHeader() -> UIView {
-        let priceView = UIView.vStack(
-            alignment: .leading,
-            spacing: Constants.priceSpacing,
-            [captionLabel, priceLabel, changeLabel]
+        let valueView = UIView.hStack(
+            alignment: .lastBaseline,
+            spacing: Constants.fiatSpacing,
+            [priceLabel, fiatLabel, UIView()]
         )
 
-        let headerView = UIView.hStack(alignment: .top, spacing: Constants.headerSpacing, [priceView, currencyControl])
+        let headerView = UIView.vStack(
+            spacing: Constants.priceSpacing,
+            [captionLabel, valueView, changeLabel]
+        )
 
-        currencyControl.snp.makeConstraints { make in
-            make.width.equalTo(0)
-            make.height.equalTo(Constants.currencyHeight)
-        }
+        fiatLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         changeLabel.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(Constants.footnoteLineHeight)

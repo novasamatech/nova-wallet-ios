@@ -83,7 +83,7 @@ extension SubtensorStakeSetupPresenter {
             maxAmount: maxAmount,
             amount: inputAmount(),
             validator: validatorState,
-            fee: fee,
+            fee: networkFee,
             price: price,
             quote: quoteFlow.freshQuote,
             positionStake: positionStake(),
@@ -101,19 +101,6 @@ extension SubtensorStakeSetupPresenter {
 
         view?.didReceive(viewModel: viewModel)
         trackNoBalanceIfNeeded(input.amountState)
-    }
-
-    func showLockedValidatorInfo() {
-        guard let hotkey = mode.lockedHotkey else {
-            return
-        }
-
-        wireframe.showValidatorInfo(
-            from: view,
-            target: .root,
-            hotkey: hotkey,
-            detail: validatorItem
-        )
     }
 
     func selectCardHeader() {

@@ -99,7 +99,6 @@ private extension SubtensorConfirmViewModelFactory {
         return costBasisViewModelFactory.createSale(
             for: input.costBasis,
             proceeds: proceeds,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
             taoPrice: input.price,
             locale: locale
         )
@@ -123,6 +122,7 @@ private extension SubtensorConfirmViewModelFactory {
             for: input.costBasis,
             after: purchase,
             alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
+            taoPrice: input.price,
             locale: locale
         )
 
@@ -226,6 +226,35 @@ private extension SubtensorConfirmViewModelFactory {
         )
     }
 
+    func createBreakdown(
+        for input: SubtensorConfirmViewModelInput,
+        locale: Locale
+    ) -> SubtensorConfirmBreakdownViewModel? {
+        guard case let .unstake(unstakeModel) = input.model.mode, Set(unstakeModel.plan.hotkeys).count > 1 else {
+            return nil
+        }
+
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let target = input.model.target
+        let info = target.isRoot ? taoInfo : amountDisplayInfo(for: target, catalogue: input.catalogue)
+        let formatter = formatterFactory.createTokenFormatter(for: info).value(for: locale)
+        let legs = unstakeModel.plan.exits.map { ($0, true) } + unstakeModel.plan.partials.map { ($0, false) }
+
+        return SubtensorConfirmBreakdownViewModel(
+            title: strings.stakingSubtensorV22ValidatorsCount(),
+            legs: legs.map { slice, isExit in
+                let amount = formatter.stringFromDecimal(slice.alpha.decimal(assetInfo: info)) ?? ""
+                let address = try? slice.hotkey.toAddress(using: chainAsset.chain.chainFormat)
+
+                return SubtensorConfirmLegViewModel(
+                    name: unstakeModel.validators[slice.hotkey]?.name ?? address?.mediumTruncated ?? "",
+                    amount: input.model.target.isRoot ? amount : isolatedAlpha(amount),
+                    detail: isExit ? strings.stakingSubtensorUiConfirmFullExit() : nil
+                )
+            }
+        )
+    }
+
     func createRootViewModel(
         for input: SubtensorConfirmViewModelInput,
         locale: Locale
@@ -251,6 +280,7 @@ extension SubtensorConfirmViewModelFactory {
         return SubtensorConfirmViewModel(
             title: title(for: input.model, locale: locale),
             content: content,
+            breakdown: createBreakdown(for: input, locale: locale),
             networkFee: balanceViewModelFactory.subtensorFee(
                 input.fee, info: taoInfo, price: input.price, locale: locale
             ),

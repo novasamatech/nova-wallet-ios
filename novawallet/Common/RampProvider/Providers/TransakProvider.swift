@@ -16,7 +16,7 @@ extension FiatPaymentPethodsProviding {
     }
 }
 
-final class TransakProvider: BaseURLStringProviding,
+final class TransakProvider: DisplayURLStringProviding,
     RampHookFactoriesProviding,
     FiatPaymentPethodsProviding {
     #if F_RELEASE
@@ -32,8 +32,8 @@ final class TransakProvider: BaseURLStringProviding,
     let onRampHookFactory: OnRampHookFactoryProtocol
     let bundle: Bundle
 
-    var baseUrlString: String {
-        Self.baseUrlString
+    var displayURLString: String {
+        displayURL
     }
 
     init(

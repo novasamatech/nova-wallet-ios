@@ -169,19 +169,6 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         interactor.loadHistory(for: state.period, registrationDate: registrationDate)
     }
 
-    func selectCurrency(at index: Int) {
-        let newIsFiat = index > 0
-
-        guard newIsFiat != state.isFiat, !newIsFiat || state.taoPrice != nil else {
-            provideViewModel()
-            return
-        }
-
-        state.chartSelection = nil
-        state.isFiat = newIsFiat
-        provideViewModel()
-    }
-
     func selectPeriod(at index: Int) {
         let periods = SubtensorPricePeriod.subnetSelectable
 

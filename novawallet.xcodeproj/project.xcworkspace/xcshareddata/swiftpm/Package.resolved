@@ -1,5 +1,5 @@
 {
-  "originHash" : "590439940be50a4baf0becbc15771f7e5e477d0d27bba48a2cad751ff412a83a",
+  "originHash" : "7b1439d726516eae6bf7eea3e4de6900fa22e8f60e4f016aec7faa83450418a5",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -269,6 +269,15 @@
       "state" : {
         "revision" : "1531b0e4091e74041331dcc8230e490e9f59183c",
         "version" : "0.2.1"
+      }
+    },
+    {
+      "identity" : "mlkem-native-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/novasamatech/mlkem-native-ios",
+      "state" : {
+        "revision" : "bec18c6683ab8983097f5d341be1a2f30013e18c",
+        "version" : "1.0.0"
       }
     },
     {

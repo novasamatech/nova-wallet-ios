@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "简单高效的KYC流程";
 "transak.buy.action.description" = "最低仅需$5即可购买加密货币";
 "transak.sell.action.description" = "最低仅需$10即可出售加密货币";
-"mercuryo.buy.action.description" = "最佳价格，手续费最高至3.95%";
-"mercuryo.sell.action.description" = "最佳价格，手续费最高至3.95%";
+"mercuryo.buy.action.description" = "最佳价格，手续费最高至3.95%%";
+"mercuryo.sell.action.description" = "最佳价格，手续费最高至3.95%%";
 "select.buy.provider.title" = "选择一个提供商购买 %@ 代币";
 "select.sell.provider.title" = "选择一个提供商出售 %@ 代币";
 "select.provider.disclaimer.text" = "不同提供商的支付方式、费用和限额有所不同。比较他们的报价以找到适合您的最佳选项。";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "没找到所需的代币？";
 "analytics.details.ip" = "您的 IP 仅使用一次以记录您所在的国家，随后即被删除——它绝不会传送给我们的分析服务提供商";
 "common.new.badge" = "新";
-"common.period.90d" = "90天";
 "deeplink.error.staking.not.supported.message" = "此资产不支持质押";
 "feature.unsupported.sheet.message.subtensor.staking" = "若要质押 TAO，请切换到其他类型的钱包。";
 "feature.unsupported.sheet.title.subtensor.staking" = "%@ 钱包不支持 Bittensor 质押";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "每 %2$@ 起价为 %1$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "暂无购买记录";
 "staking.subtensor.ui.avg.buy.price.not.available" = "不可用";
-"staking.subtensor.ui.avg.buy.price.per.format" = "每 %@ 授";
 "staking.subtensor.ui.avg.buy.price.rising" = "上升";
 "staking.subtensor.ui.buy.more.format" = "购买更多 %@";
 "staking.subtensor.ui.chart.unavailable" = "图表不可用";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "可用验证者";
 "staking.subtensor.v22.validators.count" = "验证者";
 "staking.subtensor.v22.website" = "网站";
+"staking.subtensor.ui.confirm.full.exit" = "完全退出";
+"staking.subtensor.ui.unstake.legs.cap.format" = "一笔交易最多可处理 %@ 个验证者。其余验证者请重复操作。";
+"staking.subtensor.ui.validator.all" = "所有验证者";
+"staking.subtensor.ui.validator.new" = "新验证者";
+"staking.subtensor.validator.status.via.child.key" = "通过子密钥激活";
+"staking.subtensor.error.shielded.not.executed" = "您的订单未执行。您的质押没有变化，请重试。";
+"staking.subtensor.mev.protection.details" = "将您的订单加密保存在公共内存池中，以帮助防止抢先交易。";
+"staking.subtensor.mev.protection.title" = "MEV 保护";
+"staking.subtensor.mev.protection.unavailable" = "此订单无法使用 MEV 保护。";
+"staking.subtensor.result.fee.may.be.charged" = "可能已向您收取网络费用。";

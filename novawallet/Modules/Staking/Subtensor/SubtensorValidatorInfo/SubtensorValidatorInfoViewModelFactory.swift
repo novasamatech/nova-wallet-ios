@@ -101,7 +101,13 @@ private extension SubtensorValidatorInfoViewModelFactory {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let isActive = item.status != nil && !item.isInactive
         let unknown = strings.stakingSubtensorUiValueUnknown()
-        let activeStatus = isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive()
+        let activeStatus: String
+
+        if item.status?.isViaChildKeys == true {
+            activeStatus = strings.stakingSubtensorValidatorStatusViaChildKey()
+        } else {
+            activeStatus = isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive()
+        }
 
         let reward: LoadableViewModelState<String>
         let hasReward: Bool
@@ -119,7 +125,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return SubtensorValidatorInfoViewModel.Staking(
-            status: input.needsChainDetail || item.status == nil ? unknown : activeStatus,
+            status: input.needsChainDetail ? .loading : .loaded(value: item.status == nil ? unknown : activeStatus),
             isActive: isActive,
             stake: createStakeViewModel(for: item, input: input, locale: locale),
             take: item.take.flatMap { takeFormatter.value(for: locale).stringFromDecimal($0) } ?? unknown,

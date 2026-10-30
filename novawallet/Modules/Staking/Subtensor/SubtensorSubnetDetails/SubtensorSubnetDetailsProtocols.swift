@@ -8,7 +8,6 @@ protocol SubtensorSubnetDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func setup()
-    func selectCurrency(at index: Int)
     func selectPeriod(at index: Int)
     func toggleFavorite()
     func selectValidator()

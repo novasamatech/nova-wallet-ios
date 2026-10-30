@@ -45,6 +45,15 @@ extension SubtensorOperation {
         return hotkey
     }
 
+    var hotkeyCount: Int {
+        switch self {
+        case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _, _):
+            Set(exits + partials.map(\.hotkey)).count
+        case .rootStake, .rootUnstake, .subnetBuy, .subnetSell, .rootClaim:
+            1
+        }
+    }
+
     var netuids: Set<UInt16>? {
         switch self {
         case .rootStake, .rootUnstake, .rootUnstakeGroup:
@@ -94,17 +103,26 @@ struct SubtensorOperationOutcome: Equatable {
     let networkFeePaid: Balance?
     let extrinsicHash: ExtrinsicHash
     let blockHash: BlockHash
+    var unconfirmedNetworkFee: Balance?
+}
+
+enum SubtensorSubmissionRoute: Equatable {
+    case clear
+    case shielded
 }
 
 struct SubtensorSubmissionFailure: Error {
     enum Stage: Equatable {
         case notSubmitted
         case dispatched(blockHash: BlockHash, extrinsicHash: ExtrinsicHash)
+        case notExecutedFeeUnknown
         case unconfirmed(extrinsicHash: ExtrinsicHash?)
     }
 
     let stage: Stage
     let error: Error
+    var paidNetworkFee: Balance?
+    var estimatedNetworkFee: Balance?
 }
 
 enum SubtensorSellPlan: Equatable {

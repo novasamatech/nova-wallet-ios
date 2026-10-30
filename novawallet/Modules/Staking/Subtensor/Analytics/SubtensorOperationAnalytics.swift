@@ -43,7 +43,7 @@ extension SubtensorSubmissionFailure {
         switch stage {
         case .notSubmitted:
             analyticsStage = .notSubmitted
-        case .dispatched:
+        case .dispatched, .notExecutedFeeUnknown:
             analyticsStage = .dispatched
         case .unconfirmed:
             return nil
@@ -89,7 +89,7 @@ private extension SubtensorSubmissionError {
         case .amountTooLow:
             flow == .claim ? .belowMinimum : nil
         case .stakeUnavailable, .insufficientLiquidity, .temporarilyUnavailable, .notEnoughStakeToWithdraw,
-             .tooManyStakingHotkeys:
+             .tooManyStakingHotkeys, .shieldedNotExecuted:
             nil
         }
     }

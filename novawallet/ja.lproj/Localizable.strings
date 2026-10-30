@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "簡単で効率的なKYCプロセス";
 "transak.buy.action.description" = "わずか$5からクリプトを購入";
 "transak.sell.action.description" = "わずか$10からクリプトを売る";
-"mercuryo.buy.action.description" = "手数料最大3.95%で最良の価格";
-"mercuryo.sell.action.description" = "手数料最大3.95%で最良の価格";
+"mercuryo.buy.action.description" = "手数料最大3.95%%で最良の価格";
+"mercuryo.sell.action.description" = "手数料最大3.95%%で最良の価格";
 "select.buy.provider.title" = "%@ トークンを買うためのプロバイダーを選択";
 "select.sell.provider.title" = "%@ トークンを売るためのプロバイダーを選択";
 "select.provider.disclaimer.text" = "プロバイダーによって支払い方法、手数料、制限が異なります。それらの見積もりを比較して最適なオプションを見つけてください。";
@@ -1999,8 +1999,8 @@
 "gift.created.date.format" = "作成日: %@";
 "gift.reclaim.no.account.alert.message" = "続行するには別のウォレットを選択するか、設定で %@ アカウントを追加してください。";
 "gift.reclaim.dialog.title" = "%@ ギフトを再請求しますか？";
-"polkadot.vault.scanner.message" = "QRコードをスキャン\n%";
-"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに % を提供します";
+"polkadot.vault.scanner.message" = "QRコードをスキャン\n%@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに %@ を提供します";
 "welcome.polkadot.vault.step3.import" = "右上のアイコンをタップして %@ を選択";
 "welcome.polkadot.vault.step2.pair" = "Nova Wallet に追加したい %@";
 "feature.unsupported.sheet.title.gift" = "送金は%@ ウォレットに対してサポートされていません";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "トークンが見つかりませんか？";
 "analytics.details.ip" = "あなたのIPアドレスは国を記録するために一度だけ使用され、その後削除されます — アナリティクスプロバイダーに送信されることはありません";
 "common.new.badge" = "新着";
-"common.period.90d" = "90日";
 "deeplink.error.staking.not.supported.message" = "このアセットではStakingはサポートされていません";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAOをStakeするには、別の種類のウォレットに切り替えてください。";
 "feature.unsupported.sheet.title.subtensor.staking" = "%@ウォレットではBittensorのStakingはサポートされていません";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@あたり%1$@から";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "購入履歴なし";
 "staking.subtensor.ui.avg.buy.price.not.available" = "利用できません";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@あたり";
 "staking.subtensor.ui.avg.buy.price.rising" = "上昇中";
 "staking.subtensor.ui.buy.more.format" = "%@を追加購入";
 "staking.subtensor.ui.chart.unavailable" = "チャートを利用できません";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "利用可能なバリデーター";
 "staking.subtensor.v22.validators.count" = "バリデーター";
 "staking.subtensor.v22.website" = "ウェブサイト";
+"staking.subtensor.ui.confirm.full.exit" = "完全退出";
+"staking.subtensor.ui.unstake.legs.cap.format" = "1回のトランザクションで最大%@人のバリデーターを処理できます。残りについて繰り返してください。";
+"staking.subtensor.ui.validator.all" = "すべてのバリデーター";
+"staking.subtensor.ui.validator.new" = "新しいバリデーター";
+"staking.subtensor.validator.status.via.child.key" = "子キー経由でアクティブ";
+"staking.subtensor.error.shielded.not.executed" = "注文は実行されませんでした。ステークは変更されていません。もう一度お試しください。";
+"staking.subtensor.mev.protection.details" = "フロントランニングの防止に役立つよう、公開メンプール内で注文を暗号化したままにします。";
+"staking.subtensor.mev.protection.title" = "MEV保護";
+"staking.subtensor.mev.protection.unavailable" = "この注文ではMEV保護を利用できません。";
+"staking.subtensor.result.fee.may.be.charged" = "ネットワーク手数料が請求されている場合があります。";

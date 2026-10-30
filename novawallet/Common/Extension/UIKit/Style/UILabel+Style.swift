@@ -93,6 +93,11 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnoteSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldFootnote
+    )
+
     static let semiboldFootnotePositive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .semiBoldFootnote

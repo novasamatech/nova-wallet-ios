@@ -65,8 +65,6 @@ extension SubtensorValidatorInfoViewController: SubtensorValidatorInfoViewProtoc
     }
 }
 
-extension SubtensorValidatorInfoViewController: LoadableViewProtocol {}
-
 extension SubtensorValidatorInfoViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {

@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "Proses KYC yang sederhana dan efisien";
 "transak.buy.action.description" = "Beli kripto mulai dari $5";
 "transak.sell.action.description" = "Jual kripto mulai dari $10";
-"mercuryo.buy.action.description" = "Harga terbaik dengan biaya hingga 3,95%";
-"mercuryo.sell.action.description" = "Harga terbaik dengan biaya hingga 3,95%";
+"mercuryo.buy.action.description" = "Harga terbaik dengan biaya hingga 3,95%%";
+"mercuryo.sell.action.description" = "Harga terbaik dengan biaya hingga 3,95%%";
 "select.buy.provider.title" = "Pilih penyedia untuk membeli token %@";
 "select.sell.provider.title" = "Pilih penyedia untuk menjual token %@";
 "select.provider.disclaimer.text" = "Metode pembayaran, biaya, dan batasan berbeda-beda tergantung penyedia. Bandingkan kutipan mereka untuk menemukan pilihan terbaik untuk Anda.";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "Tidak menemukan token?";
 "analytics.details.ip" = "Alamat IP Anda digunakan sekali untuk mencatat negara Anda, lalu dihapus — alamat tersebut tidak pernah sampai ke penyedia analitik kami";
 "common.new.badge" = "Baru";
-"common.period.90d" = "90 hari";
 "deeplink.error.staking.not.supported.message" = "Staking tidak didukung untuk aset ini";
 "feature.unsupported.sheet.message.subtensor.staking" = "Untuk melakukan staking TAO, silakan beralih ke jenis dompet lain.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor tidak didukung untuk dompet %@.";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "mulai dari %1$@ per %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "tidak ada pembelian";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Tidak tersedia";
-"staking.subtensor.ui.avg.buy.price.per.format" = "per %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Meningkat";
 "staking.subtensor.ui.buy.more.format" = "Beli lebih banyak %@";
 "staking.subtensor.ui.chart.unavailable" = "Grafik tidak tersedia";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "VALIDATOR YANG TERSEDIA";
 "staking.subtensor.v22.validators.count" = "Validator";
 "staking.subtensor.v22.website" = "Situs web";
+"staking.subtensor.ui.confirm.full.exit" = "Keluar sepenuhnya";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Satu transaksi mencakup hingga %@ validator. Ulangi untuk sisanya.";
+"staking.subtensor.ui.validator.all" = "Semua validator";
+"staking.subtensor.ui.validator.new" = "Validator baru";
+"staking.subtensor.validator.status.via.child.key" = "Aktif melalui Kunci Anak";
+"staking.subtensor.error.shielded.not.executed" = "Pesanan Anda tidak dieksekusi. Stake Anda tidak berubah, silakan coba lagi.";
+"staking.subtensor.mev.protection.details" = "Menjaga pesanan Anda tetap terenkripsi di mempool publik untuk membantu mencegah front-running.";
+"staking.subtensor.mev.protection.title" = "Perlindungan MEV";
+"staking.subtensor.mev.protection.unavailable" = "Perlindungan MEV tidak tersedia untuk pesanan ini.";
+"staking.subtensor.result.fee.may.be.charged" = "Biaya jaringan mungkin telah dibebankan.";

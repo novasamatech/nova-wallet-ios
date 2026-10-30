@@ -55,11 +55,13 @@ private extension SubtensorValidatorChainOperationFactory {
         let tempos: QueryWrapper<UInt16Value>
         let factors: QueryWrapper<StringScaleMapper<UInt32>>
         let takes: QueryWrapper<UInt16Value>
+        let parents: QueryWrapper<[JSON]>
+        let children: QueryWrapper<[JSON]>
 
         var allOperations: [Operation] {
             blockNumber.allOperations + uids.allOperations + permits.allOperations +
                 lastUpdates.allOperations + tempos.allOperations + factors.allOperations +
-                takes.allOperations
+                takes.allOperations + parents.allOperations + children.allOperations
         }
 
         var targetOperations: [Operation] {
@@ -70,7 +72,9 @@ private extension SubtensorValidatorChainOperationFactory {
                 lastUpdates.targetOperation,
                 tempos.targetOperation,
                 factors.targetOperation,
-                takes.targetOperation
+                takes.targetOperation,
+                parents.targetOperation,
+                children.targetOperation
             ]
         }
     }
@@ -119,8 +123,52 @@ private extension SubtensorValidatorChainOperationFactory {
                 factory: context.factory,
                 storagePath: Pallet.delegatesTakePath,
                 at: context.blockHash
-            )
+            ),
+            parents: createLinkRead(path: Pallet.parentKeysPath, pairs: plan.pairs, context: context),
+            children: createLinkRead(path: Pallet.childKeysPath, pairs: plan.pairs, context: context)
         )
+    }
+
+    func createLinkRead(
+        path: StorageCodingPath,
+        pairs: [SubtensorHotkeySubnet],
+        context: Context
+    ) -> QueryWrapper<[JSON]> {
+        requestFactory.queryItems(
+            engine: context.engine,
+            keyParams1: { pairs.map { BytesCodable(wrappedValue: $0.hotkey) } },
+            keyParams2: { pairs.map { UInt16Value(value: $0.netuid) } },
+            factory: context.factory,
+            storagePath: path,
+            at: context.blockHash
+        )
+    }
+
+    func createContextWrapper<T>(
+        build: @escaping (Context) -> CompoundOperationWrapper<T>
+    ) -> CompoundOperationWrapper<T> {
+        do {
+            let engine = try runtimeConnectionStore.getConnection()
+            let codingFactoryOperation = try runtimeConnectionStore.getRuntimeProvider().fetchCoderFactoryOperation()
+            let blockHashWrapper = blockHashOperationFactory.createBestBlockHashWrapper(connection: engine)
+
+            let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let context = try Context(
+                    engine: engine,
+                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                    blockHash: blockHashWrapper.targetOperation.extractNoCancellableResultData()
+                )
+
+                return build(context)
+            }
+
+            wrapper.addDependency(wrapper: blockHashWrapper)
+            wrapper.addDependency(operations: [codingFactoryOperation])
+
+            return wrapper.insertingHead(operations: [codingFactoryOperation] + blockHashWrapper.allOperations)
+        } catch {
+            return .createWithError(error)
+        }
     }
 
     func createSnapshotWrapper(
@@ -188,6 +236,19 @@ private extension SubtensorValidatorChainOperationFactory {
             }
     }
 
+    static func extractChildPairs(
+        plan: SnapshotPlan,
+        reads: SnapshotReads
+    ) throws -> Set<SubtensorHotkeySubnet> {
+        let links = try [reads.parents, reads.children].map { wrapper in
+            try extractPairValues(pairs: plan.pairs, wrapper: wrapper) { response in
+                response.value.flatMap { $0.isEmpty ? nil : true }
+            }
+        }
+
+        return links.reduce(into: Set<SubtensorHotkeySubnet>()) { $0.formUnion($1.keys) }
+    }
+
     static func createSnapshot(plan: SnapshotPlan, reads: SnapshotReads) throws -> SubtensorValidatorChainSnapshot {
         let blockNumberResponse = try reads.blockNumber.targetOperation.extractNoCancellableResultData()
 
@@ -208,7 +269,8 @@ private extension SubtensorValidatorChainOperationFactory {
             permits: vectors.permits,
             lastUpdates: vectors.lastUpdates,
             effectiveActivityCutoffs: extractCutoffs(plan: plan, reads: reads),
-            takes: takes
+            takes: takes,
+            childKeyPairs: extractChildPairs(plan: plan, reads: reads)
         )
     }
 }
@@ -217,28 +279,39 @@ extension SubtensorValidatorChainOperationFactory: SubtensorValidatorChainOperat
     func createChainSnapshotWrapper(
         for query: SubtensorValidatorChainQuery
     ) -> CompoundOperationWrapper<SubtensorValidatorChainSnapshot> {
-        do {
-            let engine = try runtimeConnectionStore.getConnection()
-            let codingFactoryOperation = try runtimeConnectionStore.getRuntimeProvider().fetchCoderFactoryOperation()
-            let blockHashWrapper = blockHashOperationFactory.createBestBlockHashWrapper(connection: engine)
-            let plan = SnapshotPlan(query: query)
+        let plan = SnapshotPlan(query: query)
 
-            let snapshotWrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-                let context = try Context(
-                    engine: engine,
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    blockHash: blockHashWrapper.targetOperation.extractNoCancellableResultData()
-                )
+        return createContextWrapper { self.createSnapshotWrapper(plan: plan, context: $0) }
+    }
 
-                return self.createSnapshotWrapper(plan: plan, context: context)
+    func createChildKeyLinkedPairsWrapper(
+        for pairs: [SubtensorHotkeySubnet]
+    ) -> CompoundOperationWrapper<Set<SubtensorHotkeySubnet>> {
+        let pairs = pairs.distinct()
+
+        return createContextWrapper { context in
+            let reads = [SubtensorPallet.parentKeysPath, SubtensorPallet.childKeysPath].map {
+                self.createLinkRead(path: $0, pairs: pairs, context: context)
             }
 
-            snapshotWrapper.addDependency(wrapper: blockHashWrapper)
-            snapshotWrapper.addDependency(operations: [codingFactoryOperation])
+            let mergeOperation = ClosureOperation<Set<SubtensorHotkeySubnet>> {
+                try reads.reduce(into: Set<SubtensorHotkeySubnet>()) { result, read in
+                    let responses = try read.targetOperation.extractNoCancellableResultData()
 
-            return snapshotWrapper.insertingHead(operations: [codingFactoryOperation] + blockHashWrapper.allOperations)
-        } catch {
-            return .createWithError(error)
+                    zip(pairs, responses).forEach { pair, response in
+                        if response.value?.isEmpty == false {
+                            result.insert(pair)
+                        }
+                    }
+                }
+            }
+
+            reads.forEach { mergeOperation.addDependency($0.targetOperation) }
+
+            return CompoundOperationWrapper(
+                targetOperation: mergeOperation,
+                dependencies: reads.flatMap(\.allOperations)
+            )
         }
     }
 }

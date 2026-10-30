@@ -1,4 +1,5 @@
 import Foundation
+import SnapKit
 import UIKit
 
 final class ModalPickerActionTableViewCell: UITableViewCell {
@@ -16,6 +17,8 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
         label.highlightedTextColor = R.color.colorIconAccent()?.withAlphaComponent(0.5)
         return label
     }()
+
+    private var emptyIconConstraint: Constraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -37,6 +40,12 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
         iconView.highlightedImage = viewModel.icon?.tinted(with: R.color.colorIconAccent()!.withAlphaComponent(0.5))
 
         titleLabel.text = viewModel.title
+
+        if viewModel.icon == nil {
+            emptyIconConstraint?.activate()
+        } else {
+            emptyIconConstraint?.deactivate()
+        }
     }
 
     private func setupLayout() {
@@ -44,7 +53,10 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
         iconView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
+            emptyIconConstraint = make.width.equalTo(UIConstants.address24IconSize.width).constraint
         }
+
+        emptyIconConstraint?.deactivate()
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in

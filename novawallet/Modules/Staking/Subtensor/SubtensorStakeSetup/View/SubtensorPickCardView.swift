@@ -15,7 +15,7 @@ final class SubtensorPickCardView: UIView {
     let validatorCell = SubtensorPickValidatorCell()
     let browseView = SubtensorBrowseLinkView()
 
-    let receiveCell = SubtensorPickCardView.createValueCell()
+    let receiveCell = SubtensorPickCardView.createValueCell(bottomStyle: .semiboldFootnoteSecondary)
 
     let swapRateCell = SubtensorPickCardView.createValueCell()
 
@@ -37,16 +37,12 @@ final class SubtensorPickCardView: UIView {
 
     func bind(viewModel: SubtensorPickCardViewModel) {
         clipsToBounds = !viewModel.isRoot
-        validatorCell.bind(
-            validator: viewModel.validator,
-            rate: viewModel.validatorRate,
-            isEditable: viewModel.isValidatorEditable
-        )
+        validatorCell.bind(validator: viewModel.validator, rate: viewModel.validatorRate)
         browseView.bind(title: viewModel.browseTitle)
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)
 
-        receiveCell.apply(viewModel.receive)
+        receiveCell.apply(viewModel.receive, bind: receiveCell.bind(viewModel:))
         swapRateCell.apply(viewModel.swapRate)
         networkFeeCell.bindPickValue(viewModel.networkFee)
 
@@ -58,11 +54,11 @@ final class SubtensorPickCardView: UIView {
         }
     }
 
-    static func createValueCell() -> StackTitleMultiValueCell {
+    static func createValueCell(bottomStyle: UILabel.Style = .semiboldFootnotePrimary) -> StackTitleMultiValueCell {
         let cell = StackTitleMultiValueCell()
         cell.canSelect = false
         cell.topValueLabel.apply(style: .semiboldFootnotePrimary)
-        cell.bottomValueLabel.apply(style: .semiboldFootnotePrimary)
+        cell.bottomValueLabel.apply(style: bottomStyle)
 
         [cell.topValueLabel, cell.bottomValueLabel].forEach { label in
             label.snp.makeConstraints { $0.height.equalTo(Constants.valueLineHeight) }

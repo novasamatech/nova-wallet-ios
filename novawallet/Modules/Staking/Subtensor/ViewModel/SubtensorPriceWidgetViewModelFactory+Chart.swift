@@ -9,7 +9,7 @@ extension SubtensorPriceWidgetViewModelFactory {
             SubtensorPriceChartViewModel.Point(
                 sourceIndex: index,
                 date: point.date,
-                value: params.isFiat ? point.fiatPerAlpha : point.taoPerAlpha
+                value: point.taoPerAlpha
             )
         }
         let valid = mapped.filter { $0.date.timeIntervalSince1970.isFinite && $0.plotValue.isFinite }
@@ -41,7 +41,7 @@ extension SubtensorPriceWidgetViewModelFactory {
     }
 
     func displayChange(history: SubtensorPriceHistory, params: SubtensorPriceWidgetParams) -> Decimal? {
-        guard let serviceChange = params.isFiat ? history.changeInFiat : history.changeInTao,
+        guard let serviceChange = history.changeInTao,
               NSDecimalNumber(decimal: serviceChange).doubleValue.isFinite,
               let series = datedSeries(history: history, params: params),
               let first = series.points.first,
@@ -74,12 +74,7 @@ extension SubtensorPriceWidgetViewModelFactory {
 
             guard let series = datedSeries(history: history, params: params),
                   let first = series.points.first,
-                  let last = series.points.last,
-                  let data = SubtensorPriceChartDataFactory.create(
-                      series: .dated(series),
-                      reference: reference,
-                      availablePoints: 0
-                  ) else {
+                  let last = series.points.last else {
                 return createUnavailableChart(locale: locale)
             }
 
@@ -87,17 +82,12 @@ extension SubtensorPriceWidgetViewModelFactory {
 
             return .chart(SubtensorPriceChartViewModel(
                 series: .dated(series),
-                axisLabels: [
-                    formatAxis(data.yRange.upperBound, params: params, locale: locale),
-                    formatAxis(data.yRange.lowerBound, params: params, locale: locale)
-                ],
+                axisLabels: [],
                 isRising: change.map { $0 >= 0 } ?? (last.value >= first.value),
                 reference: reference.map { value in
                     SubtensorPriceChartViewModel.Reference(
                         value: value,
-                        label: strings.stakingSubtensorUiAvgBuyChartFormat(
-                            formatAxis(value, params: params, locale: locale)
-                        )
+                        label: strings.stakingSubtensorUiAvgBuyChartFormat(formatReferencePrice(value, locale: locale))
                     )
                 }
             ))

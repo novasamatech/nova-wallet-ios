@@ -31,16 +31,33 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         forceQuoteRefresh()
     }
 
+    func selectValidator() {
+        retryValidatorNames()
+
+        guard let group, group.positions.count > 1 else {
+            showValidatorInfo()
+            return
+        }
+
+        validatorPicker = wireframe.showTargetSelection(
+            from: view,
+            content: createValidatorPickerContent(for: group),
+            delegate: self,
+            context: group.positions.map(\.hotkey) as NSArray,
+            keeping: validatorPicker
+        )
+    }
+
     func showValidatorInfo() {
-        guard let primary = group?.primaryHotkey, let target else {
+        guard let anchorHotkey, let target else {
             return
         }
 
         wireframe.showValidatorInfo(
             from: view,
             target: target,
-            hotkey: primary,
-            detail: validatorItem
+            hotkey: anchorHotkey,
+            detail: validatorItems[anchorHotkey]
         )
     }
 
@@ -68,6 +85,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 
     func proceed() {
+        retryValidatorNames()
+
         let amount = inputAmount()
 
         guard
@@ -112,7 +131,7 @@ extension SubtensorUnstakeSetupPresenter {
         return SubtensorUnstakeValidatingDependencies(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
-            hotkey: group?.primaryHotkey,
+            hotkey: anchorHotkey,
             amount: amount,
             positionAlpha: plan?.amount ?? maxAmount,
             positions: positions,
@@ -120,7 +139,7 @@ extension SubtensorUnstakeSetupPresenter {
             groupHotkeys: groupHotkeys,
             availability: group?.availability,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             existentialDeposit: existentialDeposit,
             preflight: preflight,
             holds: holds,
@@ -129,6 +148,7 @@ extension SubtensorUnstakeSetupPresenter {
             syncFailed: isPositionsSyncFailed,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
+                self?.retryUnresolvedShieldQuote()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
@@ -158,10 +178,10 @@ extension SubtensorUnstakeSetupPresenter {
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDependencies) -> SubtensorConfirmModel? {
         guard
             let target,
-            let group,
             let plan = dependencies.plan,
             let groupHotkeys = dependencies.groupHotkeys,
-            let address = try? group.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            let hotkey = Set(plan.hotkeys).count == 1 ? plan.hotkeys.first : anchorHotkey,
+            let validator = createConfirmValidator(for: hotkey) else {
             return nil
         }
 
@@ -169,19 +189,200 @@ extension SubtensorUnstakeSetupPresenter {
             origin: isRoot ? .unstake : .sell,
             account: selectedAccount,
             target: target,
-            validator: SubtensorConfirmValidator(
-                hotkey: group.primaryHotkey,
-                display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
-                annualRate: nil
-            ),
+            validator: validator,
             mode: .unstake(SubtensorUnstakeModel(
                 netuid: netuid,
                 plan: plan,
-                groupHotkeys: groupHotkeys
+                groupHotkeys: groupHotkeys,
+                validators: plan.hotkeys.reduce(into: [:]) { $0[$1] = createConfirmValidator(for: $1) }
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext),
-            hasLockedStake: hasLockedStake
+            hasLockedStake: hasLockedStake,
+            isShieldQuoteFallback: carriesShieldQuoteFallback
+        )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter {
+    var heldHotkeys: Set<AccountId> {
+        guard isRoot, let group, let holds, let currentBlock else {
+            return []
+        }
+
+        let head = UInt64(currentBlock)
+
+        return Set(group.positions.map(\.hotkey).filter { (holds[$0]?.remainingBlocks(at: head) ?? 0) > 0 })
+    }
+
+    var unsellableHotkeys: Set<AccountId> {
+        guard let group else {
+            return []
+        }
+
+        let undrawable = SubtensorGroupUnstakeBasis.undrawableHotkeys(
+            in: group,
+            groupHotkeys: groupHotkeys,
+            floors: unstakeFloors()
+        )
+
+        return heldHotkeys.union(undrawable)
+    }
+
+    var isLegCapped: Bool {
+        guard currentSelection == .all, let group else {
+            return false
+        }
+
+        return SubtensorGroupUnstakeBasis.isLegCapped(group, excluding: unsellableHotkeys)
+    }
+
+    var currentSelection: SubtensorUnstakeSelection? {
+        group.map { SubtensorUnstakeSelection.resolve(selection, in: $0, excluding: unsellableHotkeys) }
+    }
+
+    var anchorHotkey: AccountId? {
+        guard let group else {
+            return nil
+        }
+
+        let unsellable = unsellableHotkeys
+
+        return currentSelection?.hotkey ?? group.positions.first { !unsellable.contains($0.hotkey) }?.hotkey ??
+            group.primaryHotkey
+    }
+
+    func validatorName(for hotkey: AccountId) -> String? {
+        validatorItems[hotkey]?.name
+    }
+
+    func createValidatorPickerContent(for group: SubtensorPortfolioGroup) -> CollatorStakingTargetPickerContent {
+        let hotkeys = group.positions.map(\.hotkey)
+        let unsellable = unsellableHotkeys
+        let names = hotkeys.reduce(into: [AccountId: String]()) { $0[$1] = validatorName(for: $1) }
+        let hasAllAction = SubtensorUnstakeSelection.canSellAll(in: group, excluding: unsellable)
+        let pickerFactory = SubtensorValidatorPickerViewModelFactory(chainFormat: chainAsset.chain.chainFormat)
+
+        return CollatorStakingTargetPickerContent(
+            title: pickerFactory.createTitle(),
+            viewModels: pickerFactory.createViewModels(
+                for: group.positions,
+                names: names,
+                disabled: unsellable,
+                displayInfo: inputDisplayInfo
+            ),
+            action: hasAllAction ? pickerFactory.createAllValidatorsAction() : nil,
+            selectedIndex: currentSelection?.hotkey.flatMap { hotkeys.firstIndex(of: $0) } ?? NSNotFound
+        )
+    }
+
+    func refreshValidatorPicker() {
+        guard
+            let picker = validatorPicker,
+            picker.isViewLoaded,
+            let group,
+            (picker.context as? [AccountId]) == group.positions.map(\.hotkey) else {
+            return
+        }
+
+        picker.viewModels = createValidatorPickerContent(for: group).viewModels
+        picker.reload()
+    }
+
+    func createConfirmValidator(for hotkey: AccountId) -> SubtensorConfirmValidator? {
+        guard let address = try? hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            return nil
+        }
+
+        return SubtensorConfirmValidator(
+            hotkey: hotkey,
+            display: DisplayAddress(address: address, username: validatorName(for: hotkey) ?? ""),
+            annualRate: nil
+        )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let hotkeys = context as? [AccountId], index < hotkeys.count else {
+            return
+        }
+
+        let hotkey = hotkeys[index]
+
+        guard !heldHotkeys.contains(hotkey) else {
+            presentHold(for: hotkey)
+            return
+        }
+
+        guard !unsellableHotkeys.contains(hotkey) else {
+            presentNothingSellable()
+            return
+        }
+
+        applySelection(.validator(hotkey))
+    }
+
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        applySelection(.all)
+    }
+
+    private func applySelection(_ newSelection: SubtensorUnstakeSelection) {
+        guard newSelection != currentSelection else {
+            return
+        }
+
+        let previousPlan = feePlan()
+
+        selection = newSelection
+        inputResult = nil
+
+        provideAmountInputViewModel()
+        applyBasisChange(from: previousPlan)
+        provideViewModel()
+    }
+
+    private func presentNothingSellable() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        wireframe.present(
+            message: strings.stakingSubtensorUnstakeNothingAvailableHint(),
+            title: strings.stakingSubtensorUnstakeLockedTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
+    }
+
+    private func presentHold(for hotkey: AccountId) {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        let locale = selectedLocale
+
+        let message = holds?[hotkey].flatMap { hold in
+            blockTime.map { blockTime in
+                let interval = SubtensorRootHold.formatDuration(
+                    blocks: hold.interval,
+                    blockTime: blockTime,
+                    locale: locale
+                )
+                let timeLeft = currentBlock.map { block in
+                    strings.commonTimeLeftFormat(SubtensorRootHold.formatDuration(
+                        blocks: hold.remainingBlocks(at: UInt64(block)),
+                        blockTime: blockTime,
+                        locale: locale
+                    ))
+                }
+
+                return [strings.stakingSubtensorUiPositionHoldMessageFormat(interval), timeLeft]
+                    .compactMap { $0 }
+                    .joined(separator: "\n")
+            }
+        }
+
+        wireframe.present(
+            message: message,
+            title: strings.stakingSubtensorUiPositionHoldTitle(),
+            closeAction: strings.commonClose(),
+            from: view
         )
     }
 }

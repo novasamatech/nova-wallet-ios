@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "Doğrudan ve etkili KYC süreci";
 "transak.buy.action.description" = "Sadece $5 ile kripto satın al";
 "transak.sell.action.description" = "Sadece $10 ile kripto sat";
-"mercuryo.buy.action.description" = "3.95% kadar ücretlerle en iyi fiyat";
-"mercuryo.sell.action.description" = "3.95% kadar ücretlerle en iyi fiyat";
+"mercuryo.buy.action.description" = "3.95%% kadar ücretlerle en iyi fiyat";
+"mercuryo.sell.action.description" = "3.95%% kadar ücretlerle en iyi fiyat";
 "select.buy.provider.title" = "%@ tokenını satın almak için bir sağlayıcı seçin";
 "select.sell.provider.title" = "%@ tokenının satışını yapmak için bir sağlayıcı seçin";
 "select.provider.disclaimer.text" = "Ödeme yöntemleri, ücretler ve limitler sağlayıcıya göre farklılık gösterir. Sizin için en iyi seçeneği bulmak için teklifleri karşılaştırın.";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "Aradığınız token'ı bulamadınız mı?";
 "analytics.details.ip" = "IP adresiniz ülkenizi belirlemek için bir kez kullanılır, ardından silinir — analiz sağlayıcımıza hiçbir zaman ulaşmaz";
 "common.new.badge" = "Yeni";
-"common.period.90d" = "90 gün";
 "deeplink.error.staking.not.supported.message" = "Bu varlık için staking desteklenmiyor";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO stake etmek için lütfen farklı bir cüzdan türüne geçin.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Bittensor staking, %@ cüzdanları için desteklenmiyor";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@ başına %1$@'dan itibaren";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "satın alma yok";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Mevcut değil";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@ başına";
 "staking.subtensor.ui.avg.buy.price.rising" = "Yükseliyor";
 "staking.subtensor.ui.buy.more.format" = "Daha fazla %@ satın al";
 "staking.subtensor.ui.chart.unavailable" = "Grafik kullanılamıyor";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "MEVCUT DOĞRULAYICILAR";
 "staking.subtensor.v22.validators.count" = "Doğrulayıcılar";
 "staking.subtensor.v22.website" = "Web sitesi";
+"staking.subtensor.ui.confirm.full.exit" = "Tamamen çıkış";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Bir işlem en fazla %@ doğrulayıcıyı kapsar. Geri kalanlar için tekrarlayın.";
+"staking.subtensor.ui.validator.all" = "Tüm doğrulayıcılar";
+"staking.subtensor.ui.validator.new" = "Yeni doğrulayıcı";
+"staking.subtensor.validator.status.via.child.key" = "Alt Anahtar Üzerinden Aktif";
+"staking.subtensor.error.shielded.not.executed" = "Emriniz gerçekleştirilmedi. Stake bakiyeniz değişmedi, lütfen tekrar deneyin.";
+"staking.subtensor.mev.protection.details" = "Önden işlem yapılmasını önlemeye yardımcı olmak için emrinizi herkese açık mempool'da şifreli olarak tutar.";
+"staking.subtensor.mev.protection.title" = "MEV koruması";
+"staking.subtensor.mev.protection.unavailable" = "Bu emir için MEV koruması kullanılamıyor.";
+"staking.subtensor.result.fee.may.be.charged" = "Ağ ücreti tahsil edilmiş olabilir.";

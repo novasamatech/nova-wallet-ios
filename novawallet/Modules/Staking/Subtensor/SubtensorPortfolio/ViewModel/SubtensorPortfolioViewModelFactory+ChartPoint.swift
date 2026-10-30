@@ -4,7 +4,6 @@ import Foundation_iOS
 struct SubtensorPortfolioChartSelection {
     let header: SubtensorPortfolioHeaderViewModel
     let points: [SubtensorPortfolioValuePoint]
-    let isChangeAvailable: Bool
 }
 
 protocol SubtensorPortfolioChartFactoryProtocol {
@@ -37,27 +36,18 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioChartFactoryProt
         guard
             let index = state.chartPoint,
             let price = state.price.value,
-            points.indices.contains(index),
-            let first = points.first else {
+            points.indices.contains(index) else {
             return header
         }
 
         let point = points[index]
-
-        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
-            header.change
-        } else if selection.isChangeAvailable {
-            createPointChange(from: first, to: point, locale: locale).map { .value($0) } ?? .hidden
-        } else {
-            .hidden
-        }
 
         let fiat = balanceViewModelFactory.priceFromFiatAmount(point.fiatValue, currencyId: price.currencyId)
 
         return SubtensorPortfolioHeaderViewModel(
             total: balanceViewModelFactory.amountFromValue(point.taoValue, roundingMode: .down).value(for: locale),
             fiat: .value(fiat.value(for: locale)),
-            change: change,
+            date: formatPointDate(point.date, locale: locale),
             chart: header.chart,
             periods: header.periods
         )
@@ -65,32 +55,11 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioChartFactoryProt
 }
 
 private extension SubtensorPortfolioViewModelFactory {
-    func createPointChange(
-        from first: SubtensorPortfolioValuePoint,
-        to point: SubtensorPortfolioValuePoint,
-        locale: Locale
-    ) -> SubtensorPortfolioChangeViewModel? {
-        guard first.fiatValue > 0 else {
-            return nil
-        }
-
-        let change = (point.fiatValue - first.fiatValue) / first.fiatValue
-
-        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
-
-        guard let percent = formatter.stringFromDecimal(change) else {
-            return nil
-        }
-
-        let dateFormatter = point.date.sameYear(as: Date())
+    func formatPointDate(_ date: Date, locale: Locale) -> String {
+        let formatter = date.sameYear(as: Date())
             ? DateFormatter.chartEntryDate
             : DateFormatter.chartEntryWithYear
 
-        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinDotFormat(
-            percent,
-            dateFormatter.value(for: locale).string(from: point.date)
-        )
-
-        return SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0)
+        return formatter.value(for: locale).string(from: date)
     }
 }

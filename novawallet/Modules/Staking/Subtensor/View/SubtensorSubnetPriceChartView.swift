@@ -88,7 +88,6 @@ private extension SubtensorSubnetPriceChartView {
     enum Constants {
         static let lineWidth: CGFloat = 1.5
         static let guideLineWidth: CGFloat = 1
-        static let midLineDashLengths: [CGFloat] = [3, 3]
         static let referenceDashLengths: [CGFloat] = [4, 4]
         static let referenceRadius: CGFloat = 4
         static let referenceInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
@@ -171,14 +170,6 @@ private extension SubtensorSubnetPriceChartView {
         axis.axisMinimum = lower
         axis.axisMaximum = upper
         axis.removeAllLimitLines()
-
-        if style == .price {
-            addGuide(
-                at: (lower + upper) / 2,
-                color: R.color.colorTextTertiary()!,
-                dashLengths: Constants.midLineDashLengths
-            )
-        }
 
         guard labels.count > 1 else {
             axis.drawLabelsEnabled = false

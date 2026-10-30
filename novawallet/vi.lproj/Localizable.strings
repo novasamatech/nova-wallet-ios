@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "Quy trình KYC đơn giản và hiệu quả";
 "transak.buy.action.description" = "Mua tiền điện tử bắt đầu chỉ với $5";
 "transak.sell.action.description" = "Bán tiền điện tử bắt đầu chỉ với $10";
-"mercuryo.buy.action.description" = "Giá tốt nhất với phí lên đến 3.95%";
-"mercuryo.sell.action.description" = "Giá tốt nhất với phí lên đến 3.95%";
+"mercuryo.buy.action.description" = "Giá tốt nhất với phí lên đến 3.95%%";
+"mercuryo.sell.action.description" = "Giá tốt nhất với phí lên đến 3.95%%";
 "select.buy.provider.title" = "Chọn một nhà cung cấp để mua token %@";
 "select.sell.provider.title" = "Chọn một nhà cung cấp để bán token %@";
 "select.provider.disclaimer.text" = "Phương thức thanh toán, phí và giới hạn khác nhau tùy theo nhà cung cấp. So sánh báo giá của họ để tìm tùy chọn tốt nhất cho bạn.";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "Không tìm thấy token cần tìm?";
 "analytics.details.ip" = "Địa chỉ IP của bạn được sử dụng một lần để xác định quốc gia, sau đó bị xóa — không bao giờ được gửi đến nhà cung cấp dịch vụ phân tích của chúng tôi";
 "common.new.badge" = "Mới";
-"common.period.90d" = "90 ngày";
 "deeplink.error.staking.not.supported.message" = "Staking không được hỗ trợ cho tài sản này";
 "feature.unsupported.sheet.message.subtensor.staking" = "Để Stake TAO, vui lòng chuyển sang một loại ví khác.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor không được hỗ trợ cho ví %@.";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "từ %1$@ mỗi %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "không có giao dịch mua";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Không khả dụng";
-"staking.subtensor.ui.avg.buy.price.per.format" = "mỗi %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Đang tăng";
 "staking.subtensor.ui.buy.more.format" = "Mua thêm %@";
 "staking.subtensor.ui.chart.unavailable" = "Biểu đồ không khả dụng";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "CÁC VALIDATOR KHẢ DỤNG";
 "staking.subtensor.v22.validators.count" = "Validator";
 "staking.subtensor.v22.website" = "Trang web";
+"staking.subtensor.ui.confirm.full.exit" = "Thoát hoàn toàn";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Một giao dịch bao gồm tối đa %@ validator. Lặp lại với các validator còn lại.";
+"staking.subtensor.ui.validator.all" = "Tất cả validator";
+"staking.subtensor.ui.validator.new" = "Validator mới";
+"staking.subtensor.validator.status.via.child.key" = "Đang hoạt động thông qua Khóa con";
+"staking.subtensor.error.shielded.not.executed" = "Lệnh của bạn chưa được thực thi. Stake của bạn không thay đổi, vui lòng thử lại.";
+"staking.subtensor.mev.protection.details" = "Giữ lệnh của bạn ở dạng mã hóa trong mempool công khai để giúp ngăn chặn việc thực thi trước.";
+"staking.subtensor.mev.protection.title" = "Bảo vệ MEV";
+"staking.subtensor.mev.protection.unavailable" = "Bảo vệ MEV không khả dụng cho lệnh này.";
+"staking.subtensor.result.fee.may.be.charged" = "Có thể bạn đã bị tính phí mạng lưới.";

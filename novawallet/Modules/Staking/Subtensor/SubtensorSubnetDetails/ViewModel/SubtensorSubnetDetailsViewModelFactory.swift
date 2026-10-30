@@ -15,7 +15,6 @@ protocol SubtensorSubnetDetailsViewModelFactoryProtocol {
 final class SubtensorSubnetDetailsViewModelFactory {
     let subnet: SubtensorCatalogueSubnet
     let chainAsset: ChainAsset
-    let currencyManager: CurrencyManagerProtocol
     let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
@@ -28,13 +27,11 @@ final class SubtensorSubnetDetailsViewModelFactory {
     init(
         subnet: SubtensorCatalogueSubnet,
         chainAsset: ChainAsset,
-        currencyManager: CurrencyManagerProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         let formatterFactory = AssetBalanceFormatterFactory()
         self.subnet = subnet
         self.chainAsset = chainAsset
-        self.currencyManager = currencyManager
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
@@ -87,9 +84,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
         SubtensorPriceWidgetParams(
             history: state.history,
             period: state.period,
-            isFiat: state.isFiat,
             taoPrice: state.taoPrice,
-            currencyId: currencyManager.selectedCurrency.id,
             chartEndDate: state.chartEndDate,
             avgBuyPrice: nil
         )
@@ -106,16 +101,9 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             locale: locale
         )
 
-        let currencyViewModel = SubtensorSubnetCurrencyViewModel(
-            titles: [chainAsset.assetDisplayInfo.symbol, currencyManager.selectedCurrency.code],
-            selectedIndex: state.isFiat ? 1 : 0,
-            isEnabled: state.taoPrice != nil || state.isFiat
-        )
-
         return SubtensorPriceHeaderParams(
             caption: caption,
             spotPrice: subnet.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            currency: currencyViewModel,
             selection: state.chartSelection
         )
     }

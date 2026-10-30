@@ -35,8 +35,9 @@ final class SubtensorUnstakeSetupViewModelFactory {
             header: createHeader(for: input, locale: locale),
             inputPrice: createInputPrice(for: input, locale: locale),
             isInputEnabled: !input.isFullyLocked,
+            isValidatorSelectable: input.isValidatorSelectable,
             details: createDetails(for: input, locale: locale),
-            note: createRootNote(for: input, locale: locale),
+            note: createNote(for: input, locale: locale),
             feeWarning: createFeeWarning(for: input, locale: locale),
             holdWarning: createHoldWarning(for: input, locale: locale),
             action: createAction(for: input, locale: locale)
@@ -156,6 +157,16 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         return input.target.flatMap { input.catalogue?.subnet(for: $0.subnetRef)?.freshTaoPerAlpha }
     }
 
+    func createNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
+        let capNote = input.legCap.map {
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiUnstakeLegsCapFormat("\($0)")
+        }
+
+        let notes = [capNote, createRootNote(for: input, locale: locale)].compactMap { $0 }
+
+        return notes.isEmpty ? nil : notes.joined(separator: "\n\n")
+    }
+
     func createRootNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
         guard input.isRoot else {
             return nil
@@ -226,7 +237,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             swapRate: createSwapRate(for: input, swapRate: tradePanel?.swapRate, locale: locale),
             avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
             earned: createEarned(for: input, locale: locale),
-            validator: createValidator(for: input),
+            validator: createValidator(for: input, locale: locale),
             networkFee: balanceViewModelFactory.subtensorFee(
                 input.fee, info: chainAsset.assetDisplayInfo, price: input.price, locale: locale
             )
@@ -243,7 +254,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
 
         return costBasisViewModelFactory.createAvgBuyPrice(
             for: input.costBasis,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.netuid, in: input.catalogue),
+            taoPrice: input.price,
             locale: locale
         )
     }
@@ -330,8 +341,17 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         return .trade(swapRate.flatMap { $0.isEmpty ? nil : $0 }, isPending: isQuotePending(for: input), locale: locale)
     }
 
-    func createValidator(for input: SubtensorUnstakeSetupViewModelInput) -> SubtensorSetupValidatorViewModel {
-        input.primaryHotkey.flatMap { hotkey in
+    func createValidator(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupValidatorViewModel {
+        guard !input.isAllValidators else {
+            return .unselected(
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorAll()
+            )
+        }
+
+        return input.validatorHotkey.flatMap { hotkey in
             displayAddressFactory.subtensorValidator(
                 hotkey: hotkey, name: input.validatorName, chainFormat: chainAsset.chain.chainFormat
             )

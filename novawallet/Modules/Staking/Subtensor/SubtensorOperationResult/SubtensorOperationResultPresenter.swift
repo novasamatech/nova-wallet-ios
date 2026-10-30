@@ -12,6 +12,7 @@ final class SubtensorOperationResultPresenter {
     let stakingOption: Multistaking.ChainAssetOption
 
     private(set) var state: SubtensorOperationResultState = .progress
+    private var route: SubtensorSubmissionRoute?
     private var catalogue: SubtensorSubnetCatalogue?
     private var subnetLogos: SubtensorSubnetLogos?
     private var countdownTimer: CountdownTimer?
@@ -44,9 +45,14 @@ private extension SubtensorOperationResultPresenter {
         request.blockTime.timeInterval
     }
 
+    var expectedRoute: SubtensorSubmissionRoute {
+        route ?? (request.shieldQuote != nil ? .shielded : .clear)
+    }
+
     func provideViewModel() {
         let context = SubtensorResultViewContext(
             request: request,
+            route: expectedRoute,
             catalogue: catalogue,
             subnetLogos: subnetLogos,
             remainedTime: countdownTimer?.remainedInterval ?? 0
@@ -58,14 +64,21 @@ private extension SubtensorOperationResultPresenter {
     }
 
     func startCountdown() {
+        clearCountdown()
+
+        let blocks = SubtensorOperationResultConstants.expectedResultBlocks(for: expectedRoute)
         let elapsed = Date().timeIntervalSince(progressStartedAt)
-        let timer = countdownTimer ?? CountdownTimer()
+        let timer = CountdownTimer()
 
-        timer.stop()
         timer.delegate = self
-        timer.start(with: max(0, expectedBlockDuration - elapsed))
-
         countdownTimer = timer
+
+        timer.start(with: max(0, TimeInterval(blocks) * expectedBlockDuration - elapsed))
+    }
+
+    func extendCountdown() {
+        countdownTimer?.start(with: expectedBlockDuration)
+        view?.didUpdateCountdown(remainedTime: UInt(expectedBlockDuration.rounded(.up)))
     }
 
     func clearCountdown() {
@@ -103,7 +116,7 @@ private extension SubtensorOperationResultPresenter {
         }
 
         switch failure.stage {
-        case .notSubmitted:
+        case .notSubmitted, .notExecutedFeeUnknown:
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))
         case let .dispatched(blockHash, _):
             changeState(.failed(failure: failure, time: Date(), holdRemaining: nil))
@@ -242,6 +255,12 @@ extension SubtensorOperationResultPresenter: SubtensorOperationResultInteractorO
         }
     }
 
+    func didReceive(route: SubtensorSubmissionRoute) {
+        self.route = route
+
+        provideViewModel()
+    }
+
     func didReachConfirmationCap() {
         guard case .progress = state else {
             return
@@ -293,7 +312,11 @@ extension SubtensorOperationResultPresenter: CountdownTimerDelegate {
     }
 
     func didStop(with remainedInterval: TimeInterval) {
-        view?.didUpdateCountdown(remainedTime: UInt(remainedInterval.rounded(.up)))
+        if case .progress = state, expectedRoute == .shielded, expectedBlockDuration > 0 {
+            extendCountdown()
+        } else {
+            view?.didUpdateCountdown(remainedTime: UInt(remainedInterval.rounded(.up)))
+        }
     }
 }
 

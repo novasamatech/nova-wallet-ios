@@ -1814,8 +1814,8 @@
 "banxa.sell.action.description" = "Proceso de KYC directo y eficiente";
 "transak.buy.action.description" = "Compra de criptomonedas a partir de solo $5";
 "transak.sell.action.description" = "Venta de criptomonedas a partir de solo $10";
-"mercuryo.buy.action.description" = "Mejor precio con tarifas de hasta 3.95%";
-"mercuryo.sell.action.description" = "Mejor precio con tarifas de hasta 3.95%";
+"mercuryo.buy.action.description" = "Mejor precio con tarifas de hasta 3.95%%";
+"mercuryo.sell.action.description" = "Mejor precio con tarifas de hasta 3.95%%";
 "select.buy.provider.title" = "Seleccione un proveedor para comprar el token %@";
 "select.sell.provider.title" = "Seleccione un proveedor para vender el token %@";
 "select.provider.disclaimer.text" = "Los métodos de pago, tarifas y límites difieren según el proveedor. Compare sus cotizaciones para encontrar la mejor opción para usted.";
@@ -2060,7 +2060,6 @@
 "wallet.list.missing.token" = "¿Te falta un token?";
 "analytics.details.ip" = "Tu dirección IP se utiliza una vez para registrar tu país y luego se elimina — nunca llega a nuestro proveedor de análisis";
 "common.new.badge" = "Nuevo";
-"common.period.90d" = "90 d";
 "deeplink.error.staking.not.supported.message" = "El Staking no es compatible con este activo";
 "feature.unsupported.sheet.message.subtensor.staking" = "Para hacer Stake de TAO, cambia a otro tipo de billetera.";
 "feature.unsupported.sheet.title.subtensor.staking" = "El staking de Bittensor no es compatible con las billeteras %@.";
@@ -2200,7 +2199,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "desde %1$@ por %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "sin compras";
 "staking.subtensor.ui.avg.buy.price.not.available" = "No disponible";
-"staking.subtensor.ui.avg.buy.price.per.format" = "por %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Subiendo";
 "staking.subtensor.ui.buy.more.format" = "Comprar más %@";
 "staking.subtensor.ui.chart.unavailable" = "Gráfico no disponible";
@@ -2350,3 +2348,13 @@
 "staking.subtensor.v22.validators" = "VALIDADORES DISPONIBLES";
 "staking.subtensor.v22.validators.count" = "Validadores";
 "staking.subtensor.v22.website" = "Sitio web";
+"staking.subtensor.ui.confirm.full.exit" = "Salida completa";
+"staking.subtensor.ui.unstake.legs.cap.format" = "Una transacción cubre hasta %@ validadores. Repite para el resto.";
+"staking.subtensor.ui.validator.all" = "Todos los validadores";
+"staking.subtensor.ui.validator.new" = "Nuevo validador";
+"staking.subtensor.validator.status.via.child.key" = "Activo mediante clave secundaria";
+"staking.subtensor.error.shielded.not.executed" = "Tu orden no se ejecutó. Tu Stake no ha cambiado; inténtalo de nuevo.";
+"staking.subtensor.mev.protection.details" = "Mantiene tu orden cifrada en el mempool público para ayudar a prevenir el front-running.";
+"staking.subtensor.mev.protection.title" = "Protección MEV";
+"staking.subtensor.mev.protection.unavailable" = "La protección MEV no está disponible para esta orden.";
+"staking.subtensor.result.fee.may.be.charged" = "Es posible que se haya cobrado una comisión de red.";
