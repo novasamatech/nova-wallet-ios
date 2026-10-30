@@ -1,11 +1,13 @@
 import Foundation
 import Operation_iOS
 
-typealias RampHook = PayCardHook
 typealias RampHookDelegate = OffRampHookDelegate & OnRampHookDelegate
-typealias OffRampHookParams = MercuryoCardParams
-typealias OffRampMessageHandling = PayCardMessageHandling
-typealias OffRampTransferModel = PayCardTopupModel
+typealias OffRampMessageHandling = RampMessageHandling
+
+struct OffRampHookParams {
+    let chainAsset: ChainAsset
+    let refundAddress: AccountAddress
+}
 
 protocol OffRampHookDelegate: AnyObject {
     func didRequestTransfer(from model: OffRampTransferModel)

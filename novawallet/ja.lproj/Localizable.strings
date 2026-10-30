@@ -1784,15 +1784,7 @@
 "chart.period.year" = "昨年";
 "chart.period.max" = "全期間";
 "common.pay" = "支払う";
-"common.card.issued" = "カードが発行されました";
-"card.top.up.dot.setup.title" = "カードにDOTをチャージ";
-"common.manage.debit.card" = "デビットカードを管理";
 "common.estimated.timer" = "推定 ~%@";
-"card.open.pending.sheet.title" = "カードが発行されています！";
-"card.open.pending.sheet.message" = "最大で%@かかる場合があります。\nこのウィンドウは自動的に閉じられます。";
-"card.open.failed.alert.title" = "サポートに連絡";
-"card.open.failed.alert.message" = "support@novawallet.ioに連絡してください。カードを発行するために使用したメールアドレスを添えてください。";
-"card.topup.pending.sheet.title" = "あなたのカードに資金が追加されています！";
 "staking.restake.message" = "報酬はステーキングに追加されます";
 "unified.address.popup.title" = "新しい統一アドレス";
 "unified.address.popup.subtitle" = "いくつかの取引所では、更新中に操作用に従来の形式が必要な場合があります。";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "無効なコールデータ";
 "enter.call.data" = "コールデータを入力";
 "multisig.wallet.details.threshold" = "%li分の%liの閾値";
-"feature.unsupported.sheet.message.card" = "デビットカードを管理するには、異なるタイプのウォレットに切り替えてください。";
 "feature.unsupported.sheet.message.sell" = "仮想通貨をフィアットに売却するには、異なるタイプのウォレットに切り替えてください。";
 "multisig.operation.status.created" = "あなたによって作成された";
 "multisig.operation.signing.progress.format" = "署名中 (%li/%li)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@はこのトランザクション手数料を支払い、最低ネットワーク残高を上回るには少なくとも%@が必要です。残高にさらに%@を追加してください。";
 "multisig.validation.insuffisient.balance.message" = "%@は%@のネットワーク手数料を支払い、%@のマルチシグ預金をするのに十分な残高がありません。残高にさらに%@を追加してください。";
 "feature.unsupported.sheet.title.sell" = "%@ ウォレットでは売却はサポートされていません";
-"feature.unsupported.sheet.title.card" = "デビットカードは%@ウォレットではサポートされていません";
 "multisig.transaction.created.sheet.message" = "他の署名者がトランザクションを確認できます。%@でその状態を追跡できます。";
 "multisig.transactioncreated.sheet.proxied.hint" = "Novaは自動であなたのマルチシグウォレットに切り替えましたので、保留中のトランザクションを確認できます。";
 "multisig.other.signatories" = "他の署名者";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "このコールデータは別の操作用のもので、コールハッシュ%@によります";
 "call.data.validation.error.message" = "ご提供いただいた通話データが無効、または形式が正しくありません。内容をご確認のうえ、再度お試しください。";
 "feature.unsupported.sheet.title.sell.proxied" = "このプロキシウォレットでは売却はサポートされていません";
-"feature.unsupported.sheet.title.card.proxied" = "デビットカードはこのプロキシウォレットではサポートされていません";
 "feature.unsupported.sheet.message.sell.proxied" = "暗号資産を法定通貨に換金するには、別のウォレットに切り替えてください。";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "NovaでTrust Walletアカウントを使用する";

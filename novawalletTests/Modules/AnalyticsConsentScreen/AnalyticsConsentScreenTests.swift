@@ -4,7 +4,7 @@ import UIKit
 
 final class AnalyticsConsentScreenTests: XCTestCase {
     func testMissingPresentingViewReportsUnavailableWithoutRecordingDecision() {
-        let wireframe = MainTabBarWireframe(cardScreenNavigationFactory: CardScreenNavigationFactory())
+        let wireframe = MainTabBarWireframe()
         var unavailableCount = 0
         var decisionCount = 0
 

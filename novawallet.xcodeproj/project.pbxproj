@@ -50,7 +50,6 @@
 		04B85867D67D56994D99FF14 /* NftListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89CFED2E01AB638656E251AF /* NftListProtocols.swift */; };
 		04D6122369889C927BB3D13F /* SwapRouteDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 461EFCB1DAACD7D5DBBB713C /* SwapRouteDetailsViewController.swift */; };
 		04D86D5341406305E60F6D18 /* ReferendumVoteSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024B7E67C0603C53981EC394 /* ReferendumVoteSetupInteractor.swift */; };
-		0503753EC5E2136973D13E52 /* PayCardProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325A4A30102D3583ED09CEF /* PayCardProtocols.swift */; };
 		052392FCEE7F383923B3B7CD /* SubtensorClaimTapRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */; };
 		054C4BCDEC29ED5F74A36E8B /* ExportMnemonicPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBE466BDCF77E65FDCDF81 /* ExportMnemonicPresenter.swift */; };
 		0566845B5E1D65E3632C54CE /* NotificationWalletListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC56B91B4C4091E2429AC010 /* NotificationWalletListViewLayout.swift */; };
@@ -84,7 +83,6 @@
 		0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EAF50AAF6C23225E06C16C /* AssetsSearchInteractor.swift */; };
 		0927732BA0C8A56F62CCA8E7 /* SubtensorSubnetPoolSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BDCC493F029CF48419D643A /* SubtensorSubnetPoolSplitView.swift */; };
 		092A69A83D842376740F1943 /* NotificationWalletListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E09FE9E8344A2AAC336B76F /* NotificationWalletListWireframe.swift */; };
-		0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88247294D27267618933D1D8 /* PayCardPresenter.swift */; };
 		09A6D92CE47636723DFC91F4 /* MessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57535268534B154B42ED51CE /* MessageSheetViewFactory.swift */; };
 		09AB6DE2D19F1FA36BF08288 /* StakingRebagConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D089568ABA686D509DF917 /* StakingRebagConfirmViewLayout.swift */; };
 		0A44D28DF4BCF56131752F35 /* WalletConnectSessionDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ADB95DAB1F29E6A3FDD166 /* WalletConnectSessionDetailsPresenter.swift */; };
@@ -440,7 +438,6 @@
 		0C277DA62D829F33004FF053 /* XcmDynamicAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */; };
 		0C277DA82D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */; };
 		0C277DAD2D82E7FA004FF053 /* SubstratePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */; };
-		0C277DB22D8336A5004FF053 /* PayCardSheetMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */; };
 		0C277DB42D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */; };
 		0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */; };
 		0C277DB92D83F360004FF053 /* MythosStkClaimRewardsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */; };
@@ -904,21 +901,13 @@
 		0C8FDBA92CAE539900775D7F /* SwipeGovSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */; };
 		0C8FDBAB2CAE58DF00775D7F /* SwipeGovService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */; };
 		0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */; };
-		0C8FDBB62CB0FC8A00775D7F /* PayCardMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */; };
-		0C8FDBB82CB0FD3200775D7F /* MercuryoMessageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */; };
-		0C8FDBBA2CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */; };
-		0C8FDBBC2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */; };
-		0C8FDBBE2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */; };
-		0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */; };
-		0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */; };
-		0C8FDBC42CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */; };
-		0C8FDBC62CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */; };
-		0C8FDBC82CB10C5400775D7F /* PayCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */; };
-		0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */; };
-		0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */; };
-		0C8FDBCF2CB25D7400775D7F /* MercuryoStatusChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */; };
+		0C8FDBB62CB0FC8A00775D7F /* RampMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB52CB0FC8A00775D7F /* RampMessageHandler.swift */; };
+		0C8FDBC02CB1001A00775D7F /* RampHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBF2CB1001A00775D7F /* RampHook.swift */; };
+		0C8FDBC22CB1011C00775D7F /* MercuryoApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC12CB1011C00775D7F /* MercuryoApi.swift */; };
+		0C8FDBC82CB10C5400775D7F /* RampResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC72CB10C5400775D7F /* RampResource.swift */; };
+		0C8FDBCF2CB25D7400775D7F /* MercuryoStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCE2CB25D7400775D7F /* MercuryoStatus.swift */; };
 		0C8FDBD12CB25E0400775D7F /* MercuryoGenericResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */; };
-		0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */; };
+		0C8FDBD32CB30DDE00775D7F /* OffRampTransferModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD22CB30DDE00775D7F /* OffRampTransferModel.swift */; };
 		0C8FDBD72CB39D7000775D7F /* AssetListTotalBalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD62CB39D7000775D7F /* AssetListTotalBalanceView.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
@@ -1415,7 +1404,6 @@
 		0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */; };
 		0CF5F68A2CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */; };
 		0CF5F68C2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */; };
-		0CF606CB2D7B0E290041B7AE /* AssetListCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF606CA2D7B0E290041B7AE /* AssetListCardCell.swift */; };
 		0CF606CD2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF606CC2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
@@ -1723,7 +1711,6 @@
 		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
-		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
 		2D09850E2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D09850D2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift */; };
 		2D09858E2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D09858D2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift */; };
@@ -1732,10 +1719,7 @@
 		2D0985E12EE2BEA8007A5E54 /* PVScanAddressMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985E02EE2BEA8007A5E54 /* PVScanAddressMatcher.swift */; };
 		2D0985E62EE2BEC3007A5E54 /* PVSecretScanMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985E52EE2BEC3007A5E54 /* PVSecretScanMatcher.swift */; };
 		2D0985F32EE2C2A4007A5E54 /* ScanSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */; };
-		2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */; };
 		2D0A82EE2CB47F080043B330 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */; };
-		2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
-		2D0A82F12CB573BB0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
 		2D0C96F32EC9F2300034F9F8 /* GiftsLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C96F22EC9F2300034F9F8 /* GiftsLocalStorageSubscriber.swift */; };
@@ -2179,9 +2163,6 @@
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
 		2D966B432D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */; };
-		2D96D8482DECBA5100159E91 /* PayCardNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */; };
-		2D96D84A2DECBC2300159E91 /* OpenCardUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */; };
-		2D96D84C2DECBE9200159E91 /* CardScreenNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */; };
 		2D96D84F2DEDF81B00159E91 /* ExtrinsicPersistenceFilterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D84E2DEDF81B00159E91 /* ExtrinsicPersistenceFilterProtocol.swift */; };
 		2D96D8512DEDF82F00159E91 /* AccountTypeExtrinsicPersistenceFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8502DEDF82F00159E91 /* AccountTypeExtrinsicPersistenceFilter.swift */; };
 		2D96D86A2DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */; };
@@ -2239,9 +2220,9 @@
 		2DA826E02E79AF8400C03B3C /* SecuredViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */; };
 		2DA826E22E79C19F00C03B3C /* AssetListTotalAmountLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */; };
 		2DA826E62E79DC5400C03B3C /* DotsOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */; };
-		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
-		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
-		2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */; };
+		2DA85A652C7D9B8B00591900 /* OffRampTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* OffRampTransferSetupViewController.swift */; };
+		2DA85A672C7DD75300591900 /* OffRampTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* OffRampTransferSetupViewLayout.swift */; };
+		2DA85A6B2C7F36CF00591900 /* OffRampTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* OffRampTransferSetupProtocols.swift */; };
 		2DA85A6E2C7F3F2F00591900 /* MercuryoSellResponseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */; };
 		2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */; };
 		2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */; };
@@ -5839,7 +5820,6 @@
 		871F7F7A4D6AF21C1BC79C82 /* StakingType+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03EB73B177017CDD68E8FFA /* StakingType+Analytics.swift */; };
 		872C31A230DE453B978A43FD /* SubtensorRecommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FD7AD05579407EB8235500 /* SubtensorRecommendations.swift */; };
 		873FAB6E5CAD1FD4D02737D0 /* NominationPoolBondMoreSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C9473AB7D1FE4A27403078 /* NominationPoolBondMoreSetupViewController.swift */; };
-		877A27A443F9C4048B7FF99A /* PayCardInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545A70A20C21319141342418 /* PayCardInteractor.swift */; };
 		8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEB2BC52266AF493D310834 /* SwapSetupViewController.swift */; };
 		879D493C025963619CFADF4F /* GovernanceUnlockSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4642DD5186EFA940518CCB4 /* GovernanceUnlockSetupProtocols.swift */; };
 		87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5DCA28ABF42D342BBDF9A /* ParitySignerTxQrViewLayout.swift */; };
@@ -6188,7 +6168,6 @@
 		924BADB89E7FA2DC54BF1A02 /* NPoolsClaimRewardsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F1F933F624B01855AA3BA5 /* NPoolsClaimRewardsInteractor.swift */; };
 		92815EA491826A925817AFA8 /* SubtensorWhereToStakeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FED442D3DF550CD8E187BA /* SubtensorWhereToStakeViewController.swift */; };
 		92984DFE797C52644C084377 /* SwapSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53775773F2060B4B7F6D62DA /* SwapSetupProtocols.swift */; };
-		92B880FEDD0AE45A36898308 /* PayCardViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731F3692859677E2B67AE629 /* PayCardViewFactory.swift */; };
 		92C7D29370144AF683889DA9 /* SubtensorGetTaoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A7C1E4E3374FBEA80F0C22 /* SubtensorGetTaoCardView.swift */; };
 		93092A28D3C2455B873CD6E7 /* SubtensorSubnetLogos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1603EC88CB64A02A582EC17 /* SubtensorSubnetLogos.swift */; };
 		93434E8E407A6C63D8862A21 /* ChainAssetSelectionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DECC58C93DB18E79A03B5A0 /* ChainAssetSelectionProtocols.swift */; };
@@ -6685,7 +6664,7 @@
 		C28E807A027DB4C16DF500C4 /* DAppOperationConfirmPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADC5084C892CD03FCD33421 /* DAppOperationConfirmPresenter+Analytics.swift */; };
 		C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F98F75F1BCA9143356DBF08 /* GovernanceRevokeDelegationConfirmViewFactory.swift */; };
 		C2DD387223F4520ADC49AE9B /* NftDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6B5B187E83839481846C7E /* NftDetailsInteractor.swift */; };
-		C2F572F479BD61A88693238E /* PayCardViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C037C70EFB78932175FAE1 /* PayCardViewLayout.swift */; };
+		C2F572F479BD61A88693238E /* RampViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C037C70EFB78932175FAE1 /* RampViewLayout.swift */; };
 		C317BBF2F1815F0A8D937428 /* DelegateVotedReferendaViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86B1DF9D9E8E5DD8DC49DE /* DelegateVotedReferendaViewLayout.swift */; };
 		C32B85D65D0290A577BFC85F /* ParaStkRebondViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97910F70D80502419BCBB398 /* ParaStkRebondViewFactory.swift */; };
 		C36D9A2276FCAF31FFACFA4C /* SubtensorPositionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F33049A9CEA8AA6F6BD6B03 /* SubtensorPositionViewLayout.swift */; };
@@ -6756,7 +6735,6 @@
 		CC8E2564D41575ABE3C43882 /* UnifiedAddressPopupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE8AD52DEE774059844DCBE /* UnifiedAddressPopupViewLayout.swift */; };
 		CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C7D307478FA7D179B5D12B /* PolkadotRewardEngineTests.swift */; };
 		CCF5A7CED175D5E43B2C9971 /* StakingUnbondSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC17D12DCD0CDAF0BC13D80D /* StakingUnbondSetupViewController.swift */; };
-		CCF725BDBEE08A08C5450BC0 /* PayCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CA74395730B3676CC5124 /* PayCardViewController.swift */; };
 		CD0B1DA24265EFECD8EE23C5 /* NovaMainAppContainerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617F300E7FD54044844B133E /* NovaMainAppContainerPresenter.swift */; };
 		CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AE3AE09F98E37C15BA87A1 /* LedgerInstructionsWireframe.swift */; };
 		CD9359A2720F2EE1D4E09DF6 /* DAppTxDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219B9B1D97460F022D40D63E /* DAppTxDetailsWireframe.swift */; };
@@ -7018,7 +6996,6 @@
 		F0F9DA6676C248139A472163 /* AssetListRevealCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430F51B055B042799CFE20A3 /* AssetListRevealCell.swift */; };
 		F10FE0950B5F193FA4AEE10D /* DAppListPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D4D3880277991FF320DA98 /* DAppListPresenter+Analytics.swift */; };
 		F13ABDF294734B089F544E49 /* SubtensorOperationStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4838C35D0C44D98ECD3551 /* SubtensorOperationStatusView.swift */; };
-		F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCC9E55522C1D33C353A9A08 /* PayCardWireframe.swift */; };
 		F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1113F43B2C2EA6CA128893 /* CrowdloanUnlockViewLayout.swift */; };
 		F1A0E0030000000000000001 /* HydraAaveContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0040000000000000001 /* HydraAaveContract.swift */; };
 		F1A0E0050000000000000001 /* HydraAaveReservesDiscoveryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */; };
@@ -7269,7 +7246,6 @@
 		02ACCC85B2CCF3D9392CA9B4 /* CrowdloanListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListProtocols.swift; sourceTree = "<group>"; };
 		0313951BDB6341C58C7B4DF5 /* SubtensorOperationResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultViewController.swift; sourceTree = "<group>"; };
 		031DA8E6B5CC01FD4A9B58F6 /* ReferendumsFiltersProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersProtocols.swift; sourceTree = "<group>"; };
-		0325A4A30102D3583ED09CEF /* PayCardProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardProtocols.swift; sourceTree = "<group>"; };
 		03622BA8CF4657307B8F9B97 /* DAppWalletAuthWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppWalletAuthWireframe.swift; sourceTree = "<group>"; };
 		037D3CE23FFD176F4F7DABC0 /* ParaStkStakeConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkStakeConfirmViewFactory.swift; sourceTree = "<group>"; };
 		038B1C35376B62CFE28C403D /* CollatorStakingSelectFiltersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollatorStakingSelectFiltersWireframe.swift; sourceTree = "<group>"; };
@@ -7670,7 +7646,6 @@
 		0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAssetTransfer.swift; sourceTree = "<group>"; };
 		0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmDynamicTransfers+Protocol.swift"; sourceTree = "<group>"; };
 		0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstratePrimitives.swift; sourceTree = "<group>"; };
-		0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetMode.swift; sourceTree = "<group>"; };
 		0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsViewController.swift; sourceTree = "<group>"; };
 		0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsState.swift; sourceTree = "<group>"; };
 		0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsModel.swift; sourceTree = "<group>"; };
@@ -8140,21 +8115,13 @@
 		0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummaryTests.swift; sourceTree = "<group>"; };
 		0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovService.swift; sourceTree = "<group>"; };
 		0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardSummaryProcessing.swift; sourceTree = "<group>"; };
-		0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardMessageHandler.swift; sourceTree = "<group>"; };
-		0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoMessageName.swift; sourceTree = "<group>"; };
-		0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardsResponseHandler.swift; sourceTree = "<group>"; };
-		0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardStatusHandler.swift; sourceTree = "<group>"; };
-		0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoSellRequestResponseHandler.swift; sourceTree = "<group>"; };
-		0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardHook.swift; sourceTree = "<group>"; };
-		0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardHookFactory.swift; sourceTree = "<group>"; };
-		0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MercuryoCardHookFactory+ResponseIntercept.swift"; sourceTree = "<group>"; };
-		0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MercuryoCardHookFactory+Widget.swift"; sourceTree = "<group>"; };
-		0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardResourceProvider.swift; sourceTree = "<group>"; };
-		0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardResourceProvider.swift; sourceTree = "<group>"; };
-		0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardModel.swift; sourceTree = "<group>"; };
-		0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoStatusChange.swift; sourceTree = "<group>"; };
+		0C8FDBB52CB0FC8A00775D7F /* RampMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampMessageHandler.swift; sourceTree = "<group>"; };
+		0C8FDBBF2CB1001A00775D7F /* RampHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampHook.swift; sourceTree = "<group>"; };
+		0C8FDBC12CB1011C00775D7F /* MercuryoApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoApi.swift; sourceTree = "<group>"; };
+		0C8FDBC72CB10C5400775D7F /* RampResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampResource.swift; sourceTree = "<group>"; };
+		0C8FDBCE2CB25D7400775D7F /* MercuryoStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoStatus.swift; sourceTree = "<group>"; };
 		0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoGenericResponse.swift; sourceTree = "<group>"; };
-		0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardTopupModel.swift; sourceTree = "<group>"; };
+		0C8FDBD22CB30DDE00775D7F /* OffRampTransferModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffRampTransferModel.swift; sourceTree = "<group>"; };
 		0C8FDBD62CB39D7000775D7F /* AssetListTotalBalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalBalanceView.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
@@ -8639,7 +8606,6 @@
 		0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotRewardEngine.swift; sourceTree = "<group>"; };
 		0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphPath.swift; sourceTree = "<group>"; };
 		0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchageGraphReachability.swift; sourceTree = "<group>"; };
-		0CF606CA2D7B0E290041B7AE /* AssetListCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCardCell.swift; sourceTree = "<group>"; };
 		0CF606CC2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkUnstakeConfirmLayout.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
@@ -8797,7 +8763,6 @@
 		1C56183BEA8453E1B0CC255A /* ManualBackupWalletListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupWalletListViewFactory.swift; sourceTree = "<group>"; };
 		1C5C524FD0E3E7E5113F325D /* AssetReceiveViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetReceiveViewFactory.swift; sourceTree = "<group>"; };
 		1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManagerTests.swift; sourceTree = "<group>"; };
-		1C6CA74395730B3676CC5124 /* PayCardViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardViewController.swift; sourceTree = "<group>"; };
 		1C996DFAABD9DBA72FC3AAAD /* FeatureNavigationTrackerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureNavigationTrackerFactory.swift; sourceTree = "<group>"; };
 		1C9EEC5FDEA7DAE42F2880C7 /* ParaStkYieldBoostSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupPresenter.swift; sourceTree = "<group>"; };
 		1CC566D6EACB81469B926611 /* ExportMnemonicConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicConfirmInteractor.swift; sourceTree = "<group>"; };
@@ -8967,7 +8932,6 @@
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
 		2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel17.xcdatamodel; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
-		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
 		2D09850D2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSubmissionMonitor.swift; sourceTree = "<group>"; };
 		2D09858D2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorTimeout.swift; sourceTree = "<group>"; };
@@ -8976,9 +8940,7 @@
 		2D0985E02EE2BEA8007A5E54 /* PVScanAddressMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVScanAddressMatcher.swift; sourceTree = "<group>"; };
 		2D0985E52EE2BEC3007A5E54 /* PVSecretScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVSecretScanMatcher.swift; sourceTree = "<group>"; };
 		2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanSecret.swift; sourceTree = "<group>"; };
-		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
-		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
 		2D0C96F22EC9F2300034F9F8 /* GiftsLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -9412,9 +9374,6 @@
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeSharedStateStore.swift; sourceTree = "<group>"; };
 		2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationTransformFactory.swift; sourceTree = "<group>"; };
-		2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardNavigation.swift; sourceTree = "<group>"; };
-		2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCardUrlParsingService.swift; sourceTree = "<group>"; };
-		2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScreenNavigationFactory.swift; sourceTree = "<group>"; };
 		2D96D84E2DEDF81B00159E91 /* ExtrinsicPersistenceFilterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicPersistenceFilterProtocol.swift; sourceTree = "<group>"; };
 		2D96D8502DEDF82F00159E91 /* AccountTypeExtrinsicPersistenceFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeExtrinsicPersistenceFilter.swift; sourceTree = "<group>"; };
 		2D96D8612DF04FF700159E91 /* DelegatedAccountsUpdateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateFactory.swift; sourceTree = "<group>"; };
@@ -9460,9 +9419,9 @@
 		2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredViewModel.swift; sourceTree = "<group>"; };
 		2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalAmountLabel.swift; sourceTree = "<group>"; };
 		2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsOverlayView.swift; sourceTree = "<group>"; };
-		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
-		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
-		2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupProtocols.swift; sourceTree = "<group>"; };
+		2DA85A642C7D9B8B00591900 /* OffRampTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffRampTransferSetupViewController.swift; sourceTree = "<group>"; };
+		2DA85A662C7DD75300591900 /* OffRampTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffRampTransferSetupViewLayout.swift; sourceTree = "<group>"; };
+		2DA85A6A2C7F36CF00591900 /* OffRampTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffRampTransferSetupProtocols.swift; sourceTree = "<group>"; };
 		2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoSellResponseData.swift; sourceTree = "<group>"; };
 		2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovBannerView.swift; sourceTree = "<group>"; };
 		2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedGradientBackgroundView.swift; sourceTree = "<group>"; };
@@ -10026,7 +9985,6 @@
 		53BE9DEF100A373868EDD03F /* ParaStkSelectCollatorsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkSelectCollatorsWireframe.swift; sourceTree = "<group>"; };
 		53C2612BBF75CF0FBD91764E /* ParaStkCollatorsSearchWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorsSearchWireframe.swift; sourceTree = "<group>"; };
 		543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAuthorizedResponseGrader.swift; sourceTree = "<group>"; };
-		545A70A20C21319141342418 /* PayCardInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardInteractor.swift; sourceTree = "<group>"; };
 		5467B9B6AEDB33F565D130A1 /* ParaStkUnstakeViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeViewFactory.swift; sourceTree = "<group>"; };
 		54BEBC631DCC1DF8AD0578E5 /* KnownNetworksListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewFactory.swift; sourceTree = "<group>"; };
 		54FB887490A8B33890B4E0E4 /* ControllerAccountConfirmationPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationPresenter.swift; sourceTree = "<group>"; };
@@ -10233,7 +10191,7 @@
 		707D69D7EC1BD4295192633F /* DAppBrowserTabListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListPresenter.swift; sourceTree = "<group>"; };
 		70A399F229B59A854FEA6D91 /* LedgerPerformOperationViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerPerformOperationViewLayout.swift; sourceTree = "<group>"; };
 		70AA08AB98D94ED9A61977B8 /* SubtensorStakeSetupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeSetupViewModelFactory.swift; sourceTree = "<group>"; };
-		70C037C70EFB78932175FAE1 /* PayCardViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardViewLayout.swift; sourceTree = "<group>"; };
+		70C037C70EFB78932175FAE1 /* RampViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RampViewLayout.swift; sourceTree = "<group>"; };
 		71040ECB206855280257D4F2 /* StartStakingConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmPresenter.swift; sourceTree = "<group>"; };
 		710BEEB9E42E69CCD7FDD552 /* UnifiedAddressPopupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnifiedAddressPopupInteractor.swift; sourceTree = "<group>"; };
 		710F0BA5EC0F5D434217E5AA /* CloudBackupCreateViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateViewController.swift; sourceTree = "<group>"; };
@@ -10252,7 +10210,6 @@
 		72EF3BEC3EA07548C10A87FD /* ReferendumSearchWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumSearchWireframe.swift; sourceTree = "<group>"; };
 		72FEB9C65F32B7A4FD27C9EB /* ParitySignerTxScanInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanInteractor.swift; sourceTree = "<group>"; };
 		7306D50F278F6CC90DC88F27 /* AccountConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountConfirmPresenter.swift; sourceTree = "<group>"; };
-		731F3692859677E2B67AE629 /* PayCardViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardViewFactory.swift; sourceTree = "<group>"; };
 		73B10524F0FC470391E22680 /* SubtensorSubnetCatalogueOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetCatalogueOperationFactory.swift; sourceTree = "<group>"; };
 		73D569738955713647612599 /* OperationDetailsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsViewLayout.swift; sourceTree = "<group>"; };
 		73D6B3F74819B5D45324F714 /* NominationPoolBondMoreConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmInteractor.swift; sourceTree = "<group>"; };
@@ -12802,7 +12759,6 @@
 		881ED76A6BA2C0C92E34D491 /* BaseReferendumVoteConfirmPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseReferendumVoteConfirmPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		881ED96729758088000C0457 /* Array+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Safe.swift"; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
-		88247294D27267618933D1D8 /* PayCardPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardPresenter.swift; sourceTree = "<group>"; };
 		8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsInteractor.swift; sourceTree = "<group>"; };
 		8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrettyPrintedJSONOperationFactory.swift; sourceTree = "<group>"; };
 		8824D42529032B410022D778 /* BlurredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredView.swift; sourceTree = "<group>"; };
@@ -14125,7 +14081,6 @@
 		FC303C85EF12CFE605A0950E /* KnownNetworksListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListProtocols.swift; sourceTree = "<group>"; };
 		FC3CCCB1EB6A34D3F5BC182E /* SubtensorUnstakePlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakePlanTests.swift; sourceTree = "<group>"; };
 		FCA43AABAC7555C2E648442F /* DAppSettingsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSettingsViewFactory.swift; sourceTree = "<group>"; };
-		FCC9E55522C1D33C353A9A08 /* PayCardWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayCardWireframe.swift; sourceTree = "<group>"; };
 		FD098B6DB870AFF6304CB542 /* NotificationWalletListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationWalletListProtocols.swift; sourceTree = "<group>"; };
 		FD3446A32CAF6768F6EBFB71 /* CrowdloanUnlockPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanUnlockPresenter.swift; sourceTree = "<group>"; };
 		FDAE49E1AAB3B45CE3CE78DF /* MythosStkUnstakeConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeConfirmProtocols.swift; sourceTree = "<group>"; };
@@ -14484,6 +14439,10 @@
 		0C028E472DC910520060A0E8 /* Mercuryo */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBCE2CB25D7400775D7F /* MercuryoStatus.swift */,
+				2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */,
+				0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */,
+				0C8FDBC12CB1011C00775D7F /* MercuryoApi.swift */,
 				0C028E422DC910520060A0E8 /* OffRamp */,
 				0C028E452DC910520060A0E8 /* OnRamp */,
 				0C028E462DC910520060A0E8 /* MercuryoRampEventNames.swift */,
@@ -14522,6 +14481,8 @@
 		0C028E522DC910520060A0E8 /* Hook */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBB52CB0FC8A00775D7F /* RampMessageHandler.swift */,
+				0C8FDBBF2CB1001A00775D7F /* RampHook.swift */,
 				0C028E472DC910520060A0E8 /* Mercuryo */,
 				0C028E4F2DC910520060A0E8 /* Transak */,
 				0C028E502DC910520060A0E8 /* OffRampHook.swift */,
@@ -14533,6 +14494,8 @@
 		0C028E552DC910520060A0E8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBC72CB10C5400775D7F /* RampResource.swift */,
+				0C8FDBD22CB30DDE00775D7F /* OffRampTransferModel.swift */,
 				0C028E532DC910520060A0E8 /* RampModel.swift */,
 				91FFDC1BB4844BA49844F2E2 /* AnalyticsRampContent.swift */,
 				0C028E542DC910520060A0E8 /* TransakTransferEventData.swift */,
@@ -14543,6 +14506,7 @@
 		0C028E5C2DC910520060A0E8 /* Ramp */ = {
 			isa = PBXGroup;
 			children = (
+				70C037C70EFB78932175FAE1 /* RampViewLayout.swift */,
 				0C028E522DC910520060A0E8 /* Hook */,
 				0C028E552DC910520060A0E8 /* Model */,
 				0C028E562DC910520060A0E8 /* RampInteractor.swift */,
@@ -16302,18 +16266,6 @@
 				0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */,
 			);
 			path = SwipeGov;
-			sourceTree = "<group>";
-		};
-		0C8FDBCB2CB10E2C00775D7F /* Mercuryo */ = {
-			isa = PBXGroup;
-			children = (
-				2D07803F2D12C68E003E35B1 /* MessageHandlers */,
-				2D0780402D12C6B5003E35B1 /* Hooks */,
-				2D0780412D12C6F8003E35B1 /* Model */,
-				0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */,
-				2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */,
-			);
-			path = Mercuryo;
 			sourceTree = "<group>";
 		};
 		0C962F842AA859DE00C0B551 /* LocalFilter */ = {
@@ -18157,37 +18109,6 @@
 			path = Validation;
 			sourceTree = "<group>";
 		};
-		2D07803F2D12C68E003E35B1 /* MessageHandlers */ = {
-			isa = PBXGroup;
-			children = (
-				0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */,
-				0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */,
-				0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */,
-			);
-			path = MessageHandlers;
-			sourceTree = "<group>";
-		};
-		2D0780402D12C6B5003E35B1 /* Hooks */ = {
-			isa = PBXGroup;
-			children = (
-				0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */,
-				0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */,
-				0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */,
-			);
-			path = Hooks;
-			sourceTree = "<group>";
-		};
-		2D0780412D12C6F8003E35B1 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */,
-				2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */,
-				0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */,
-				0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		2D0985092EDEF7F7007A5E54 /* TransactionSubmissionMonitor */ = {
 			isa = PBXGroup;
 			children = (
@@ -18208,15 +18129,6 @@
 				2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */,
 			);
 			path = PolkadotVaultScan;
-			sourceTree = "<group>";
-		};
-		2D0A82EA2CB47E200043B330 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */,
-				0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		2D0C97192ECA41310034F9F8 /* Factory */ = {
@@ -19924,28 +19836,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		2DA85A692C7F366C00591900 /* CardTopUp */ = {
+		2DA85A692C7F366C00591900 /* OffRamp */ = {
 			isa = PBXGroup;
 			children = (
-				2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */,
-				2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */,
-				2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */,
+				2DA85A6A2C7F36CF00591900 /* OffRampTransferSetupProtocols.swift */,
+				2DA85A642C7D9B8B00591900 /* OffRampTransferSetupViewController.swift */,
+				2DA85A662C7DD75300591900 /* OffRampTransferSetupViewLayout.swift */,
 			);
-			path = CardTopUp;
-			sourceTree = "<group>";
-		};
-		2DA85A6C2C7F3F2300591900 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */,
-				0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */,
-				0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */,
-				0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */,
-				0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */,
-				2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */,
-				2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */,
-			);
-			path = Model;
+			path = OffRamp;
 			sourceTree = "<group>";
 		};
 		2DA85A7A2C80726300591900 /* Presenter */ = {
@@ -22159,7 +22057,6 @@
 				774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */,
 				774A980C2B0D0873009146CA /* OpenScreenUrlParsingService.swift */,
 				77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */,
-				2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */,
 				77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */,
 				2DC002D82E869FD700D49A42 /* OpenAHMUrlParsingService.swift */,
 				77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */,
@@ -25823,7 +25720,7 @@
 		848F8B1528634F8C00204BC4 /* OnChain */ = {
 			isa = PBXGroup;
 			children = (
-				2DA85A692C7F366C00591900 /* CardTopUp */,
+				2DA85A692C7F366C00591900 /* OffRamp */,
 				84CFE446292B979B00CDDD7C /* Interactor */,
 				9871C4FF3B05F6055AF82F14 /* OnChainTransferSetupWireframe.swift */,
 				DD1A2F7E5E278FDCC89FE097 /* OnChainTransferSetupPresenter.swift */,
@@ -26091,7 +25988,6 @@
 				85D192A683920D50BCD10893 /* Notifications */,
 				3C6913D315CA586B8DBC28EC /* AppearanceSettings */,
 				F3B54B5A951ACB53FBE9A9EF /* NovaMainAppContainer */,
-				C0549656153BA1D4E114DCDA /* PayCard */,
 				2D2B6AF02D6DCD5C002F8C77 /* BrowserNavigation */,
 				525901B46946ED08CB25F6C3 /* Banners */,
 				0274F684DCFA6D2AFEA43CF5 /* AssetPriceChart */,
@@ -29102,7 +28998,6 @@
 			children = (
 				2D7978772E829FF90049F02A /* AssetListNftView */,
 				2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */,
-				0CF606CA2D7B0E290041B7AE /* AssetListCardCell.swift */,
 				2D008A642CC5684F00BFEE99 /* AssetListCollectionManager */,
 				2D008A5B2CC11DE300BFEE99 /* FlowLayout */,
 				2D81FAE92CC6351000BA0E46 /* AssetListAssetCell */,
@@ -31629,24 +31524,6 @@
 			path = AccountImport;
 			sourceTree = "<group>";
 		};
-		C0549656153BA1D4E114DCDA /* PayCard */ = {
-			isa = PBXGroup;
-			children = (
-				0C8FDBCB2CB10E2C00775D7F /* Mercuryo */,
-				2DA85A6C2C7F3F2300591900 /* Model */,
-				2D0A82EA2CB47E200043B330 /* View */,
-				0325A4A30102D3583ED09CEF /* PayCardProtocols.swift */,
-				FCC9E55522C1D33C353A9A08 /* PayCardWireframe.swift */,
-				88247294D27267618933D1D8 /* PayCardPresenter.swift */,
-				545A70A20C21319141342418 /* PayCardInteractor.swift */,
-				1C6CA74395730B3676CC5124 /* PayCardViewController.swift */,
-				70C037C70EFB78932175FAE1 /* PayCardViewLayout.swift */,
-				731F3692859677E2B67AE629 /* PayCardViewFactory.swift */,
-				2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */,
-			);
-			path = PayCard;
-			sourceTree = "<group>";
-		};
 		C20671672BE647C99C514715 /* SubtensorOperationResult */ = {
 			isa = PBXGroup;
 			children = (
@@ -33487,7 +33364,6 @@
 				7778FE4C2B9107D20023E801 /* CompoundOperationWrapper+Dependency.swift in Sources */,
 				0C3AD3092DF04D3500387C0E /* AssetTypeExtras.swift in Sources */,
 				77A90E2B2BA2BFBD00A08A3E /* Referenda.swift in Sources */,
-				2D0A82F12CB573BB0043B330 /* PayCardStatus.swift in Sources */,
 				2DEDEF742E4D0AB8008F07B2 /* TypeRegistry+Node.swift in Sources */,
 				7778FE612B910BD40023E801 /* GovernanceType.swift in Sources */,
 				2DEDEF772E4D0B83008F07B2 /* PalletAssets+Call.swift in Sources */,
@@ -34278,7 +34154,6 @@
 				77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */,
 				2D8DE4E82E4A12D90004291B /* MultisigNotificationsProtocols.swift in Sources */,
 				88F34FDB28FFE6AA00712BDE /* RequestedAmountRow.swift in Sources */,
-				2D96D84C2DECBE9200159E91 /* CardScreenNavigationFactory.swift in Sources */,
 				880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */,
 				0C03878A2D0A2785000A2F24 /* SwapRouteDetailsViewModelFactory.swift in Sources */,
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
@@ -34381,7 +34256,6 @@
 				AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */,
 				0CAA10052E7A0005007E41C4 /* Logger+SDKLogger.swift in Sources */,
 				84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */,
-				0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */,
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
 				8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */,
 				8490143024A935FE008F705E /* AlertPresentable.swift in Sources */,
@@ -34466,7 +34340,7 @@
 				840DFDD8277061ED00B62981 /* DAppOperationConfirmModel.swift in Sources */,
 				84F4393A25DAC48D00AEDA56 /* JSONRPCAliases.swift in Sources */,
 				84466B3728B7588F00FA1E0D /* LedgerWalletFactory.swift in Sources */,
-				2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */,
+				2DA85A672C7DD75300591900 /* OffRampTransferSetupViewLayout.swift in Sources */,
 				0C1D433F2ED9B27F0023626A /* AssetsExchangeGraphDescription.swift in Sources */,
 				84C5ADD928127F4D006D7388 /* WalletAccountSelectionView.swift in Sources */,
 				843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */,
@@ -34501,7 +34375,7 @@
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,
 				0CD846412BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift in Sources */,
 				84415BCA26E783EB005A3683 /* PayoutValidatorsForNominatorFactory.swift in Sources */,
-				2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */,
+				2DA85A652C7D9B8B00591900 /* OffRampTransferSetupViewController.swift in Sources */,
 				8401AEC32642A71D000B03E3 /* StakingRebondConfirmationViewController.swift in Sources */,
 				0CFF82512D9275C900DB17A4 /* AvailableBalanceMapping.swift in Sources */,
 				2D533C4A2EB0B4000005FF8A /* GiftTransferSetupProtocols.swift in Sources */,
@@ -35506,7 +35380,6 @@
 				0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */,
-				0C8FDBBC2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift in Sources */,
 				0C2285DC2E23D8B30093FD44 /* DelegationResolutionCallWrapper.swift in Sources */,
 				0CD54E4B2BCE306C007B58E7 /* CloudBackupCryptoManager.swift in Sources */,
 				8858917A29A700F000320896 /* DelegationReferendumVotersViewModelFactory.swift in Sources */,
@@ -35653,7 +35526,6 @@
 				2DFF39D52E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift in Sources */,
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
-				2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */,
 				84F231E329B233F20070FC2F /* GovernanceDelegateListOperationFactoryProtocol+BlockNumber.swift in Sources */,
 				2D4F551C2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift in Sources */,
 				849AFEB326DADC1300B65924 /* SubqueryHistory.swift in Sources */,
@@ -35740,7 +35612,7 @@
 				84EBC54324F656D100459D15 /* SortDescriptor+Storage.swift in Sources */,
 				845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */,
 				840874DE29782DD400ACFA55 /* GovernanceDelegateMetadataFactory.swift in Sources */,
-				0C8FDBC82CB10C5400775D7F /* PayCardResourceProvider.swift in Sources */,
+				0C8FDBC82CB10C5400775D7F /* RampResource.swift in Sources */,
 				77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */,
 				0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */,
 				0C2285E42E244D1E0093FD44 /* DelegationCallWrapperFactory.swift in Sources */,
@@ -35862,7 +35734,6 @@
 				2DDF94C82E1955C1009B7F19 /* MultisigTxDetails.swift in Sources */,
 				84B6349D28F4A06D00503306 /* Preimage.swift in Sources */,
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,
-				2D96D8482DECBA5100159E91 /* PayCardNavigation.swift in Sources */,
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
 				0CB64E652B01E0CC008F268F /* TransferNetworkSelectionCell.swift in Sources */,
 				0C3205EC2A8A122D002EB914 /* FeeOutputModel.swift in Sources */,
@@ -36349,7 +36220,6 @@
 				9D5926790B055C56FB74B282 /* AccountManagementProtocols.swift in Sources */,
 				7796C7052A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift in Sources */,
 				84F18D4E27A18C1400CA7554 /* OrmlAccountSubscription.swift in Sources */,
-				0C8FDBC62CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift in Sources */,
 				7726CD552A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift in Sources */,
 				8499FED427BFAA0000712589 /* BaseNftSyncService.swift in Sources */,
 				F419FD7A273D05B00061652C /* SettingsSection.swift in Sources */,
@@ -36429,7 +36299,6 @@
 				84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */,
 				84DB9E8A26409E8200F23DD3 /* StakingRedeemLayout.swift in Sources */,
 				84F3B27627F4175500D64CF5 /* PhishingSite.swift in Sources */,
-				0C8FDBB82CB0FD3200775D7F /* MercuryoMessageName.swift in Sources */,
 				84644A2B2567222A004EAA4B /* TriangularedBlurButton.swift in Sources */,
 				F41CEB7B272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift in Sources */,
 				843E9B3D27C8E8F1009C143A /* NftMediaView.swift in Sources */,
@@ -36496,7 +36365,6 @@
 				84644A0725670B03004EAA4B /* BlockBackgroundView.swift in Sources */,
 				2D3286F62E00B70B004D5D24 /* MultisigCallDataSyncService.swift in Sources */,
 				AEA0C8B0267B82BA00F9666F /* SelectedValidatorListHeaderView.swift in Sources */,
-				2D96D84A2DECBC2300159E91 /* OpenCardUrlParsingService.swift in Sources */,
 				0CA8AF232D85E8E800DB4E6A /* RuntimeCallOrigin.swift in Sources */,
 				AEA2C1BE2681E9DD0069492E /* ValidatorSearchViewController.swift in Sources */,
 				84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */,
@@ -36838,7 +36706,7 @@
 				AD00010000000000000000FB /* AssetHubCommissionHistoryParser+Calls.swift in Sources */,
 				AB0000002E3D050FCDCC1CF2 /* AssetHubCommissionTopology.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
-				0C8FDBB62CB0FC8A00775D7F /* PayCardMessageHandler.swift in Sources */,
+				0C8FDBB62CB0FC8A00775D7F /* RampMessageHandler.swift in Sources */,
 				0C38B5102B7DCADF00882A8B /* KodaDotNftSyncService.swift in Sources */,
 				88421059289BBA8D00306F2C /* CurrencyViewFactory.swift in Sources */,
 				0C7104852C2B26A100487E64 /* NewLedgerPolkadotApplication.swift in Sources */,
@@ -37130,7 +36998,6 @@
 				844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */,
 				0C0F6D722D39698700943A7C /* MythosStakingPallet+Freezes.swift in Sources */,
 				8499FED627BFB12600712589 /* UniquesSyncService.swift in Sources */,
-				0C8FDBBE2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift in Sources */,
 				841E556B282EAC3600C8438F /* ParachainStakingDelegatorState.swift in Sources */,
 				880E40FF298CF1ED0077B18B /* VotesProtocols.swift in Sources */,
 				774A980D2B0D0873009146CA /* OpenScreenUrlParsingService.swift in Sources */,
@@ -38001,7 +37868,6 @@
 				84EF8D3E288FDA2100265346 /* WalletListLocalStorageSubscriber.swift in Sources */,
 				2D3C71AB2E087CFB00DF9E49 /* PendingOperation.swift in Sources */,
 				0CB2E89D2E5EFE6F0067DE12 /* ProxyFilter.swift in Sources */,
-				0CF606CB2D7B0E290041B7AE /* AssetListCardCell.swift in Sources */,
 				0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */,
 				84DD261429ACA9030032A598 /* VotersInfoOperationFactory.swift in Sources */,
 				0C63909B2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift in Sources */,
@@ -38030,7 +37896,7 @@
 				84033057290FD8AB009C18E6 /* ReferendumsPersonalActivityView.swift in Sources */,
 				433A3C2B0D1E4BA5974D681B /* DAppAddFavoriteWireframe.swift in Sources */,
 				0C7104832C2B176100487E64 /* LedgerCommonApplication.swift in Sources */,
-				0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */,
+				0C8FDBC02CB1001A00775D7F /* RampHook.swift in Sources */,
 				77C9BCCC2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift in Sources */,
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
 				2DC694512DF2F0DB004F4584 /* MultisigAccountMapper.swift in Sources */,
@@ -38075,7 +37941,6 @@
 				0C3731CC2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift in Sources */,
 				0C75E2982C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift in Sources */,
 				2D0C96FD2EC9F2C20034F9F8 /* GiftsLocalSubscriptionFactory.swift in Sources */,
-				0C277DB22D8336A5004FF053 /* PayCardSheetMode.swift in Sources */,
 				2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */,
 				A714CEAF7A86292E8D679056 /* ParaStkStakeSetupViewFactory.swift in Sources */,
 				84350AD62845836C0031EF24 /* IdentityPresentable.swift in Sources */,
@@ -38136,7 +38001,6 @@
 				BFC8C5A2C95D6EDF97D73732 /* CollatorStakingSelectSearchPresenter.swift in Sources */,
 				25993E2E536DE682E1DFC9AD /* CollatorStakingSelectSearchInteractor.swift in Sources */,
 				842643BF28785CFC0031B5B5 /* TuringStaking.swift in Sources */,
-				0C8FDBBA2CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift in Sources */,
 				0CB64E5E2B00AA8F008F268F /* GetTokenOptionsResult.swift in Sources */,
 				688F73AFD5FF20F77242B57E /* CollatorStakingSelectSearchViewController.swift in Sources */,
 				3BFD635E852E4D395025BEE8 /* CollatorStakingSelectSearchViewFactory.swift in Sources */,
@@ -38192,7 +38056,6 @@
 				08E88012BCBC5A04D5CD6978 /* ParaStkUnstakeConfirmPresenter+Analytics.swift in Sources */,
 				DECE047E7BBE2B9251A09353 /* CollatorStkUnstakeConfirmVC.swift in Sources */,
 				77171CA82A98BBA10032B387 /* NominationPoolErrorPresentable.swift in Sources */,
-				2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */,
 				0CD76AED2E5675D400C6E34B /* XcmTransferFeatures.swift in Sources */,
 				A14308E2633921838166C843 /* ParaStkUnstakeConfirmViewFactory.swift in Sources */,
 				841AB78F2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift in Sources */,
@@ -38201,7 +38064,7 @@
 				88F34FDD28FFE6E400712BDE /* MultiValueView+Model.swift in Sources */,
 				54D334605E9A7C71A4873CFC /* ParaStkRedeemWireframe.swift in Sources */,
 				413CCB7C7B22831147B8E815 /* ParaStkRedeemPresenter.swift in Sources */,
-				0C8FDBCF2CB25D7400775D7F /* MercuryoStatusChange.swift in Sources */,
+				0C8FDBCF2CB25D7400775D7F /* MercuryoStatus.swift in Sources */,
 				35F9157CAA182493B2F0E1D3 /* ParaStkRedeemInteractor.swift in Sources */,
 				771901A22AE7E34D00D9C918 /* SwapBaseInteractor.swift in Sources */,
 				2DF95D2A2D785AF1001D8785 /* HapticEngine.swift in Sources */,
@@ -38243,7 +38106,7 @@
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */,
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
-				0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */,
+				0C8FDBC22CB1011C00775D7F /* MercuryoApi.swift in Sources */,
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
 				8434B602298D363C00FACF4C /* GovernanceAddDelegationTracksViewController.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
@@ -38645,7 +38508,7 @@
 				0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */,
 				2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */,
 				845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */,
-				2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */,
+				2DA85A6B2C7F36CF00591900 /* OffRampTransferSetupProtocols.swift in Sources */,
 				38D0977931828C7894579968 /* GovernanceUnlockSetupInteractor.swift in Sources */,
 				27B8E1772E12B0B800EB1F5B /* UniqueNft.swift in Sources */,
 				16098DABB1C9C058C1965F1D /* GovernanceUnlockSetupViewController.swift in Sources */,
@@ -38678,7 +38541,7 @@
 				7DB7E81CC2F880E4736DE062 /* GovernanceUnlockConfirmViewLayout.swift in Sources */,
 				84B8AA8D29FA41F600347A37 /* WalletConnectStateNewMessage.swift in Sources */,
 				0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */,
-				0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */,
+				0C8FDBD32CB30DDE00775D7F /* OffRampTransferModel.swift in Sources */,
 				D5BB3A36DB9ADD25EE43109F /* GovernanceUnlockConfirmViewFactory.swift in Sources */,
 				0CE9B7102DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift in Sources */,
 				65CD159259A06EC3E92FD4B0 /* AssetDetailsProtocols.swift in Sources */,
@@ -38977,7 +38840,6 @@
 				2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */,
 				C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */,
 				0CA8AF272D85F16900DB4E6A /* RuntimeCall+Init.swift in Sources */,
-				0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */,
 				642FDAC7A745ECC92BFF0CC0 /* DelegationReferendumVotersProtocols.swift in Sources */,
 				0C1CF7222E53806300B1DA66 /* HydraAave.swift in Sources */,
 				AD877F7F77F9CB862DC7D5B3 /* DelegationReferendumVotersWireframe.swift in Sources */,
@@ -39021,7 +38883,6 @@
 				F5AADF461ED043EAF04A50DE /* ReferendumsFiltersProtocols.swift in Sources */,
 				A44CA3E6BB506841948AB2D1 /* ReferendumsFiltersWireframe.swift in Sources */,
 				0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */,
-				0C8FDBC42CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift in Sources */,
 				77DF40422B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift in Sources */,
 				32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */,
 				165FD10F3329A67373DA78C6 /* ReferendumsFiltersViewController.swift in Sources */,
@@ -39450,7 +39311,6 @@
 				2D9837A62F310CE000B184D4 /* WOScamAlertSheetPresenter.swift in Sources */,
 				403472F848E2D71B296980DC /* BackupAttentionViewLayout.swift in Sources */,
 				AC24319E26F417DF02F45ABA /* BackupAttentionViewFactory.swift in Sources */,
-				2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */,
 				AE416368E5CDCEE35181660B /* BackupMnemonicCardProtocols.swift in Sources */,
 				0C71047F2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift in Sources */,
 				C3D21C269EC7B9A2C8A5E5BE /* BackupMnemonicCardWireframe.swift in Sources */,
@@ -39557,16 +39417,10 @@
 				2D6287512C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift in Sources */,
 				5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */,
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
-				0503753EC5E2136973D13E52 /* PayCardProtocols.swift in Sources */,
 				2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */,
-				F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */,
 				0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */,
 				2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */,
-				0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */,
-				877A27A443F9C4048B7FF99A /* PayCardInteractor.swift in Sources */,
-				CCF725BDBEE08A08C5450BC0 /* PayCardViewController.swift in Sources */,
-				C2F572F479BD61A88693238E /* PayCardViewLayout.swift in Sources */,
-				92B880FEDD0AE45A36898308 /* PayCardViewFactory.swift in Sources */,
+				C2F572F479BD61A88693238E /* RampViewLayout.swift in Sources */,
 				49E9D296222D2E8418E0A4EA /* SwipeGovProtocols.swift in Sources */,
 				56C840097B6B2E3D7133EE21 /* SwipeGovWireframe.swift in Sources */,
 				59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */,

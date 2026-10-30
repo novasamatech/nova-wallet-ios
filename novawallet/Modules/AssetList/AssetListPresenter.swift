@@ -538,15 +538,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showTokensManage(from: view)
     }
 
-    func presentCard() {
-        guard let wallet else { return }
-
-        wireframe.showCard(
-            from: view,
-            wallet: wallet
-        )
-    }
-
     func presentLocks() {
         guard
             checkNonZeroLocks(),

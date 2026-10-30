@@ -3,7 +3,7 @@ import UIKit
 enum AssetListMeasurement {
     static let accountHeight: CGFloat = 56.0
 
-    static let totalBalanceHeight: CGFloat = 260.0
+    static let totalBalanceHeight: CGFloat = 202.0
 
     static let totalBalanceWithLocksHeight: CGFloat = totalBalanceHeight
 

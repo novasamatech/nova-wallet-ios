@@ -14,7 +14,6 @@ enum UniversalLink {
         case staking
         case governance = "gov"
         case dApp = "dapp"
-        case card
         case assetHubMigration = "ahm"
         case gift
     }
@@ -86,12 +85,6 @@ enum UniversalLink {
     enum AssetHubMigration {
         enum QueryKey {
             static let chainId = "chainId"
-        }
-    }
-
-    enum CardScreen {
-        enum QueryKey {
-            static let provider = "provider"
         }
     }
 

@@ -14,7 +14,7 @@ final class RampInteractor {
 
     let operationQueue: OperationQueue
 
-    private var messageHandlers: [PayCardMessageHandling] = []
+    private var messageHandlers: [RampMessageHandling] = []
     private var callStore = CancellableCallStore()
 
     init(
@@ -43,7 +43,7 @@ final class RampInteractor {
 // MARK: Private
 
 private extension RampInteractor {
-    func provideModel(with hooks: [PayCardHook]) {
+    func provideModel(with hooks: [RampHook]) {
         guard !callStore.hasCall else {
             return
         }

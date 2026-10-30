@@ -38,7 +38,7 @@ final class MercuryoOnRampHookFactory {
         };
         """
 
-        let handlers: [PayCardMessageHandling] = [
+        let handlers: [RampMessageHandling] = [
             MercuryoOnRampResponseHandler(
                 delegate: delegate,
                 logger: logger
