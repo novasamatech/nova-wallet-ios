@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "토큰이 없나요?";
 "analytics.details.ip" = "IP 주소는 국가를 확인하기 위해 한 번 사용된 후 삭제됩니다 — 분석 제공업체에는 절대 전송되지 않습니다";
 "common.new.badge" = "신규";
-"common.period.90d" = "90일";
 "deeplink.error.staking.not.supported.message" = "이 자산에서는 Staking을 지원하지 않습니다";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO를 Staking하려면 다른 유형의 지갑으로 전환하세요.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Bittensor Staking은 %@ 지갑에서 지원되지 않습니다";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@당 %1$@부터";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "구매 내역 없음";
 "staking.subtensor.ui.avg.buy.price.not.available" = "이용 불가";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@당";
 "staking.subtensor.ui.avg.buy.price.rising" = "상승 중";
 "staking.subtensor.ui.buy.more.format" = "%@ 추가 구매";
 "staking.subtensor.ui.chart.unavailable" = "차트 이용 불가";

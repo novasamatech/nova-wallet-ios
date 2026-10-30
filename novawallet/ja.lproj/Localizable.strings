@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "トークンが見つかりませんか？";
 "analytics.details.ip" = "あなたのIPアドレスは国を記録するために一度だけ使用され、その後削除されます — アナリティクスプロバイダーに送信されることはありません";
 "common.new.badge" = "新着";
-"common.period.90d" = "90日";
 "deeplink.error.staking.not.supported.message" = "このアセットではStakingはサポートされていません";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAOをStakeするには、別の種類のウォレットに切り替えてください。";
 "feature.unsupported.sheet.title.subtensor.staking" = "%@ウォレットではBittensorのStakingはサポートされていません";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@あたり%1$@から";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "購入履歴なし";
 "staking.subtensor.ui.avg.buy.price.not.available" = "利用できません";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@あたり";
 "staking.subtensor.ui.avg.buy.price.rising" = "上昇中";
 "staking.subtensor.ui.buy.more.format" = "%@を追加購入";
 "staking.subtensor.ui.chart.unavailable" = "チャートを利用できません";

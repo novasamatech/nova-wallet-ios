@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Aradığınız token'ı bulamadınız mı?";
 "analytics.details.ip" = "IP adresiniz ülkenizi belirlemek için bir kez kullanılır, ardından silinir — analiz sağlayıcımıza hiçbir zaman ulaşmaz";
 "common.new.badge" = "Yeni";
-"common.period.90d" = "90 gün";
 "deeplink.error.staking.not.supported.message" = "Bu varlık için staking desteklenmiyor";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO stake etmek için lütfen farklı bir cüzdan türüne geçin.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Bittensor staking, %@ cüzdanları için desteklenmiyor";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%2$@ başına %1$@'dan itibaren";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "satın alma yok";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Mevcut değil";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@ başına";
 "staking.subtensor.ui.avg.buy.price.rising" = "Yükseliyor";
 "staking.subtensor.ui.buy.more.format" = "Daha fazla %@ satın al";
 "staking.subtensor.ui.chart.unavailable" = "Grafik kullanılamıyor";

@@ -22,7 +22,6 @@ enum SubtensorSubnetValidatorState: Equatable {
 }
 
 struct SubtensorSubnetDetailsState {
-    var isFiat = false
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
     var history: SubtensorSubnetHistoryState = .loading {
         didSet {

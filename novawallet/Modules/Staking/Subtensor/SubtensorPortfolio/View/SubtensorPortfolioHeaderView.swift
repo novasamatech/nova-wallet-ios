@@ -8,8 +8,8 @@ final class SubtensorPortfolioHeaderView: UIView {
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let changeLabel: UILabel = .create { label in
-        label.apply(style: .semiboldFootnotePositive)
+    let dateLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
         label.textAlignment = .right
     }
 
@@ -84,8 +84,9 @@ final class SubtensorPortfolioHeaderView: UIView {
         totalLabel.text = viewModel.total
         totalSkeletonView.setLoading(viewModel.total == nil)
 
+        dateLabel.text = viewModel.date
+
         bind(fiat: viewModel.fiat)
-        bind(change: viewModel.change)
         bind(chart: viewModel.chart)
 
         if periodControl.titles != viewModel.periods.titles {
@@ -93,6 +94,19 @@ final class SubtensorPortfolioHeaderView: UIView {
         }
 
         periodControl.selectedSegmentIndex = viewModel.periods.selectedIndex
+    }
+
+    func bind(ratesAlert text: String) {
+        let label = ratesAlertView.contentView.detailsLabel
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = Constants.alertLineHeight
+        paragraph.maximumLineHeight = Constants.alertLineHeight
+
+        label.attributedText = NSAttributedString(string: text, attributes: [
+            .paragraphStyle: paragraph,
+            .baselineOffset: (Constants.alertLineHeight - label.font.lineHeight) / 2
+        ])
     }
 
     func bind(isRatesUnavailable: Bool) {
@@ -113,6 +127,7 @@ private extension SubtensorPortfolioHeaderView {
         static let chartSkeletonInset: CGFloat = 12
         static let bottomInset: CGFloat = 12
         static let alertBottomInset: CGFloat = 16
+        static let alertLineHeight: CGFloat = 16
     }
 
     func bind(fiat: SubtensorRowState<String>) {
@@ -126,16 +141,6 @@ private extension SubtensorPortfolioHeaderView {
         case let .value(text):
             fiatLabel.text = text
             fiatSkeletonView.setLoading(false)
-        }
-    }
-
-    func bind(change: SubtensorRowState<SubtensorPortfolioChangeViewModel>) {
-        switch change {
-        case .loading, .hidden:
-            changeLabel.text = nil
-        case let .value(viewModel):
-            changeLabel.text = viewModel.text
-            changeLabel.textColor = viewModel.isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
         }
     }
 
@@ -171,7 +176,7 @@ private extension SubtensorPortfolioHeaderView {
     }
 
     func setupLayout() {
-        let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), changeLabel])
+        let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), dateLabel])
 
         [chartView, chartUnavailableLabel].forEach { view in
             chartContainerView.addSubview(view)

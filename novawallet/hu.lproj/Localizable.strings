@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Hiányzik egy token?";
 "analytics.details.ip" = "Az IP-címedet egyszer használjuk fel az országod megállapításához, majd töröljük – soha nem jut el az analitikai szolgáltatónkhoz";
 "common.new.badge" = "Új";
-"common.period.90d" = "90 nap";
 "deeplink.error.staking.not.supported.message" = "A stakingelés nem támogatott ennél az eszköznél";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO stakeléséhez váltson más típusú tárcára.";
 "feature.unsupported.sheet.title.subtensor.staking" = "A Bittensor-stakelés nem támogatott a %@ tárcák esetében";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "%1$@-tól %2$@-onként";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "nincs vásárlás";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Nem érhető el";
-"staking.subtensor.ui.avg.buy.price.per.format" = "%@-onként";
 "staking.subtensor.ui.avg.buy.price.rising" = "Emelkedő";
 "staking.subtensor.ui.buy.more.format" = "További %@ vásárlása";
 "staking.subtensor.ui.chart.unavailable" = "A grafikon nem érhető el";

@@ -287,6 +287,7 @@ private extension SubtensorOperationResultViewModelFactory {
                     for: settledCostBasis,
                     after: purchase ?? .unknown,
                     alphaSymbol: SubtensorSubnetNaming.symbol(for: request.target.netuid, in: context.catalogue),
+                    taoPrice: request.prices.taoPrice,
                     locale: locale
                 )
             )

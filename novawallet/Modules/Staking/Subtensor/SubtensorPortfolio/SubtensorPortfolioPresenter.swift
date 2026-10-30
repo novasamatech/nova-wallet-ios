@@ -11,7 +11,6 @@ final class SubtensorPortfolioPresenter {
     let wallet: MetaAccountModel
     let account: MetaChainAccountResponse
     let chainAsset: ChainAsset
-    let localizationManager: LocalizationManagerProtocol
 
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
@@ -48,7 +47,7 @@ private extension SubtensorPortfolioPresenter {
     func provideViewModel() {
         chartSelection = nil
 
-        let viewModel = viewModelFactory.createViewModel(for: state, locale: localizationManager.selectedLocale)
+        let viewModel = viewModelFactory.createViewModel(for: state, locale: selectedLocale)
         view?.didReceive(viewModel: viewModel)
         trackOpenedIfResolved(viewModel, groups: state.positions == nil ? nil : state.groups)
     }

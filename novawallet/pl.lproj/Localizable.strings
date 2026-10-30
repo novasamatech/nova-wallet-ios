@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Brakuje tokena?";
 "analytics.details.ip" = "Twój adres IP jest używany jednorazowo do określenia Twojego kraju, a następnie usuwany — nigdy nie trafia do naszego dostawcy usług analitycznych";
 "common.new.badge" = "Nowe";
-"common.period.90d" = "90 d";
 "deeplink.error.staking.not.supported.message" = "Staking nie jest obsługiwany dla tego aktywa";
 "feature.unsupported.sheet.message.subtensor.staking" = "Aby Stake TAO, przełącz się na inny typ portfela.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor nie jest obsługiwany w portfelach %@.";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "od %1$@ za %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "brak zakupów";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Niedostępne";
-"staking.subtensor.ui.avg.buy.price.per.format" = "za %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Rosnąca";
 "staking.subtensor.ui.buy.more.format" = "Kup więcej %@";
 "staking.subtensor.ui.chart.unavailable" = "Wykres niedostępny";

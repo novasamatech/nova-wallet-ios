@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Tidak menemukan token?";
 "analytics.details.ip" = "Alamat IP Anda digunakan sekali untuk mencatat negara Anda, lalu dihapus — alamat tersebut tidak pernah sampai ke penyedia analitik kami";
 "common.new.badge" = "Baru";
-"common.period.90d" = "90 hari";
 "deeplink.error.staking.not.supported.message" = "Staking tidak didukung untuk aset ini";
 "feature.unsupported.sheet.message.subtensor.staking" = "Untuk melakukan staking TAO, silakan beralih ke jenis dompet lain.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor tidak didukung untuk dompet %@.";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "mulai dari %1$@ per %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "tidak ada pembelian";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Tidak tersedia";
-"staking.subtensor.ui.avg.buy.price.per.format" = "per %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Meningkat";
 "staking.subtensor.ui.buy.more.format" = "Beli lebih banyak %@";
 "staking.subtensor.ui.chart.unavailable" = "Grafik tidak tersedia";

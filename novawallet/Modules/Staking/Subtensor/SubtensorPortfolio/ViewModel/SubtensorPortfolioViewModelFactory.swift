@@ -33,9 +33,7 @@ final class SubtensorPortfolioViewModelFactory {
 private extension SubtensorPortfolioViewModelFactory {
     struct ChartContent {
         let chart: SubtensorPortfolioChartViewModel
-        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
         var points: [SubtensorPortfolioValuePoint] = []
-        var isChangeAvailable = false
     }
 
     var precision: Int16 {
@@ -71,7 +69,7 @@ private extension SubtensorPortfolioViewModelFactory {
         SubtensorPortfolioHeaderViewModel(
             total: nil,
             fiat: .loading,
-            change: .loading,
+            date: nil,
             chart: .loading,
             periods: createPeriods(for: state, locale: locale)
         )
@@ -85,8 +83,7 @@ private extension SubtensorPortfolioViewModelFactory {
         let unavailable = ChartContent(
             chart: .unavailable(
                 R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiChartUnavailable()
-            ),
-            change: .hidden
+            )
         )
 
         guard portfolio.isFullyPriced else {
@@ -97,7 +94,7 @@ private extension SubtensorPortfolioViewModelFactory {
         case (.loaded(.none), _), (_, .failed):
             return unavailable
         case (.loading, _), (_, .loading):
-            return ChartContent(chart: .loading, change: .loading)
+            return ChartContent(chart: .loading)
         case let (.loaded(.some(price)), .loaded(histories)):
             guard let taoPrice = price.decimalRate else {
                 return unavailable
@@ -116,34 +113,8 @@ private extension SubtensorPortfolioViewModelFactory {
                 return unavailable
             }
 
-            let change = series.changeInFiat.flatMap { changeInFiat in
-                createChange(changeInFiat, period: histories.period, locale: locale)
-            }
-
-            return ChartContent(
-                chart: .chart(chart),
-                change: change.map { .value($0) } ?? .hidden,
-                points: points,
-                isChangeAvailable: series.changeInFiat != nil
-            )
+            return ChartContent(chart: .chart(chart), points: points)
         }
-    }
-
-    func createChange(
-        _ change: Decimal,
-        period: SubtensorPricePeriod,
-        locale: Locale
-    ) -> SubtensorPortfolioChangeViewModel? {
-        guard let percent = formatSignedPercent(change, locale: locale) else {
-            return nil
-        }
-
-        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinDotFormat(
-            percent,
-            period.title(for: locale)
-        )
-
-        return SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0)
     }
 
     func createChartViewModel(
@@ -327,7 +298,7 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactory
         locale: Locale
     ) -> SubtensorPortfolioChartSelection {
         let chart = state.isCatalogueUnavailable
-            ? ChartContent(chart: .hidden, change: .hidden)
+            ? ChartContent(chart: .hidden)
             : createChart(for: portfolio, state: state, locale: locale)
 
         let total = decimal(portfolio.pricedTaoValue)
@@ -346,15 +317,11 @@ extension SubtensorPortfolioViewModelFactory: SubtensorPortfolioViewModelFactory
         let header = SubtensorPortfolioHeaderViewModel(
             total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : .subtensorUnknown(for: locale),
             fiat: portfolio.isFullyPriced ? fiat : .hidden,
-            change: chart.change,
+            date: nil,
             chart: chart.chart,
             periods: createPeriods(for: state, locale: locale)
         )
 
-        return SubtensorPortfolioChartSelection(
-            header: header,
-            points: chart.points,
-            isChangeAvailable: chart.isChangeAvailable
-        )
+        return SubtensorPortfolioChartSelection(header: header, points: chart.points)
     }
 }

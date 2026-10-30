@@ -99,7 +99,9 @@ private extension SubtensorPositionSummaryView {
         static let skeletonHeight: CGFloat = 12
         static let spacing: CGFloat = 10
         static let valueLineHeight: CGFloat = 18
+        static let valueLineSpacing: CGFloat = 2
         static let detailLineHeight: CGFloat = 16
+        static let rowSkeletonWidth: CGFloat = 120
     }
 
     func bind(rows: [SubtensorPositionRowViewModel]) {
@@ -242,7 +244,11 @@ private final class SubtensorPositionSummaryRowView: UIView {
             make.height.equalTo(SubtensorDividerStyle.thickness)
         }
 
-        let valueView = UIView.vStack(alignment: .trailing, spacing: 2, [valueLabel, detailLabel])
+        let valueView = UIView.vStack(
+            alignment: .trailing,
+            spacing: SubtensorPositionSummaryView.Constants.valueLineSpacing,
+            [valueLabel, detailLabel]
+        )
         let contentView = UIView.hStack(alignment: .center, spacing: 12, [titleLabel, UIView(), valueView])
         let stackView = UIView.vStack(spacing: 8, [contentView, captionLabel])
 
@@ -253,14 +259,18 @@ private final class SubtensorPositionSummaryRowView: UIView {
         }
 
         contentView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(24)
+            make.height.greaterThanOrEqualTo(
+                SubtensorPositionSummaryView.Constants.valueLineHeight +
+                    SubtensorPositionSummaryView.Constants.valueLineSpacing +
+                    SubtensorPositionSummaryView.Constants.detailLineHeight
+            )
         }
 
         addSubview(skeletonView)
         skeletonView.snp.makeConstraints { make in
             make.trailing.centerY.equalTo(contentView)
-            make.width.equalTo(100)
-            make.height.equalTo(12)
+            make.width.equalTo(SubtensorPositionSummaryView.Constants.rowSkeletonWidth)
+            make.height.equalTo(SubtensorPositionSummaryView.Constants.skeletonHeight)
         }
 
         valueLabel.snp.makeConstraints { make in

@@ -31,7 +31,7 @@ extension SubtensorStakeSetupViewModelFactory {
             browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             header: createHeader(for: input, locale: locale),
             chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData, locale: locale),
-            receive: .trade(tradePanel?.receive?.amount, isPending: isQuotePending(for: input), locale: locale),
+            receive: .trade(tradePanel?.receive, isPending: isQuotePending(for: input), locale: locale),
             swapRate: .trade(tradePanel?.swapRate, isPending: isQuotePending(for: input), locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale),
             isRoot: false
@@ -158,6 +158,7 @@ private extension SubtensorStakeSetupViewModelFactory {
             for: input.subnetData.costBasis,
             after: purchase,
             alphaSymbol: SubtensorSubnetNaming.symbol(for: position.netuid, in: input.matchingCatalogue),
+            taoPrice: input.price,
             locale: locale
         )
     }

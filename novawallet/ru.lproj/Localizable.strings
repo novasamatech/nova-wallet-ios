@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Не нашли нужный токен?";
 "analytics.details.ip" = "Ваш IP используется один раз для определения вашей страны, а затем удаляется — он никогда не передаётся нашему провайдеру аналитики";
 "common.new.badge" = "Новое";
-"common.period.90d" = "90д";
 "deeplink.error.staking.not.supported.message" = "Staking не поддерживается для этого актива";
 "feature.unsupported.sheet.message.subtensor.staking" = "Чтобы выполнить Stake TAO, переключитесь на другой тип кошелька.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor не поддерживается для кошельков %@.";
@@ -2211,7 +2210,6 @@
 "staking.subtensor.ui.avg.buy.price.from.format" = "от %1$@ за %2$@";
 "staking.subtensor.ui.avg.buy.price.no.purchases" = "нет покупок";
 "staking.subtensor.ui.avg.buy.price.not.available" = "Недоступно";
-"staking.subtensor.ui.avg.buy.price.per.format" = "за %@";
 "staking.subtensor.ui.avg.buy.price.rising" = "Растёт";
 "staking.subtensor.ui.buy.more.format" = "Купить ещё %@";
 "staking.subtensor.ui.chart.unavailable" = "График недоступен";
