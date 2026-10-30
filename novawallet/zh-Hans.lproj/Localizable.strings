@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "没找到所需的代币？";
 "analytics.details.ip" = "您的 IP 仅使用一次以记录您所在的国家，随后即被删除——它绝不会传送给我们的分析服务提供商";
 "common.new.badge" = "新";
-"common.period.90d" = "90天";
 "deeplink.error.staking.not.supported.message" = "此资产不支持质押";
 "feature.unsupported.sheet.message.subtensor.staking" = "若要质押 TAO，请切换到其他类型的钱包。";
 "feature.unsupported.sheet.title.subtensor.staking" = "%@ 钱包不支持 Bittensor 质押";

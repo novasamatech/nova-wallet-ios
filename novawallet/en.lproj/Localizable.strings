@@ -2175,7 +2175,6 @@ Do you want to continue?";
 "staking.subtensor.ui.stake.after" = "Stake after";
 "staking.subtensor.ui.stake.after.format" = "%1$@ → %2$@";
 "staking.subtensor.ui.add.stake.root.title" = "Add stake to root";
-"common.period.90d" = "90d";
 "staking.subtensor.info.slippage.title" = "Slippage tolerance";
 "staking.subtensor.info.swap.rate.buy" = "How many %1$@ you get for 1 TAO right now. The rate is set by the subnet’s liquidity pool and changes with every trade. It already includes the %2$@ Nova Wallet fee.";
 "staking.subtensor.info.swap.rate.sell" = "How much TAO you get for 1 %1$@ right now. The rate is set by the subnet’s liquidity pool and changes with every trade. It already includes the %2$@ Nova Wallet fee.";

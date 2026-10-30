@@ -53,9 +53,6 @@ extension SubtensorPriceHistoryOperationFactory {
             points: periodPoints,
             changeInTao: coversPeriod
                 ? SubtensorPriceSeries.change(of: periodPoints, over: period, date: \.date, value: \.taoPerAlpha)
-                : nil,
-            changeInFiat: coversPeriod
-                ? SubtensorPriceSeries.change(of: periodPoints, over: period, date: \.date, value: \.fiatPerAlpha)
                 : nil
         )
     }

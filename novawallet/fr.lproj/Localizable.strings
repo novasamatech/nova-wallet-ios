@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Un token manque ?";
 "analytics.details.ip" = "Votre adresse IP est utilisée une seule fois pour noter votre pays, puis supprimée — elle ne parvient jamais à notre fournisseur d’analyses";
 "common.new.badge" = "Nouveau";
-"common.period.90d" = "90 j";
 "deeplink.error.staking.not.supported.message" = "Le Staking n’est pas pris en charge pour cet actif";
 "feature.unsupported.sheet.message.subtensor.staking" = "Pour faire du Staking de TAO, veuillez passer à un autre type de portefeuille.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Le Staking Bittensor n’est pas pris en charge pour les portefeuilles %@.";

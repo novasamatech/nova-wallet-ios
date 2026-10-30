@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "トークンが見つかりませんか？";
 "analytics.details.ip" = "あなたのIPアドレスは国を記録するために一度だけ使用され、その後削除されます — アナリティクスプロバイダーに送信されることはありません";
 "common.new.badge" = "新着";
-"common.period.90d" = "90日";
 "deeplink.error.staking.not.supported.message" = "このアセットではStakingはサポートされていません";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAOをStakeするには、別の種類のウォレットに切り替えてください。";
 "feature.unsupported.sheet.title.subtensor.staking" = "%@ウォレットではBittensorのStakingはサポートされていません";

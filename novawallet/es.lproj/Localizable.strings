@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "¿Te falta un token?";
 "analytics.details.ip" = "Tu dirección IP se utiliza una vez para registrar tu país y luego se elimina — nunca llega a nuestro proveedor de análisis";
 "common.new.badge" = "Nuevo";
-"common.period.90d" = "90 d";
 "deeplink.error.staking.not.supported.message" = "El Staking no es compatible con este activo";
 "feature.unsupported.sheet.message.subtensor.staking" = "Para hacer Stake de TAO, cambia a otro tipo de billetera.";
 "feature.unsupported.sheet.title.subtensor.staking" = "El staking de Bittensor no es compatible con las billeteras %@.";

@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Không tìm thấy token cần tìm?";
 "analytics.details.ip" = "Địa chỉ IP của bạn được sử dụng một lần để xác định quốc gia, sau đó bị xóa — không bao giờ được gửi đến nhà cung cấp dịch vụ phân tích của chúng tôi";
 "common.new.badge" = "Mới";
-"common.period.90d" = "90 ngày";
 "deeplink.error.staking.not.supported.message" = "Staking không được hỗ trợ cho tài sản này";
 "feature.unsupported.sheet.message.subtensor.staking" = "Để Stake TAO, vui lòng chuyển sang một loại ví khác.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Staking Bittensor không được hỗ trợ cho ví %@.";

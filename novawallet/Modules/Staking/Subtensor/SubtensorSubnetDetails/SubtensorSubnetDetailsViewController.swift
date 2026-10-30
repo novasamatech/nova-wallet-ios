@@ -61,7 +61,6 @@ private extension SubtensorSubnetDetailsViewController {
     }
 
     func setupHandlers() {
-        rootView.currencyControl.addTarget(self, action: #selector(actionCurrency), for: .valueChanged)
         rootView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.chartUnavailableView.addTarget(self, action: #selector(actionRetryHistory), for: .touchUpInside)
         rootView.chartView.delegate = self
@@ -84,10 +83,6 @@ private extension SubtensorSubnetDetailsViewController {
 
         rootView.actionButton.imageWithTitleView?.title = strings.stakingSubtensorUiDetailUseSubnet()
         rootView.actionButton.invalidateLayout()
-    }
-
-    @objc func actionCurrency() {
-        presenter.selectCurrency(at: rootView.currencyControl.selectedSegmentIndex)
     }
 
     @objc func actionPeriod() {

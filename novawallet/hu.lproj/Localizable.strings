@@ -2071,7 +2071,6 @@
 "wallet.list.missing.token" = "Hiányzik egy token?";
 "analytics.details.ip" = "Az IP-címedet egyszer használjuk fel az országod megállapításához, majd töröljük – soha nem jut el az analitikai szolgáltatónkhoz";
 "common.new.badge" = "Új";
-"common.period.90d" = "90 nap";
 "deeplink.error.staking.not.supported.message" = "A stakingelés nem támogatott ennél az eszköznél";
 "feature.unsupported.sheet.message.subtensor.staking" = "TAO stakeléséhez váltson más típusú tárcára.";
 "feature.unsupported.sheet.title.subtensor.staking" = "A Bittensor-stakelés nem támogatott a %@ tárcák esetében";

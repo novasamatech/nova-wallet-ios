@@ -1,23 +1,17 @@
 import Foundation
 
-struct SubtensorSubnetCurrencyViewModel: Equatable {
-    let titles: [String]
-    let selectedIndex: Int
-    let isEnabled: Bool
-}
-
 struct SubtensorSubnetPriceHeaderViewModel: Equatable {
     enum Change: Equatable {
         case loading
         case hidden
-        case date(String)
         case value(text: String, isRising: Bool)
     }
 
     let caption: String
     let price: String
+    let fiat: String?
     let change: Change
-    let currency: SubtensorSubnetCurrencyViewModel?
+    let date: String?
 }
 
 enum SubtensorSubnetChartViewModel: Equatable {
