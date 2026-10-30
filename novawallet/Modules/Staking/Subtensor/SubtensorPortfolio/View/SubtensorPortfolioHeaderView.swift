@@ -8,8 +8,8 @@ final class SubtensorPortfolioHeaderView: UIView {
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let changeLabel: UILabel = .create { label in
-        label.apply(style: .semiboldFootnotePositive)
+    let dateLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
         label.textAlignment = .right
     }
 
@@ -84,8 +84,9 @@ final class SubtensorPortfolioHeaderView: UIView {
         totalLabel.text = viewModel.total
         totalSkeletonView.setLoading(viewModel.total == nil)
 
+        dateLabel.text = viewModel.date
+
         bind(fiat: viewModel.fiat)
-        bind(change: viewModel.change)
         bind(chart: viewModel.chart)
 
         if periodControl.titles != viewModel.periods.titles {
@@ -129,16 +130,6 @@ private extension SubtensorPortfolioHeaderView {
         }
     }
 
-    func bind(change: SubtensorRowState<SubtensorPortfolioChangeViewModel>) {
-        switch change {
-        case .loading, .hidden:
-            changeLabel.text = nil
-        case let .value(viewModel):
-            changeLabel.text = viewModel.text
-            changeLabel.textColor = viewModel.isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
-        }
-    }
-
     func bind(chart: SubtensorPortfolioChartViewModel) {
         chartContainerView.isHidden = chart == .hidden
         periodControl.isHidden = chart == .hidden
@@ -171,7 +162,7 @@ private extension SubtensorPortfolioHeaderView {
     }
 
     func setupLayout() {
-        let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), changeLabel])
+        let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), dateLabel])
 
         [chartView, chartUnavailableLabel].forEach { view in
             chartContainerView.addSubview(view)
