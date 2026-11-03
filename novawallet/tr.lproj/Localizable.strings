@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV koruması";
 "staking.subtensor.mev.protection.unavailable" = "Bu emir için MEV koruması kullanılamıyor.";
 "staking.subtensor.result.fee.may.be.charged" = "Ağ ücreti tahsil edilmiş olabilir.";
+"swap.failure.pool.trade.minimum.message" = "Bu takas için minimum miktar %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Bu rota bu kadar küçük bir miktarı işleyemez. Daha büyük bir miktar deneyin.";
+"swap.failure.pool.trade.minimum.title" = "Miktar çok küçük";

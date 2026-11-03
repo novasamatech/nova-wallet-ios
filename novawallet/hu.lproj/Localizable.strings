@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV-védelem";
 "staking.subtensor.mev.protection.unavailable" = "A MEV-védelem ehhez a megrendeléshez nem érhető el.";
 "staking.subtensor.result.fee.may.be.charged" = "Hálózati díj kerülhetett felszámításra.";
+"swap.failure.pool.trade.minimum.message" = "A csere minimális összege: %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Ez az útvonal nem tud ilyen kis összeget feldolgozni. Próbálj meg nagyobb összeget.";
+"swap.failure.pool.trade.minimum.title" = "Az összeg túl kicsi";

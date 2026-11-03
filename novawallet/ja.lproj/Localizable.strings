@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV保護";
 "staking.subtensor.mev.protection.unavailable" = "この注文ではMEV保護を利用できません。";
 "staking.subtensor.result.fee.may.be.charged" = "ネットワーク手数料が請求されている場合があります。";
+"swap.failure.pool.trade.minimum.message" = "このスワップの最小数量は%@です。";
+"swap.failure.pool.trade.minimum.route.message" = "このルートでは、このような少量を処理できません。より大きな数量をお試しください。";
+"swap.failure.pool.trade.minimum.title" = "数量が少なすぎます";

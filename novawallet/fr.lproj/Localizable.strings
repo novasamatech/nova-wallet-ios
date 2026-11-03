@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "Protection contre le MEV";
 "staking.subtensor.mev.protection.unavailable" = "La protection contre le MEV n’est pas disponible pour cet ordre.";
 "staking.subtensor.result.fee.may.be.charged" = "Des frais de réseau peuvent avoir été facturés.";
+"swap.failure.pool.trade.minimum.message" = "Le montant minimum pour cet échange est de %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Cette route ne peut pas traiter un montant aussi faible. Essayez un montant plus élevé.";
+"swap.failure.pool.trade.minimum.title" = "Le montant est trop faible";
