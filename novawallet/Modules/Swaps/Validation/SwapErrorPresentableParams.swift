@@ -43,6 +43,7 @@ extension SwapDisplayError.PoolTradeLimit {
     static func build(
         from failure: AssetExchangeTradeLimitFailure,
         canApply: Bool,
+        chargesCommission: Bool,
         viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
         locale: Locale
     ) -> SwapDisplayError.PoolTradeLimit? {
@@ -81,7 +82,7 @@ extension SwapDisplayError.PoolTradeLimit {
             )
         }
 
-        guard let suggestion = failure.suggestion() else {
+        guard let suggestion = failure.suggestion(chargesCommission: chargesCommission) else {
             return nil
         }
 

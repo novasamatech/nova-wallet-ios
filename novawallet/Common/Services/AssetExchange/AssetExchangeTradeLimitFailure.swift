@@ -15,18 +15,17 @@ struct AssetExchangeTradeLimitFailure: Error, Equatable {
 extension AssetExchangeTradeLimitFailure {
     static let headroom = BigRational.percent(of: 95)
 
-    func suggestion() -> Balance? {
+    func suggestion(chargesCommission: Bool) -> Balance? {
         guard let maxGivenAmount else {
             return nil
         }
 
         let headroomed = Self.headroom.mul(value: maxGivenAmount)
 
-        let suggested = switch direction {
-        case .sell:
-            headroomed
-        case .buy:
+        let suggested = if direction == .buy, chargesCommission {
             AssetExchangeCommissionConstants.grossUpInverse.mul(value: headroomed)
+        } else {
+            headroomed
         }
 
         guard suggested > 0, suggested >= (minTradingLimit ?? 0) else {

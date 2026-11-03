@@ -26,6 +26,7 @@ extension SwapDataValidatorFactory {
                 case let .blocked(failure):
                     self?.presentPoolTradeLimit(
                         for: failure,
+                        chargesCommission: params.quote?.commission != nil,
                         poolTradeLimitAction: poolTradeLimitAction,
                         locale: locale
                     )
@@ -50,6 +51,7 @@ extension SwapDataValidatorFactory {
 private extension SwapDataValidatorFactory {
     func presentPoolTradeLimit(
         for failure: AssetExchangeTradeLimitFailure?,
+        chargesCommission: Bool,
         poolTradeLimitAction: SwapPoolTradeLimitApplying?,
         locale: Locale
     ) {
@@ -66,6 +68,7 @@ private extension SwapDataValidatorFactory {
         guard let displayError = SwapDisplayError.PoolTradeLimit.build(
             from: failure,
             canApply: failure.isUserInputAdjustable && poolTradeLimitAction != nil,
+            chargesCommission: chargesCommission,
             viewModelFactory: balanceViewModelFactoryFacade,
             locale: locale
         ) else {
@@ -78,7 +81,7 @@ private extension SwapDataValidatorFactory {
             from: view,
             reason: displayError,
             applyAction: {
-                guard let suggestion = failure.suggestion() else {
+                guard let suggestion = failure.suggestion(chargesCommission: chargesCommission) else {
                     return
                 }
 
