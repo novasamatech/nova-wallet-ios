@@ -26,7 +26,7 @@ extension AssetExchangeTradeLimitFailure {
         case .sell:
             headroomed
         case .buy:
-            grossUpInverse.mul(value: headroomed)
+            AssetExchangeCommissionConstants.grossUpInverse.mul(value: headroomed)
         }
 
         guard suggested > 0, suggested >= (minTradingLimit ?? 0) else {
@@ -35,11 +35,37 @@ extension AssetExchangeTradeLimitFailure {
 
         return suggested
     }
+}
 
-    private var grossUpInverse: BigRational {
-        let rate = AssetExchangeCommissionConstants.rate
+struct AssetExchangeTradeMinimumFailure: Error, Equatable {
+    let limitedAsset: ChainAsset?
 
-        return BigRational(
+    let minTradingLimit: Balance
+
+    let direction: AssetConversion.Direction
+
+    let isUserInputAdjustable: Bool
+}
+
+extension AssetExchangeTradeMinimumFailure {
+    func userMinimum(chargesCommission: Bool) -> Balance? {
+        guard isUserInputAdjustable else {
+            return nil
+        }
+
+        guard direction == .buy, chargesCommission else {
+            return minTradingLimit
+        }
+
+        let grossUpInverse = AssetExchangeCommissionConstants.grossUpInverse
+
+        return (minTradingLimit * grossUpInverse.numerator).divideByRoundingUp(grossUpInverse.denominator)
+    }
+}
+
+private extension AssetExchangeCommissionConstants {
+    static var grossUpInverse: BigRational {
+        BigRational(
             numerator: rate.denominator,
             denominator: rate.denominator + rate.numerator
         )

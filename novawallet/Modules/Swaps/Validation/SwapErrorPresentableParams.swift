@@ -95,3 +95,23 @@ extension SwapDisplayError.PoolTradeLimit {
         )
     }
 }
+
+extension AssetExchangeTradeMinimumFailure {
+    func formattedUserMinimum(
+        chargesCommission: Bool,
+        viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
+        locale: Locale
+    ) -> String? {
+        guard let limitedAsset, let minimum = userMinimum(chargesCommission: chargesCommission) else {
+            return nil
+        }
+
+        let assetInfo = limitedAsset.assetDisplayInfo
+
+        return viewModelFactory.amountFromValue(
+            targetAssetInfo: assetInfo,
+            value: minimum.decimal(assetInfo: assetInfo),
+            roundingMode: .up
+        ).value(for: locale)
+    }
+}
