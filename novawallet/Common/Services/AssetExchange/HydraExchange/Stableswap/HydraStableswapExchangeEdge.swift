@@ -77,9 +77,50 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func tradeLimitVerdict(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
+        amount: Balance,
+        direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        .createWithResult(.withinLimit)
+        let coderFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let minTradingLimitWrapper = HydraExchangeTradeLimits.createMinTradingLimitWrapper(
+            for: HydraStableswap.minTradingLimitPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        minTradingLimitWrapper.addDependency(operations: [coderFactoryOperation])
+
+        let poolPair = HydraStableswap.PoolPair(
+            poolAsset: poolAsset,
+            assetIn: remoteSwapPair.assetIn,
+            assetOut: remoteSwapPair.assetOut
+        )
+
+        let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
+            let minTradingLimit = try minTradingLimitWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let minTradingLimit else {
+                return .withinLimit
+            }
+
+            let verdict = HydraStableswapQuoteFactory.tradeLimitVerdict(
+                for: amount,
+                direction: direction,
+                poolPair: poolPair,
+                minTradingLimit: minTradingLimit
+            )
+
+            guard let limitedAsset = self.limitedAsset(for: direction) else {
+                return verdict
+            }
+
+            return verdict.naming(limitedAsset: limitedAsset)
+        }
+
+        verdictOperation.addDependency(minTradingLimitWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: verdictOperation,
+            dependencies: [coderFactoryOperation] + minTradingLimitWrapper.allOperations
+        )
     }
 }

@@ -120,6 +120,24 @@ extension HydraXYKSwapQuoteFactory {
         remoteState: HydraXYK.QuoteRemoteState,
         limits: HydraExchangeTradeLimits.PoolLimits
     ) throws -> AssetExchangeTradeLimitVerdict {
+        if let minTradingLimit = limits.minTradingLimit, amount < minTradingLimit {
+            return .belowMinimum(.init(minTradingLimit: minTradingLimit))
+        }
+
+        return try maxTradeLimitVerdict(
+            for: amount,
+            direction: direction,
+            remoteState: remoteState,
+            limits: limits
+        )
+    }
+
+    private static func maxTradeLimitVerdict(
+        for amount: Balance,
+        direction: AssetConversion.Direction,
+        remoteState: HydraXYK.QuoteRemoteState,
+        limits: HydraExchangeTradeLimits.PoolLimits
+    ) throws -> AssetExchangeTradeLimitVerdict {
         let reserveIn = remoteState.assetInBalance
         let reserveOut = remoteState.assetOutBalance
 

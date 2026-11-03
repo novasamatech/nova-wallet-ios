@@ -188,21 +188,13 @@ extension HydraExchangeTradeLimits {
 
         maxOutRatioOperation.addDependency(coderFactoryOperation)
 
-        let minTradingLimitOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+        let minTradingLimitWrapper = createMinTradingLimitWrapper(
             for: constants.minTradingLimitPath,
             dependingOn: coderFactoryOperation
         )
 
-        minTradingLimitOperation.addDependency(coderFactoryOperation)
-
         let mergeOperation = ClosureOperation<PoolLimits?> {
-            let minTradingLimit: Balance?
-
-            do {
-                minTradingLimit = try minTradingLimitOperation.extractNoCancellableResultData()
-            } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
-                minTradingLimit = nil
-            }
+            let minTradingLimit = try minTradingLimitWrapper.targetOperation.extractNoCancellableResultData()
 
             do {
                 let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
@@ -220,11 +212,35 @@ extension HydraExchangeTradeLimits {
 
         mergeOperation.addDependency(maxInRatioOperation)
         mergeOperation.addDependency(maxOutRatioOperation)
-        mergeOperation.addDependency(minTradingLimitOperation)
+        mergeOperation.addDependency(minTradingLimitWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [maxInRatioOperation, maxOutRatioOperation, minTradingLimitOperation]
+            dependencies: [maxInRatioOperation, maxOutRatioOperation] + minTradingLimitWrapper.allOperations
         )
+    }
+
+    static func createMinTradingLimitWrapper(
+        for path: ConstantCodingPath,
+        dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<Balance?> {
+        let constantOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: path,
+            dependingOn: coderFactoryOperation
+        )
+
+        constantOperation.addDependency(coderFactoryOperation)
+
+        let mapOperation = ClosureOperation<Balance?> {
+            do {
+                return try constantOperation.extractNoCancellableResultData()
+            } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
+                return nil
+            }
+        }
+
+        mapOperation.addDependency(constantOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [constantOperation])
     }
 }
