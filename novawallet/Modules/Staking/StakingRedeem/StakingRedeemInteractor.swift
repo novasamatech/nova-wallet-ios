@@ -6,7 +6,7 @@ import SubstrateSdk
 import NovaCrypto
 
 final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
-    weak var presenter: StakingRedeemInteractorOutputProtocol!
+    weak var presenter: StakingRedeemInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -123,7 +123,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
 
     private func estimateFee(with numberOfSlasingSpans: UInt32) {
         guard let extrinsicService = extrinsicService else {
-            presenter.didReceiveFee(result: .failure(CommonError.undefined))
+            presenter?.didReceiveFee(result: .failure(CommonError.undefined))
             return
         }
 
@@ -148,7 +148,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
         guard
             let extrinsicMonitorFactory,
             let signingWrapper = signingWrapper else {
-            presenter.didSubmitRedeeming(result: .failure(CommonError.undefined))
+            presenter?.didSubmitRedeeming(result: .failure(CommonError.undefined))
             return
         }
 
@@ -173,7 +173,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didSubmitRedeeming(result: result.mapToExtrinsicSubmittedResult())
+            self?.presenter?.didSubmitRedeeming(result: result.mapToExtrinsicSubmittedResult())
         }
     }
 }
@@ -183,13 +183,13 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         activeEraProvider = subscribeActiveEra(for: chainAsset.chain.chainId)
@@ -200,10 +200,10 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
                 runtimeCodingService: runtimeService,
                 operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
-                self?.presenter.didReceiveExistentialDeposit(result: result)
+                self?.presenter?.didReceiveExistentialDeposit(result: result)
             }
         } else {
-            presenter.didReceiveExistentialDeposit(
+            presenter?.didReceiveExistentialDeposit(
                 result: .failure(ChainRegistryError.runtimeMetadaUnavailable)
             )
         }
@@ -218,7 +218,7 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
                 let numberOfSlashes = slashingSpans?.numOfSlashingSpans ?? 0
                 self?.estimateFee(with: numberOfSlashes)
             case let .failure(error):
-                self?.presenter.didSubmitRedeeming(result: .failure(error))
+                self?.presenter?.didSubmitRedeeming(result: .failure(error))
             }
         }
     }
@@ -230,7 +230,7 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
                 let numberOfSlashes = slashingSpans?.numOfSlashingSpans ?? 0
                 self?.submit(with: numberOfSlashes)
             case let .failure(error):
-                self?.presenter.didSubmitRedeeming(result: .failure(error))
+                self?.presenter?.didSubmitRedeeming(result: .failure(error))
             }
         }
     }
@@ -246,7 +246,7 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
             let maybeStashItem = try result.get()
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             if let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
@@ -269,21 +269,21 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        self?.presenter.didReceiveController(result: .success(maybeResponse))
+                        self?.presenter?.didReceiveController(result: .success(maybeResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveController(result: .failure(error))
+                        self?.presenter?.didReceiveController(result: .failure(error))
                     }
                 }
 
             } else {
-                presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -292,11 +292,11 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 
     func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveActiveEra(result: result)
+        presenter?.didReceiveActiveEra(result: result)
     }
 }
 
@@ -307,19 +307,19 @@ extension StakingRedeemInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingRedeemInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
 extension StakingRedeemInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

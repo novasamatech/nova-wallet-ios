@@ -5,7 +5,7 @@ import NovaCrypto
 import SubstrateSdk
 
 final class ControllerAccountInteractor: AccountFetching {
-    weak var presenter: ControllerAccountInteractorOutputProtocol!
+    weak var presenter: ControllerAccountInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -59,9 +59,9 @@ final class ControllerAccountInteractor: AccountFetching {
             runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 let isDeprecated = Staking.SetController.isDeprecated(for: coderFactory)
-                self?.presenter.didReceiveIsDeprecated(result: .success(isDeprecated))
+                self?.presenter?.didReceiveIsDeprecated(result: .success(isDeprecated))
             }, errorClosure: { [weak self] error in
-                self?.presenter.didReceiveIsDeprecated(result: .failure(error))
+                self?.presenter?.didReceiveIsDeprecated(result: .failure(error))
             }
         )
     }
@@ -96,7 +96,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         if let accountAddress = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: accountAddress, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         let repository = accountRepositoryFactory.createMetaAccountRepository(
@@ -111,9 +111,9 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                self?.presenter.didReceiveAccounts(result: .success(responses))
+                self?.presenter?.didReceiveAccounts(result: .success(responses))
             case let .failure(error):
-                self?.presenter.didReceiveAccounts(result: .failure(error))
+                self?.presenter?.didReceiveAccounts(result: .failure(error))
             }
         }
 
@@ -126,7 +126,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
             completion: { [weak self] coderFactory in
                 self?.estimateFee(for: account, coderFactory: coderFactory)
             }, errorClosure: { [weak self] error in
-                self?.presenter.didReceiveFee(result: .failure(error))
+                self?.presenter?.didReceiveFee(result: .failure(error))
             }
         )
     }
@@ -148,7 +148,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
                 )
             }
         } catch {
-            presenter.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
+            presenter?.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
         }
     }
 
@@ -167,7 +167,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
             }
 
         } catch {
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -230,7 +230,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
             let maybeStashId = try maybeStashItem?.stash.toAccountId()
             let maybeControllerId = try maybeStashItem?.controller.toAccountId()
 
-            presenter.didReceiveStashItem(result: .success(maybeStashItem))
+            presenter?.didReceiveStashItem(result: .success(maybeStashItem))
 
             if let stashId = maybeStashId, let controllerId = maybeControllerId {
                 balanceProvider = subscribeToAssetBalanceProvider(
@@ -258,9 +258,9 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                             )
                             self?.estimateFee(for: account)
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(accountResponse))
+                        self?.presenter?.didReceiveStashAccount(result: .success(accountResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveStashAccount(result: .failure(error))
+                        self?.presenter?.didReceiveStashAccount(result: .failure(error))
                     }
                 }
 
@@ -274,11 +274,11 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                         self?.estimateFee(for: controller.chainAccount)
                     }
 
-                    self?.presenter.didReceiveControllerAccount(result: result)
+                    self?.presenter?.didReceiveControllerAccount(result: result)
                 }
             }
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
         }
     }
 
@@ -287,7 +287,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
@@ -302,12 +302,12 @@ extension ControllerAccountInteractor: WalletLocalStorageSubscriber, WalletLocal
             return
         }
 
-        presenter.didReceiveAccountBalance(result: result, address: address)
+        presenter?.didReceiveAccountBalance(result: result, address: address)
     }
 }
 
 extension ControllerAccountInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
