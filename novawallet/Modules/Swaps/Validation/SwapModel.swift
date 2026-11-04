@@ -413,7 +413,7 @@ struct SwapModel {
         let balance = payAssetTotalBalanceAfterSwap
         let minBalance = payAssetExistense?.minBalance ?? 0
 
-        guard balance > 0, balance < minBalance else {
+        guard !payChainAsset.mayBackHydraAaveLoan, balance > 0, balance < minBalance else {
             return nil
         }
 
