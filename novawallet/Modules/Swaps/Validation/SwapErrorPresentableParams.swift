@@ -99,15 +99,16 @@ extension SwapDisplayError.PoolTradeLimit {
 
 extension AssetExchangeTradeMinimumFailure {
     func formattedUserMinimum(
+        for asset: ChainAsset,
         chargesCommission: Bool,
         viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
         locale: Locale
     ) -> String? {
-        guard let limitedAsset, let minimum = userMinimum(chargesCommission: chargesCommission) else {
+        guard let minimum = userMinimum(chargesCommission: chargesCommission) else {
             return nil
         }
 
-        let assetInfo = limitedAsset.assetDisplayInfo
+        let assetInfo = asset.assetDisplayInfo
 
         return viewModelFactory.amountFromValue(
             targetAssetInfo: assetInfo,

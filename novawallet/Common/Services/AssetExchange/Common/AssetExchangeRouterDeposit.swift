@@ -1,26 +1,19 @@
 import Foundation
 
-struct AssetExchangeRouterHop: Equatable {
-    let assetIn: ChainAsset
-    let assetOut: ChainAsset
-}
-
 struct AssetExchangeRouterDeposit: Equatable {
-    enum Side: Equatable {
-        case hopIn
-        case hopOut
-    }
-
-    let itemIndex: Int
-    let side: Side
-    let asset: ChainAsset
+    let assetId: ChainAssetId
     let amount: Balance
 }
 
+struct AssetExchangeRouterHopDeposits: Equatable {
+    var hopIn: AssetExchangeRouterDeposit?
+    var hopOut: AssetExchangeRouterDeposit?
+}
+
 extension AssetExchangeRoute {
-    func routerAccountDeposits(slippage: BigRational) throws -> [AssetExchangeRouterDeposit] {
+    func routerAccountDeposits(slippage: BigRational) throws -> [AssetExchangeRouterHopDeposits] {
         try mergedRuns().flatMap { run in
-            try routerAccountDeposits(in: run, slippage: slippage)
+            routerAccountDeposits(in: run, slippage: slippage)
         }
     }
 }
@@ -41,38 +34,33 @@ private extension AssetExchangeRoute {
     func routerAccountDeposits(
         in run: ClosedRange<Int>,
         slippage: BigRational
-    ) throws -> [AssetExchangeRouterDeposit] {
+    ) -> [AssetExchangeRouterHopDeposits] {
         let inMultiHopRun = run.count > 1
 
-        return try run.reduce(into: []) { deposits, index in
-            guard let hop = try items[index].edge.routerAccountHop(inMultiHopRun: inMultiHopRun) else {
-                return
+        return run.map { index in
+            var deposits = AssetExchangeRouterHopDeposits()
+            let edge = items[index].edge
+
+            guard edge.usesRouterAccount(inMultiHopRun: inMultiHopRun) else {
+                return deposits
             }
 
             if index == run.lowerBound {
-                deposits.append(
-                    AssetExchangeRouterDeposit(
-                        itemIndex: index,
-                        side: .hopIn,
-                        asset: hop.assetIn,
-                        amount: depositedAmountIn(at: index, slippage: slippage)
-                    )
+                deposits.hopIn = AssetExchangeRouterDeposit(
+                    assetId: edge.origin,
+                    amount: depositedAmountIn(at: index, slippage: slippage)
                 )
             }
 
             // the intermediate ED validation owns the output of a run that feeds a later operation
-            guard index < run.upperBound || index == items.count - 1 else {
-                return
-            }
-
-            deposits.append(
-                AssetExchangeRouterDeposit(
-                    itemIndex: index,
-                    side: .hopOut,
-                    asset: hop.assetOut,
+            if index < run.upperBound || index == items.count - 1 {
+                deposits.hopOut = AssetExchangeRouterDeposit(
+                    assetId: edge.destination,
                     amount: depositedAmountOut(at: index, isRunOutput: index == run.upperBound, slippage: slippage)
                 )
-            )
+            }
+
+            return deposits
         }
     }
 

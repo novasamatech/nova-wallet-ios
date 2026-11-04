@@ -14,7 +14,7 @@ class AnyAssetExchangeEdge {
         AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
 
-    private let routerAccountHopClosure: (Bool) throws -> AssetExchangeRouterHop?
+    private let usesRouterAccountClosure: (Bool) -> Bool
 
     private let beginOperationClosure: (AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol
     private let appendToOperationClosure: (
@@ -45,7 +45,7 @@ class AnyAssetExchangeEdge {
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
         fetchTradeLimitVerdict = edge.tradeLimitVerdict
-        routerAccountHopClosure = edge.routerAccountHop
+        usesRouterAccountClosure = edge.usesRouterAccount
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
@@ -73,8 +73,8 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         fetchTradeLimitVerdict(amount, direction)
     }
 
-    func routerAccountHop(inMultiHopRun: Bool) throws -> AssetExchangeRouterHop? {
-        try routerAccountHopClosure(inMultiHopRun)
+    func usesRouterAccount(inMultiHopRun: Bool) -> Bool {
+        usesRouterAccountClosure(inMultiHopRun)
     }
 
     var origin: ChainAssetId { fetchOrigin() }

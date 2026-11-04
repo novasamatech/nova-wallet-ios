@@ -225,7 +225,7 @@ extension HydraStableswapQuoteFactory {
             return .withinLimit
         }
 
-        return .belowMinimum(.init(minTradingLimit: minTradingLimit))
+        return .belowMinimum(minTradingLimit)
     }
 
     // Among share-token hops the runtime enforces the minimum only when adding liquidity by asset amount

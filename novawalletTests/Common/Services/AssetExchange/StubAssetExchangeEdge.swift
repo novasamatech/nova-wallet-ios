@@ -12,7 +12,7 @@ final class StubAssetExchangeEdge {
     let type: AssetExchangeEdgeType
     let chain: ChainModel
     let poolId: AssetExchangePoolId?
-    let routerHop: AssetExchangeRouterHop?
+    let isRouted: Bool
     let verdict: AssetExchangeTradeLimitVerdict
     let quoteClosure: (Balance, AssetConversion.Direction) -> Balance
 
@@ -22,7 +22,7 @@ final class StubAssetExchangeEdge {
         type: AssetExchangeEdgeType,
         chain: ChainModel,
         poolId: AssetExchangePoolId? = nil,
-        routerHop: AssetExchangeRouterHop? = nil,
+        isRouted: Bool = false,
         verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
         quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount }
     ) {
@@ -31,7 +31,7 @@ final class StubAssetExchangeEdge {
         self.type = type
         self.chain = chain
         self.poolId = poolId
-        self.routerHop = routerHop
+        self.isRouted = isRouted
         self.verdict = verdict
         self.quoteClosure = quoteClosure
     }
@@ -49,8 +49,8 @@ extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
         .createWithResult(verdict)
     }
 
-    func routerAccountHop(inMultiHopRun _: Bool) -> AssetExchangeRouterHop? {
-        routerHop
+    func usesRouterAccount(inMultiHopRun _: Bool) -> Bool {
+        isRouted
     }
 
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {

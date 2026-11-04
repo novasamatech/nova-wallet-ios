@@ -21,12 +21,8 @@ final class HydraOmnipoolExchangeEdge: AssetsHydraExchangeEdge {
         )
     }
 
-    override func routerAccountHop(inMultiHopRun: Bool) throws -> AssetExchangeRouterHop? {
-        guard inMultiHopRun else {
-            return nil
-        }
-
-        return try super.routerAccountHop(inMultiHopRun: inMultiHopRun)
+    override func usesRouterAccount(inMultiHopRun: Bool) -> Bool {
+        inMultiHopRun
     }
 }
 

@@ -121,7 +121,7 @@ extension HydraXYKSwapQuoteFactory {
         limits: HydraExchangeTradeLimits.PoolLimits
     ) throws -> AssetExchangeTradeLimitVerdict {
         if let minTradingLimit = limits.minTradingLimit, amount < minTradingLimit {
-            return .belowMinimum(.init(minTradingLimit: minTradingLimit))
+            return .belowMinimum(minTradingLimit)
         }
 
         return try maxTradeLimitVerdict(

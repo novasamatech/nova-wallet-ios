@@ -66,6 +66,7 @@ private extension SwapDataValidatorFactory {
         case let .belowMinimum(failure):
             presentPoolTradeMinimum(
                 for: failure,
+                asset: failure.direction == .sell ? context.params.payChainAsset : context.params.receiveChainAsset,
                 chargesCommission: context.chargesCommission,
                 locale: context.locale
             )
@@ -150,6 +151,7 @@ private extension SwapDataValidatorFactory {
 
     func presentPoolTradeMinimum(
         for failure: AssetExchangeTradeMinimumFailure,
+        asset: ChainAsset,
         chargesCommission: Bool,
         locale: Locale
     ) {
@@ -158,6 +160,7 @@ private extension SwapDataValidatorFactory {
         }
 
         let minAmount = failure.formattedUserMinimum(
+            for: asset,
             chargesCommission: chargesCommission,
             viewModelFactory: balanceViewModelFactoryFacade,
             locale: locale

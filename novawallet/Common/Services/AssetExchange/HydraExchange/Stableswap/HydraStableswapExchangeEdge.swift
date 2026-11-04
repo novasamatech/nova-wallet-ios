@@ -102,18 +102,12 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
                 return .withinLimit
             }
 
-            let verdict = HydraStableswapQuoteFactory.tradeLimitVerdict(
+            return HydraStableswapQuoteFactory.tradeLimitVerdict(
                 for: amount,
                 direction: direction,
                 poolPair: poolPair,
                 minTradingLimit: minTradingLimit
             )
-
-            guard let limitedAsset = self.limitedAsset(for: direction) else {
-                return verdict
-            }
-
-            return verdict.naming(limitedAsset: limitedAsset)
         }
 
         verdictOperation.addDependency(minTradingLimitWrapper.targetOperation)

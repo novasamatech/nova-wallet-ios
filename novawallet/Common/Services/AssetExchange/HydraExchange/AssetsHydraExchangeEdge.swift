@@ -75,11 +75,8 @@ class AssetsHydraExchangeEdge {
         false
     }
 
-    func routerAccountHop(inMultiHopRun _: Bool) throws -> AssetExchangeRouterHop? {
-        AssetExchangeRouterHop(
-            assetIn: try host.chain.chainAssetOrError(for: origin.assetId),
-            assetOut: try host.chain.chainAssetOrError(for: destination.assetId)
-        )
+    func usesRouterAccount(inMultiHopRun _: Bool) -> Bool {
+        true
     }
 
     func beginMetaOperation(

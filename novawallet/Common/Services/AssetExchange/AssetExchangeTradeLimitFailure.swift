@@ -37,8 +37,6 @@ extension AssetExchangeTradeLimitFailure {
 }
 
 struct AssetExchangeTradeMinimumFailure: Error, Equatable {
-    let limitedAsset: ChainAsset?
-
     let minimumAmount: Balance
 
     let direction: AssetConversion.Direction

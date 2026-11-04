@@ -87,8 +87,8 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         .createWithResult(.withinLimit)
     }
 
-    func routerAccountHop(inMultiHopRun _: Bool) -> AssetExchangeRouterHop? {
-        nil
+    func usesRouterAccount(inMultiHopRun _: Bool) -> Bool {
+        false
     }
 
     func beginMetaOperation(

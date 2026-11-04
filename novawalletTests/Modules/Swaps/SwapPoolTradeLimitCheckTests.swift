@@ -25,7 +25,7 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
 
         XCTAssertEqual(
             try runCheck(route),
-            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
+            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
         )
     }
 
@@ -34,22 +34,17 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
 
         XCTAssertEqual(
             try runCheck(belowDeposit),
-            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
-        )
-
-        let tradingLimit = AssetExchangeTradeLimitShortfall(
-            minTradingLimit: 1000,
-            limitedAsset: CommissionTestFixtures.chainAsset(4)
+            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
         )
 
         let belowBoth = makeRoute(
-            [hop(4, 5, amount: 30, quote: 29, verdict: .belowMinimum(tradingLimit))],
+            [hop(4, 5, amount: 30, quote: 29, verdict: .belowMinimum(1000))],
             direction: .sell
         )
 
         XCTAssertEqual(
             try runCheck(belowBoth),
-            .belowMinimum(failure(asset: 4, minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+            .belowMinimum(failure(minimum: 1000, direction: .sell, isUserInputAdjustable: true))
         )
     }
 
@@ -84,7 +79,7 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
         let belowDeposit = makeRoute([hop(2, 1, amount: Self.hdxDeposit - 1, quote: 20_000_000)], direction: .sell)
         XCTAssertEqual(
             try runCheck(belowDeposit),
-            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
+            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
         )
     }
 
@@ -111,7 +106,7 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
 
         XCTAssertEqual(
             try runCheck(route),
-            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
+            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
         )
     }
 
@@ -149,13 +144,8 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
     }
 
     func testFailedExistentialDepositFetchStillReportsTheTradingMinimum() throws {
-        let tradingLimit = AssetExchangeTradeLimitShortfall(
-            minTradingLimit: 1000,
-            limitedAsset: CommissionTestFixtures.chainAsset(4)
-        )
-
         let route = makeRoute(
-            [hop(4, 5, amount: 306, quote: 305, verdict: .belowMinimum(tradingLimit))],
+            [hop(4, 5, amount: 306, quote: 305, verdict: .belowMinimum(1000))],
             direction: .sell
         )
 
@@ -163,7 +153,7 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
 
         XCTAssertEqual(
             check,
-            .belowMinimum(failure(asset: 4, minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+            .belowMinimum(failure(minimum: 1000, direction: .sell, isUserInputAdjustable: true))
         )
     }
 }
@@ -177,17 +167,12 @@ private extension SwapPoolTradeLimitCheckTests {
         isRouted: Bool = true,
         verdict: AssetExchangeTradeLimitVerdict = .withinLimit
     ) -> AssetExchangeRouteItem {
-        let routerHop = AssetExchangeRouterHop(
-            assetIn: CommissionTestFixtures.chainAsset(origin),
-            assetOut: CommissionTestFixtures.chainAsset(destination)
-        )
-
         let edge = StubAssetExchangeEdge(
             origin: CommissionTestFixtures.asset(origin),
             destination: CommissionTestFixtures.asset(destination),
             type: .hydraSwap,
             chain: CommissionTestFixtures.chain,
-            routerHop: isRouted ? routerHop : nil,
+            isRouted: isRouted,
             verdict: verdict
         )
 
@@ -201,13 +186,11 @@ private extension SwapPoolTradeLimitCheckTests {
     }
 
     func failure(
-        asset: AssetModel.Id,
         minimum: Balance,
         direction: AssetConversion.Direction,
         isUserInputAdjustable: Bool
     ) -> AssetExchangeTradeMinimumFailure {
         AssetExchangeTradeMinimumFailure(
-            limitedAsset: CommissionTestFixtures.chainAsset(asset),
             minimumAmount: minimum,
             direction: direction,
             isUserInputAdjustable: isUserInputAdjustable
