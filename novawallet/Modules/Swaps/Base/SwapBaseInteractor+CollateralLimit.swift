@@ -19,13 +19,13 @@ private extension SwapBaseInteractor {
         collateralLimitCallStore.cancel()
         collateralLimitRetryChainAsset = nil
 
-        guard
-            chainAsset.mayBackHydraAaveLoan,
-            let accountId = chainAccountResponse(for: chainAsset)?.accountId else {
+        guard chainAsset.mayBackHydraAaveLoan else {
             return
         }
 
-        let wrapper = collateralLimitFactory.createLimitWrapper(for: chainAsset, accountId: accountId)
+        let wrapper = chainAccountResponse(for: chainAsset).map {
+            collateralLimitFactory.createLimitWrapper(for: chainAsset, accountId: $0.accountId)
+        } ?? .createWithResult(.unrestricted)
 
         executeCancellable(
             wrapper: wrapper,
