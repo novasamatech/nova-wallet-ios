@@ -2,6 +2,20 @@ import Foundation
 
 extension SwapBaseInteractor {
     func provideCollateralLimit(for chainAsset: ChainAsset) {
+        fetchCollateralLimit(for: chainAsset, retriesOnFailure: true)
+    }
+
+    func retryCollateralLimitIfNeeded(for chainAssetId: ChainAssetId) {
+        guard let chainAsset = collateralLimitRetryChainAsset, chainAsset.chainAssetId == chainAssetId else {
+            return
+        }
+
+        fetchCollateralLimit(for: chainAsset, retriesOnFailure: false)
+    }
+}
+
+private extension SwapBaseInteractor {
+    func fetchCollateralLimit(for chainAsset: ChainAsset, retriesOnFailure: Bool) {
         collateralLimitCallStore.cancel()
         collateralLimitRetryChainAsset = nil
 
@@ -24,19 +38,8 @@ extension SwapBaseInteractor {
                 self?.basePresenter?.didReceive(collateralLimit: limit, for: chainAsset.chainAssetId)
             case let .failure(error):
                 self?.logger.error("Collateral limit fetch failed: \(error)")
-                self?.collateralLimitRetryChainAsset = chainAsset
+                self?.collateralLimitRetryChainAsset = retriesOnFailure ? chainAsset : nil
             }
         }
-    }
-
-    func retryCollateralLimitIfNeeded(for chainAssetId: ChainAssetId) {
-        guard
-            let chainAsset = collateralLimitRetryChainAsset,
-            chainAsset.chainAssetId == chainAssetId,
-            !collateralLimitCallStore.hasCall else {
-            return
-        }
-
-        provideCollateralLimit(for: chainAsset)
     }
 }
