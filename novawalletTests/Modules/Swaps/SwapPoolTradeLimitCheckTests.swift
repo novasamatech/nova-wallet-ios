@@ -122,6 +122,50 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
 
         XCTAssertEqual(check, .minBalanceUnavailable)
     }
+
+    func testFailedExistentialDepositFetchStillReportsTheExceededPoolLimit() throws {
+        let breach = AssetExchangeTradeLimitBreach(
+            maxGivenAmount: 5_000_000_000_000,
+            minTradingLimit: 1000,
+            limitedAsset: CommissionTestFixtures.chainAsset(2)
+        )
+
+        let route = makeRoute(
+            [hop(2, 1, amount: 10_000_000_000_000, quote: 20_000_000, verdict: .exceeds(breach))],
+            direction: .sell
+        )
+
+        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
+
+        let expectedFailure = AssetExchangeTradeLimitFailure(
+            limitedAsset: CommissionTestFixtures.chainAsset(2),
+            maxGivenAmount: 5_000_000_000_000,
+            minTradingLimit: 1000,
+            direction: .sell,
+            isUserInputAdjustable: true
+        )
+
+        XCTAssertEqual(check, .blocked(expectedFailure))
+    }
+
+    func testFailedExistentialDepositFetchStillReportsTheTradingMinimum() throws {
+        let tradingLimit = AssetExchangeTradeLimitShortfall(
+            minTradingLimit: 1000,
+            limitedAsset: CommissionTestFixtures.chainAsset(4)
+        )
+
+        let route = makeRoute(
+            [hop(4, 5, amount: 306, quote: 305, verdict: .belowMinimum(tradingLimit))],
+            direction: .sell
+        )
+
+        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
+
+        XCTAssertEqual(
+            check,
+            .belowMinimum(failure(asset: 4, minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+        )
+    }
 }
 
 private extension SwapPoolTradeLimitCheckTests {
