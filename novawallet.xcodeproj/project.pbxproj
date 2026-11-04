@@ -11,6 +11,7 @@
 		6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */; };
 		645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE2C5025AEA5C5FC9BF3F74 /* SwapBaseInteractor+CollateralLimit.swift */; };
 		234062D9905BC4437C760123 /* SwapModel+Collateral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0D1A588BE5B9C4DB347FC6 /* SwapModel+Collateral.swift */; };
+		6699FA2EDBEA52E8C09A6125 /* SwapModel+Provider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CD6942B043BB51E359B94D /* SwapModel+Provider.swift */; };
 		F9709A40CA697CA6618EABB7 /* HydraAaveCollateralLimitFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */; };
 		FF26F09D4A578262444DC172 /* HydraAaveContract+Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B7375D472934227718A06C /* HydraAaveContract+Position.swift */; };
 		E94B6028BF75F8234CD498F2 /* HydraAaveCollateralPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD4F29B6F4B3CBCB640B4F1 /* HydraAaveCollateralPosition.swift */; };
@@ -7260,6 +7261,7 @@
 		6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveFlowStateTests.swift; sourceTree = "<group>"; };
 		EAE2C5025AEA5C5FC9BF3F74 /* SwapBaseInteractor+CollateralLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapBaseInteractor+CollateralLimit.swift"; sourceTree = "<group>"; };
 		5A0D1A588BE5B9C4DB347FC6 /* SwapModel+Collateral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapModel+Collateral.swift"; sourceTree = "<group>"; };
+		40CD6942B043BB51E359B94D /* SwapModel+Provider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapModel+Provider.swift"; sourceTree = "<group>"; };
 		D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralLimitFactory.swift; sourceTree = "<group>"; };
 		89B7375D472934227718A06C /* HydraAaveContract+Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraAaveContract+Position.swift"; sourceTree = "<group>"; };
 		CCD4F29B6F4B3CBCB640B4F1 /* HydraAaveCollateralPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralPosition.swift; sourceTree = "<group>"; };
@@ -22017,6 +22019,7 @@
 			isa = PBXGroup;
 			children = (
 				5A0D1A588BE5B9C4DB347FC6 /* SwapModel+Collateral.swift */,
+				40CD6942B043BB51E359B94D /* SwapModel+Provider.swift */,
 				7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */,
 				7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */,
 				0C13DFC82AF4FFC200E5F355 /* SwapErrorPresentableParams.swift */,
@@ -33737,6 +33740,7 @@
 			files = (
 				645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */,
 				234062D9905BC4437C760123 /* SwapModel+Collateral.swift in Sources */,
+				6699FA2EDBEA52E8C09A6125 /* SwapModel+Provider.swift in Sources */,
 				F9709A40CA697CA6618EABB7 /* HydraAaveCollateralLimitFactory.swift in Sources */,
 				FF26F09D4A578262444DC172 /* HydraAaveContract+Position.swift in Sources */,
 				E94B6028BF75F8234CD498F2 /* HydraAaveCollateralPosition.swift in Sources */,
