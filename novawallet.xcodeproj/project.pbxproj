@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F9709A40CA697CA6618EABB7 /* HydraAaveCollateralLimitFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */; };
+		FF26F09D4A578262444DC172 /* HydraAaveContract+Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B7375D472934227718A06C /* HydraAaveContract+Position.swift */; };
+		E94B6028BF75F8234CD498F2 /* HydraAaveCollateralPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD4F29B6F4B3CBCB640B4F1 /* HydraAaveCollateralPosition.swift */; };
+		14CFD2937097D474E168DE7D /* HydraAaveCollateralModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E9DCC8A3605F7EB0C8469 /* HydraAaveCollateralModels.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */; };
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
@@ -7245,6 +7249,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralLimitFactory.swift; sourceTree = "<group>"; };
+		89B7375D472934227718A06C /* HydraAaveContract+Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraAaveContract+Position.swift"; sourceTree = "<group>"; };
+		CCD4F29B6F4B3CBCB640B4F1 /* HydraAaveCollateralPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralPosition.swift; sourceTree = "<group>"; };
+		664E9DCC8A3605F7EB0C8469 /* HydraAaveCollateralModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralModels.swift; sourceTree = "<group>"; };
 		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
@@ -15307,6 +15315,10 @@
 		0C1CF7162E53197A00B1DA66 /* AavePool */ = {
 			isa = PBXGroup;
 			children = (
+				D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */,
+				89B7375D472934227718A06C /* HydraAaveContract+Position.swift */,
+				CCD4F29B6F4B3CBCB640B4F1 /* HydraAaveCollateralPosition.swift */,
+				664E9DCC8A3605F7EB0C8469 /* HydraAaveCollateralModels.swift */,
 				0C1CF7172E531C1700B1DA66 /* AssetsHydraAaveExchange.swift */,
 				0C1CF7192E531D0200B1DA66 /* HydraAaveExchangeEdge.swift */,
 				0C1CF71D2E5367F600B1DA66 /* HydraAaveSwapQuoteFactory.swift */,
@@ -33702,6 +33714,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9709A40CA697CA6618EABB7 /* HydraAaveCollateralLimitFactory.swift in Sources */,
+				FF26F09D4A578262444DC172 /* HydraAaveContract+Position.swift in Sources */,
+				E94B6028BF75F8234CD498F2 /* HydraAaveCollateralPosition.swift in Sources */,
+				14CFD2937097D474E168DE7D /* HydraAaveCollateralModels.swift in Sources */,
 				C9F70AF20B1F35A03C4FD338 /* SubtensorValidatorSelectAnalytics.swift in Sources */,
 				42BB620F46E178A21A891BC1 /* SubtensorValidatorSelectPresenter+Analytics.swift in Sources */,
 				7A11F8BB78E3CB1073976FEE /* SubtensorPositionPresenter+Analytics.swift in Sources */,

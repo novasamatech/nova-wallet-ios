@@ -17,6 +17,8 @@ extension HydraAave {
         private static let getReservesListMethod = "getReservesList"
         private static let getReserveDataMethod = "getReserveData"
         private static let addressByteLength = 20
+        private static let configurationIndex = 0
+        private static let reserveIdIndex = 7
         private static let aTokenIndex = 8
         private static let assetPrecompilePrefix = Data(repeating: 0, count: 15) + Data([1])
         private static let reserveDataABIType = ABI.Element.ParameterType.tuple(types: [
@@ -37,7 +39,7 @@ extension HydraAave {
             .uint(bits: 128)
         ])
 
-        private static let abi: [ABI.Element] = [
+        static let abi: [ABI.Element] = [
             .function(
                 .init(
                     name: getReservesListMethod,
@@ -99,6 +101,25 @@ extension HydraAave {
             return address.addressData
         }
 
+        static func decodeReserveData(response: String) throws -> ReserveData {
+            let result = try decodeResponse(response, method: getReserveDataMethod)
+
+            guard
+                let reserveData = result["0"] as? [Any],
+                reserveData.indices.contains(aTokenIndex),
+                let configuration = (reserveData[configurationIndex] as? [Any])?.first as? BigUInt,
+                let reserveIndex = reserveData[reserveIdIndex] as? BigUInt,
+                let address = reserveData[aTokenIndex] as? EthereumAddress else {
+                throw ContractError.invalidResponse
+            }
+
+            return ReserveData(
+                configuration: ReserveConfiguration(rawValue: configuration),
+                index: Int(reserveIndex),
+                aTokenAddress: address.addressData
+            )
+        }
+
         static func assetId(
             for address: AccountId,
             registeredAssets: [AccountId: HydraDx.AssetId]
@@ -114,7 +135,11 @@ extension HydraAave {
             return registeredAssets[address]
         }
 
-        private static func encodeCall(method: String, parameters: [Any]) throws -> String {
+        static func encodeCall(
+            method: String,
+            parameters: [Any],
+            abi: [ABI.Element] = Contract.abi
+        ) throws -> String {
             let contract = try EthereumContract(abi: abi)
 
             guard let data = contract.method(method, parameters: parameters, extraData: Data()) else {
@@ -124,7 +149,11 @@ extension HydraAave {
             return data.toHex(includePrefix: true)
         }
 
-        private static func decodeResponse(_ response: String, method: String) throws -> [String: Any] {
+        static func decodeResponse(
+            _ response: String,
+            method: String,
+            abi: [ABI.Element] = Contract.abi
+        ) throws -> [String: Any] {
             do {
                 let data = try Data(hexString: response)
                 return try EthereumContract(abi: abi).decodeReturnData(method, data: data)
