@@ -4,70 +4,40 @@ import BigInt
 
 final class HydraAaveCollateralPositionTests: XCTestCase {
     func testBorrowerAtLiquidationEdgeCannotSwapCollateral() {
-        let position = makePosition(
+        let limit = calculateLimit(
             collateral: 1_909_921_790,
             debt: 1_601_343_823,
             liquidationThreshold: 8387,
-            userConfiguration: 0x20C0,
             reserve: makeReserve(index: 3, ltv: 8000, liquidationThreshold: 8500, eModeCategory: 2),
             price: 95_093_401
         )
 
-        XCTAssertEqual(position.calculateLimit(), .limited(0))
+        XCTAssertEqual(limit, .limited(0))
     }
 
     func testHealthyBorrowerCanSwapUntilHealthFactorMargin() {
-        let position = makePosition(
+        let limit = calculateLimit(
             collateral: 10_000_000_000,
             debt: 2_000_000_000,
             liquidationThreshold: 8387,
-            userConfiguration: 0xC0,
             reserve: makeReserve(index: 3, ltv: 8000, liquidationThreshold: 8387),
             price: 400_000_000
         )
 
-        XCTAssertEqual(position.calculateLimit(), .limited(189_787_766_775))
+        XCTAssertEqual(limit, .limited(189_787_766_775))
     }
 
     func testEModeBorrowerUsesCategoryLiquidationThreshold() {
-        let position = makePosition(
+        let limit = calculateLimit(
             collateral: 10_000_000_000,
             debt: 2_000_000_000,
             liquidationThreshold: 9200,
-            userConfiguration: 0xC0,
             reserve: makeReserve(index: 3, ltv: 8000, liquidationThreshold: 8500, eModeCategory: 2),
-            userEModeCategoryId: 2,
             eModeCategory: HydraAave.EModeCategory(liquidationThreshold: 9200, priceSource: Data(count: 20)),
             price: 400_000_000
         )
 
-        XCTAssertEqual(position.calculateLimit(), .limited(195_108_695_650))
-    }
-
-    func testAccountWithoutDebtIsUnrestricted() {
-        let position = makePosition(
-            collateral: 10_000_000_000,
-            debt: 0,
-            liquidationThreshold: 8387,
-            userConfiguration: 0x80,
-            reserve: makeReserve(index: 3, ltv: 8000, liquidationThreshold: 8387),
-            price: 400_000_000
-        )
-
-        XCTAssertEqual(position.calculateLimit(), .unrestricted)
-    }
-
-    func testTokenNotEnabledAsCollateralIsUnrestricted() {
-        let position = makePosition(
-            collateral: 1_909_921_790,
-            debt: 1_601_343_823,
-            liquidationThreshold: 8387,
-            userConfiguration: 0x2040,
-            reserve: makeReserve(index: 3, ltv: 8000, liquidationThreshold: 8500),
-            price: 95_093_401
-        )
-
-        XCTAssertEqual(position.calculateLimit(), .unrestricted)
+        XCTAssertEqual(limit, .limited(195_108_695_650))
     }
 
     private func makeReserve(
@@ -86,27 +56,22 @@ final class HydraAaveCollateralPositionTests: XCTestCase {
         )
     }
 
-    private func makePosition(
+    private func calculateLimit(
         collateral: BigUInt,
         debt: BigUInt,
         liquidationThreshold: BigUInt,
-        userConfiguration: BigUInt,
         reserve: HydraAave.ReserveData,
-        userEModeCategoryId: BigUInt = 0,
         eModeCategory: HydraAave.EModeCategory? = nil,
         price: BigUInt
-    ) -> HydraAave.CollateralPosition {
-        HydraAave.CollateralPosition(
+    ) -> HydraAave.CollateralLimit {
+        HydraAave.CollateralPosition.calculateLimit(
             accountData: HydraAave.UserAccountData(
                 totalCollateralBase: collateral,
                 totalDebtBase: debt,
-                currentLiquidationThreshold: liquidationThreshold,
-                healthFactor: 0
+                currentLiquidationThreshold: liquidationThreshold
             ),
-            userConfiguration: HydraAave.UserConfiguration(rawValue: userConfiguration),
             reserve: reserve,
-            reserves: [reserve],
-            userEModeCategoryId: userEModeCategoryId,
+            collateralReserves: [reserve],
             eModeCategory: eModeCategory,
             price: price
         )

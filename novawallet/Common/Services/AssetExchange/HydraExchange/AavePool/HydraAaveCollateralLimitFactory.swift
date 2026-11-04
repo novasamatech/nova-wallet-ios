@@ -249,13 +249,13 @@ private extension HydraAaveCollateralLimitFactory {
         oracle: AccountId,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<HydraAave.CollateralLimit> {
-        let userState = borrowerState.userState
-
-        let priceAsset = HydraAave.CollateralPosition.priceAsset(
-            for: reserve,
-            userEModeCategoryId: userState.eModeCategoryId,
+        let eModeCategory = HydraAave.CollateralPosition.userEModeCategory(
+            for: reserve.data.configuration,
+            userEModeCategoryId: borrowerState.userState.eModeCategoryId,
             eModeCategory: borrowerState.eModeCategory
         )
+
+        let priceAsset = HydraAave.CollateralPosition.priceAsset(for: reserve, eModeCategory: eModeCategory)
 
         let priceWrapper = createCallWrapper(
             connection: connection,
@@ -265,15 +265,13 @@ private extension HydraAaveCollateralLimitFactory {
         )
 
         let calculationOperation = ClosureOperation<HydraAave.CollateralLimit> {
-            HydraAave.CollateralPosition(
-                accountData: userState.accountData,
-                userConfiguration: userState.configuration,
+            HydraAave.CollateralPosition.calculateLimit(
+                accountData: borrowerState.userState.accountData,
                 reserve: reserve.data,
-                reserves: borrowerState.collateralReserves.map(\.data),
-                userEModeCategoryId: userState.eModeCategoryId,
-                eModeCategory: borrowerState.eModeCategory,
+                collateralReserves: borrowerState.collateralReserves.map(\.data),
+                eModeCategory: eModeCategory,
                 price: try priceWrapper.targetOperation.extractNoCancellableResultData()
-            ).calculateLimit()
+            )
         }
 
         calculationOperation.addDependency(priceWrapper.targetOperation)

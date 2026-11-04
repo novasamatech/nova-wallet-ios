@@ -70,16 +70,14 @@ extension HydraAave.Contract {
         guard
             let totalCollateralBase = result["0"] as? BigUInt,
             let totalDebtBase = result["1"] as? BigUInt,
-            let currentLiquidationThreshold = result["3"] as? BigUInt,
-            let healthFactor = result["5"] as? BigUInt else {
+            let currentLiquidationThreshold = result["3"] as? BigUInt else {
             throw HydraAave.ContractError.invalidResponse
         }
 
         return HydraAave.UserAccountData(
             totalCollateralBase: totalCollateralBase,
             totalDebtBase: totalDebtBase,
-            currentLiquidationThreshold: currentLiquidationThreshold,
-            healthFactor: healthFactor
+            currentLiquidationThreshold: currentLiquidationThreshold
         )
     }
 

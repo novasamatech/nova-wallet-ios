@@ -46,7 +46,6 @@ extension HydraAave {
         let totalCollateralBase: BigUInt
         let totalDebtBase: BigUInt
         let currentLiquidationThreshold: BigUInt
-        let healthFactor: BigUInt
     }
 
     struct UserConfiguration: Equatable {
