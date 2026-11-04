@@ -12,4 +12,8 @@ extension HydraStableswap {
     static var poolPegs: StorageCodingPath {
         StorageCodingPath(moduleName: Self.module, itemName: "PoolPegs")
     }
+
+    static var minTradingLimitPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.module, constantName: "MinTradingLimit")
+    }
 }

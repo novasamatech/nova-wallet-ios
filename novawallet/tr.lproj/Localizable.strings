@@ -2369,6 +2369,13 @@
 "staking.subtensor.mev.protection.title" = "MEV koruması";
 "staking.subtensor.mev.protection.unavailable" = "Bu emir için MEV koruması kullanılamıyor.";
 "staking.subtensor.result.fee.may.be.charged" = "Ağ ücreti tahsil edilmiş olabilir.";
+"swaps.setup.deposit.alternatives" = "%1$@ veya %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · tarayıcıda açılır";
+"swaps.setup.deposit.by.dapp.title" = "%@ üzerinden takas yap";
+"swaps.setup.deposit.third.party" = "ÜÇÜNCÜ TARAF";
+"swap.failure.pool.trade.minimum.message" = "Bu takas için minimum miktar %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Bu rota bu kadar küçük bir miktarı işleyemez. Daha büyük bir miktar deneyin.";
+"swap.failure.pool.trade.minimum.title" = "Miktar çok küçük";
 "swap.failure.collateral.in.use.message" = "Şu anda yalnızca %@ takas edilebilir. Kalanı Hydration krediniz için teminat olarak kullanılıyor.";
 "swap.failure.collateral.in.use.none.message" = "Bu %@, Hydration krediniz için teminat olarak kullanılıyor; bu nedenle kredinin bir kısmını geri ödeyene kadar takas edilemez.";
 "swap.failure.collateral.in.use.title" = "Kullanımda olan teminat";

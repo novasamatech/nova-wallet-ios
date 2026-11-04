@@ -13,6 +13,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
     func requestValidatingPoolTradeLimits(
         for route: AssetExchangeRoute,
+        slippage: BigRational,
         completion: @escaping (SwapPoolTradeLimitCheck) -> Void
     )
 

@@ -4,7 +4,7 @@ import NovaCrypto
 import SubstrateSdk
 
 final class ControllerAccountConfirmationInteractor: AccountFetching {
-    weak var presenter: ControllerAccountConfirmationInteractorOutputProtocol!
+    weak var presenter: ControllerAccountConfirmationInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let controllerAccountItem: ChainAccountResponse
@@ -108,13 +108,13 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         estimateFee()
@@ -136,11 +136,11 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
                     signer: signingWrapper,
                     runningIn: .main,
                     completion: { [weak self] result in
-                        self?.presenter.didConfirmed(result: result)
+                        self?.presenter?.didConfirmed(result: result)
                     }
                 )
             }, errorClosure: { [weak self] error in
-                self?.presenter.didConfirmed(result: .failure(error))
+                self?.presenter?.didConfirmed(result: .failure(error))
             }
         )
     }
@@ -164,7 +164,7 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
                     setupBy: builderClosure
                 )
             }, errorClosure: { [weak self] error in
-                self?.presenter.didReceiveFee(result: .failure(error))
+                self?.presenter?.didReceiveFee(result: .failure(error))
             }
         )
     }
@@ -194,7 +194,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
             let maybeStashItem = try result.get()
             let maybeStashId = try maybeStashItem?.stash.toAccountId()
 
-            presenter.didReceiveStashItem(result: .success(maybeStashItem))
+            presenter?.didReceiveStashItem(result: .success(maybeStashItem))
 
             if let stashId = maybeStashId {
                 balanceProvider = subscribeToAssetBalanceProvider(
@@ -221,14 +221,14 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
 
                             self?.estimateFee()
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccountResponse))
+                        self?.presenter?.didReceiveStashAccount(result: .success(maybeAccountResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveStashAccount(result: .failure(error))
+                        self?.presenter?.didReceiveStashAccount(result: .failure(error))
                     }
                 }
             }
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
         }
     }
 }
@@ -236,7 +236,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
 extension ControllerAccountConfirmationInteractor: PriceLocalStorageSubscriber,
     PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
@@ -248,13 +248,13 @@ extension ControllerAccountConfirmationInteractor: WalletLocalStorageSubscriber,
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension ControllerAccountConfirmationInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

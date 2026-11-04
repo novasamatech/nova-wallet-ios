@@ -2369,6 +2369,13 @@
 "staking.subtensor.mev.protection.title" = "Protection contre le MEV";
 "staking.subtensor.mev.protection.unavailable" = "La protection contre le MEV n’est pas disponible pour cet ordre.";
 "staking.subtensor.result.fee.may.be.charged" = "Des frais de réseau peuvent avoir été facturés.";
+"swaps.setup.deposit.alternatives" = "%1$@ ou %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · s’ouvre dans le navigateur";
+"swaps.setup.deposit.by.dapp.title" = "Échanger sur %@";
+"swaps.setup.deposit.third.party" = "TIERS";
+"swap.failure.pool.trade.minimum.message" = "Le montant minimum pour cet échange est de %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Cette route ne peut pas traiter un montant aussi faible. Essayez un montant plus élevé.";
+"swap.failure.pool.trade.minimum.title" = "Le montant est trop faible";
 "swap.failure.collateral.in.use.message" = "Seul %@ peut être échangé pour le moment. Le reste garantit votre prêt Hydration.";
 "swap.failure.collateral.in.use.none.message" = "Ce %@ garantit votre prêt Hydration, il ne peut donc pas être échangé tant que vous n’avez pas remboursé une partie du prêt.";
 "swap.failure.collateral.in.use.title" = "Garantie utilisée";

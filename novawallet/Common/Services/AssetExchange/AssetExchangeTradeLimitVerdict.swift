@@ -28,12 +28,13 @@ struct AssetExchangeTradeLimitBreach: Equatable {
 
 enum AssetExchangeTradeLimitVerdict: Equatable {
     case withinLimit
+    case belowMinimum(Balance)
     case exceeds(AssetExchangeTradeLimitBreach)
 
     func naming(limitedAsset: ChainAsset) -> AssetExchangeTradeLimitVerdict {
         switch self {
-        case .withinLimit:
-            .withinLimit
+        case .withinLimit, .belowMinimum:
+            self
         case let .exceeds(breach):
             .exceeds(breach.naming(limitedAsset: limitedAsset))
         }

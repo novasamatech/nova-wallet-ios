@@ -20,7 +20,8 @@ enum GetTokenOptionsViewFactory {
         let presenter = GetTokenOptionsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            destinationChainAsset: destinationChainAsset
+            destinationChainAsset: destinationChainAsset,
+            allOperations: interactor.allOperations
         )
 
         let view = GetTokenOptionsViewController(operationPresenter: presenter)
@@ -78,6 +79,8 @@ enum GetTokenOptionsViewFactory {
             xcmTransfersSyncService: xcmTransfersSyncService,
             featureChecker: featureChecker,
             rampProvider: RampAggregator.defaultAggregator(),
+            globalConfigProvider: GlobalConfigProvider.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
     }

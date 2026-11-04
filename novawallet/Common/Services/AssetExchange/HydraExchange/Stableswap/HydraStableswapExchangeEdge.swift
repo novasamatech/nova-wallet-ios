@@ -77,9 +77,44 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func tradeLimitVerdict(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
+        amount: Balance,
+        direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        .createWithResult(.withinLimit)
+        let coderFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let minTradingLimitOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: HydraStableswap.minTradingLimitPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        minTradingLimitOperation.addDependency(coderFactoryOperation)
+
+        let poolPair = HydraStableswap.PoolPair(
+            poolAsset: poolAsset,
+            assetIn: remoteSwapPair.assetIn,
+            assetOut: remoteSwapPair.assetOut
+        )
+
+        let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
+            let minTradingLimit = try HydraExchangeTradeLimits.optionalMinTradingLimit(from: minTradingLimitOperation)
+
+            guard let minTradingLimit else {
+                return .withinLimit
+            }
+
+            return HydraStableswapQuoteFactory.tradeLimitVerdict(
+                for: amount,
+                direction: direction,
+                poolPair: poolPair,
+                minTradingLimit: minTradingLimit
+            )
+        }
+
+        verdictOperation.addDependency(minTradingLimitOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: verdictOperation,
+            dependencies: [coderFactoryOperation, minTradingLimitOperation]
+        )
     }
 }

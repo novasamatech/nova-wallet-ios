@@ -2369,6 +2369,13 @@
 "staking.subtensor.mev.protection.title" = "Bảo vệ MEV";
 "staking.subtensor.mev.protection.unavailable" = "Bảo vệ MEV không khả dụng cho lệnh này.";
 "staking.subtensor.result.fee.may.be.charged" = "Có thể bạn đã bị tính phí mạng lưới.";
+"swaps.setup.deposit.alternatives" = "%1$@ hoặc %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · mở trong trình duyệt";
+"swaps.setup.deposit.by.dapp.title" = "Hoán đổi trên %@";
+"swaps.setup.deposit.third.party" = "BÊN THỨ BA";
+"swap.failure.pool.trade.minimum.message" = "Số tiền tối thiểu cho giao dịch hoán đổi này là %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Tuyến đường này không thể xử lý số tiền nhỏ như vậy. Hãy thử số tiền lớn hơn.";
+"swap.failure.pool.trade.minimum.title" = "Số tiền quá nhỏ";
 "swap.failure.collateral.in.use.message" = "Hiện chỉ có thể hoán đổi %@. Phần còn lại đang dùng làm tài sản thế chấp cho khoản vay Hydration của bạn.";
 "swap.failure.collateral.in.use.none.message" = "%@ này đang dùng làm tài sản thế chấp cho khoản vay Hydration của bạn, vì vậy không thể hoán đổi cho đến khi bạn hoàn trả một phần khoản vay.";
 "swap.failure.collateral.in.use.title" = "Tài sản thế chấp đang được sử dụng";

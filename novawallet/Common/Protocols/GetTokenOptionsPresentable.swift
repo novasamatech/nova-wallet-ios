@@ -1,6 +1,6 @@
 import Foundation
 
-protocol GetTokenOptionsPresentable: RampPresentable, AlertPresentable {
+protocol GetTokenOptionsPresentable: RampPresentable, AlertPresentable, BrowserOpening {
     var assetListObservable: AssetListModelObservable { get }
 }
 
@@ -39,6 +39,9 @@ extension GetTokenOptionsPresentable {
                     chainAsset: destinationChainAsset,
                     locale: locale
                 )
+            case let .changeNow(url):
+                view?.controller.view.endEditing(true)
+                openBrowser(with: .query(string: url.absoluteString))
             }
         }
 
