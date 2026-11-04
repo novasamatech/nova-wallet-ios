@@ -65,7 +65,7 @@ private extension AssetExchangeRoute {
                     itemIndex: index,
                     side: .hopOut,
                     asset: hop.assetOut,
-                    amount: depositedAmountOut(at: index, slippage: slippage)
+                    amount: depositedAmountOut(at: index, isRunOutput: index == run.upperBound, slippage: slippage)
                 )
             )
         }
@@ -82,12 +82,13 @@ private extension AssetExchangeRoute {
         }
     }
 
-    func depositedAmountOut(at index: Int, slippage: BigRational) -> Balance {
+    func depositedAmountOut(at index: Int, isRunOutput: Bool, slippage: BigRational) -> Balance {
         let item = items[index]
 
         switch direction {
         case .sell:
-            return item.quote.subtractOrZero(slippage.mul(value: item.quote))
+            // the router enforces the slippage minimum on the run output only
+            return isRunOutput ? item.quote.subtractOrZero(slippage.mul(value: item.quote)) : item.quote
         case .buy:
             return item.amount
         }
