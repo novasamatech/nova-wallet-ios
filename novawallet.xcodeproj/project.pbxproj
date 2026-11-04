@@ -6139,6 +6139,7 @@
 		8AEF593AFE8F59F7DC0A5753 /* CustomValidatorListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365CAE2753E7D5F9B9DB7D1F /* CustomValidatorListInteractor.swift */; };
 		8B274B4CBA93332E841EA246 /* SubtensorOperationResultPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699C234CC45C17F27C20C6FA /* SubtensorOperationResultPresenter+Analytics.swift */; };
 		8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9C6892F10913B65D01751A /* SwapModelTests.swift */; };
+		F4176E51B15308DC9E6337B0 /* SwapPoolTradeLimitCheckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD2C8336A04715D89D9C87B /* SwapPoolTradeLimitCheckTests.swift */; };
 		8B53466F5239B852F20F0C4E /* AssetOperationNetworkListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891FBCE49A51A9120ED9F861 /* AssetOperationNetworkListViewController.swift */; };
 		8BB2AB5B4E97FAE0D27A4B60 /* SwapExecutionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E16B2A68FEAEC039E8604 /* SwapExecutionViewLayout.swift */; };
 		8C0C890FCCF0900DDE9CFD5F /* NotificationWalletListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD098B6DB870AFF6304CB542 /* NotificationWalletListProtocols.swift */; };
@@ -10094,6 +10095,7 @@
 		5A1F0A012F1000000000E101 /* AnnouncementsRemoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRemoteTests.swift; sourceTree = "<group>"; };
 		5A44D7C6D7C946577FA5C149 /* SubtensorSubmissionOperationFactory+Shield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorSubmissionOperationFactory+Shield.swift"; sourceTree = "<group>"; };
 		5A9C6892F10913B65D01751A /* SwapModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapModelTests.swift; sourceTree = "<group>"; };
+		3AD2C8336A04715D89D9C87B /* SwapPoolTradeLimitCheckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheckTests.swift; sourceTree = "<group>"; };
 		5AD16D5FA4115F2A525BDE4F /* CollatorStakingRedeemViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollatorStakingRedeemViewController.swift; sourceTree = "<group>"; };
 		5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageRootViewModel.swift; sourceTree = "<group>"; };
 		5AFA57BC935878DEBBE32EEA /* GovernanceRevokeDelegationConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmInteractor.swift; sourceTree = "<group>"; };
@@ -22007,6 +22009,7 @@
 			children = (
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
 				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
+				3AD2C8336A04715D89D9C87B /* SwapPoolTradeLimitCheckTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -40123,6 +40126,7 @@
 				AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
+				F4176E51B15308DC9E6337B0 /* SwapPoolTradeLimitCheckTests.swift in Sources */,
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
 				0CF00D012BE48998000EBFC2 /* UnstakingDurationOperationFactoryMock.swift in Sources */,
 				2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */,

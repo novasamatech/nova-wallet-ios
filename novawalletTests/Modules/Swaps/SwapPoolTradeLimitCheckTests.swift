@@ -1,0 +1,154 @@
+import XCTest
+@testable import novawallet
+import Operation_iOS
+
+final class SwapPoolTradeLimitCheckTests: XCTestCase {
+    static let existentialDeposits: [AssetModel.Id: Balance] = [
+        0: 588_235_294_118,
+        1: 17_540_000,
+        2: 1_000_000_000_000,
+        3: 32_467_532_467_532_500,
+        4: 34,
+        5: 36
+    ]
+
+    static let hdxDeposit: Balance = 1_000_000_000_000
+
+    func testRouterHopOutputBelowExistentialDepositBlocksTheRoute() throws {
+        let route = makeRoute(
+            [
+                hop(0, 1, amount: 1_337_000_000_000_000, quote: 3_105_000_000),
+                hop(1, 2, amount: 3_105_000_000, quote: 94_480_506_265)
+            ],
+            direction: .sell
+        )
+
+        XCTAssertEqual(
+            try runCheck(route),
+            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
+        )
+    }
+
+    func testSellAmountBelowExistentialDepositShowsTheLargerMinimum() throws {
+        let belowDeposit = makeRoute([hop(2, 3, amount: 800_000_000_000, quote: 1_000_000)], direction: .sell)
+
+        XCTAssertEqual(
+            try runCheck(belowDeposit),
+            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
+        )
+
+        let tradingLimit = AssetExchangeTradeLimitShortfall(
+            minTradingLimit: 1000,
+            limitedAsset: CommissionTestFixtures.chainAsset(4)
+        )
+
+        let belowBoth = makeRoute(
+            [hop(4, 5, amount: 30, quote: 29, verdict: .belowMinimum(tradingLimit))],
+            direction: .sell
+        )
+
+        XCTAssertEqual(
+            try runCheck(belowBoth),
+            .belowMinimum(failure(asset: 4, minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+        )
+    }
+
+    func testBuyBelowExistentialDepositAsksForTheNetMinimum() throws {
+        let policy = CommissionTestFixtures.createPolicy()
+        let path = [hop(1, 2, amount: 0, quote: 0).edge]
+
+        func buyRoute(net: Balance) -> AssetExchangeRoute {
+            let gross = policy.grossingUpAmountOut(net, for: path)
+            return makeRoute([hop(1, 2, amount: gross, quote: 20_000_000)], direction: .buy)
+        }
+
+        guard case let .belowMinimum(failure) = try runCheck(buyRoute(net: 500_000_000_000)) else {
+            return XCTFail("expected the buy to be below the minimum")
+        }
+
+        XCTAssertTrue(failure.isUserInputAdjustable)
+
+        let netMinimum = try XCTUnwrap(failure.userMinimum(chargesCommission: true))
+
+        XCTAssertEqual(try runCheck(buyRoute(net: netMinimum)), .withinLimits)
+        XCTAssertEqual(try runCheck(buyRoute(net: netMinimum - 1)), .belowMinimum(failure))
+    }
+
+    func testDirectHopIsExemptAndTheDepositItselfPasses() throws {
+        let direct = makeRoute([hop(1, 2, amount: 20_000_000, quote: 1, isRouted: false)], direction: .sell)
+        XCTAssertEqual(try runCheck(direct), .withinLimits)
+
+        let atDeposit = makeRoute([hop(2, 1, amount: Self.hdxDeposit, quote: 20_000_000)], direction: .sell)
+        XCTAssertEqual(try runCheck(atDeposit), .withinLimits)
+
+        let belowDeposit = makeRoute([hop(2, 1, amount: Self.hdxDeposit - 1, quote: 20_000_000)], direction: .sell)
+        XCTAssertEqual(
+            try runCheck(belowDeposit),
+            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
+        )
+    }
+}
+
+private extension SwapPoolTradeLimitCheckTests {
+    func hop(
+        _ origin: AssetModel.Id,
+        _ destination: AssetModel.Id,
+        amount: Balance,
+        quote: Balance,
+        isRouted: Bool = true,
+        verdict: AssetExchangeTradeLimitVerdict = .withinLimit
+    ) -> AssetExchangeRouteItem {
+        let routerHop = AssetExchangeRouterHop(
+            assetIn: CommissionTestFixtures.chainAsset(origin),
+            assetOut: CommissionTestFixtures.chainAsset(destination)
+        )
+
+        let edge = StubAssetExchangeEdge(
+            origin: CommissionTestFixtures.asset(origin),
+            destination: CommissionTestFixtures.asset(destination),
+            type: .hydraSwap,
+            chain: CommissionTestFixtures.chain,
+            routerHop: isRouted ? routerHop : nil,
+            verdict: verdict
+        )
+
+        return AssetExchangeRouteItem(edge: AnyAssetExchangeEdge(edge), amount: amount, quote: quote)
+    }
+
+    func makeRoute(_ items: [AssetExchangeRouteItem], direction: AssetConversion.Direction) -> AssetExchangeRoute {
+        let amount = direction == .sell ? items.first?.amount : items.last?.amount
+
+        return AssetExchangeRoute(items: items, amount: amount ?? 0, direction: direction)
+    }
+
+    func failure(
+        asset: AssetModel.Id,
+        minimum: Balance,
+        direction: AssetConversion.Direction,
+        isUserInputAdjustable: Bool
+    ) -> AssetExchangeTradeMinimumFailure {
+        AssetExchangeTradeMinimumFailure(
+            limitedAsset: CommissionTestFixtures.chainAsset(asset),
+            minimumAmount: minimum,
+            direction: direction,
+            isUserInputAdjustable: isUserInputAdjustable
+        )
+    }
+
+    func runCheck(_ route: AssetExchangeRoute) throws -> SwapPoolTradeLimitCheck {
+        let wrapper = route.poolTradeLimitCheckWrapper(slippage: .percent(of: 1)) { chainAssetIds in
+            let existences = chainAssetIds.reduce(into: [ChainAssetId: AssetBalanceExistence]()) { result, assetId in
+                result[assetId] = AssetBalanceExistence(
+                    minBalance: Self.existentialDeposits[assetId.assetId] ?? 0,
+                    isSelfSufficient: true
+                )
+            }
+
+            return .createWithResult(existences)
+        }
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+}
