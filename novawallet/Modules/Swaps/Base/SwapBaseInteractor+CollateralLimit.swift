@@ -39,6 +39,7 @@ private extension SwapBaseInteractor {
             case let .failure(error):
                 self?.logger.error("Collateral limit fetch failed: \(error)")
                 self?.collateralLimitRetryChainAsset = retriesOnFailure ? chainAsset : nil
+                self?.basePresenter?.didReceive(baseError: .collateralLimit(error, chainAsset.chainAssetId))
             }
         }
     }

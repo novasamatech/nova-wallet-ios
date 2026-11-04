@@ -20,6 +20,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     private var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
 
+    private var waitsForCollateralLimit = false
+
     private let abandonTracker = AnalyticsAbandonTracker {
         AnalyticsEvent.swapAbandoned(stage: .confirm)
     }
@@ -198,6 +200,15 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         if initState.feeChainAsset.asset.priceId == priceId {
             provideFeeViewModel()
         }
+    }
+
+    override func handleNewCollateralLimit(for _: ChainAssetId) {
+        guard waitsForCollateralLimit else {
+            return
+        }
+
+        waitsForCollateralLimit = false
+        view?.didReceiveStopLoading()
     }
 }
 
@@ -378,9 +389,15 @@ extension SwapConfirmPresenter {
 
 extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     func setup() {
+        waitsForCollateralLimit = isPayAssetCollateralLimitPending
+
         interactor.setup()
         estimateFee()
         updateViews()
+
+        if waitsForCollateralLimit {
+            view?.didReceiveStartLoading()
+        }
     }
 
     func showRateInfo() {

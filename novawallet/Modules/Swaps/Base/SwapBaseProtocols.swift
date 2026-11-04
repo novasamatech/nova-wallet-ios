@@ -42,4 +42,5 @@ enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
     case fetchFeeFailed(Error, ChainAssetId?)
     case assetBalanceExistence(Error, ChainAsset)
+    case collateralLimit(Error, ChainAssetId)
 }

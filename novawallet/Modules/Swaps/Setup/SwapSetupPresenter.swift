@@ -287,6 +287,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         }
 
         handleNewBalance(payAssetBalance, for: chainAssetId)
+        provideButtonState()
 
         if case .rate = payAmountInput {
             refreshQuote(direction: .sell, forceUpdate: false)
@@ -494,7 +495,7 @@ extension SwapSetupPresenter {
 
         view?.didReceiveButtonState(
             title: buttonState.title.value(for: selectedLocale),
-            enabled: buttonState.enabled
+            enabled: buttonState.enabled && !isPayAssetCollateralLimitPending
         )
     }
 

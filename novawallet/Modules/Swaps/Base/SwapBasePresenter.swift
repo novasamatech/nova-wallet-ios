@@ -19,6 +19,10 @@ class SwapBasePresenter {
         getPayChainAsset().flatMap { collateralLimits[$0.chainAssetId] }
     }
 
+    var isPayAssetCollateralLimitPending: Bool {
+        getPayChainAsset().map { $0.mayBackHydraAaveLoan && collateralLimits[$0.chainAssetId] == nil } ?? false
+    }
+
     var feeAssetBalance: AssetBalance? {
         getFeeChainAsset().flatMap { balances[$0.chainAssetId] }
     }
@@ -285,6 +289,10 @@ class SwapBasePresenter {
         case let .assetBalanceExistence(_, chainAsset):
             wireframe.presentRequestStatus(on: view, locale: locale) {
                 interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
+            }
+        case let .collateralLimit(_, chainAssetId):
+            if collateralLimits[chainAssetId] == nil {
+                didReceive(collateralLimit: .unrestricted, for: chainAssetId)
             }
         }
     }
