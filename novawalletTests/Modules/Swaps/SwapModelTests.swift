@@ -121,6 +121,14 @@ final class SwapModelTests: XCTestCase {
         XCTAssertEqual(reason.available, Balance(44000).decimal(precision: model.payChainAsset.asset.precision))
     }
 
+    func testCollateralLimitBelowBalanceLeavesFeeCheckWhenFeeTakesWholeBalance() throws {
+        let model = try makeCollateralModel(balance: 5000, limit: 4000, feeInPayAsset: 6000, spending: 3000)
+
+        guard case .feeInPayAsset = model.checkBalanceSufficiency() else {
+            return XCTFail("expected .feeInPayAsset when the fee takes the whole balance")
+        }
+    }
+
     func testCollateralLimitAboveBalanceLeavesBalanceCheckToReport() throws {
         let model = try makeCollateralModel(balance: 100_000, limit: 105_000, feeInPayAsset: 6000, spending: 100_000)
 

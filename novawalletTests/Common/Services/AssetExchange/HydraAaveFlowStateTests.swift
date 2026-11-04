@@ -39,10 +39,28 @@ final class HydraAaveFlowStateTests: XCTestCase {
 
         verify(discoveryFactory, times(1)).createPairsWrapper()
     }
+
+    func testDiscoveryOutlastingTimeLimitFails() throws {
+        let discoveryFactory = MockHydraAaveReservesDiscoveryFactoryProtocol()
+        let hangingOperation = AsyncClosureOperation<[HydraAave.TradePair]> { _ in }
+
+        stub(discoveryFactory) { stub in
+            when(stub.createPairsWrapper()).thenReturn(CompoundOperationWrapper(targetOperation: hangingOperation))
+        }
+
+        let flowState = try makeFlowState(discoveryFactory: discoveryFactory, discoveryTimeLimit: 0.1)
+
+        XCTAssertThrowsError(try fetchPairs(from: flowState)) { error in
+            XCTAssertEqual(error as? TimeLimitedLongrunError, .timeLimitExceeded)
+        }
+    }
 }
 
 private extension HydraAaveFlowStateTests {
-    func makeFlowState(discoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol) throws -> HydraAaveFlowState {
+    func makeFlowState(
+        discoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol,
+        discoveryTimeLimit: TimeInterval = HydraAaveFlowState.defaultDiscoveryTimeLimit
+    ) throws -> HydraAaveFlowState {
         let apiFactory = MockHydraAaveTradeExecutorFactoryProtocol()
 
         stub(apiFactory) { stub in
@@ -63,14 +81,18 @@ private extension HydraAaveFlowStateTests {
             notificationsRegistrar: nil,
             apiFactory: apiFactory,
             reservesDiscoveryFactory: discoveryFactory,
+            discoveryTimeLimit: discoveryTimeLimit,
             operationQueue: OperationQueue()
         )
     }
 
     func fetchPairs(from flowState: HydraAaveFlowState) throws -> [HydraAave.TradePair] {
         let wrapper = flowState.createPairsWrapper()
+        let finished = expectation(description: "pairs")
+        wrapper.targetOperation.completionBlock = { finished.fulfill() }
 
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [finished], timeout: 5)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
