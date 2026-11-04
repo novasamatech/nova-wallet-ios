@@ -138,6 +138,16 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             connection: host.connection,
             runtimeProvider: host.runtimeService,
             notificationsRegistrar: exchangeStateRegistrar,
+            apiFactory: HydraAaveTradeExecutorFactory(
+                connection: host.connection,
+                runtimeProvider: host.runtimeService,
+                operationQueue: operationQueue
+            ),
+            reservesDiscoveryFactory: HydraAaveReservesDiscoveryFactory(
+                connection: host.connection,
+                runtimeProvider: host.runtimeService,
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue
         )
 

@@ -2376,3 +2376,6 @@
 "swap.failure.pool.trade.minimum.message" = "O valor mínimo para esta troca é %@.";
 "swap.failure.pool.trade.minimum.route.message" = "Esta rota não pode processar um valor tão pequeno. Tente um valor maior.";
 "swap.failure.pool.trade.minimum.title" = "O valor é muito pequeno";
+"swap.failure.collateral.in.use.message" = "Apenas %@ pode ser trocado agora. O restante garante seu empréstimo na Hydration.";
+"swap.failure.collateral.in.use.none.message" = "Este %@ serve como garantia do seu empréstimo na Hydration, por isso não pode ser trocado até que você quite parte do empréstimo.";
+"swap.failure.collateral.in.use.title" = "Garantia em uso";

@@ -14,6 +14,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let collateralLimitFactory: HydraAaveCollateralLimitFactoryProtocol
+
+    let collateralLimitCallStore = CancellableCallStore()
+    var collateralLimitRetryChainAsset: ChainAsset?
 
     private var quoteCallStore = CancellableCallStore()
     private var feeCallStore = CancellableCallStore()
@@ -42,11 +46,17 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
         self.logger = logger
+
+        collateralLimitFactory = HydraAaveCollateralLimitFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 
     deinit {
         quoteCallStore.cancel()
         feeCallStore.cancel()
+        collateralLimitCallStore.cancel()
     }
 
     private func createAssetBalanceExistenceWrapper(
@@ -294,6 +304,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         updateOriginAccountInfoProvider(for: chainAsset.chain)
 
         provideAssetBalanceExistenses(for: chainAsset)
+        provideCollateralLimit(for: chainAsset)
 
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
@@ -444,6 +455,8 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
             )
 
             basePresenter?.didReceive(balance: balance, for: chainAssetId)
+
+            retryCollateralLimitIfNeeded(for: chainAssetId)
 
         case let .failure(error):
             logger.error("Unexpected balance error: \(error)")

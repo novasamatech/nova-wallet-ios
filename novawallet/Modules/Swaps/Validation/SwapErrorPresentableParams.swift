@@ -37,6 +37,11 @@ enum SwapDisplayError {
 
         let applyTitle: String?
     }
+
+    enum CollateralInUse {
+        case partiallyAvailable(amount: String)
+        case unavailable(symbol: String)
+    }
 }
 
 extension SwapDisplayError.PoolTradeLimit {

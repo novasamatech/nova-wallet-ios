@@ -2376,3 +2376,6 @@
 "swap.failure.pool.trade.minimum.message" = "이 스왑의 최소 금액은 %@입니다.";
 "swap.failure.pool.trade.minimum.route.message" = "이 경로에서는 이렇게 적은 금액을 처리할 수 없습니다. 더 큰 금액을 시도해 보세요.";
 "swap.failure.pool.trade.minimum.title" = "금액이 너무 적음";
+"swap.failure.collateral.in.use.message" = "현재 %@만 스왑할 수 있습니다. 나머지는 Hydration 대출을 뒷받침합니다.";
+"swap.failure.collateral.in.use.none.message" = "이 %@는 Hydration 대출을 뒷받침하므로 대출금의 일부를 상환하기 전에는 스왑할 수 없습니다.";
+"swap.failure.collateral.in.use.title" = "사용 중인 담보";

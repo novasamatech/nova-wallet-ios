@@ -78,6 +78,12 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         retryAction: @escaping () -> Void,
         locale: Locale
     )
+
+    func presentCollateralInUse(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.CollateralInUse,
+        locale: Locale
+    )
 }
 
 extension SwapErrorPresentable where Self: AlertPresentable & CommonRetryable {
@@ -357,6 +363,28 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(
             message: message,
             title: strings.swapFailurePoolTradeMinimumTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
+    }
+
+    func presentCollateralInUse(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.CollateralInUse,
+        locale: Locale
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let message = switch reason {
+        case let .partiallyAvailable(amount):
+            strings.swapFailureCollateralInUseMessage(amount)
+        case let .unavailable(symbol):
+            strings.swapFailureCollateralInUseNoneMessage(symbol)
+        }
+
+        present(
+            message: message,
+            title: strings.swapFailureCollateralInUseTitle(),
             closeAction: strings.commonClose(),
             from: view
         )

@@ -2376,3 +2376,6 @@
 "swap.failure.pool.trade.minimum.message" = "Minimalna kwota dla tej wymiany to %@.";
 "swap.failure.pool.trade.minimum.route.message" = "Ta ścieżka nie może przetworzyć tak małej kwoty. Spróbuj większej kwoty.";
 "swap.failure.pool.trade.minimum.title" = "Kwota jest zbyt mała";
+"swap.failure.collateral.in.use.message" = "Tylko %@ można teraz wymienić. Reszta stanowi zabezpieczenie Twojej pożyczki Hydration.";
+"swap.failure.collateral.in.use.none.message" = "To %@ stanowi zabezpieczenie Twojej pożyczki Hydration, więc nie można go wymienić, dopóki nie spłacisz części pożyczki.";
+"swap.failure.collateral.in.use.title" = "Zabezpieczenie w użyciu";

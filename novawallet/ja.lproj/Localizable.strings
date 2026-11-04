@@ -2376,3 +2376,6 @@
 "swap.failure.pool.trade.minimum.message" = "このスワップの最小数量は%@です。";
 "swap.failure.pool.trade.minimum.route.message" = "このルートでは、このような少量を処理できません。より大きな数量をお試しください。";
 "swap.failure.pool.trade.minimum.title" = "数量が少なすぎます";
+"swap.failure.collateral.in.use.message" = "現在スワップできるのは%@のみです。残りはあなたのHydrationローンの担保になっています。";
+"swap.failure.collateral.in.use.none.message" = "この%@はあなたのHydrationローンの担保になっているため、ローンの一部を返済するまでスワップできません。";
+"swap.failure.collateral.in.use.title" = "使用中の担保";

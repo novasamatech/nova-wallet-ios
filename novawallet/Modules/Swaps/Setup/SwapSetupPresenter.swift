@@ -280,6 +280,19 @@ final class SwapSetupPresenter: SwapBasePresenter {
             provideButtonState()
         }
     }
+
+    override func handleNewCollateralLimit(for chainAssetId: ChainAssetId) {
+        guard payChainAsset?.chainAssetId == chainAssetId else {
+            return
+        }
+
+        handleNewBalance(payAssetBalance, for: chainAssetId)
+        provideButtonState()
+
+        if case .rate = payAmountInput {
+            refreshQuote(direction: .sell, forceUpdate: false)
+        }
+    }
 }
 
 extension SwapSetupPresenter {
@@ -482,7 +495,7 @@ extension SwapSetupPresenter {
 
         view?.didReceiveButtonState(
             title: buttonState.title.value(for: selectedLocale),
-            enabled: buttonState.enabled
+            enabled: buttonState.enabled && !isPayAssetCollateralLimitPending
         )
     }
 
@@ -908,7 +921,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     feeChainAsset: swapModel.feeChainAsset,
                     slippage: slippage,
                     quote: quote,
-                    quoteArgs: quoteArgs
+                    quoteArgs: quoteArgs,
+                    payAssetCollateralLimit: swapModel.payAssetCollateralLimit
                 )
 
                 self?.trackProceededToConfirmation(for: swapModel, quote: quote)

@@ -10,6 +10,7 @@ struct SwapMaxModel {
     let payAssetExistense: AssetBalanceExistence?
     let receiveAssetExistense: AssetBalanceExistence?
     let accountInfo: AccountInfo?
+    let payAssetCollateralLimit: HydraAave.CollateralLimit?
 
     func minBalanceCoveredByFrozen(
         in balance: AssetBalance,
@@ -64,7 +65,7 @@ struct SwapMaxModel {
         needMinBalanceDueToOriginKeepAlive
     }
 
-    private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
+    private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Balance {
         var maxAmount = balance.transferable
 
         if shouldKeepNativeMinBalance, !minBalanceCoveredByFrozen(in: balance, assetExistence: payAssetExistense) {
@@ -77,10 +78,10 @@ struct SwapMaxModel {
             maxAmount = maxAmount.subtractOrZero(fee)
         }
 
-        return maxAmount.decimal(precision: payChainAsset.asset.precision)
+        return maxAmount
     }
 
-    private func calculateForCustomAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
+    private func calculateForCustomAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Balance {
         var maxAmount = balance.transferable
 
         if
@@ -91,7 +92,7 @@ struct SwapMaxModel {
         }
 
         guard let feeModel = feeModel else {
-            return maxAmount.decimal(precision: payChainAsset.asset.precision)
+            return maxAmount
         }
 
         let fee: Balance = if payChainAsset.chainAssetId == feeChainAsset?.chainAssetId {
@@ -100,7 +101,7 @@ struct SwapMaxModel {
             feeModel.postSubmissionFeeInAssetIn(payChainAsset)
         }
 
-        return maxAmount.subtractOrZero(fee).decimal(precision: payChainAsset.asset.precision)
+        return maxAmount.subtractOrZero(fee)
     }
 
     func calculate() -> Decimal {
@@ -108,10 +109,15 @@ struct SwapMaxModel {
             return 0
         }
 
-        if payChainAsset.isUtilityAsset {
-            return calculateForNativeAsset(payChainAsset, balance: balance)
+        let balanceBound = if payChainAsset.isUtilityAsset {
+            calculateForNativeAsset(payChainAsset, balance: balance)
         } else {
-            return calculateForCustomAsset(payChainAsset, balance: balance)
+            calculateForCustomAsset(payChainAsset, balance: balance)
         }
+
+        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
+        let maxAmount = payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
+
+        return maxAmount.decimal(precision: payChainAsset.asset.precision)
     }
 }

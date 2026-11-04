@@ -3,10 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import Web3Core
 
-protocol HydraAaveReservesDiscoveryFactoryProtocol {
-    func createPairsWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]>
-}
-
 final class HydraAaveReservesDiscoveryFactory {
     private static let reserveDetailsConcurrency = 6
 
@@ -27,22 +23,11 @@ final class HydraAaveReservesDiscoveryFactory {
 
 private extension HydraAaveReservesDiscoveryFactory {
     func createContractCallOperation(data: String) -> BaseOperation<String> {
-        let transaction = EthereumTransaction(
-            from: AccountId.nonzeroAccountId(of: 20).toHex(includePrefix: true),
-            to: HydraAave.Contract.poolAddress,
-            gas: nil,
-            gasPrice: nil,
-            value: nil,
+        HydraAave.Contract.createCallOperation(
+            connection: connection,
+            contract: HydraAave.Contract.poolAddress,
             data: data,
-            nonce: nil
-        )
-
-        let params = EvmQueryMessage.Params(call: transaction, block: .latest)
-
-        return JSONRPCOperation<EvmQueryMessage.Params, String>(
-            engine: connection,
-            method: EvmQueryMessage.method,
-            parameters: params
+            timeout: JSONRPCTimeout.singleNode
         )
     }
 
@@ -70,13 +55,11 @@ private extension HydraAaveReservesDiscoveryFactory {
             let locations = try locationsWrapper.targetOperation.extractNoCancellableResultData()
 
             return locations.reduce(into: [:]) { result, item in
-                guard
-                    case let .accountKey20(account) = item.value.location.interior.items.last,
-                    account.accountId.count == 20 else {
+                guard let address = item.value.evmAddress else {
                     return
                 }
 
-                result[account.accountId] = item.key.assetId
+                result[address] = item.key.assetId
             }
         }
 
@@ -95,7 +78,7 @@ private extension HydraAaveReservesDiscoveryFactory {
 
             let mappingOperation = ClosureOperation<HydraAave.TradePair?> {
                 let response = try callOperation.extractNoCancellableResultData()
-                let aToken = try HydraAave.Contract.decodeATokenAddress(response: response)
+                let aToken = try HydraAave.Contract.decodeReserveData(response: response).aTokenAddress
                 let registeredAssets = try registeredAssetsClosure()
 
                 guard

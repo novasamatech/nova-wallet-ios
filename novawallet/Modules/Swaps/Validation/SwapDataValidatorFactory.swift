@@ -70,7 +70,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         self.percentFormatter = percentFormatter
     }
 
-    // swiftlint:disable:next function_body_length
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
     func hasSufficientBalance(
         params: SwapModel,
         swapMaxAction: @escaping () -> Void,
@@ -191,6 +191,19 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     minBalance: minBalance,
                     locale: locale
                 )
+            case let .collateralInUse(model):
+                let reason: SwapDisplayError.CollateralInUse = if model.available > 0 {
+                    .partiallyAvailable(
+                        amount: viewModelFactory.amountFromValue(
+                            targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                            value: model.available
+                        ).value(for: locale)
+                    )
+                } else {
+                    .unavailable(symbol: params.payChainAsset.asset.symbol)
+                }
+
+                self?.presentable.presentCollateralInUse(from: view, reason: reason, locale: locale)
             }
         }, preservesCondition: {
             insufficientReason == nil

@@ -14,9 +14,20 @@ extension HydraAave {
     enum Contract {
         static let poolAddress = "0x1b02E051683b5cfaC5929C25E84adb26ECf87B38"
 
+        static let getUserAccountDataMethod = "getUserAccountData"
+        static let getUserConfigurationMethod = "getUserConfiguration"
+        static let getUserEModeMethod = "getUserEMode"
+        static let getEModeCategoryDataMethod = "getEModeCategoryData"
+        static let getReserveAddressByIdMethod = "getReserveAddressById"
+        static let addressesProviderMethod = "ADDRESSES_PROVIDER"
+        static let getPriceOracleMethod = "getPriceOracle"
+        static let getAssetPriceMethod = "getAssetPrice"
+
         private static let getReservesListMethod = "getReservesList"
         private static let getReserveDataMethod = "getReserveData"
         private static let addressByteLength = 20
+        private static let configurationIndex = 0
+        private static let reserveIdIndex = 7
         private static let aTokenIndex = 8
         private static let assetPrecompilePrefix = Data(repeating: 0, count: 15) + Data([1])
         private static let reserveDataABIType = ABI.Element.ParameterType.tuple(types: [
@@ -37,31 +48,33 @@ extension HydraAave {
             .uint(bits: 128)
         ])
 
+        private static let eModeCategoryABIType = ABI.Element.ParameterType.tuple(types: [
+            .uint(bits: 16),
+            .uint(bits: 16),
+            .uint(bits: 16),
+            .address,
+            .string
+        ])
+
         private static let abi: [ABI.Element] = [
-            .function(
-                .init(
-                    name: getReservesListMethod,
-                    inputs: [],
-                    outputs: [
-                        .init(name: "", type: .array(type: .address, length: 0))
-                    ],
-                    constant: true,
-                    payable: false
-                )
+            viewFunction(getReservesListMethod, inputs: [], outputs: [.array(type: .address, length: 0)]),
+            viewFunction(getReserveDataMethod, inputs: [.address], outputs: [reserveDataABIType]),
+            viewFunction(
+                getUserAccountDataMethod,
+                inputs: [.address],
+                outputs: Array(repeating: .uint(bits: 256), count: 6)
             ),
-            .function(
-                .init(
-                    name: getReserveDataMethod,
-                    inputs: [
-                        .init(name: "asset", type: .address)
-                    ],
-                    outputs: [
-                        .init(name: "", type: reserveDataABIType)
-                    ],
-                    constant: true,
-                    payable: false
-                )
-            )
+            viewFunction(
+                getUserConfigurationMethod,
+                inputs: [.address],
+                outputs: [.tuple(types: [.uint(bits: 256)])]
+            ),
+            viewFunction(getUserEModeMethod, inputs: [.address], outputs: [.uint(bits: 256)]),
+            viewFunction(getEModeCategoryDataMethod, inputs: [.uint(bits: 8)], outputs: [eModeCategoryABIType]),
+            viewFunction(getReserveAddressByIdMethod, inputs: [.uint(bits: 16)], outputs: [.address]),
+            viewFunction(addressesProviderMethod, inputs: [], outputs: [.address]),
+            viewFunction(getPriceOracleMethod, inputs: [], outputs: [.address]),
+            viewFunction(getAssetPriceMethod, inputs: [.address], outputs: [.uint(bits: 256)])
         ]
 
         static func getReservesListCall() throws -> String {
@@ -86,17 +99,23 @@ extension HydraAave {
             return addresses.map(\.addressData)
         }
 
-        static func decodeATokenAddress(response: String) throws -> AccountId {
+        static func decodeReserveData(response: String) throws -> ReserveData {
             let result = try decodeResponse(response, method: getReserveDataMethod)
 
             guard
                 let reserveData = result["0"] as? [Any],
                 reserveData.indices.contains(aTokenIndex),
+                let configuration = (reserveData[configurationIndex] as? [Any])?.first as? BigUInt,
+                let reserveIndex = reserveData[reserveIdIndex] as? BigUInt,
                 let address = reserveData[aTokenIndex] as? EthereumAddress else {
                 throw ContractError.invalidResponse
             }
 
-            return address.addressData
+            return ReserveData(
+                configuration: ReserveConfiguration(rawValue: configuration),
+                index: Int(reserveIndex),
+                aTokenAddress: address.addressData
+            )
         }
 
         static func assetId(
@@ -114,7 +133,7 @@ extension HydraAave {
             return registeredAssets[address]
         }
 
-        private static func encodeCall(method: String, parameters: [Any]) throws -> String {
+        static func encodeCall(method: String, parameters: [Any]) throws -> String {
             let contract = try EthereumContract(abi: abi)
 
             guard let data = contract.method(method, parameters: parameters, extraData: Data()) else {
@@ -124,13 +143,29 @@ extension HydraAave {
             return data.toHex(includePrefix: true)
         }
 
-        private static func decodeResponse(_ response: String, method: String) throws -> [String: Any] {
+        static func decodeResponse(_ response: String, method: String) throws -> [String: Any] {
             do {
                 let data = try Data(hexString: response)
                 return try EthereumContract(abi: abi).decodeReturnData(method, data: data)
             } catch {
                 throw ContractError.invalidResponse
             }
+        }
+
+        private static func viewFunction(
+            _ name: String,
+            inputs: [ABI.Element.ParameterType],
+            outputs: [ABI.Element.ParameterType]
+        ) -> ABI.Element {
+            .function(
+                .init(
+                    name: name,
+                    inputs: inputs.map { .init(name: "", type: $0) },
+                    outputs: outputs.map { .init(name: "", type: $0) },
+                    constant: true,
+                    payable: false
+                )
+            )
         }
     }
 }

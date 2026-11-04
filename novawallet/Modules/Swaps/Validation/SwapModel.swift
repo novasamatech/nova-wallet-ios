@@ -36,6 +36,7 @@ struct SwapModel {
         case deliveryFee(InsufficientDueDeliveryFee)
         case originKeepAlive(InsufficientDueOriginKeepAlive)
         case violatingConsumers(InsufficientDueConsumers)
+        case collateralInUse(InsufficientDueCollateral)
     }
 
     struct DustAfterSwap {
@@ -92,6 +93,7 @@ struct SwapModel {
     let accountInfo: AccountInfo?
     let destAccountInfo: AccountInfo?
     let destUtilityAssetExistence: AssetBalanceExistence?
+    let payAssetCollateralLimit: HydraAave.CollateralLimit?
 
     var utilityChainAsset: ChainAsset? {
         feeChainAsset.chain.utilityChainAsset()
@@ -270,6 +272,10 @@ struct SwapModel {
 
     func checkBalanceSufficiency() -> InsufficientBalanceReason? {
         if let insufficient = checkEnoughBalanceToSpend() {
+            return insufficient
+        }
+
+        if let insufficient = checkEnoughCollateralToSpend() {
             return insufficient
         }
 

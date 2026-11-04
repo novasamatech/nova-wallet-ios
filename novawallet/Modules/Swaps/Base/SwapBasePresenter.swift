@@ -9,9 +9,18 @@ class SwapBasePresenter {
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
+    var collateralLimits: [ChainAssetId: HydraAave.CollateralLimit] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }
+    }
+
+    var payAssetCollateralLimit: HydraAave.CollateralLimit? {
+        getPayChainAsset().flatMap { collateralLimits[$0.chainAssetId] }
+    }
+
+    var isPayAssetCollateralLimitPending: Bool {
+        getPayChainAsset().map { $0.mayBackHydraAaveLoan && collateralLimits[$0.chainAssetId] == nil } ?? false
     }
 
     var feeAssetBalance: AssetBalance? {
@@ -150,7 +159,8 @@ class SwapBasePresenter {
             slippage: getSlippage(),
             accountInfo: originAccountInfo,
             destAccountInfo: destAccountInfo,
-            destUtilityAssetExistence: destUtilityAssetBalanceExistense
+            destUtilityAssetExistence: destUtilityAssetBalanceExistense,
+            payAssetCollateralLimit: payAssetCollateralLimit
         )
     }
 
@@ -164,7 +174,8 @@ class SwapBasePresenter {
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: originAccountInfo
+            accountInfo: originAccountInfo,
+            payAssetCollateralLimit: payAssetCollateralLimit
         )
     }
 
@@ -253,6 +264,8 @@ class SwapBasePresenter {
 
     func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {}
 
+    func handleNewCollateralLimit(for _: ChainAssetId) {}
+
     func handleBaseError(
         _ error: SwapBaseError,
         view: ControllerBackedProtocol?,
@@ -276,6 +289,10 @@ class SwapBasePresenter {
         case let .assetBalanceExistence(_, chainAsset):
             wireframe.presentRequestStatus(on: view, locale: locale) {
                 interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
+            }
+        case let .collateralLimit(_, chainAssetId):
+            if collateralLimits[chainAssetId] == nil {
+                didReceive(collateralLimit: .unrestricted, for: chainAssetId)
             }
         }
     }
@@ -479,5 +496,17 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         accountInfoDict[chainId] = accountInfo
 
         handleNewAccountInfo(accountInfo, chainId: chainId)
+    }
+
+    func didReceive(collateralLimit: HydraAave.CollateralLimit, for chainAssetId: ChainAssetId) {
+        guard collateralLimits[chainAssetId] != collateralLimit else {
+            return
+        }
+
+        logger.debug("New collateral limit \(chainAssetId): \(collateralLimit)")
+
+        collateralLimits[chainAssetId] = collateralLimit
+
+        handleNewCollateralLimit(for: chainAssetId)
     }
 }
