@@ -15,16 +15,6 @@ extension GetTokenOperation {
         static let changeNowLastToken = "USDC"
     }
 
-    static func operations(for chainAsset: ChainAsset) -> [GetTokenOperation] {
-        let operations: [GetTokenOperation] = [.crosschain, .receive, .buy]
-
-        return supportsChangeNow(chainAsset) ? operations + [.changeNow] : operations
-    }
-
-    static func supportsChangeNow(_ chainAsset: ChainAsset) -> Bool {
-        chainAsset.chain.chainId == KnowChainId.bittensor && chainAsset.isUtilityAsset
-    }
-
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
         case .crosschain:

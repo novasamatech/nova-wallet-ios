@@ -14,12 +14,13 @@ final class GetTokenOptionsPresenter {
     init(
         interactor: GetTokenOptionsInteractorInputProtocol,
         wireframe: GetTokenOptionsWireframeProtocol,
-        destinationChainAsset: ChainAsset
+        destinationChainAsset: ChainAsset,
+        allOperations: [GetTokenOperation]
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.destinationChainAsset = destinationChainAsset
-        allOperations = GetTokenOperation.operations(for: destinationChainAsset)
+        self.allOperations = allOperations
     }
 
     private func isOperationAvailable(_ operation: GetTokenOperation) -> Bool {

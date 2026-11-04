@@ -41,9 +41,19 @@ final class GetTokenOptionsInteractor {
         self.logger = logger
     }
 
+    var allOperations: [GetTokenOperation] {
+        let operations: [GetTokenOperation] = [.crosschain, .receive, .buy]
+
+        return isNativeTao ? operations + [.changeNow] : operations
+    }
+
     deinit {
         xcmTransfersSyncService.throttle()
         globalConfigCallStore.cancel()
+    }
+
+    private var isNativeTao: Bool {
+        destinationChainAsset.chain.chainId == KnowChainId.bittensor && destinationChainAsset.isUtilityAsset
     }
 
     private func provideModel() {
@@ -139,7 +149,7 @@ final class GetTokenOptionsInteractor {
     }
 
     private func setupChangeNowUrl() {
-        guard GetTokenOperation.supportsChangeNow(destinationChainAsset) else {
+        guard isNativeTao else {
             return
         }
 

@@ -20,7 +20,8 @@ enum GetTokenOptionsViewFactory {
         let presenter = GetTokenOptionsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            destinationChainAsset: destinationChainAsset
+            destinationChainAsset: destinationChainAsset,
+            allOperations: interactor.allOperations
         )
 
         let view = GetTokenOptionsViewController(operationPresenter: presenter)
