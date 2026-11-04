@@ -10,15 +10,19 @@ extension SwapModel {
             return nil
         }
 
+        let balance = payAssetBalance?.transferable ?? 0
         let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
         let swapAmount = spendingAmountInPlank ?? 0
 
-        guard swapAmount + fee > limit else {
+        let collateralCeiling = limit.subtractOrZero(fee)
+        let balanceCeiling = balance.subtractOrZero(fee)
+
+        guard collateralCeiling < balanceCeiling, swapAmount + fee > limit else {
             return nil
         }
 
         let model = InsufficientDueCollateral(
-            available: limit.subtractOrZero(fee).decimal(assetInfo: payChainAsset.assetDisplayInfo)
+            available: collateralCeiling.decimal(assetInfo: payChainAsset.assetDisplayInfo)
         )
 
         return .collateralInUse(model)
