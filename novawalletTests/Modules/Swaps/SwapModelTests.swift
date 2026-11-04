@@ -136,9 +136,87 @@ final class SwapModelTests: XCTestCase {
             return XCTFail("expected .feeInPayAsset when the balance is below the limit")
         }
     }
+
+    func testHydraATokenRemainderBelowMinBalanceIsNotDust() throws {
+        let model = try makeHydraModel(payAssetId: 2, receiveAssetId: 1, providers: 1)
+
+        XCTAssertNil(model.checkDustAfterSwap())
+    }
+
+    func testSwapTakingLastProviderIntoHydraATokenCannotReceive() throws {
+        let model = try makeHydraModel(payAssetId: 1, receiveAssetId: 2, providers: 1)
+
+        guard case .noProvider = model.checkCanReceive() else {
+            return XCTFail("expected .noProvider when the pay asset was the only provider")
+        }
+    }
+
+    func testSwapIntoHydraATokenKeepingAnotherProviderCanReceive() throws {
+        let model = try makeHydraModel(payAssetId: 1, receiveAssetId: 2, providers: 2)
+
+        XCTAssertNil(model.checkCanReceive())
+    }
 }
 
 private extension SwapModelTests {
+    func makeHydraChain() throws -> ChainModel {
+        let json = """
+        {"chainId": "\(KnowChainId.hydra)", "name": "Hydration", "addressPrefix": 63, "nodes": [],
+        "options": ["hydradx-swaps"], "assets": [{"assetId": 0, "symbol": "HDX", "precision": 12},
+        {"assetId": 1, "symbol": "DOT", "precision": 10, "type": "orml"},
+        {"assetId": 2, "symbol": "aDOT", "precision": 10, "type": "orml-hydration-evm"}]}
+        """
+        let remoteChain = try JSONDecoder().decode(RemoteChainModel.self, from: Data(json.utf8))
+
+        return try XCTUnwrap(
+            ChainModelConverter().update(localModel: nil, remoteModel: remoteChain, additionalAssets: [], order: 0)
+        )
+    }
+
+    func makeHydraModel(payAssetId: AssetModel.Id, receiveAssetId: AssetModel.Id, providers: UInt32) throws -> SwapModel {
+        let chain = try makeHydraChain()
+        let payChainAsset = try XCTUnwrap(chain.chainAsset(for: payAssetId))
+        let receiveChainAsset = try XCTUnwrap(chain.chainAsset(for: receiveAssetId))
+        let spending: Balance = 9_033_734_111
+
+        return SwapModel(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: payChainAsset,
+            spendingAmount: spending.decimal(precision: payChainAsset.asset.precision),
+            payAssetBalance: AssetBalance(
+                chainAssetId: payChainAsset.chainAssetId,
+                accountId: CommissionTestFixtures.beneficiary,
+                freeInPlank: 9_037_107_880,
+                reservedInPlank: 0,
+                frozenInPlank: 0,
+                edCountMode: .basedOnTotal,
+                transferrableMode: .regular,
+                blocked: false
+            ),
+            feeAssetBalance: nil,
+            receiveAssetBalance: nil,
+            utilityAssetBalance: nil,
+            payAssetExistense: AssetBalanceExistence(minBalance: 17_540_000, isSelfSufficient: true),
+            receiveAssetExistense: AssetBalanceExistence(minBalance: 0, isSelfSufficient: true),
+            feeAssetExistense: nil,
+            utilityAssetExistense: nil,
+            feeModel: makeFee(commission: nil),
+            quoteArgs: AssetConversion.QuoteArgs(
+                assetIn: payChainAsset.chainAssetId,
+                assetOut: receiveChainAsset.chainAssetId,
+                amount: spending,
+                direction: .sell
+            ),
+            quote: nil,
+            slippage: BigRational(numerator: 0, denominator: 100),
+            accountInfo: AccountInfo(nonce: 0, providers: providers, sufficients: 0, data: AccountData(free: 0, reserved: 0)),
+            destAccountInfo: nil,
+            destUtilityAssetExistence: nil,
+            payAssetCollateralLimit: nil
+        )
+    }
+
     func makeCollateralModel(
         balance: Balance,
         limit: Balance,
