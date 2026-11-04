@@ -4501,6 +4501,7 @@
 		845C7F01263C44B70024E797 /* AnyProviderAutoClearTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845C7F00263C44B70024E797 /* AnyProviderAutoClearTests.swift */; };
 		845C7F06263C45EC0024E797 /* AnyProviderAutoCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845C7F05263C45EC0024E797 /* AnyProviderAutoCleaner.swift */; };
 		845CB6FA26276326005F798B /* LongrunOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CB6F926276326005F798B /* LongrunOperation.swift */; };
+		4F70C6E561FADA479C4122A3 /* TimeLimitedLongrun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ACFB2F0EF77865ACAAC3103 /* TimeLimitedLongrun.swift */; };
 		845D8ED32977CBD000F22133 /* SubqueryDelegatorStatsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845D8ED22977CBD000F22133 /* SubqueryDelegatorStatsOperationFactory.swift */; };
 		845D8ED92977F18300F22133 /* GovernanceDelegateStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845D8ED82977F18300F22133 /* GovernanceDelegateStats.swift */; };
 		845E49832636C87B002F8C22 /* ActionManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845E49822636C87B002F8C22 /* ActionManageViewModel.swift */; };
@@ -11408,6 +11409,7 @@
 		845C7F00263C44B70024E797 /* AnyProviderAutoClearTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyProviderAutoClearTests.swift; sourceTree = "<group>"; };
 		845C7F05263C45EC0024E797 /* AnyProviderAutoCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyProviderAutoCleaner.swift; sourceTree = "<group>"; };
 		845CB6F926276326005F798B /* LongrunOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongrunOperation.swift; sourceTree = "<group>"; };
+		8ACFB2F0EF77865ACAAC3103 /* TimeLimitedLongrun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitedLongrun.swift; sourceTree = "<group>"; };
 		845D8ED22977CBD000F22133 /* SubqueryDelegatorStatsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryDelegatorStatsOperationFactory.swift; sourceTree = "<group>"; };
 		845D8ED82977F18300F22133 /* GovernanceDelegateStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateStats.swift; sourceTree = "<group>"; };
 		845E49822636C87B002F8C22 /* ActionManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionManageViewModel.swift; sourceTree = "<group>"; };
@@ -24772,6 +24774,7 @@
 			children = (
 				845CB6F926276326005F798B /* LongrunOperation.swift */,
 				849ABE48262763BB00011A2A /* Longrun.swift */,
+				8ACFB2F0EF77865ACAAC3103 /* TimeLimitedLongrun.swift */,
 			);
 			path = Longrun;
 			sourceTree = "<group>";
@@ -36677,6 +36680,7 @@
 				2D8F0ED72CEFD05B00A22074 /* DAppBrowserTabViewModel.swift in Sources */,
 				848FD1A528AE27E700CCD9E2 /* HardwareWalletOption.swift in Sources */,
 				845CB6FA26276326005F798B /* LongrunOperation.swift in Sources */,
+				4F70C6E561FADA479C4122A3 /* TimeLimitedLongrun.swift in Sources */,
 				0C13DFDB2AFA691400E5F355 /* SlippageConfig.swift in Sources */,
 				8499FEC627BEC68000712589 /* UniquesInstanceMetadata.swift in Sources */,
 				77AAD2992B1731D1007AD86F /* ReferendumsInitState.swift in Sources */,

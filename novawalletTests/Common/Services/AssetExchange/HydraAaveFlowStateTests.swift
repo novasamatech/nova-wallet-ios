@@ -17,7 +17,7 @@ final class HydraAaveFlowStateTests: XCTestCase {
             )
         }
 
-        let flowState = makeFlowState(discoveryFactory: discoveryFactory)
+        let flowState = try makeFlowState(discoveryFactory: discoveryFactory)
 
         XCTAssertThrowsError(try fetchPairs(from: flowState))
         XCTAssertEqual(try fetchPairs(from: flowState), pairs)
@@ -32,7 +32,7 @@ final class HydraAaveFlowStateTests: XCTestCase {
             when(stub.createPairsWrapper()).thenReturn(.createWithResult(pairs))
         }
 
-        let flowState = makeFlowState(discoveryFactory: discoveryFactory)
+        let flowState = try makeFlowState(discoveryFactory: discoveryFactory)
 
         XCTAssertEqual(try fetchPairs(from: flowState), pairs)
         XCTAssertEqual(try fetchPairs(from: flowState), pairs)
@@ -42,17 +42,24 @@ final class HydraAaveFlowStateTests: XCTestCase {
 }
 
 private extension HydraAaveFlowStateTests {
-    func makeFlowState(discoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol) -> HydraAaveFlowState {
+    func makeFlowState(discoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol) throws -> HydraAaveFlowState {
         let apiFactory = MockHydraAaveTradeExecutorFactoryProtocol()
 
         stub(apiFactory) { stub in
             when(stub.createAaveTradePairs(for: any())).then { _ in .createWithResult([]) }
         }
 
+        let codingFactory = try RuntimeCodingServiceStub.createWestendCodingFactory()
+        let runtimeProvider = MockRuntimeProviderProtocol()
+
+        stub(runtimeProvider) { stub in
+            when(stub.fetchCoderFactoryOperation()).then { BaseOperation.createWithResult(codingFactory) }
+        }
+
         return HydraAaveFlowState(
             account: AccountGenerator.generateSubstrateChainAccountResponse(for: KnowChainId.hydra),
             connection: MockTestJSONRPCEngine(),
-            runtimeProvider: MockRuntimeProviderProtocol(),
+            runtimeProvider: runtimeProvider,
             notificationsRegistrar: nil,
             apiFactory: apiFactory,
             reservesDiscoveryFactory: discoveryFactory,
