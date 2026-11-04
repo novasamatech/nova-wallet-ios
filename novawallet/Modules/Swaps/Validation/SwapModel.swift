@@ -360,9 +360,7 @@ struct SwapModel {
             return nil
         }
 
-        let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-
-        if !isSelfSufficient, nativeTokenProviderWillBeKilled {
+        if noProviderLeftAfterSwap {
             let utilityMinBalance = utilityAssetExistense?.minBalance ?? 0
             let precision = utilityChainAsset.asset.precision
             return .noProvider(
