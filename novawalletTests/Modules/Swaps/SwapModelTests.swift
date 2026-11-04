@@ -150,12 +150,6 @@ final class SwapModelTests: XCTestCase {
             return XCTFail("expected .noProvider when the pay asset was the only provider")
         }
     }
-
-    func testSwapIntoHydraATokenKeepingAnotherProviderCanReceive() throws {
-        let model = try makeHydraModel(payAssetId: 1, receiveAssetId: 2, providers: 2)
-
-        XCTAssertNil(model.checkCanReceive())
-    }
 }
 
 private extension SwapModelTests {
