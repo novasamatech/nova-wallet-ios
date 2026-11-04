@@ -3,10 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import Web3Core
 
-protocol HydraAaveReservesDiscoveryFactoryProtocol {
-    func createPairsWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]>
-}
-
 final class HydraAaveReservesDiscoveryFactory {
     private static let reserveDetailsConcurrency = 6
 
@@ -42,7 +38,8 @@ private extension HydraAaveReservesDiscoveryFactory {
         return JSONRPCOperation<EvmQueryMessage.Params, String>(
             engine: connection,
             method: EvmQueryMessage.method,
-            parameters: params
+            parameters: params,
+            timeout: JSONRPCTimeout.singleNode
         )
     }
 

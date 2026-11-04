@@ -7029,6 +7029,7 @@
 		F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1113F43B2C2EA6CA128893 /* CrowdloanUnlockViewLayout.swift */; };
 		F1A0E0030000000000000001 /* HydraAaveContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0040000000000000001 /* HydraAaveContract.swift */; };
 		F1A0E0050000000000000001 /* HydraAaveReservesDiscoveryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */; };
+		6F3B1C8DAE2041F5B7C9D321 /* HydraAaveReservesDiscoveryFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3B1C8DAE2041F5B7C9D322 /* HydraAaveReservesDiscoveryFactoryProtocol.swift */; };
 		F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */; };
 		F1F6821B897D4C2E85A46DE5 /* SubtensorPortfolioValueSeriesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */; };
 		F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA94E5B74194AABA482F2FD /* WalletConnectSessionDetailsProtocols.swift */; };
@@ -13982,6 +13983,7 @@
 		F1440B4954EF8D2DC0CE9100 /* GiftListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GiftListPresenter.swift; sourceTree = "<group>"; };
 		F1A0E0040000000000000001 /* HydraAaveContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveContract.swift; sourceTree = "<group>"; };
 		F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveReservesDiscoveryFactory.swift; sourceTree = "<group>"; };
+		6F3B1C8DAE2041F5B7C9D322 /* HydraAaveReservesDiscoveryFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveReservesDiscoveryFactoryProtocol.swift; sourceTree = "<group>"; };
 		F1A9B9D741BABBCE6C70BE45 /* LedgerDiscoverProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverProtocols.swift; sourceTree = "<group>"; };
 		F1EE07A02459EDE50188E49D /* DAppStakingDetectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppStakingDetectionTests.swift; sourceTree = "<group>"; };
 		F23EDFB699CAEEADC9263A0D /* DAppAuthSettingsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsViewFactory.swift; sourceTree = "<group>"; };
@@ -15335,6 +15337,7 @@
 				0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */,
 				F1A0E0040000000000000001 /* HydraAaveContract.swift */,
 				F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */,
+				6F3B1C8DAE2041F5B7C9D322 /* HydraAaveReservesDiscoveryFactoryProtocol.swift */,
 				0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */,
 			);
 			path = AavePool;
@@ -36362,6 +36365,7 @@
 				0C1CF7282E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift in Sources */,
 				F1A0E0030000000000000001 /* HydraAaveContract.swift in Sources */,
 				F1A0E0050000000000000001 /* HydraAaveReservesDiscoveryFactory.swift in Sources */,
+				6F3B1C8DAE2041F5B7C9D321 /* HydraAaveReservesDiscoveryFactoryProtocol.swift in Sources */,
 				0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84CFE443292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift in Sources */,
 				95D8A7168C71BA5BA029321F /* TransferOnChainConfirmPresenter+Analytics.swift in Sources */,

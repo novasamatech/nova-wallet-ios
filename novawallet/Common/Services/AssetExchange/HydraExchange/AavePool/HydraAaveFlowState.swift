@@ -24,6 +24,8 @@ final class HydraAaveFlowState {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         notificationsRegistrar: AssetsExchangeStateRegistring?,
+        apiFactory: HydraAaveTradeExecutorFactoryProtocol,
+        reservesDiscoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue = .global(),
         logger: LoggerProtocol = Logger.shared
@@ -32,20 +34,40 @@ final class HydraAaveFlowState {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.notificationsRegistrar = notificationsRegistrar
+        self.apiFactory = apiFactory
+        self.reservesDiscoveryFactory = reservesDiscoveryFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
+    }
 
-        apiFactory = HydraAaveTradeExecutorFactory(
+    convenience init(
+        account: ChainAccountResponse,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        notificationsRegistrar: AssetsExchangeStateRegistring?,
+        operationQueue: OperationQueue,
+        workingQueue: DispatchQueue = .global(),
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        self.init(
+            account: account,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
-        )
-
-        reservesDiscoveryFactory = HydraAaveReservesDiscoveryFactory(
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
+            notificationsRegistrar: notificationsRegistrar,
+            apiFactory: HydraAaveTradeExecutorFactory(
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                operationQueue: operationQueue
+            ),
+            reservesDiscoveryFactory: HydraAaveReservesDiscoveryFactory(
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                operationQueue: operationQueue
+            ),
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
         )
     }
 
@@ -98,18 +120,6 @@ private extension HydraAaveFlowState {
 
         return service
     }
-
-    func createRecoveringDiscoveryWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]> {
-        let discoveryWrapper = reservesDiscoveryFactory.createPairsWrapper()
-
-        let recoveryOperation = ClosureOperation<[HydraAave.TradePair]> {
-            (try? discoveryWrapper.targetOperation.extractNoCancellableResultData()) ?? []
-        }
-
-        recoveryOperation.addDependency(discoveryWrapper.targetOperation)
-
-        return discoveryWrapper.insertingTail(operation: recoveryOperation)
-    }
 }
 
 extension HydraAaveFlowState {
@@ -134,7 +144,7 @@ extension HydraAaveFlowState {
                 return .createWithResult(pairs)
             }
 
-            return self.createRecoveringDiscoveryWrapper()
+            return self.reservesDiscoveryFactory.createPairsWrapper()
         }
 
         fallbackWrapper.addDependency(wrapper: aggregateWrapper)
