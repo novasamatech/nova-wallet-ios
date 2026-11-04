@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */; };
+		6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */; };
 		645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE2C5025AEA5C5FC9BF3F74 /* SwapBaseInteractor+CollateralLimit.swift */; };
 		234062D9905BC4437C760123 /* SwapModel+Collateral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0D1A588BE5B9C4DB347FC6 /* SwapModel+Collateral.swift */; };
 		F9709A40CA697CA6618EABB7 /* HydraAaveCollateralLimitFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */; };
@@ -7254,6 +7255,7 @@
 
 /* Begin PBXFileReference section */
 		B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralPositionTests.swift; sourceTree = "<group>"; };
+		6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveFlowStateTests.swift; sourceTree = "<group>"; };
 		EAE2C5025AEA5C5FC9BF3F74 /* SwapBaseInteractor+CollateralLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapBaseInteractor+CollateralLimit.swift"; sourceTree = "<group>"; };
 		5A0D1A588BE5B9C4DB347FC6 /* SwapModel+Collateral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapModel+Collateral.swift"; sourceTree = "<group>"; };
 		D8C0B9DBC3AE1EF7F5AD896A /* HydraAaveCollateralLimitFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralLimitFactory.swift; sourceTree = "<group>"; };
@@ -32239,6 +32241,7 @@
 			isa = PBXGroup;
 			children = (
 				B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */,
+				6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */,
 				A1B2C3D40002E5F600000001 /* HydraFeeQuoteFactoryTests.swift */,
 				761F8E10F7E6FA8ECB54861D /* HydraFeeConversionTests.swift */,
 				4845A8C3A356404F029B6C19 /* HydraFeeOraclePriceCalculatorTests.swift */,
@@ -40106,6 +40109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */,
+				6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */,
 				978F8A271B9E4D6393C114FF /* SubtensorOutcomeParserTests.swift in Sources */,
 				FBABE2BEAAD345519CCFEB3D /* SubtensorSubmissionOperationFactoryTests.swift in Sources */,
 				66ACCF6EC81C4CD484861906 /* SubtensorTradeQuoteOperationFactoryTests.swift in Sources */,

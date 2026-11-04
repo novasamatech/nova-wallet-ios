@@ -110,9 +110,94 @@ final class SwapModelTests: XCTestCase {
             return
         }
     }
+
+    func testCollateralLimitBelowBalanceOffersLimitMinusFee() throws {
+        let model = try makeCollateralModel(balance: 100_000, limit: 50000, feeInPayAsset: 6000, spending: 60000)
+
+        guard case let .collateralInUse(reason) = model.checkBalanceSufficiency() else {
+            return XCTFail("expected .collateralInUse when the limit is below the balance")
+        }
+
+        XCTAssertEqual(reason.available, Balance(44000).decimal(precision: model.payChainAsset.asset.precision))
+    }
+
+    func testCollateralLimitAboveBalanceLeavesBalanceCheckToReport() throws {
+        let model = try makeCollateralModel(balance: 100_000, limit: 105_000, feeInPayAsset: 6000, spending: 100_000)
+
+        guard case .feeInPayAsset = model.checkBalanceSufficiency() else {
+            return XCTFail("expected .feeInPayAsset when the balance is below the limit")
+        }
+    }
 }
 
 private extension SwapModelTests {
+    func makeCollateralModel(
+        balance: Balance,
+        limit: Balance,
+        feeInPayAsset: Balance,
+        spending: Balance
+    ) throws -> SwapModel {
+        let payChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let payAssetBalance = AssetBalance(
+            chainAssetId: payChainAsset.chainAssetId,
+            accountId: CommissionTestFixtures.beneficiary,
+            freeInPlank: balance,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .regular,
+            blocked: false
+        )
+
+        let fee = AssetExchangeFee(
+            route: CommissionTestFixtures.createRoute([.hydraSwap], amount: spending),
+            operationFees: [
+                AssetExchangeOperationFee(
+                    submissionFee: .init(
+                        amountWithAsset: .init(amount: feeInPayAsset, asset: payChainAsset.chainAssetId),
+                        payer: nil,
+                        weight: .init(refTime: 0, proofSize: 0)
+                    ),
+                    postSubmissionFee: .init(paidByAccount: [], paidFromAmount: [])
+                )
+            ],
+            intermediateFeesInAssetIn: 0,
+            slippage: BigRational(numerator: 0, denominator: 100),
+            feeAssetId: payChainAsset.chainAssetId,
+            commission: nil
+        )
+
+        return SwapModel(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            feeChainAsset: payChainAsset,
+            spendingAmount: spending.decimal(precision: payChainAsset.asset.precision),
+            payAssetBalance: payAssetBalance,
+            feeAssetBalance: payAssetBalance,
+            receiveAssetBalance: nil,
+            utilityAssetBalance: nil,
+            payAssetExistense: nil,
+            receiveAssetExistense: nil,
+            feeAssetExistense: nil,
+            utilityAssetExistense: nil,
+            feeModel: fee,
+            quoteArgs: AssetConversion.QuoteArgs(
+                assetIn: payChainAsset.chainAssetId,
+                assetOut: receiveChainAsset.chainAssetId,
+                amount: spending,
+                direction: .sell
+            ),
+            quote: nil,
+            slippage: BigRational(numerator: 0, denominator: 100),
+            accountInfo: nil,
+            destAccountInfo: nil,
+            destUtilityAssetExistence: nil,
+            payAssetCollateralLimit: .limited(limit)
+        )
+    }
+
     func makeFee(commission: AssetExchangeCommission?) -> AssetExchangeFee {
         AssetExchangeFee(
             route: CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000),
