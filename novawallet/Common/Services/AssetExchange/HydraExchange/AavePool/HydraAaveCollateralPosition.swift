@@ -5,18 +5,6 @@ extension HydraAave {
     static let minSafeHealthFactorBps: BigUInt = 10100
 
     enum CollateralPosition {
-        static func userEModeCategory(
-            for configuration: ReserveConfiguration,
-            userEModeCategoryId: BigUInt,
-            eModeCategory: EModeCategory?
-        ) -> EModeCategory? {
-            guard userEModeCategoryId > 0, configuration.eModeCategory == userEModeCategoryId else {
-                return nil
-            }
-
-            return eModeCategory
-        }
-
         static func priceAsset(for reserve: Reserve, eModeCategory: EModeCategory?) -> AccountId {
             guard let priceSource = eModeCategory?.priceSource, priceSource.contains(where: { $0 != 0 }) else {
                 return reserve.address

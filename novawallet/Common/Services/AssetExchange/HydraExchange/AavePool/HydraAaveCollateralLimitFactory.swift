@@ -38,12 +38,6 @@ private extension HydraAaveCollateralLimitFactory {
         }
     }
 
-    struct BorrowerState {
-        let userState: UserState
-        let collateralReserves: [HydraAave.Reserve]
-        let eModeCategory: HydraAave.EModeCategory?
-    }
-
     func createCallWrapper<T>(
         connection: JSONRPCEngine,
         contract: String = HydraAave.Contract.poolAddress,
@@ -230,53 +224,70 @@ private extension HydraAaveCollateralLimitFactory {
 
     func createEModeCategoryWrapper(
         connection: JSONRPCEngine,
-        categoryId: BigUInt
+        reserve: HydraAave.Reserve,
+        userEModeCategoryId: BigUInt
     ) -> CompoundOperationWrapper<HydraAave.EModeCategory?> {
-        guard categoryId > 0 else {
+        guard userEModeCategoryId > 0, reserve.data.configuration.eModeCategory == userEModeCategoryId else {
             return .createWithResult(nil)
         }
 
         return createCallWrapper(
             connection: connection,
-            callDataClosure: { try HydraAave.Contract.getEModeCategoryDataCall(categoryId: categoryId) },
+            callDataClosure: { try HydraAave.Contract.getEModeCategoryDataCall(categoryId: userEModeCategoryId) },
             decoder: { try HydraAave.Contract.decodeEModeCategory(response: $0) }
         )
     }
 
-    func createPriceLimitWrapper(
+    func createReserveLimitWrapper(
         for reserve: HydraAave.Reserve,
-        borrowerState: BorrowerState,
-        oracle: AccountId,
+        collateralReserves: [HydraAave.Reserve],
+        userState: UserState,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<HydraAave.CollateralLimit> {
-        let eModeCategory = HydraAave.CollateralPosition.userEModeCategory(
-            for: reserve.data.configuration,
-            userEModeCategoryId: borrowerState.userState.eModeCategoryId,
-            eModeCategory: borrowerState.eModeCategory
-        )
-
-        let priceAsset = HydraAave.CollateralPosition.priceAsset(for: reserve, eModeCategory: eModeCategory)
-
-        let priceWrapper = createCallWrapper(
+        let eModeCategoryWrapper = createEModeCategoryWrapper(
             connection: connection,
-            contract: oracle.toHex(includePrefix: true),
-            callDataClosure: { try HydraAave.Contract.getAssetPriceCall(asset: priceAsset) },
-            decoder: HydraAave.Contract.decodeAssetPrice
+            reserve: reserve,
+            userEModeCategoryId: userState.eModeCategoryId
         )
 
-        let calculationOperation = ClosureOperation<HydraAave.CollateralLimit> {
-            HydraAave.CollateralPosition.calculateLimit(
-                accountData: borrowerState.userState.accountData,
-                reserve: reserve.data,
-                collateralReserves: borrowerState.collateralReserves.map(\.data),
-                eModeCategory: eModeCategory,
-                price: try priceWrapper.targetOperation.extractNoCancellableResultData()
+        let oracleWrapper = createPriceOracleWrapper(connection: connection)
+
+        let limitWrapper = OperationCombiningService<HydraAave.CollateralLimit>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let eModeCategory = try eModeCategoryWrapper.targetOperation.extractNoCancellableResultData()
+            let oracle = try oracleWrapper.targetOperation.extractNoCancellableResultData()
+
+            let priceWrapper = self.createCallWrapper(
+                connection: connection,
+                contract: oracle.toHex(includePrefix: true),
+                callDataClosure: {
+                    try HydraAave.Contract.getAssetPriceCall(
+                        asset: HydraAave.CollateralPosition.priceAsset(for: reserve, eModeCategory: eModeCategory)
+                    )
+                },
+                decoder: HydraAave.Contract.decodeAssetPrice
             )
+
+            let calculationOperation = ClosureOperation<HydraAave.CollateralLimit> {
+                HydraAave.CollateralPosition.calculateLimit(
+                    accountData: userState.accountData,
+                    reserve: reserve.data,
+                    collateralReserves: collateralReserves.map(\.data),
+                    eModeCategory: eModeCategory,
+                    price: try priceWrapper.targetOperation.extractNoCancellableResultData()
+                )
+            }
+
+            calculationOperation.addDependency(priceWrapper.targetOperation)
+
+            return priceWrapper.insertingTail(operation: calculationOperation)
         }
 
-        calculationOperation.addDependency(priceWrapper.targetOperation)
+        limitWrapper.addDependency(wrapper: eModeCategoryWrapper)
+        limitWrapper.addDependency(wrapper: oracleWrapper)
 
-        return priceWrapper.insertingTail(operation: calculationOperation)
+        return limitWrapper.insertingHead(operations: eModeCategoryWrapper.allOperations + oracleWrapper.allOperations)
     }
 
     func createBorrowerLimitWrapper(
@@ -296,13 +307,6 @@ private extension HydraAaveCollateralLimitFactory {
             configuration: userState.configuration
         )
 
-        let eModeCategoryWrapper = createEModeCategoryWrapper(
-            connection: connection,
-            categoryId: userState.eModeCategoryId
-        )
-
-        let oracleWrapper = createPriceOracleWrapper(connection: connection)
-
         let limitWrapper = OperationCombiningService<HydraAave.CollateralLimit>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
@@ -313,29 +317,18 @@ private extension HydraAaveCollateralLimitFactory {
                 return .createWithResult(.unrestricted)
             }
 
-            let borrowerState = BorrowerState(
-                userState: userState,
-                collateralReserves: reserves,
-                eModeCategory: try eModeCategoryWrapper.targetOperation.extractNoCancellableResultData()
-            )
-
-            return self.createPriceLimitWrapper(
+            return self.createReserveLimitWrapper(
                 for: reserve,
-                borrowerState: borrowerState,
-                oracle: try oracleWrapper.targetOperation.extractNoCancellableResultData(),
+                collateralReserves: reserves,
+                userState: userState,
                 connection: connection
             )
         }
 
         limitWrapper.addDependency(wrapper: payAssetWrapper)
         limitWrapper.addDependency(wrapper: reservesWrapper)
-        limitWrapper.addDependency(wrapper: eModeCategoryWrapper)
-        limitWrapper.addDependency(wrapper: oracleWrapper)
 
-        return limitWrapper.insertingHead(
-            operations: payAssetWrapper.allOperations + reservesWrapper.allOperations +
-                eModeCategoryWrapper.allOperations + oracleWrapper.allOperations
-        )
+        return limitWrapper.insertingHead(operations: payAssetWrapper.allOperations + reservesWrapper.allOperations)
     }
 }
 
