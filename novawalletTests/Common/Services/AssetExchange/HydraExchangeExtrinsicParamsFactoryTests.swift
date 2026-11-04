@@ -269,6 +269,20 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             XCTAssertEqual(params.commission?.amount, 1000)
         }
     }
+
+    func testNovaReferralCodeOwnerDoesNotLinkReferralCode() throws {
+        let owner = try HydraConstants.novaReferralCodeOwnerAddress.toAccountId()
+
+        let params = HydraExchangeSwapParams.Params(referral: nil, accountId: owner)
+
+        XCTAssertFalse(params.shouldSetReferral)
+    }
+
+    func testUnlinkedAccountLinksReferralCode() {
+        let params = HydraExchangeSwapParams.Params(referral: nil, accountId: Data(repeating: 2, count: 32))
+
+        XCTAssertTrue(params.shouldSetReferral)
+    }
 }
 
 private extension HydraExchangeExtrinsicParamsFactoryTests {
