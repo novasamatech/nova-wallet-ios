@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV koruması";
 "staking.subtensor.mev.protection.unavailable" = "Bu emir için MEV koruması kullanılamıyor.";
 "staking.subtensor.result.fee.may.be.charged" = "Ağ ücreti tahsil edilmiş olabilir.";
+"swap.failure.collateral.in.use.message" = "Şu anda yalnızca %@ takas edilebilir. Kalanı Hydration krediniz için teminat olarak kullanılıyor.";
+"swap.failure.collateral.in.use.none.message" = "Bu %@, Hydration krediniz için teminat olarak kullanılıyor; bu nedenle kredinin bir kısmını geri ödeyene kadar takas edilemez.";
+"swap.failure.collateral.in.use.title" = "Kullanımda olan teminat";

@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV保護";
 "staking.subtensor.mev.protection.unavailable" = "この注文ではMEV保護を利用できません。";
 "staking.subtensor.result.fee.may.be.charged" = "ネットワーク手数料が請求されている場合があります。";
+"swap.failure.collateral.in.use.message" = "現在スワップできるのは%@のみです。残りはあなたのHydrationローンの担保になっています。";
+"swap.failure.collateral.in.use.none.message" = "この%@はあなたのHydrationローンの担保になっているため、ローンの一部を返済するまでスワップできません。";
+"swap.failure.collateral.in.use.title" = "使用中の担保";

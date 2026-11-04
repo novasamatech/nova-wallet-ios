@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "Bảo vệ MEV";
 "staking.subtensor.mev.protection.unavailable" = "Bảo vệ MEV không khả dụng cho lệnh này.";
 "staking.subtensor.result.fee.may.be.charged" = "Có thể bạn đã bị tính phí mạng lưới.";
+"swap.failure.collateral.in.use.message" = "Hiện chỉ có thể hoán đổi %@. Phần còn lại đang dùng làm tài sản thế chấp cho khoản vay Hydration của bạn.";
+"swap.failure.collateral.in.use.none.message" = "%@ này đang dùng làm tài sản thế chấp cho khoản vay Hydration của bạn, vì vậy không thể hoán đổi cho đến khi bạn hoàn trả một phần khoản vay.";
+"swap.failure.collateral.in.use.title" = "Tài sản thế chấp đang được sử dụng";
