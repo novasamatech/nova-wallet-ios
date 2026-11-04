@@ -4,7 +4,7 @@ import BigInt
 import Keystore_iOS
 
 final class StakingBondMoreInteractor: AccountFetching {
-    weak var presenter: StakingBondMoreInteractorOutputProtocol!
+    weak var presenter: StakingBondMoreInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -69,10 +69,10 @@ private extension StakingBondMoreInteractor {
             runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 let isStakingMigrated = coderFactory.hasBalancesHold(with: Staking.holdId)
-                self?.presenter.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
+                self?.presenter?.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
             },
             errorClosure: { [weak self] error in
-                self?.presenter.didReceiveStakingMigratedToHold(result: .failure(error))
+                self?.presenter?.didReceiveStakingMigratedToHold(result: .failure(error))
             }
         )
     }
@@ -87,7 +87,7 @@ extension StakingBondMoreInteractor: StakingBondMoreInteractorInputProtocol {
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         feeProxy.delegate = self
@@ -117,16 +117,16 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
             guard let stashItem = try result.get() else {
-                presenter.didReceiveStashItem(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
-                presenter.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveStashItem(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
                 return
             }
 
             clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &ledgerProvider)
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             let stashAccountId = try stashItem.stash.toAccountId(using: chainAsset.chain.chainFormat)
             let controllerAccountId = try stashItem.controller.toAccountId(using: chainAsset.chain.chainFormat)
@@ -155,16 +155,16 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
                 switch result {
                 case let .success(response):
                     let account = response?.chainAccount
-                    self?.presenter.didReceiveStash(result: .success(account))
+                    self?.presenter?.didReceiveStash(result: .success(account))
                 case let .failure(error):
-                    self?.presenter.didReceiveStash(result: .failure(error))
+                    self?.presenter?.didReceiveStash(result: .failure(error))
                 }
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -173,13 +173,13 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
 extension StakingBondMoreInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
@@ -190,13 +190,13 @@ extension StakingBondMoreInteractor: WalletLocalStorageSubscriber, WalletLocalSu
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingBondMoreInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

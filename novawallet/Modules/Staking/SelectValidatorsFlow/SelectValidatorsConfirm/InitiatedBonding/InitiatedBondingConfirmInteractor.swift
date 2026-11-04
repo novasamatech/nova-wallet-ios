@@ -65,7 +65,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             hasExistingNomination: false
         )
 
-        presenter.didReceiveModel(result: .success(confirmation))
+        presenter?.didReceiveModel(result: .success(confirmation))
     }
 
     private func createExtrinsicBuilderClosure(
@@ -120,9 +120,9 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         ) { [weak self] result in
             switch result.mapToExtrinsicSubmittedResult() {
             case let .success(model):
-                self?.presenter.didCompleteNomination(submission: model)
+                self?.presenter?.didCompleteNomination(submission: model)
             case let .failure(error):
-                self?.presenter.didFailNomination(error: error)
+                self?.presenter?.didFailNomination(error: error)
             }
         }
     }
@@ -147,22 +147,22 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
                 self?.extrinsicService.estimateFee(closure, runningIn: .main) { result in
                     switch result {
                     case let .success(info):
-                        self?.presenter.didReceive(paymentInfo: info)
+                        self?.presenter?.didReceive(paymentInfo: info)
                     case let .failure(error):
-                        self?.presenter.didReceive(feeError: error)
+                        self?.presenter?.didReceive(feeError: error)
                     }
                 }
             }, errorClosure: { [weak self] error in
-                self?.presenter.didReceive(feeError: error)
+                self?.presenter?.didReceive(feeError: error)
             }
         )
     }
 
     override func submitNomination() {
-        presenter.didStartNomination()
+        presenter?.didStartNomination()
 
         guard !nomination.targets.isEmpty else {
-            presenter.didFailNomination(error: SelectValidatorsConfirmError.extrinsicFailed)
+            presenter?.didFailNomination(error: SelectValidatorsConfirmError.extrinsicFailed)
             return
         }
 
@@ -171,7 +171,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             completion: { [weak self] coderFactory in
                 self?.performNominationSubmission(for: coderFactory)
             }, errorClosure: { [weak self] error in
-                self?.presenter.didFailNomination(error: error)
+                self?.presenter?.didFailNomination(error: error)
             }
         )
     }

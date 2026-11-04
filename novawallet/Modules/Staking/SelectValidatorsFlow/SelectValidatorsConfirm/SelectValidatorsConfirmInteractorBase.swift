@@ -4,7 +4,7 @@ import BigInt
 
 class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorInputProtocol,
     StakingDurationFetching {
-    weak var presenter: SelectValidatorsConfirmInteractorOutputProtocol!
+    weak var presenter: SelectValidatorsConfirmInteractorOutputProtocol?
 
     let balanceAccountAddress: AccountAddress
     let chainAsset: ChainAsset
@@ -55,7 +55,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePrice(result: .success(nil))
+            presenter?.didReceivePrice(result: .success(nil))
         }
 
         if let accountId = try? balanceAccountAddress.toAccountId() {
@@ -76,7 +76,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
             operationFactory: durationOperationFactory,
             operationQueue: operationQueue
         ) { [weak self] result in
-            self?.presenter.didReceiveStakingDuration(result: result)
+            self?.presenter?.didReceiveStakingDuration(result: result)
         }
     }
 
@@ -87,15 +87,15 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
 
 extension SelectValidatorsConfirmInteractorBase: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveMinBond(result: result)
+        presenter?.didReceiveMinBond(result: result)
     }
 
     func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveCounterForNominators(result: result)
+        presenter?.didReceiveCounterForNominators(result: result)
     }
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveMaxNominatorsCount(result: result)
+        presenter?.didReceiveMaxNominatorsCount(result: result)
     }
 }
 
@@ -106,13 +106,13 @@ extension SelectValidatorsConfirmInteractorBase: WalletLocalStorageSubscriber, W
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension SelectValidatorsConfirmInteractorBase: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePrice(result: result)
+        presenter?.didReceivePrice(result: result)
     }
 }
 
