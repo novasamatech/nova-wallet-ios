@@ -6,6 +6,7 @@ protocol SubtensorConfirmViewProtocol: ControllerBackedProtocol, LoadableViewPro
     func didReceiveValidator(viewModel: DisplayAddressViewModel)
     func didReceiveTileIcons(viewModel: SubtensorConfirmTileIconsViewModel)
     func didReceive(viewModel: SubtensorConfirmViewModel)
+    func didReceiveShield(viewModel: SubtensorConfirmShieldViewModel?)
 }
 
 protocol SubtensorConfirmPresenterProtocol: AnyObject {
@@ -18,6 +19,7 @@ protocol SubtensorConfirmPresenterProtocol: AnyObject {
     func showAvgBuyPriceInfo()
     func showYouWillEarnInfo()
     func showNetworkFeeInfo()
+    func toggleShield()
 }
 
 protocol SubtensorConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

@@ -166,6 +166,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         }
 
         forceQuoteRefresh()
+        retryUnresolvedShieldQuote()
     }
 
     func didReceivePreflight(_ preflight: SubtensorPreflight) {
@@ -177,5 +178,10 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProto
         provideViewModel()
     }
 
-    func didReceiveExistentialDeposit(_: Balance) {}
+    func didReceiveExistentialDeposit(_ deposit: Balance) {
+        existentialDeposit = deposit
+        maxRefreshTransferable = nil
+
+        applyMaxChange()
+    }
 }

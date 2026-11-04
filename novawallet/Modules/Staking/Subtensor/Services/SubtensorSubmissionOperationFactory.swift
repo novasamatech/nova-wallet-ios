@@ -15,6 +15,8 @@ final class SubtensorSubmissionOperationFactory {
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol?
     let errorMapper: SubtensorErrorMapping = SubtensorErrorMapper()
     let feeCalculator: SubtensorNovaFeeCalculator
+    let shield: SubtensorShieldServices?
+    let logger: LoggerProtocol
     let workingQueue = DispatchQueue.global(qos: .userInitiated)
 
     init(
@@ -28,7 +30,9 @@ final class SubtensorSubmissionOperationFactory {
         eventCenter: EventCenterProtocol,
         configProvider: SubtensorConfigProviding,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
-        feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator()
+        feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
+        shield: SubtensorShieldServices? = nil,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.chainAsset = chainAsset
         self.accountId = accountId
@@ -41,23 +45,45 @@ final class SubtensorSubmissionOperationFactory {
         self.configProvider = configProvider
         self.pendingRootClaims = pendingRootClaims
         self.feeCalculator = feeCalculator
+        self.shield = shield
+        self.logger = logger
     }
 }
 
 private extension SubtensorSubmissionOperationFactory {
     func createFinalizer(
         for operation: SubtensorOperation,
-        signer: SubtensorRecordingSigner
+        submissionMarkers: [SubtensorRecordingSigner]
     ) -> SubtensorSubmissionFinalizer {
         SubtensorSubmissionFinalizer(
             chainAssetId: chainAsset.chainAssetId,
             accountId: accountId,
             netuids: operation.netuids,
             novaFeeBeneficiary: feeCalculator.beneficiary,
-            signer: signer,
+            submissionMarkers: submissionMarkers,
             eventCenter: eventCenter,
             errorMapper: errorMapper
         )
+    }
+
+    func createPricedOperationWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<SubtensorOperation> {
+        guard let basis = operation.novaFeeBasis, operation.novaFee == nil else {
+            return .createWithResult(operation)
+        }
+
+        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+
+        let pricingOperation = ClosureOperation<SubtensorOperation> { [feeCalculator] in
+            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try operation.pricing(novaFee: feeCalculator.fee(basis: basis, rate: rate))
+        }
+
+        pricingOperation.addDependency(rateWrapper.targetOperation)
+
+        return rateWrapper.insertingTail(operation: pricingOperation)
     }
 
     func createEstimateOperation(
@@ -116,66 +142,74 @@ private extension SubtensorSubmissionOperationFactory {
             dependencies: submitWrapper.allOperations + [codingFactoryOperation]
         )
     }
-}
 
-extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol {
-    func createFeeWrapper(
-        for operation: SubtensorOperation
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        guard let basis = operation.novaFeeBasis, operation.novaFee == nil else {
-            return CompoundOperationWrapper(targetOperation: createEstimateOperation { operation })
-        }
-
-        let rateWrapper = configProvider.createNovaFeeRateWrapper()
-
-        let estimateOperation = createEstimateOperation { [feeCalculator] in
-            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try operation.pricing(novaFee: feeCalculator.fee(basis: basis, rate: rate))
-        }
-
-        estimateOperation.addDependency(rateWrapper.targetOperation)
-
-        return rateWrapper.insertingTail(operation: estimateOperation)
-    }
-
-    func createSubmitWrapper(
+    // swiftlint:disable:next function_parameter_count
+    func createRoutedSubmissionWrapper(
         for operation: SubtensorOperation,
-        signedClosure: @escaping () -> Void
+        builderClosure: @escaping ExtrinsicBuilderClosure,
+        clearSigner: SubtensorRecordingSigner,
+        shieldSigners: SubtensorShieldSigners?,
+        blockTiming: SubtensorShieldBlockTiming,
+        finalizer: SubtensorSubmissionFinalizer
     ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
-        let builderClosure: ExtrinsicBuilderClosure
-
-        do {
-            builderClosure = try operation.extrinsicBuilderClosure(novaFeeBeneficiary: feeCalculator.beneficiary)
-        } catch {
-            return .createWithError(SubtensorSubmissionFailure(stage: .notSubmitted, error: error))
+        guard let shield, let shieldSigners else {
+            return createSubmissionWrapper(
+                for: operation,
+                builderClosure: builderClosure,
+                signer: clearSigner,
+                finalizer: finalizer
+            )
         }
 
-        let claimMarker = pendingRootClaims?.marker(for: operation, coldkey: accountId)
-
-        let recordingSigner = SubtensorRecordingSigner(signer: signer) {
-            claimMarker?.markSigned()
-            signedClosure()
-        }
-
-        let finalizer = createFinalizer(for: operation, signer: recordingSigner)
-
-        let markSentOperation = ClosureOperation { [sharedOperation] in
-            DispatchQueue.main.async {
-                sharedOperation?.markSent()
-            }
-        }
-
-        let submissionWrapper = createSubmissionWrapper(
+        let readinessWrapper = shield.submissionOperationFactory.createReadinessWrapper(
             for: operation,
-            builderClosure: builderClosure,
-            signer: recordingSigner,
-            finalizer: finalizer
+            blockTiming: blockTiming,
+            innerClosure: builderClosure
         )
 
-        submissionWrapper.addDependency(operations: [markSentOperation])
+        let submissionWrapper = OperationCombiningService<SubtensorOperationOutcome>.compoundNonOptionalWrapper(
+            operationQueue: shield.operationQueue
+        ) {
+            // an order the user chose to shield is never sent in the clear: without a ready quote nothing is signed
+            guard let quote = self.extractReadyQuote(from: readinessWrapper) else {
+                throw finalizer.shieldedFailure(for: SubtensorShieldError.notReady)
+            }
 
-        let resultOperation = ClosureOperation<SubtensorOperationOutcome> { [sharedOperation] in
+            return self.createShieldedOutcomeWrapper(
+                for: operation,
+                submissionWrapper: shield.submissionOperationFactory.createSubmissionWrapper(
+                    for: builderClosure,
+                    signers: shieldSigners,
+                    blockTiming: blockTiming,
+                    matchingEvents: SubtensorEventMatcher()
+                ),
+                quote: quote,
+                finalizer: finalizer
+            )
+        }
+
+        submissionWrapper.addDependency(wrapper: readinessWrapper)
+
+        return submissionWrapper.insertingHead(operations: readinessWrapper.allOperations)
+    }
+
+    func extractReadyQuote(
+        from readinessWrapper: CompoundOperationWrapper<SubtensorShieldQuote>
+    ) -> SubtensorShieldQuote? {
+        do {
+            return try readinessWrapper.targetOperation.extractNoCancellableResultData()
+        } catch {
+            logger.warning("Shield readiness failed: \(error)")
+            return nil
+        }
+    }
+
+    func createResultOperation(
+        for submissionWrapper: CompoundOperationWrapper<SubtensorOperationOutcome>,
+        claimMarker: SubtensorPendingRootClaimMarker?,
+        finalizer: SubtensorSubmissionFinalizer
+    ) -> BaseOperation<SubtensorOperationOutcome> {
+        ClosureOperation { [sharedOperation] in
             do {
                 let outcome = try submissionWrapper.targetOperation.extractNoCancellableResultData()
                 claimMarker?.finish()
@@ -194,6 +228,96 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
                 throw failure
             }
         }
+    }
+}
+
+extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol {
+    func createFeeWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        let pricedWrapper = createPricedOperationWrapper(for: operation)
+
+        let estimateOperation = createEstimateOperation {
+            try pricedWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        estimateOperation.addDependency(pricedWrapper.targetOperation)
+
+        return pricedWrapper.insertingTail(operation: estimateOperation)
+    }
+
+    func createShieldQuoteWrapper(
+        for operation: SubtensorOperation
+    ) -> CompoundOperationWrapper<SubtensorShieldQuote?> {
+        guard let shield, SubtensorShieldEligibility.supports(operation: operation) else {
+            return .createWithResult(nil)
+        }
+
+        let pricedWrapper = createPricedOperationWrapper(for: operation)
+
+        let quoteWrapper = shield.submissionOperationFactory.createQuoteWrapper(for: operation) { [feeCalculator] in
+            try pricedWrapper.targetOperation.extractNoCancellableResultData().extrinsicBuilderClosure(
+                novaFeeBeneficiary: feeCalculator.beneficiary
+            )
+        }
+
+        quoteWrapper.addDependency(wrapper: pricedWrapper)
+
+        return quoteWrapper.insertingHead(operations: pricedWrapper.allOperations)
+    }
+
+    func createSubmitWrapper(
+        for operation: SubtensorOperation,
+        shielded: Bool,
+        blockTime: BlockTime,
+        signedClosure: @escaping (SubtensorSubmissionRoute) -> Void
+    ) -> CompoundOperationWrapper<SubtensorOperationOutcome> {
+        let builderClosure: ExtrinsicBuilderClosure
+
+        do {
+            builderClosure = try operation.extrinsicBuilderClosure(novaFeeBeneficiary: feeCalculator.beneficiary)
+        } catch {
+            return .createWithError(SubtensorSubmissionFailure(stage: .notSubmitted, error: error))
+        }
+
+        let claimMarker = pendingRootClaims?.marker(for: operation, coldkey: accountId)
+
+        let markSigned: (SubtensorSubmissionRoute) -> Void = { route in
+            claimMarker?.markSigned()
+            signedClosure(route)
+        }
+
+        let recordingSigner = SubtensorRecordingSigner(signer: signer) { markSigned(.clear) }
+
+        let shieldSigners = shielded ? createShieldSigners(for: operation) { markSigned(.shielded) } : nil
+
+        let finalizer = createFinalizer(
+            for: operation,
+            submissionMarkers: [recordingSigner] + (shieldSigners.map { [$0.carrier] } ?? [])
+        )
+
+        let markSentOperation = ClosureOperation { [sharedOperation] in
+            DispatchQueue.main.async {
+                sharedOperation?.markSent()
+            }
+        }
+
+        let submissionWrapper = createRoutedSubmissionWrapper(
+            for: operation,
+            builderClosure: builderClosure,
+            clearSigner: recordingSigner,
+            shieldSigners: shieldSigners,
+            blockTiming: SubtensorShieldBlockTiming(blockTime: blockTime),
+            finalizer: finalizer
+        )
+
+        submissionWrapper.addDependency(operations: [markSentOperation])
+
+        let resultOperation = createResultOperation(
+            for: submissionWrapper,
+            claimMarker: claimMarker,
+            finalizer: finalizer
+        )
 
         resultOperation.addDependency(submissionWrapper.targetOperation)
 
@@ -203,96 +327,10 @@ extension SubtensorSubmissionOperationFactory: SubtensorSubmissionOperationFacto
     }
 }
 
-private struct SubtensorSubmissionFinalizer {
-    let chainAssetId: ChainAssetId
-    let accountId: AccountId
-    let netuids: Set<UInt16>?
-    let novaFeeBeneficiary: AccountId?
-    let signer: SubtensorRecordingSigner
-    let eventCenter: EventCenterProtocol
-    let errorMapper: SubtensorErrorMapping
-
-    func failure(for error: Error) -> SubtensorSubmissionFailure {
-        if let failure = error as? SubtensorSubmissionFailure {
-            return failure
-        }
-
-        let mappedError = errorMapper.mapSubmission(error: error)
-
-        guard signer.hasSignature, !Self.isFirstSendRejection(mappedError) else {
-            return SubtensorSubmissionFailure(stage: .notSubmitted, error: mappedError)
-        }
-
-        notifyStakeChanged()
-
-        return SubtensorSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: mappedError)
-    }
-
-    func dispatchFailure(for failure: SubstrateExtrinsicStatus.FailedExtrinsic) -> SubtensorSubmissionFailure {
-        SubtensorSubmissionFailure(
-            stage: .dispatched(blockHash: failure.blockHash, extrinsicHash: failure.extrinsicHash),
-            error: errorMapper.mapSubmission(error: failure.error)
-        )
-    }
-
-    func complete(
-        operation: SubtensorOperation,
-        success: SubstrateExtrinsicStatus.SuccessExtrinsic,
-        codingFactory: RuntimeCoderFactoryProtocol?
-    ) -> SubtensorOperationOutcome {
-        let outcome: SubtensorOperationOutcome
-
-        if let codingFactory {
-            let parser = SubtensorOutcomeParser(
-                coldkey: accountId,
-                novaFeeBeneficiary: novaFeeBeneficiary,
-                codingFactory: codingFactory
-            )
-
-            outcome = parser.parse(
-                events: success.interestedEvents,
-                for: operation,
-                extrinsicHash: success.extrinsicHash,
-                blockHash: success.blockHash
-            )
-        } else {
-            outcome = SubtensorOperationOutcome(
-                executed: nil,
-                novaFeePaid: nil,
-                alphaFeePaid: nil,
-                networkFeePaid: nil,
-                extrinsicHash: success.extrinsicHash,
-                blockHash: success.blockHash
-            )
-        }
-
-        notifyStakeChanged()
-
-        return outcome
-    }
-}
-
-private extension SubtensorSubmissionFinalizer {
-    static func isFirstSendRejection(_ error: Error) -> Bool {
-        switch error as? SubtensorSubmissionError {
-        case .feeUnpayable, .coldkeySwapInProgress:
-            true
-        default:
-            false
-        }
-    }
-
-    func notifyStakeChanged() {
-        eventCenter.notify(
-            with: SubtensorStakeChanged(chainAssetId: chainAssetId, accountId: accountId, netuids: netuids)
-        )
-    }
-}
-
 private extension SubtensorSubmissionFailure.Stage {
     var revertsSharedOperation: Bool {
         switch self {
-        case .notSubmitted, .dispatched:
+        case .notSubmitted, .dispatched, .notExecutedFeeUnknown:
             true
         case .unconfirmed:
             false

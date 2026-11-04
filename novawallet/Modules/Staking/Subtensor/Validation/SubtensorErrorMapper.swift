@@ -19,6 +19,7 @@ enum SubtensorSubmissionError: Error, Equatable {
     case notEnoughStakeToWithdraw
     case tooManyStakingHotkeys
     case rootClaimTooHeavy
+    case shieldedNotExecuted
 }
 
 protocol SubtensorErrorMapping {
@@ -218,6 +219,8 @@ extension SubtensorSubmissionError: ErrorContentConvertible {
             strings.parachainStakingFullMessage(String(Self.maxStakingHotkeys))
         case .rootClaimTooHeavy:
             strings.stakingSubtensorErrorRootClaimTooHeavy()
+        case .shieldedNotExecuted:
+            strings.stakingSubtensorErrorShieldedNotExecuted()
         }
 
         return ErrorContent(title: title, message: message)

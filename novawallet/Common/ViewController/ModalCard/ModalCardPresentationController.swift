@@ -120,7 +120,7 @@ private extension ModalCardPresentationController {
         let finalHeight: CGFloat = if presentedByModalCardController {
             presentingViewController.view.bounds.height
         } else {
-            presentingViewController.view.bounds.height - topOffset
+            containerView.bounds.height - topOffset
         }
 
         let finalFrameSize = CGSize(

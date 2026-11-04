@@ -29,6 +29,13 @@ final class SubtensorStakeSetupPresenter {
     var isBalanceLoaded = false
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var shieldQuoteOperation: SubtensorOperation?
+    var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
+    var lastMaxAmount: Balance?
+    var maxRefreshTransferable: Balance?
+    var existentialDeposit: Balance?
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
@@ -100,23 +107,12 @@ extension SubtensorStakeSetupPresenter {
         isBalanceLoaded ? (balance?.transferable ?? 0) : nil
     }
 
-    var maxAmount: Balance? {
-        guard let transferable, let fee else {
-            return nil
-        }
-
-        return SubtensorAmountPolicy.maxBuyOrStake(
-            transferable: transferable,
-            networkFee: fee.amountForCurrentAccount ?? 0
-        )
-    }
-
     var subnetRef: SubtensorSubnetRef? {
         target?.subnetRef
     }
 
     func inputDecimal() -> Decimal? {
-        let maxDecimal = (maxAmount ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo)
+        let maxDecimal = (maxAmount ?? lastMaxAmount ?? 0).decimal(assetInfo: chainAsset.assetDisplayInfo)
 
         return inputResult?.absoluteValue(from: maxDecimal)
     }
@@ -173,6 +169,7 @@ extension SubtensorStakeSetupPresenter {
         requestPresetIfReady()
         refreshPreflight()
         fee = nil
+        resetShieldQuote()
         refreshFee()
         updateQuote()
         provideViewModel()
@@ -262,7 +259,9 @@ extension SubtensorStakeSetupPresenter {
             return
         }
 
+        maxRefreshTransferable = nil
         interactor.estimateFee(for: operation)
+        requestShieldQuote(for: operation)
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
@@ -281,9 +280,14 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func applyMaxChange() {
+        if let maxAmount {
+            lastMaxAmount = maxAmount
+        }
+
         if case .rate = inputResult {
             provideAmountInputViewModel()
             updateQuote()
+            refreshFeeForNewMax()
         }
 
         provideAssetViewModel()
@@ -315,6 +319,7 @@ extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
         interactor.setup()
         interactor.loadBlockTime()
         interactor.loadNovaFeeRate()
+        interactor.loadExistentialDeposit()
 
         trackScreenOpened()
         startMode()

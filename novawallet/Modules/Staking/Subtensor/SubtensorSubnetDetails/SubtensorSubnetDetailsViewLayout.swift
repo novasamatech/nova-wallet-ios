@@ -43,8 +43,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var currencyControl: RoundedSegmentedControl { priceWidget.currencyControl }
-
     var periodControl: RoundedSegmentedControl { priceWidget.periodControl }
 
     var chartView: SubtensorSubnetPriceChartView { priceWidget.chartView }

@@ -11,24 +11,17 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
 
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         if settingsManager.pinConfirmationEnabled == true {
-            let signingResult = signAfterAutorization(originalData, context: context)
-            switch signingResult {
-            case let .success(signature):
-                return signature
-            case let .failure(error):
-                throw error
+            return try authorizeSynchronously { signer in
+                try signer.signData(originalData, context: context)
             }
         } else {
             return try signData(originalData, context: context)
         }
     }
 
-    private func signAfterAutorization(
-        _ originalData: Data,
-        context: ExtrinsicSigningContext
-    ) -> Result<IRSignatureProtocol, Error> {
+    final func authorizeSynchronously<T>(then action: @escaping (BaseSigner) throws -> T) throws -> T {
         let semaphore = DispatchSemaphore(value: 0)
-        var signResult: Result<IRSignatureProtocol, Error>?
+        var result: Result<T, Error>?
 
         DispatchQueue.main.async {
             self.authorize(animated: true, cancellable: true) { [weak self] completed in
@@ -39,19 +32,14 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
                     return
                 }
                 if completed {
-                    do {
-                        let sign = try self.signData(originalData, context: context)
-                        signResult = .success(sign)
-                    } catch {
-                        signResult = .failure(error)
-                    }
+                    result = Result { try action(self) }
                 }
             }
         }
 
         semaphore.wait()
 
-        return signResult ?? .failure(SigningWrapperError.pinCheckNotPassed)
+        return try (result ?? .failure(SigningWrapperError.pinCheckNotPassed)).get()
     }
 
     func signData(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {

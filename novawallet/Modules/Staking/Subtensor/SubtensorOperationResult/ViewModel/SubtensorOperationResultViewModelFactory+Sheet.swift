@@ -10,9 +10,9 @@ extension SubtensorOperationResultViewModelFactory {
         case .progress:
             createProgressSheet(for: context.request, locale: locale)
         case let .done(outcome, _) where context.request.origin == .claim:
-            createClaimDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
+            createClaimDoneSheet(for: outcome, state: state, context: context, locale: locale)
         case let .done(outcome, _):
-            createDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
+            createDoneSheet(for: outcome, state: state, context: context, locale: locale)
         case let .failed(failure, _, holdRemaining):
             createFailedSheet(
                 for: failure,
@@ -44,10 +44,10 @@ private extension SubtensorOperationResultViewModelFactory {
 
     func networkFeeRow(
         for state: SubtensorOperationResultState,
-        request: SubtensorOperationResultRequest,
+        context: SubtensorResultViewContext,
         locale: Locale
     ) -> SubtensorResultSheetRowViewModel {
-        let fee = networkFee(for: state, request: request, locale: locale)
+        let fee = networkFee(for: state, request: context.request, route: context.route, locale: locale)
 
         return SubtensorResultSheetRowViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),
@@ -96,13 +96,14 @@ private extension SubtensorOperationResultViewModelFactory {
     func createDoneSheet(
         for outcome: SubtensorOperationOutcome,
         state: SubtensorOperationResultState,
-        request: SubtensorOperationResultRequest,
+        context: SubtensorResultViewContext,
         locale: Locale
     ) -> SubtensorResultSheetViewModel {
+        let request = context.request
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let stakeMoved = (outcome.executed?.tao ?? request.payAmount) + (outcome.alphaFeePaid ?? 0)
         let stakeMovedString = formatAmount(stakeMoved, info: taoInfo, locale: locale)
-        let feeRow = networkFeeRow(for: state, request: request, locale: locale)
+        let feeRow = networkFeeRow(for: state, context: context, locale: locale)
 
         guard request.origin != .newPosition else {
             let validatorRow = SubtensorResultSheetRowViewModel(
@@ -170,6 +171,8 @@ private extension SubtensorOperationResultViewModelFactory {
             strings.stakingSubtensorResultNotSubmittedMessage()
         case .dispatched:
             strings.stakingSubtensorResultDispatchedMessage()
+        case .notExecutedFeeUnknown:
+            strings.stakingSubtensorResultFeeMayBeCharged()
         case .unconfirmed:
             strings.stakingSubtensorResultUnconfirmedMessage()
         }
@@ -200,11 +203,12 @@ private extension SubtensorOperationResultViewModelFactory {
     func createClaimDoneSheet(
         for outcome: SubtensorOperationOutcome,
         state: SubtensorOperationResultState,
-        request: SubtensorOperationResultRequest,
+        context: SubtensorResultViewContext,
         locale: Locale
     ) -> SubtensorResultSheetViewModel {
+        let request = context.request
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let feeRow = networkFeeRow(for: state, request: request, locale: locale)
+        let feeRow = networkFeeRow(for: state, context: context, locale: locale)
         let claimed = outcome.executed?.tao
 
         if let claimed, claimed == 0 {

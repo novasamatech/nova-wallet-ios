@@ -4,6 +4,7 @@ import BigInt
 
 struct SubtensorResultViewContext {
     let request: SubtensorOperationResultRequest
+    let route: SubtensorSubmissionRoute
     let catalogue: SubtensorSubnetCatalogue?
     let subnetLogos: SubtensorSubnetLogos?
     let remainedTime: TimeInterval
@@ -86,25 +87,30 @@ extension SubtensorOperationResultViewModelFactory {
     func networkFee(
         for state: SubtensorOperationResultState,
         request: SubtensorOperationResultRequest,
+        route: SubtensorSubmissionRoute,
         locale: Locale
     ) -> BalanceViewModelProtocol {
-        let paidFee: Balance? = if case let .done(outcome, _) = state {
-            outcome.networkFeePaid
-        } else {
-            nil
+        let estimate = route == .shielded
+            ? request.shieldQuote?.totalFee.amount ?? request.estimatedNetworkFee.amount
+            : request.estimatedNetworkFee.amount
+
+        let (fee, isExact): (Balance, Bool) = switch state {
+        case let .done(outcome, _):
+            outcome.networkFeePaid.map {
+                ($0 + (outcome.unconfirmedNetworkFee ?? 0), outcome.unconfirmedNetworkFee == nil)
+            } ?? (estimate, false)
+        case let .failed(failure, _, _):
+            failure.paidNetworkFee.map { ($0, true) } ?? (failure.estimatedNetworkFee ?? estimate, false)
+        case .progress, .unconfirmed:
+            (estimate, false)
         }
 
-        let fee = paidFee ?? request.estimatedNetworkFee.amount
         let amount = formatterFactory.createFeeTokenFormatter(for: taoInfo)
             .value(for: locale)
             .stringFromDecimal(fee.decimal(assetInfo: taoInfo)) ?? ""
         let price = formatTaoFiat(fee, prices: request.prices, locale: locale)
 
-        guard paidFee == nil else {
-            return BalanceViewModel(amount: amount, price: price)
-        }
-
-        return BalanceViewModel(amount: amount.approximatelyEqual(), price: price)
+        return BalanceViewModel(amount: isExact ? amount : amount.approximatelyEqual(), price: price)
     }
 
     func failureReason(

@@ -83,7 +83,7 @@ extension SubtensorStakeSetupPresenter {
             maxAmount: maxAmount,
             amount: inputAmount(),
             validator: validatorState,
-            fee: fee,
+            fee: networkFee,
             price: price,
             quote: quoteFlow.freshQuote,
             positionStake: positionStake(),

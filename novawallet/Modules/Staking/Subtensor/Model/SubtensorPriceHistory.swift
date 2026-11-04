@@ -15,7 +15,6 @@ enum SubtensorPricePeriod: Equatable {
 struct SubtensorPricePoint: Equatable {
     let date: Date
     let taoPerAlpha: Decimal
-    let fiatPerAlpha: Decimal
 }
 
 struct SubtensorPriceHistory: Equatable {
@@ -23,7 +22,6 @@ struct SubtensorPriceHistory: Equatable {
     let period: SubtensorPricePeriod
     let points: [SubtensorPricePoint]
     let changeInTao: Decimal?
-    let changeInFiat: Decimal?
 }
 
 enum SubtensorPriceData<Value: Equatable>: Equatable {

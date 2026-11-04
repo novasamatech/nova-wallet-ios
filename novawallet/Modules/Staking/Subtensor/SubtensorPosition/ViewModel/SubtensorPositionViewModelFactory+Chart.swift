@@ -31,9 +31,7 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorPriceWidgetParams(
             history: state.history,
             period: state.period,
-            isFiat: false,
-            taoPrice: nil,
-            currencyId: nil,
+            taoPrice: state.price.value,
             chartEndDate: state.chartEndDate,
             avgBuyPrice: state.costBasis.averagePrice
         )
@@ -52,7 +50,6 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorPriceHeaderParams(
             caption: caption,
             spotPrice: state.prices?.taoPerAlpha[state.netuid]?.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            currency: nil,
             selection: state.chartSelection
         )
     }

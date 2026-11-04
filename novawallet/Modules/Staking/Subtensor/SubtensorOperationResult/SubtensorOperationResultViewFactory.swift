@@ -69,6 +69,8 @@ private extension SubtensorOperationResultViewFactory {
 
         return SubtensorOperationResultInteractor(
             operation: request.operation,
+            shielded: request.shieldQuote != nil,
+            blockTime: request.blockTime,
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
             submissionOperationFactory: services.submissionOperationFactory,

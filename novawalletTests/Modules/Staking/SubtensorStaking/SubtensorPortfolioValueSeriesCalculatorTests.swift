@@ -158,8 +158,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
         let points = [1_700_000_000, 1_760_000_000, 1_790_000_000].enumerated().map { index, time in
             SubtensorPricePoint(
                 date: Date(timeIntervalSince1970: TimeInterval(time)),
-                taoPerAlpha: Decimal(index + 1),
-                fiatPerAlpha: Decimal(300 * (index + 1))
+                taoPerAlpha: Decimal(index + 1)
             )
         }
 

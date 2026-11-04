@@ -167,8 +167,7 @@ enum SubtensorPriceSeries {
 
             return SubtensorPricePoint(
                 date: Date(timeIntervalSince1970: time),
-                taoPerAlpha: item.value / sortedTao[index].value,
-                fiatPerAlpha: item.value
+                taoPerAlpha: item.value / sortedTao[index].value
             )
         }
     }

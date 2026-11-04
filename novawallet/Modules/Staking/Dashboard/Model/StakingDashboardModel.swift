@@ -182,6 +182,11 @@ extension Array where Element: StakingDashboardItemModelCommonProtocol {
     func sortedByBalance() -> [Element] {
         sorted { item1, item2 in
             CompoundComparator.compare(list: [{
+                let order1 = item1.chainAsset.chain.bittensorFirstOrder
+                let order2 = item2.chainAsset.chain.bittensorFirstOrder
+
+                return CompoundComparator.compare(item1: order1, item2: order2, isAsc: true)
+            }, {
                 let chain1 = item1.chainAsset.chain
                 let chain2 = item2.chainAsset.chain
 
@@ -218,6 +223,11 @@ extension Array where Element == StakingDashboardItemModel.Concrete {
     func sortedByStake() -> [StakingDashboardItemModel.Concrete] {
         sorted { item1, item2 in
             CompoundComparator.compare(list: [{
+                let order1 = item1.chainAsset.chain.bittensorFirstOrder
+                let order2 = item2.chainAsset.chain.bittensorFirstOrder
+
+                return CompoundComparator.compare(item1: order1, item2: order2, isAsc: true)
+            }, {
                 let stake1 = item1.stakeValue()
                 let stake2 = item2.stakeValue()
 
@@ -345,5 +355,11 @@ extension StakingDashboardItemModel: StakingDashboardItemModelCommonProtocol {
         case let .concrete(value):
             return value.isOffchainSync
         }
+    }
+}
+
+private extension ChainModel {
+    var bittensorFirstOrder: Int {
+        chainId == KnowChainId.bittensor ? 0 : 1
     }
 }

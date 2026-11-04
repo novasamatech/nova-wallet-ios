@@ -14,12 +14,19 @@ final class SubtensorConfirmPresenter {
     let logger: LoggerProtocol
 
     var balance: AssetBalance?
+    var isBalanceLoaded = false
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var shieldQuote: SubtensorShieldQuote?
+    var shieldQuoteOperation: SubtensorOperation?
+    var isShieldQuoteResolved = false
+    var isShieldQuoteFallback = false
+    var isShieldOn = true
     var positionsState: Multistaking.SubtensorState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorPreflight?
     var existentialDeposit: Balance?
+    var isExistentialDepositFailed = false
     var currentBlock: BlockNumber?
     var holds: [AccountId: SubtensorRootHold]?
     var quoteState: SubtensorConfirmQuoteState?
@@ -48,6 +55,8 @@ final class SubtensorConfirmPresenter {
         self.chainAsset = chainAsset
         self.model = model
         isWatchOnly = model.account.chainAccount.type == .watchOnly
+        isShieldQuoteResolved = model.isShieldQuoteFallback
+        isShieldQuoteFallback = model.isShieldQuoteFallback
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
@@ -115,7 +124,7 @@ extension SubtensorConfirmPresenter {
             isQuoteFailed: quoteState?.isLatestFailed ?? false,
             isPriceMoved: quoteState?.isPriceMoved ?? false,
             price: price,
-            fee: fee,
+            fee: networkFee,
             stakeChange: createStakeChange(),
             isWatchOnly: isWatchOnly,
             costBasis: tracksCostBasis ? costBasis : nil
@@ -123,15 +132,7 @@ extension SubtensorConfirmPresenter {
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
         analytics.syncPriceMoveBanner(isShown: input.isPriceMoved)
-    }
-
-    func createStakeChange() -> SubtensorConfirmStakeChange? {
-        switch model.mode {
-        case let .stake(amount):
-            return createStakeChange(adding: amount)
-        case let .unstake(unstakeModel):
-            return createStakeChange(removing: unstakeModel)
-        }
+        provideShieldState()
     }
 
     func refreshQuote() {
@@ -140,17 +141,6 @@ extension SubtensorConfirmPresenter {
         }
 
         interactor.refreshQuote(for: request)
-    }
-
-    func refreshFee() {
-        let acknowledged = quoteState?.acknowledged
-
-        guard let operation = createOperation(limitPrice: acknowledged?.limitPrice, quote: acknowledged) else {
-            refreshQuote()
-            return
-        }
-
-        interactor.estimateFee(for: operation)
     }
 
     func refreshPreflight() {
@@ -218,14 +208,14 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
-            analytics.acknowledgePriceMove()
+            analytics.acknowledgePriceMove(heldForNextTap: waitsForShieldQuote)
             state.acknowledgeLatest()
             quoteState = state
 
-            refreshFee()
+            refreshFeeAtTap()
             provideViewModel()
 
-            return true
+            return !waitsForShieldQuote
         }
 
         guard !state.raisePriceMovedIfCrossed() else {
@@ -255,7 +245,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func handOffAtTap() {
-        guard !isHandingOff, let fee, let preflight, let verified = createVerifiedOperation() else {
+        guard !isHandingOff, let fee = networkFee, let preflight, let verified = createVerifiedOperation() else {
             view?.didStopLoading()
             return
         }
@@ -264,6 +254,7 @@ extension SubtensorConfirmPresenter {
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
+            shieldQuote: activeShieldQuote,
             origin: model.origin,
             account: model.account,
             target: model.target,
@@ -271,7 +262,7 @@ extension SubtensorConfirmPresenter {
             quote: verified.quote,
             slippage: model.tolerance,
             validator: model.validator,
-            estimatedNetworkFee: fee,
+            estimatedNetworkFee: self.fee ?? fee,
             stakeBefore: group?.totalAlpha ?? 0,
             groupHotkeyCount: hotkeyCountAfterOperation(in: group),
             emptiesPosition: emptiesPosition(verified.operation, group: group),

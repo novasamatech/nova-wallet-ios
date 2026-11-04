@@ -119,7 +119,7 @@ struct SubtensorPortfolioPeriodsViewModel: Equatable {
 struct SubtensorPortfolioHeaderViewModel: Equatable {
     let total: String?
     let fiat: SubtensorRowState<String>
-    let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
+    let date: String?
     let chart: SubtensorPortfolioChartViewModel
     let periods: SubtensorPortfolioPeriodsViewModel
 }

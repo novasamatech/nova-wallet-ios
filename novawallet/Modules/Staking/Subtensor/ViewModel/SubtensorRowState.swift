@@ -17,3 +17,19 @@ extension SubtensorRowState where Value == String {
         return isPending ? .loading : .value(.subtensorUnknown(for: locale))
     }
 }
+
+extension SubtensorRowState where Value == BalanceViewModelProtocol {
+    static func trade(
+        _ value: BalanceViewModelProtocol?,
+        isPending: Bool,
+        locale: Locale
+    ) -> SubtensorRowState<BalanceViewModelProtocol> {
+        if let value {
+            return .value(
+                BalanceViewModel(amount: SubtensorSubnetNaming.isolatedLeftToRight(value.amount), price: value.price)
+            )
+        }
+
+        return isPending ? .loading : .value(BalanceViewModel(amount: .subtensorUnknown(for: locale), price: nil))
+    }
+}

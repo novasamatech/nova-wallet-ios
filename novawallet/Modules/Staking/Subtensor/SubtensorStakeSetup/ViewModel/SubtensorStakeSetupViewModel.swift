@@ -62,7 +62,7 @@ struct SubtensorPickCardViewModel {
     let browseTitle: String?
     let header: SubtensorPickCardHeaderViewModel?
     let chips: [String]
-    let receive: SubtensorRowState<String>
+    let receive: SubtensorRowState<BalanceViewModelProtocol>
     let swapRate: SubtensorRowState<String>
     let networkFee: BalanceViewModelProtocol?
     let isRoot: Bool

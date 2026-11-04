@@ -14,6 +14,7 @@ extension SubtensorConfirmPresenter {
 extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+        isBalanceLoaded = true
 
         provideViewModel()
     }
@@ -52,6 +53,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
         }
 
         refreshQuote()
+        retryUnresolvedShieldQuote()
     }
 
     func didReceivePreflight(_ preflight: SubtensorPreflight) {
@@ -81,6 +83,7 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+        isExistentialDepositFailed = false
 
         provideViewModel()
     }
@@ -94,6 +97,11 @@ extension SubtensorConfirmPresenter: SubtensorBaseInteractorOutputProtocol {
             quoteState?.invalidateLatest()
             provideViewModel()
             return
+        }
+
+        if case .existentialDepositFailed = error {
+            isExistentialDepositFailed = true
+            provideViewModel()
         }
 
         guard case .quoteFailed = error else {

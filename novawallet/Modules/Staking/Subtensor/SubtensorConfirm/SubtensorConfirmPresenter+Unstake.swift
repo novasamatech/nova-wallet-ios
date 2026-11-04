@@ -113,7 +113,7 @@ extension SubtensorConfirmPresenter {
             groupHotkeys: unstakeModel.groupHotkeys,
             availability: group?.availability,
             balance: balance,
-            fee: fee,
+            fee: networkFee,
             existentialDeposit: existentialDeposit,
             preflight: preflight,
             holds: holds,
@@ -121,13 +121,16 @@ extension SubtensorConfirmPresenter {
             assetDisplayInfo: viewModelFactory.amountDisplayInfo(for: model.target, catalogue: catalogue),
             syncFailed: isPositionsSyncFailed || positionsState == nil,
             onFeeRefresh: { [weak self] in
-                self?.refreshFee()
+                self?.refreshFeeKeepingAcknowledgement()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
             },
             onPositionsRefresh: { [weak self] in
                 self?.interactor.refreshPositions()
+            },
+            onPositionsStale: { [weak self] in
+                self?.keepPriceMoveAcknowledgement()
             }
         )
 

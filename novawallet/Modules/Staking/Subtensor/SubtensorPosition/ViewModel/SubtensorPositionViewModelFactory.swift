@@ -151,13 +151,15 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createAvgBuyPriceRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel? {
-        let value = state.isCatalogueResolved
-            ? costBasisViewModelFactory.createAvgBuyPrice(
+        let isLoading = state.price == .loading || !state.isCatalogueResolved
+
+        let value = isLoading
+            ? .loading
+            : costBasisViewModelFactory.createAvgBuyPrice(
                 for: state.costBasis,
-                alphaSymbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue),
+                taoPrice: state.price.value,
                 locale: locale
             )
-            : .loading
 
         return createCostBasisRow(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiAvgBuyPrice(),
