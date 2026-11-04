@@ -381,7 +381,7 @@ struct SwapModel {
 
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
 
-        guard !isSelfSufficient, !hasAccountProviderOnDestChain else {
+        guard !isSelfSufficient || receiveChainAsset.mayBackHydraAaveLoan, !hasAccountProviderOnDestChain else {
             return nil
         }
 
