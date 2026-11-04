@@ -157,7 +157,7 @@ private extension AssetExchangeRoute {
             return nil
         }
 
-        guard first.isUserAmount else {
+        guard shortfalls.contains(where: \.isUserAmount) else {
             return AssetExchangeTradeMinimumFailure(
                 limitedAsset: first.limitedAsset,
                 minimumAmount: first.minimumAmount,
