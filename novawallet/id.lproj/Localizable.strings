@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "Perlindungan MEV";
 "staking.subtensor.mev.protection.unavailable" = "Perlindungan MEV tidak tersedia untuk pesanan ini.";
 "staking.subtensor.result.fee.may.be.charged" = "Biaya jaringan mungkin telah dibebankan.";
+"swap.failure.collateral.in.use.message" = "Saat ini hanya %@ yang dapat ditukar. Sisanya menjamin pinjaman Hydration Anda.";
+"swap.failure.collateral.in.use.none.message" = "%@ ini menjamin pinjaman Hydration Anda, sehingga tidak dapat ditukar sampai Anda melunasi sebagian pinjaman.";
+"swap.failure.collateral.in.use.title" = "Jaminan sedang digunakan";

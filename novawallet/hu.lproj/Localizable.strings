@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "MEV-védelem";
 "staking.subtensor.mev.protection.unavailable" = "A MEV-védelem ehhez a megrendeléshez nem érhető el.";
 "staking.subtensor.result.fee.may.be.charged" = "Hálózati díj kerülhetett felszámításra.";
+"swap.failure.collateral.in.use.message" = "Jelenleg csak a(z) %@ cserélhető le. A többi a Hydration-kölcsönödet fedezi.";
+"swap.failure.collateral.in.use.none.message" = "Ez a(z) %@ a Hydration-kölcsönödet fedezi, ezért nem cserélhető le, amíg vissza nem fizeted a kölcsön egy részét.";
+"swap.failure.collateral.in.use.title" = "Használatban lévő fedezet";

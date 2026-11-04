@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "Защита от MEV";
 "staking.subtensor.mev.protection.unavailable" = "Защита от MEV недоступна для этого ордера.";
 "staking.subtensor.result.fee.may.be.charged" = "С вас могла быть списана комиссия сети.";
+"swap.failure.collateral.in.use.message" = "Сейчас можно обменять только %@. Остальное служит обеспечением вашего займа в Hydration.";
+"swap.failure.collateral.in.use.none.message" = "Этот %@ служит обеспечением вашего займа в Hydration, поэтому его нельзя обменять, пока вы не погасите часть займа.";
+"swap.failure.collateral.in.use.title" = "Обеспечение используется";

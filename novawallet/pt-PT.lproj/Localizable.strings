@@ -2369,3 +2369,6 @@
 "staking.subtensor.mev.protection.title" = "Proteção contra MEV";
 "staking.subtensor.mev.protection.unavailable" = "A proteção contra MEV não está disponível para este pedido.";
 "staking.subtensor.result.fee.may.be.charged" = "Uma taxa de rede pode ter sido cobrada.";
+"swap.failure.collateral.in.use.message" = "Apenas %@ pode ser trocado agora. O restante garante seu empréstimo na Hydration.";
+"swap.failure.collateral.in.use.none.message" = "Este %@ serve como garantia do seu empréstimo na Hydration, por isso não pode ser trocado até que você quite parte do empréstimo.";
+"swap.failure.collateral.in.use.title" = "Garantia em uso";
