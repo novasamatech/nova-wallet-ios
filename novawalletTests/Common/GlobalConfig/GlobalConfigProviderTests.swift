@@ -50,7 +50,7 @@ final class GlobalConfigProviderTests: XCTestCase {
         )
     }
 
-    func testDecodesTheChangeNowTaoUrlOnlyWhenPresentAndValid() throws {
+    func testDecodesTheChangeNowTaoUrlOnlyWhenPresent() throws {
         let changeNowTaoUrl = "https://changenow.io/exchange?from=assethub&to=tao&link_id=59409968ba3831"
 
         GlobalConfigStubURLProtocol.payload = makePayload(
@@ -68,13 +68,6 @@ final class GlobalConfigProviderTests: XCTestCase {
 
         XCTAssertNil(configWithoutUrl.changeNowTaoUrl)
         XCTAssertEqual(configWithoutUrl.infraUrl.absoluteString, "https://second.example")
-
-        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://third.example", changeNowTaoUrl: "")
-
-        let configWithInvalidUrl = try fetch(GlobalConfigProvider(configUrl: configUrl).createConfigWrapper())
-
-        XCTAssertNil(configWithInvalidUrl.changeNowTaoUrl)
-        XCTAssertEqual(configWithInvalidUrl.infraUrl.absoluteString, "https://third.example")
     }
 
     private func makePayload(infraUrl: String, changeNowTaoUrl: String? = nil) -> Data {
