@@ -143,16 +143,9 @@ private extension HydraAaveCollateralLimitFactory {
         let mappingOperation = ClosureOperation<PayAsset> {
             let location = try locationWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-            let registeredAddress: AccountId? = if
-                case let .accountKey20(account) = location?.location.interior.items.last {
-                account.accountId
-            } else {
-                nil
-            }
-
             return PayAsset(
                 assetId: try assetIdOperation.extractNoCancellableResultData(),
-                registeredAddress: registeredAddress
+                registeredAddress: location?.evmAddress
             )
         }
 
