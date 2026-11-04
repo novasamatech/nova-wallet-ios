@@ -72,6 +72,22 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         minAmount: String?,
         locale: Locale
     )
+
+    func presentMinBalanceUnavailable(
+        from view: ControllerBackedProtocol,
+        retryAction: @escaping () -> Void,
+        locale: Locale
+    )
+}
+
+extension SwapErrorPresentable where Self: AlertPresentable & CommonRetryable {
+    func presentMinBalanceUnavailable(
+        from view: ControllerBackedProtocol,
+        retryAction: @escaping () -> Void,
+        locale: Locale
+    ) {
+        presentRequestStatus(on: view, locale: locale, retryAction: retryAction)
+    }
 }
 
 extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {

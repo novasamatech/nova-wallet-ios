@@ -10,36 +10,21 @@ extension SwapDataValidatorFactory {
         poolTradeLimitAction: SwapPoolTradeLimitApplying?,
         locale: Locale
     ) -> DataValidating {
+        let context = SwapPoolTradeLimitValidatingContext(
+            params: params,
+            remoteValidatingClosure: remoteValidatingClosure,
+            poolTradeLimitAction: poolTradeLimitAction,
+            locale: locale
+        )
+
         var failedCheck: SwapPoolTradeLimitCheck = .withinLimits
 
-        return AsyncErrorConditionViolation(
-            onError: { [weak self] in
-                switch failedCheck {
-                case .withinLimits:
-                    return
-                case let .belowMinimum(failure):
-                    self?.presentPoolTradeMinimum(
-                        for: failure,
-                        chargesCommission: params.quote?.commission != nil,
-                        locale: locale
-                    )
-                case let .blocked(failure):
-                    self?.presentPoolTradeLimit(
-                        for: failure,
-                        chargesCommission: params.quote?.commission != nil,
-                        poolTradeLimitAction: poolTradeLimitAction,
-                        locale: locale
-                    )
-                }
+        return AsyncWarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                self?.presentPoolTradeLimitCheck(failedCheck, context: context, delegate: delegate)
             },
             preservesCondition: { completion in
-                guard let route = params.quote?.route else {
-                    completion(true)
-
-                    return
-                }
-
-                remoteValidatingClosure(route) { check in
+                context.check { check in
                     failedCheck = check
                     completion(check == .withinLimits)
                 }
@@ -48,7 +33,79 @@ extension SwapDataValidatorFactory {
     }
 }
 
+private struct SwapPoolTradeLimitValidatingContext {
+    let params: SwapModel
+    let remoteValidatingClosure: SwapPoolTradeLimitValidatingClosure
+    let poolTradeLimitAction: SwapPoolTradeLimitApplying?
+    let locale: Locale
+
+    var chargesCommission: Bool {
+        params.quote?.commission != nil
+    }
+
+    func check(completion: @escaping (SwapPoolTradeLimitCheck) -> Void) {
+        guard let route = params.quote?.route else {
+            completion(.withinLimits)
+
+            return
+        }
+
+        remoteValidatingClosure(route, completion)
+    }
+}
+
 private extension SwapDataValidatorFactory {
+    func presentPoolTradeLimitCheck(
+        _ check: SwapPoolTradeLimitCheck,
+        context: SwapPoolTradeLimitValidatingContext,
+        delegate: DataValidatingDelegate
+    ) {
+        switch check {
+        case .withinLimits:
+            return
+        case let .belowMinimum(failure):
+            presentPoolTradeMinimum(
+                for: failure,
+                chargesCommission: context.chargesCommission,
+                locale: context.locale
+            )
+        case let .blocked(failure):
+            presentPoolTradeLimit(
+                for: failure,
+                chargesCommission: context.chargesCommission,
+                poolTradeLimitAction: context.poolTradeLimitAction,
+                locale: context.locale
+            )
+        case .minBalanceUnavailable:
+            guard let view else {
+                return
+            }
+
+            presentable.presentMinBalanceUnavailable(
+                from: view,
+                retryAction: { [weak self] in
+                    self?.recheckPoolTradeLimits(context: context, delegate: delegate)
+                },
+                locale: context.locale
+            )
+        }
+    }
+
+    func recheckPoolTradeLimits(
+        context: SwapPoolTradeLimitValidatingContext,
+        delegate: DataValidatingDelegate
+    ) {
+        context.check { [weak self] check in
+            guard check != .withinLimits else {
+                delegate.didCompleteAsyncHandling()
+
+                return
+            }
+
+            self?.presentPoolTradeLimitCheck(check, context: context, delegate: delegate)
+        }
+    }
+
     func presentPoolTradeLimit(
         for failure: AssetExchangeTradeLimitFailure?,
         chargesCommission: Bool,

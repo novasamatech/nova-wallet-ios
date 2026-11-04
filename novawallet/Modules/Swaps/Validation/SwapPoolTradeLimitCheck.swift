@@ -5,6 +5,7 @@ enum SwapPoolTradeLimitCheck: Equatable {
     case withinLimits
     case belowMinimum(AssetExchangeTradeMinimumFailure)
     case blocked(AssetExchangeTradeLimitFailure?)
+    case minBalanceUnavailable
 }
 
 typealias SwapBalanceExistenceWrapperFactory = (Set<ChainAssetId>)
@@ -16,15 +17,21 @@ extension AssetExchangeRoute {
         balanceExistenceWrapperFactory: SwapBalanceExistenceWrapperFactory
     ) -> CompoundOperationWrapper<SwapPoolTradeLimitCheck> {
         let routerDeposits: [AssetExchangeRouterDeposit]
-        let balanceExistenceWrapper: CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]>
 
         do {
             routerDeposits = try routerAccountDeposits(slippage: slippage)
+        } catch {
+            return .createWithError(error)
+        }
+
+        let balanceExistenceWrapper: CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]>
+
+        do {
             balanceExistenceWrapper = try balanceExistenceWrapperFactory(
                 Set(routerDeposits.map(\.asset.chainAssetId))
             )
         } catch {
-            return .createWithError(error)
+            balanceExistenceWrapper = .createWithError(error)
         }
 
         let verdictWrappers = items.map { item in
@@ -34,9 +41,15 @@ extension AssetExchangeRoute {
         let mergeOperation = ClosureOperation<SwapPoolTradeLimitCheck> {
             let verdicts = try verdictWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-            let minBalances = try balanceExistenceWrapper.targetOperation
-                .extractNoCancellableResultData()
-                .mapValues(\.minBalance)
+            let minBalances: [ChainAssetId: Balance]
+
+            do {
+                minBalances = try balanceExistenceWrapper.targetOperation
+                    .extractNoCancellableResultData()
+                    .mapValues(\.minBalance)
+            } catch {
+                return .minBalanceUnavailable
+            }
 
             return self.poolTradeLimitCheck(
                 verdicts: verdicts,
