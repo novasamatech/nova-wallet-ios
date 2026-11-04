@@ -2369,6 +2369,10 @@
 "staking.subtensor.mev.protection.title" = "Защита от MEV";
 "staking.subtensor.mev.protection.unavailable" = "Защита от MEV недоступна для этого ордера.";
 "staking.subtensor.result.fee.may.be.charged" = "С вас могла быть списана комиссия сети.";
+"swaps.setup.deposit.alternatives" = "%1$@ или %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · открывается в браузере";
+"swaps.setup.deposit.by.dapp.title" = "Обмен через %@";
+"swaps.setup.deposit.third.party" = "СТОРОННИЙ СЕРВИС";
 "swap.failure.pool.trade.minimum.message" = "Минимальная сумма для этого обмена составляет %@.";
 "swap.failure.pool.trade.minimum.route.message" = "Этот маршрут не может обработать настолько маленькую сумму. Попробуйте указать большую сумму.";
 "swap.failure.pool.trade.minimum.title" = "Сумма слишком мала";

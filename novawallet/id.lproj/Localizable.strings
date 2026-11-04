@@ -2369,6 +2369,10 @@
 "staking.subtensor.mev.protection.title" = "Perlindungan MEV";
 "staking.subtensor.mev.protection.unavailable" = "Perlindungan MEV tidak tersedia untuk pesanan ini.";
 "staking.subtensor.result.fee.may.be.charged" = "Biaya jaringan mungkin telah dibebankan.";
+"swaps.setup.deposit.alternatives" = "%1$@ atau %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · dibuka di browser";
+"swaps.setup.deposit.by.dapp.title" = "Tukar di %@";
+"swaps.setup.deposit.third.party" = "PIHAK KETIGA";
 "swap.failure.pool.trade.minimum.message" = "Jumlah minimum untuk swap ini adalah %@.";
 "swap.failure.pool.trade.minimum.route.message" = "Rute ini tidak dapat memproses jumlah sekecil itu. Coba jumlah yang lebih besar.";
 "swap.failure.pool.trade.minimum.title" = "Jumlah terlalu kecil";

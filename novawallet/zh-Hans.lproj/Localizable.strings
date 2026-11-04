@@ -2369,6 +2369,10 @@
 "staking.subtensor.mev.protection.title" = "MEV 保护";
 "staking.subtensor.mev.protection.unavailable" = "此订单无法使用 MEV 保护。";
 "staking.subtensor.result.fee.may.be.charged" = "可能已向您收取网络费用。";
+"swaps.setup.deposit.alternatives" = "%1$@ 或 %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · 在浏览器中打开";
+"swaps.setup.deposit.by.dapp.title" = "通过 %@ 兑换";
+"swaps.setup.deposit.third.party" = "第三方服务";
 "swap.failure.pool.trade.minimum.message" = "此兑换的最低金额为 %@。";
 "swap.failure.pool.trade.minimum.route.message" = "此路线无法处理如此小的金额。请尝试输入更大的金额。";
 "swap.failure.pool.trade.minimum.title" = "金额太小";

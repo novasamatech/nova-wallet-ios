@@ -2369,6 +2369,10 @@
 "staking.subtensor.mev.protection.title" = "Protezione MEV";
 "staking.subtensor.mev.protection.unavailable" = "La protezione MEV non è disponibile per questo ordine.";
 "staking.subtensor.result.fee.may.be.charged" = "Potrebbe essere stata addebitata una commissione di rete.";
+"swaps.setup.deposit.alternatives" = "%1$@ o %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · si apre nel browser";
+"swaps.setup.deposit.by.dapp.title" = "Scambia su %@";
+"swaps.setup.deposit.third.party" = "DI TERZE PARTI";
 "swap.failure.pool.trade.minimum.message" = "L'importo minimo per questo swap è %@.";
 "swap.failure.pool.trade.minimum.route.message" = "Questo percorso non può elaborare un importo così ridotto. Prova con un importo maggiore.";
 "swap.failure.pool.trade.minimum.title" = "L'importo è troppo basso";

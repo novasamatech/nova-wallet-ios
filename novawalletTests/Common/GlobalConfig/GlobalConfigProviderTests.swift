@@ -50,8 +50,30 @@ final class GlobalConfigProviderTests: XCTestCase {
         )
     }
 
-    private func makePayload(infraUrl: String) -> Data {
-        Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"\#(infraUrl)"}"#.utf8)
+    func testDecodesTheChangeNowTaoUrlOnlyWhenPresent() throws {
+        let changeNowTaoUrl = "https://changenow.io/exchange?from=assethub&to=tao&link_id=59409968ba3831"
+
+        GlobalConfigStubURLProtocol.payload = makePayload(
+            infraUrl: "https://first.example",
+            changeNowTaoUrl: changeNowTaoUrl
+        )
+
+        let configWithUrl = try fetch(GlobalConfigProvider(configUrl: configUrl).createConfigWrapper())
+
+        XCTAssertEqual(configWithUrl.changeNowTaoUrl?.absoluteString, changeNowTaoUrl)
+
+        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://second.example")
+
+        let configWithoutUrl = try fetch(GlobalConfigProvider(configUrl: configUrl).createConfigWrapper())
+
+        XCTAssertNil(configWithoutUrl.changeNowTaoUrl)
+        XCTAssertEqual(configWithoutUrl.infraUrl.absoluteString, "https://second.example")
+    }
+
+    private func makePayload(infraUrl: String, changeNowTaoUrl: String? = nil) -> Data {
+        let changeNowField = changeNowTaoUrl.map { #","changeNowTaoUrl":"\#($0)""# } ?? ""
+
+        return Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"\#(infraUrl)"\#(changeNowField)}"#.utf8)
     }
 
     private func fetch(_ wrapper: CompoundOperationWrapper<GlobalConfig>) throws -> GlobalConfig {

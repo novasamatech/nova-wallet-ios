@@ -5,4 +5,5 @@ struct GlobalConfig: Decodable {
     let multisigsApiUrl: URL
     let proxyApiUrl: URL
     let infraUrl: URL
+    let changeNowTaoUrl: URL?
 }
