@@ -9,7 +9,7 @@ class SwapBasePresenter {
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
-    private(set) var collateralLimits: [ChainAssetId: HydraAave.CollateralLimit] = [:]
+    var collateralLimits: [ChainAssetId: HydraAave.CollateralLimit] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }

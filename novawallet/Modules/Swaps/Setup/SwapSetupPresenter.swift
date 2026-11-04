@@ -920,7 +920,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     feeChainAsset: swapModel.feeChainAsset,
                     slippage: slippage,
                     quote: quote,
-                    quoteArgs: quoteArgs
+                    quoteArgs: quoteArgs,
+                    payAssetCollateralLimit: swapModel.payAssetCollateralLimit
                 )
 
                 self?.trackProceededToConfirmation(for: swapModel, quote: quote)

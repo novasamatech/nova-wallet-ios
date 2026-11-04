@@ -55,6 +55,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         )
 
         quoteResult = .success(initState.quote)
+        collateralLimits[initState.chainAssetIn.chainAssetId] = initState.payAssetCollateralLimit
         self.localizationManager = localizationManager
     }
 
