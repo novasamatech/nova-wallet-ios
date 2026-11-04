@@ -7,7 +7,7 @@ final class GetTokenOptionsPresenter {
     let wireframe: GetTokenOptionsWireframeProtocol
     let destinationChainAsset: ChainAsset
 
-    let allOperations: [GetTokenOperation] = [.crosschain, .receive, .buy]
+    let allOperations: [GetTokenOperation]
 
     private var model: GetTokenOptionsModel?
 
@@ -19,6 +19,7 @@ final class GetTokenOptionsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.destinationChainAsset = destinationChainAsset
+        allOperations = GetTokenOperation.operations(for: destinationChainAsset)
     }
 
     private func isOperationAvailable(_ operation: GetTokenOperation) -> Bool {
@@ -33,6 +34,8 @@ final class GetTokenOptionsPresenter {
             return model.receiveAccount != nil
         case .buy:
             return !model.buyOptions.isEmpty
+        case .changeNow:
+            return model.changeNowUrl != nil
         }
     }
 
@@ -48,6 +51,7 @@ final class GetTokenOptionsPresenter {
                         subtitle: operation.subtitleForLocale(locale, token: token),
                         icon: operation.icon
                     ),
+                    chip: operation.chipForLocale(locale),
                     isActive: isActive
                 )
             }
@@ -83,6 +87,10 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
             }
         case .buy:
             wireframe.complete(on: view, result: .buy(model.buyOptions))
+        case .changeNow:
+            if let url = model.changeNowUrl {
+                wireframe.complete(on: view, result: .changeNow(url))
+            }
         }
     }
 }

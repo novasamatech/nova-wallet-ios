@@ -78,6 +78,8 @@ enum GetTokenOptionsViewFactory {
             xcmTransfersSyncService: xcmTransfersSyncService,
             featureChecker: featureChecker,
             rampProvider: RampAggregator.defaultAggregator(),
+            globalConfigProvider: GlobalConfigProvider.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
     }
