@@ -2369,3 +2369,7 @@
 "staking.subtensor.mev.protection.title" = "MEV 보호";
 "staking.subtensor.mev.protection.unavailable" = "이 주문에는 MEV 보호를 사용할 수 없습니다.";
 "staking.subtensor.result.fee.may.be.charged" = "네트워크 수수료가 부과되었을 수 있습니다.";
+"swaps.setup.deposit.alternatives" = "%1$@ 또는 %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · 브라우저에서 열기";
+"swaps.setup.deposit.by.dapp.title" = "%@에서 교환";
+"swaps.setup.deposit.third.party" = "제3자";

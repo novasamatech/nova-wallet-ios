@@ -2369,3 +2369,7 @@
 "staking.subtensor.mev.protection.title" = "Защита от MEV";
 "staking.subtensor.mev.protection.unavailable" = "Защита от MEV недоступна для этого ордера.";
 "staking.subtensor.result.fee.may.be.charged" = "С вас могла быть списана комиссия сети.";
+"swaps.setup.deposit.alternatives" = "%1$@ или %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · открывается в браузере";
+"swaps.setup.deposit.by.dapp.title" = "Обмен через %@";
+"swaps.setup.deposit.third.party" = "СТОРОННИЙ СЕРВИС";
