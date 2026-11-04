@@ -47,36 +47,6 @@ final class HydraAaveFlowState {
         self.logger = logger
     }
 
-    convenience init(
-        account: ChainAccountResponse,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        notificationsRegistrar: AssetsExchangeStateRegistring?,
-        operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = .global(),
-        logger: LoggerProtocol = Logger.shared
-    ) {
-        self.init(
-            account: account,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            notificationsRegistrar: notificationsRegistrar,
-            apiFactory: HydraAaveTradeExecutorFactory(
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                operationQueue: operationQueue
-            ),
-            reservesDiscoveryFactory: HydraAaveReservesDiscoveryFactory(
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                operationQueue: operationQueue
-            ),
-            operationQueue: operationQueue,
-            workingQueue: workingQueue,
-            logger: logger
-        )
-    }
-
     deinit {
         clear()
     }

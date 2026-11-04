@@ -6,18 +6,13 @@ extension SwapModel {
     }
 
     func checkEnoughCollateralToSpend() -> InsufficientBalanceReason? {
-        guard case let .limited(limit) = payAssetCollateralLimit else {
-            return nil
-        }
-
-        let balance = payAssetBalance?.transferable ?? 0
         let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
-        let swapAmount = spendingAmountInPlank ?? 0
 
-        let collateralCeiling = limit.subtractOrZero(fee)
-        let balanceCeiling = balance.subtractOrZero(fee)
-
-        guard collateralCeiling < balanceCeiling, swapAmount + fee > limit else {
+        guard
+            case let .limited(limit) = payAssetCollateralLimit,
+            let collateralCeiling = payAssetCollateralLimit?.ceiling(afterFee: fee),
+            collateralCeiling < (payAssetBalance?.transferable ?? 0).subtractOrZero(fee),
+            (spendingAmountInPlank ?? 0) + fee > limit else {
             return nil
         }
 

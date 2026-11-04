@@ -104,16 +104,6 @@ struct SwapMaxModel {
         return maxAmount.subtractOrZero(fee)
     }
 
-    private func collateralBound(for payChainAsset: ChainAsset) -> Balance? {
-        guard case let .limited(limit) = payAssetCollateralLimit else {
-            return nil
-        }
-
-        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
-
-        return limit.subtractOrZero(fee)
-    }
-
     func calculate() -> Decimal {
         guard let payChainAsset = payChainAsset, let balance = balance else {
             return 0
@@ -125,7 +115,8 @@ struct SwapMaxModel {
             calculateForCustomAsset(payChainAsset, balance: balance)
         }
 
-        let maxAmount = collateralBound(for: payChainAsset).map { min($0, balanceBound) } ?? balanceBound
+        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
+        let maxAmount = payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
 
         return maxAmount.decimal(precision: payChainAsset.asset.precision)
     }

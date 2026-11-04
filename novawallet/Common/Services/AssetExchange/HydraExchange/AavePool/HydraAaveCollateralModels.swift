@@ -5,6 +5,14 @@ extension HydraAave {
     enum CollateralLimit: Equatable {
         case unrestricted
         case limited(Balance)
+
+        func ceiling(afterFee fee: Balance) -> Balance? {
+            guard case let .limited(limit) = self else {
+                return nil
+            }
+
+            return limit.subtractOrZero(fee)
+        }
     }
 
     struct ReserveConfiguration: Equatable {
