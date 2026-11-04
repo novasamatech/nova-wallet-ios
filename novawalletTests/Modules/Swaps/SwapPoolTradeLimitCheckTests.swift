@@ -87,6 +87,41 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
             .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
         )
     }
+
+    func testIntermediateHopOutputAtTheDepositPassesDespiteSlippage() throws {
+        let route = makeRoute(
+            [
+                hop(0, 1, amount: 1_337_000_000_000_000, quote: 17_540_000),
+                hop(1, 2, amount: 17_540_000, quote: 2_000_000_000_000)
+            ],
+            direction: .sell
+        )
+
+        XCTAssertEqual(try runCheck(route), .withinLimits)
+    }
+
+    func testFinalHopOutputAtTheDepositIsBlockedBySlippage() throws {
+        let route = makeRoute(
+            [
+                hop(0, 1, amount: 1_337_000_000_000_000, quote: 3_105_000_000),
+                hop(1, 2, amount: 3_105_000_000, quote: Self.hdxDeposit)
+            ],
+            direction: .sell
+        )
+
+        XCTAssertEqual(
+            try runCheck(route),
+            .belowMinimum(failure(asset: 2, minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
+        )
+    }
+
+    func testFailedExistentialDepositFetchAsksForRetry() throws {
+        let route = makeRoute([hop(2, 1, amount: Self.hdxDeposit, quote: 20_000_000)], direction: .sell)
+
+        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
+
+        XCTAssertEqual(check, .minBalanceUnavailable)
+    }
 }
 
 private extension SwapPoolTradeLimitCheckTests {
@@ -135,17 +170,27 @@ private extension SwapPoolTradeLimitCheckTests {
         )
     }
 
-    func runCheck(_ route: AssetExchangeRoute) throws -> SwapPoolTradeLimitCheck {
-        let wrapper = route.poolTradeLimitCheckWrapper(slippage: .percent(of: 1)) { chainAssetIds in
-            let existences = chainAssetIds.reduce(into: [ChainAssetId: AssetBalanceExistence]()) { result, assetId in
-                result[assetId] = AssetBalanceExistence(
-                    minBalance: Self.existentialDeposits[assetId.assetId] ?? 0,
-                    isSelfSufficient: true
-                )
-            }
-
-            return .createWithResult(existences)
+    static func depositsWrapper(
+        for chainAssetIds: Set<ChainAssetId>
+    ) -> CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]> {
+        let existences = chainAssetIds.reduce(into: [ChainAssetId: AssetBalanceExistence]()) { result, assetId in
+            result[assetId] = AssetBalanceExistence(
+                minBalance: existentialDeposits[assetId.assetId] ?? 0,
+                isSelfSufficient: true
+            )
         }
+
+        return .createWithResult(existences)
+    }
+
+    func runCheck(
+        _ route: AssetExchangeRoute,
+        balanceExistenceWrapperFactory: SwapBalanceExistenceWrapperFactory = SwapPoolTradeLimitCheckTests.depositsWrapper
+    ) throws -> SwapPoolTradeLimitCheck {
+        let wrapper = route.poolTradeLimitCheckWrapper(
+            slippage: .percent(of: 1),
+            balanceExistenceWrapperFactory: balanceExistenceWrapperFactory
+        )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
