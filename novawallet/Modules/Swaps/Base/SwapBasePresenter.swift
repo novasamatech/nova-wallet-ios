@@ -334,7 +334,7 @@ class SwapBasePresenter {
         dataValidatingFactory.noPoolTradeLimitExceeded(
             params: swapModel,
             remoteValidatingClosure: { [weak self] route, completion in
-                interactor.requestValidatingPoolTradeLimits(for: route) { check in
+                interactor.requestValidatingPoolTradeLimits(for: route, slippage: swapModel.slippage) { check in
                     if case .withinLimits = check {
                         self?.resetPoolTradeLimitCorrection()
                     }

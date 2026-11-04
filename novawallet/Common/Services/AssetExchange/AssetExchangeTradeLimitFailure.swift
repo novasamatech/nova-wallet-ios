@@ -39,7 +39,7 @@ extension AssetExchangeTradeLimitFailure {
 struct AssetExchangeTradeMinimumFailure: Error, Equatable {
     let limitedAsset: ChainAsset?
 
-    let minTradingLimit: Balance
+    let minimumAmount: Balance
 
     let direction: AssetConversion.Direction
 
@@ -53,12 +53,12 @@ extension AssetExchangeTradeMinimumFailure {
         }
 
         guard direction == .buy, chargesCommission else {
-            return minTradingLimit
+            return minimumAmount
         }
 
         let grossUpInverse = AssetExchangeCommissionConstants.grossUpInverse
 
-        return (minTradingLimit * grossUpInverse.numerator).divideByRoundingUp(grossUpInverse.denominator)
+        return (minimumAmount * grossUpInverse.numerator).divideByRoundingUp(grossUpInverse.denominator)
     }
 }
 

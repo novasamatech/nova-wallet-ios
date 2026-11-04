@@ -7,61 +7,172 @@ enum SwapPoolTradeLimitCheck: Equatable {
     case blocked(AssetExchangeTradeLimitFailure?)
 }
 
+typealias SwapBalanceExistenceWrapperFactory = (Set<ChainAssetId>)
+    throws -> CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]>
+
 extension AssetExchangeRoute {
-    func poolTradeLimitCheckWrapper() -> CompoundOperationWrapper<SwapPoolTradeLimitCheck> {
+    func poolTradeLimitCheckWrapper(
+        slippage: BigRational,
+        balanceExistenceWrapperFactory: SwapBalanceExistenceWrapperFactory
+    ) -> CompoundOperationWrapper<SwapPoolTradeLimitCheck> {
+        let routerDeposits: [AssetExchangeRouterDeposit]
+        let balanceExistenceWrapper: CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]>
+
+        do {
+            routerDeposits = try routerAccountDeposits(slippage: slippage)
+            balanceExistenceWrapper = try balanceExistenceWrapperFactory(
+                Set(routerDeposits.map(\.asset.chainAssetId))
+            )
+        } catch {
+            return .createWithError(error)
+        }
+
         let verdictWrappers = items.map { item in
             item.edge.tradeLimitVerdict(amount: item.amount, direction: direction)
         }
 
-        let routeDirection = direction
-        let lastIndex = items.count - 1
-
         let mergeOperation = ClosureOperation<SwapPoolTradeLimitCheck> {
-            for (index, verdictWrapper) in verdictWrappers.enumerated() {
-                let verdict = try verdictWrapper.targetOperation.extractNoCancellableResultData()
+            let verdicts = try verdictWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-                let isUserInputAdjustable = switch routeDirection {
-                case .sell: index == 0
-                case .buy: index == lastIndex
-                }
+            let minBalances = try balanceExistenceWrapper.targetOperation
+                .extractNoCancellableResultData()
+                .mapValues(\.minBalance)
 
-                if case let .belowMinimum(shortfall) = verdict {
-                    return .belowMinimum(
-                        AssetExchangeTradeMinimumFailure(
-                            limitedAsset: shortfall.limitedAsset,
-                            minTradingLimit: shortfall.minTradingLimit,
-                            direction: routeDirection,
-                            isUserInputAdjustable: isUserInputAdjustable
-                        )
-                    )
-                }
-
-                guard case let .exceeds(breach) = verdict else {
-                    continue
-                }
-
-                guard let limitedAsset = breach.limitedAsset else {
-                    return .blocked(nil)
-                }
-
-                return .blocked(
-                    AssetExchangeTradeLimitFailure(
-                        limitedAsset: limitedAsset,
-                        maxGivenAmount: breach.maxGivenAmount,
-                        minTradingLimit: breach.minTradingLimit,
-                        direction: routeDirection,
-                        isUserInputAdjustable: isUserInputAdjustable
-                    )
-                )
-            }
-
-            return .withinLimits
+            return self.poolTradeLimitCheck(
+                verdicts: verdicts,
+                routerDeposits: routerDeposits,
+                minBalances: minBalances
+            )
         }
 
-        let dependencies = verdictWrappers.flatMap(\.allOperations)
+        let dependencies = verdictWrappers.flatMap(\.allOperations) + balanceExistenceWrapper.allOperations
 
         dependencies.forEach { mergeOperation.addDependency($0) }
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
+}
+
+private struct SwapPoolTradeShortfall {
+    let limitedAsset: ChainAsset?
+    let minimumAmount: Balance
+    let isUserAmount: Bool
+}
+
+private extension AssetExchangeRoute {
+    func poolTradeLimitCheck(
+        verdicts: [AssetExchangeTradeLimitVerdict],
+        routerDeposits: [AssetExchangeRouterDeposit],
+        minBalances: [ChainAssetId: Balance]
+    ) -> SwapPoolTradeLimitCheck {
+        for (index, verdict) in verdicts.enumerated() {
+            let hopDeposits = routerDeposits.filter { $0.itemIndex == index }
+
+            var shortfalls = hopDeposits
+                .filter { $0.side == .hopIn }
+                .compactMap { shortfall(for: $0, minBalances: minBalances) }
+
+            switch verdict {
+            case .withinLimit:
+                break
+            case let .belowMinimum(limitShortfall):
+                shortfalls.append(
+                    SwapPoolTradeShortfall(
+                        limitedAsset: limitShortfall.limitedAsset,
+                        minimumAmount: limitShortfall.minTradingLimit,
+                        isUserAmount: isUserAmountHop(at: index)
+                    )
+                )
+            case let .exceeds(breach):
+                if shortfalls.isEmpty {
+                    return blockedCheck(for: breach, isUserInputAdjustable: isUserAmountHop(at: index))
+                }
+            }
+
+            shortfalls += hopDeposits
+                .filter { $0.side == .hopOut }
+                .compactMap { shortfall(for: $0, minBalances: minBalances) }
+
+            if let failure = minimumFailure(from: shortfalls) {
+                return .belowMinimum(failure)
+            }
+        }
+
+        return .withinLimits
+    }
+
+    func isUserAmountHop(at index: Int) -> Bool {
+        switch direction {
+        case .sell:
+            return index == 0
+        case .buy:
+            return index == items.count - 1
+        }
+    }
+
+    func isUserAmount(_ deposit: AssetExchangeRouterDeposit) -> Bool {
+        let userSide: AssetExchangeRouterDeposit.Side = direction == .sell ? .hopIn : .hopOut
+
+        return deposit.side == userSide && isUserAmountHop(at: deposit.itemIndex)
+    }
+
+    func shortfall(
+        for deposit: AssetExchangeRouterDeposit,
+        minBalances: [ChainAssetId: Balance]
+    ) -> SwapPoolTradeShortfall? {
+        let minBalance = minBalances[deposit.asset.chainAssetId] ?? 0
+
+        guard deposit.amount < minBalance else {
+            return nil
+        }
+
+        return SwapPoolTradeShortfall(
+            limitedAsset: deposit.asset,
+            minimumAmount: minBalance,
+            isUserAmount: isUserAmount(deposit)
+        )
+    }
+
+    func minimumFailure(from shortfalls: [SwapPoolTradeShortfall]) -> AssetExchangeTradeMinimumFailure? {
+        guard let first = shortfalls.first else {
+            return nil
+        }
+
+        guard first.isUserAmount else {
+            return AssetExchangeTradeMinimumFailure(
+                limitedAsset: first.limitedAsset,
+                minimumAmount: first.minimumAmount,
+                direction: direction,
+                isUserInputAdjustable: false
+            )
+        }
+
+        let userShortfalls = shortfalls.filter(\.isUserAmount)
+
+        return AssetExchangeTradeMinimumFailure(
+            limitedAsset: userShortfalls.compactMap(\.limitedAsset).first,
+            minimumAmount: userShortfalls.map(\.minimumAmount).max() ?? first.minimumAmount,
+            direction: direction,
+            isUserInputAdjustable: true
+        )
+    }
+
+    func blockedCheck(
+        for breach: AssetExchangeTradeLimitBreach,
+        isUserInputAdjustable: Bool
+    ) -> SwapPoolTradeLimitCheck {
+        guard let limitedAsset = breach.limitedAsset else {
+            return .blocked(nil)
+        }
+
+        return .blocked(
+            AssetExchangeTradeLimitFailure(
+                limitedAsset: limitedAsset,
+                maxGivenAmount: breach.maxGivenAmount,
+                minTradingLimit: breach.minTradingLimit,
+                direction: direction,
+                isUserInputAdjustable: isUserInputAdjustable
+            )
+        )
     }
 }

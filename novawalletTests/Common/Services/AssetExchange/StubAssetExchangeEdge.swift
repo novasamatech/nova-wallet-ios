@@ -43,6 +43,10 @@ extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
         .createWithResult(.withinLimit)
     }
 
+    func routerAccountHop(inMultiHopRun _: Bool) -> AssetExchangeRouterHop? {
+        nil
+    }
+
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
         currentWeight + 1
     }
