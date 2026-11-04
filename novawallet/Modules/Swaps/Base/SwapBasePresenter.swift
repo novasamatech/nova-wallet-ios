@@ -9,9 +9,14 @@ class SwapBasePresenter {
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
+    private(set) var collateralLimits: [ChainAssetId: HydraAave.CollateralLimit] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }
+    }
+
+    var payAssetCollateralLimit: HydraAave.CollateralLimit? {
+        getPayChainAsset().flatMap { collateralLimits[$0.chainAssetId] }
     }
 
     var feeAssetBalance: AssetBalance? {
@@ -150,7 +155,8 @@ class SwapBasePresenter {
             slippage: getSlippage(),
             accountInfo: originAccountInfo,
             destAccountInfo: destAccountInfo,
-            destUtilityAssetExistence: destUtilityAssetBalanceExistense
+            destUtilityAssetExistence: destUtilityAssetBalanceExistense,
+            payAssetCollateralLimit: payAssetCollateralLimit
         )
     }
 
@@ -164,7 +170,8 @@ class SwapBasePresenter {
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: originAccountInfo
+            accountInfo: originAccountInfo,
+            payAssetCollateralLimit: payAssetCollateralLimit
         )
     }
 
@@ -252,6 +259,8 @@ class SwapBasePresenter {
     func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {}
 
     func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {}
+
+    func handleNewCollateralLimit(for _: ChainAssetId) {}
 
     func handleBaseError(
         _ error: SwapBaseError,
@@ -479,5 +488,17 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         accountInfoDict[chainId] = accountInfo
 
         handleNewAccountInfo(accountInfo, chainId: chainId)
+    }
+
+    func didReceive(collateralLimit: HydraAave.CollateralLimit, for chainAssetId: ChainAssetId) {
+        guard collateralLimits[chainAssetId] != collateralLimit else {
+            return
+        }
+
+        logger.debug("New collateral limit \(chainAssetId): \(collateralLimit)")
+
+        collateralLimits[chainAssetId] = collateralLimit
+
+        handleNewCollateralLimit(for: chainAssetId)
     }
 }

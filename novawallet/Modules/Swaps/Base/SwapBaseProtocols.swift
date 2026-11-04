@@ -32,6 +32,7 @@ protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId)
     func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId)
     func didReceive(accountInfo: AccountInfo?, chainId: ChainModel.Id)
+    func didReceive(collateralLimit: HydraAave.CollateralLimit, for chainAssetId: ChainAssetId)
 }
 
 protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresentable,

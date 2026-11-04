@@ -280,6 +280,18 @@ final class SwapSetupPresenter: SwapBasePresenter {
             provideButtonState()
         }
     }
+
+    override func handleNewCollateralLimit(for chainAssetId: ChainAssetId) {
+        guard payChainAsset?.chainAssetId == chainAssetId else {
+            return
+        }
+
+        handleNewBalance(payAssetBalance, for: chainAssetId)
+
+        if case .rate = payAmountInput {
+            refreshQuote(direction: .sell, forceUpdate: false)
+        }
+    }
 }
 
 extension SwapSetupPresenter {

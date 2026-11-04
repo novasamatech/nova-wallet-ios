@@ -210,7 +210,8 @@ private extension SwapModelTests {
             slippage: slippage,
             accountInfo: nil,
             destAccountInfo: nil,
-            destUtilityAssetExistence: nil
+            destUtilityAssetExistence: nil,
+            payAssetCollateralLimit: nil
         )
     }
 }
