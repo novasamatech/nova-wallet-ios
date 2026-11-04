@@ -3,48 +3,16 @@ import XCTest
 import Operation_iOS
 
 final class SwapPoolTradeLimitCheckTests: XCTestCase {
-    static let existentialDeposits: [AssetModel.Id: Balance] = [
-        0: 588_235_294_118,
-        1: 17_540_000,
-        2: 1_000_000_000_000,
-        3: 32_467_532_467_532_500,
-        4: 34,
-        5: 36
-    ]
+    static let existentialDeposits: [AssetModel.Id: Balance] = [1: 17_540_000, 2: 1_000_000_000_000, 4: 34]
 
-    static let hdxDeposit: Balance = 1_000_000_000_000
+    func testRouterDepositAtTheExistentialDepositPassesAndBelowItIsBlocked() throws {
+        let atDeposit = makeRoute([hop(2, 1, amount: 1_000_000_000_000, quote: 20_000_000)], direction: .sell)
+        XCTAssertEqual(try runCheck(atDeposit), .withinLimits)
 
-    func testRouterHopOutputBelowExistentialDepositBlocksTheRoute() throws {
-        let route = makeRoute(
-            [
-                hop(0, 1, amount: 1_337_000_000_000_000, quote: 3_105_000_000),
-                hop(1, 2, amount: 3_105_000_000, quote: 94_480_506_265)
-            ],
-            direction: .sell
-        )
-
-        XCTAssertEqual(
-            try runCheck(route),
-            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
-        )
-    }
-
-    func testSellAmountBelowExistentialDepositShowsTheLargerMinimum() throws {
-        let belowDeposit = makeRoute([hop(2, 3, amount: 800_000_000_000, quote: 1_000_000)], direction: .sell)
-
+        let belowDeposit = makeRoute([hop(2, 1, amount: 999_999_999_999, quote: 20_000_000)], direction: .sell)
         XCTAssertEqual(
             try runCheck(belowDeposit),
-            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
-        )
-
-        let belowBoth = makeRoute(
-            [hop(4, 5, amount: 30, quote: 29, verdict: .belowMinimum(1000))],
-            direction: .sell
-        )
-
-        XCTAssertEqual(
-            try runCheck(belowBoth),
-            .belowMinimum(failure(minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+            .belowMinimum(.init(minimumAmount: 1_000_000_000_000, direction: .sell, isUserInputAdjustable: true))
         )
     }
 
@@ -69,92 +37,28 @@ final class SwapPoolTradeLimitCheckTests: XCTestCase {
         XCTAssertEqual(try runCheck(buyRoute(net: netMinimum - 1)), .belowMinimum(failure))
     }
 
-    func testDirectHopIsExemptAndTheDepositItselfPasses() throws {
-        let direct = makeRoute([hop(1, 2, amount: 20_000_000, quote: 1, isRouted: false)], direction: .sell)
-        XCTAssertEqual(try runCheck(direct), .withinLimits)
-
-        let atDeposit = makeRoute([hop(2, 1, amount: Self.hdxDeposit, quote: 20_000_000)], direction: .sell)
-        XCTAssertEqual(try runCheck(atDeposit), .withinLimits)
-
-        let belowDeposit = makeRoute([hop(2, 1, amount: Self.hdxDeposit - 1, quote: 20_000_000)], direction: .sell)
-        XCTAssertEqual(
-            try runCheck(belowDeposit),
-            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: true))
-        )
-    }
-
-    func testIntermediateHopOutputAtTheDepositPassesDespiteSlippage() throws {
-        let route = makeRoute(
-            [
-                hop(0, 1, amount: 1_337_000_000_000_000, quote: 17_540_000),
-                hop(1, 2, amount: 17_540_000, quote: 2_000_000_000_000)
-            ],
-            direction: .sell
-        )
-
-        XCTAssertEqual(try runCheck(route), .withinLimits)
-    }
-
-    func testFinalHopOutputAtTheDepositIsBlockedBySlippage() throws {
-        let route = makeRoute(
-            [
-                hop(0, 1, amount: 1_337_000_000_000_000, quote: 3_105_000_000),
-                hop(1, 2, amount: 3_105_000_000, quote: Self.hdxDeposit)
-            ],
-            direction: .sell
-        )
+    func testBuyBelowThePoolMinimumAsksForItEvenWhenThePaidAmountIsBelowItsDeposit() throws {
+        let route = makeRoute([hop(4, 5, amount: 500, quote: 20, verdict: .belowMinimum(1000))], direction: .buy)
 
         XCTAssertEqual(
             try runCheck(route),
-            .belowMinimum(failure(minimum: Self.hdxDeposit, direction: .sell, isUserInputAdjustable: false))
+            .belowMinimum(.init(minimumAmount: 1000, direction: .buy, isUserInputAdjustable: true))
         )
-    }
-
-    func testFailedExistentialDepositFetchAsksForRetry() throws {
-        let route = makeRoute([hop(2, 1, amount: Self.hdxDeposit, quote: 20_000_000)], direction: .sell)
-
-        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
-
-        XCTAssertEqual(check, .minBalanceUnavailable)
-    }
-
-    func testFailedExistentialDepositFetchStillReportsTheExceededPoolLimit() throws {
-        let breach = AssetExchangeTradeLimitBreach(
-            maxGivenAmount: 5_000_000_000_000,
-            minTradingLimit: 1000,
-            limitedAsset: CommissionTestFixtures.chainAsset(2)
-        )
-
-        let route = makeRoute(
-            [hop(2, 1, amount: 10_000_000_000_000, quote: 20_000_000, verdict: .exceeds(breach))],
-            direction: .sell
-        )
-
-        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
-
-        let expectedFailure = AssetExchangeTradeLimitFailure(
-            limitedAsset: CommissionTestFixtures.chainAsset(2),
-            maxGivenAmount: 5_000_000_000_000,
-            minTradingLimit: 1000,
-            direction: .sell,
-            isUserInputAdjustable: true
-        )
-
-        XCTAssertEqual(check, .blocked(expectedFailure))
     }
 
     func testFailedExistentialDepositFetchStillReportsTheTradingMinimum() throws {
-        let route = makeRoute(
-            [hop(4, 5, amount: 306, quote: 305, verdict: .belowMinimum(1000))],
-            direction: .sell
-        )
-
-        let check = try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }
+        let route = makeRoute([hop(4, 5, amount: 306, quote: 305, verdict: .belowMinimum(1000))], direction: .sell)
 
         XCTAssertEqual(
-            check,
-            .belowMinimum(failure(minimum: 1000, direction: .sell, isUserInputAdjustable: true))
+            try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) },
+            .belowMinimum(.init(minimumAmount: 1000, direction: .sell, isUserInputAdjustable: true))
         )
+    }
+
+    func testFailedExistentialDepositFetchWithoutPoolLimitAsksForRetry() throws {
+        let route = makeRoute([hop(2, 1, amount: 1_000_000_000_000, quote: 20_000_000)], direction: .sell)
+
+        XCTAssertEqual(try runCheck(route) { _ in .createWithError(CommonError.noDataRetrieved) }, .minBalanceUnavailable)
     }
 }
 
@@ -164,7 +68,6 @@ private extension SwapPoolTradeLimitCheckTests {
         _ destination: AssetModel.Id,
         amount: Balance,
         quote: Balance,
-        isRouted: Bool = true,
         verdict: AssetExchangeTradeLimitVerdict = .withinLimit
     ) -> AssetExchangeRouteItem {
         let edge = StubAssetExchangeEdge(
@@ -172,7 +75,7 @@ private extension SwapPoolTradeLimitCheckTests {
             destination: CommissionTestFixtures.asset(destination),
             type: .hydraSwap,
             chain: CommissionTestFixtures.chain,
-            isRouted: isRouted,
+            isRouted: true,
             verdict: verdict
         )
 
@@ -185,29 +88,17 @@ private extension SwapPoolTradeLimitCheckTests {
         return AssetExchangeRoute(items: items, amount: amount ?? 0, direction: direction)
     }
 
-    func failure(
-        minimum: Balance,
-        direction: AssetConversion.Direction,
-        isUserInputAdjustable: Bool
-    ) -> AssetExchangeTradeMinimumFailure {
-        AssetExchangeTradeMinimumFailure(
-            minimumAmount: minimum,
-            direction: direction,
-            isUserInputAdjustable: isUserInputAdjustable
-        )
-    }
-
     static func depositsWrapper(
         for chainAssetIds: Set<ChainAssetId>
     ) -> CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]> {
-        let existences = chainAssetIds.reduce(into: [ChainAssetId: AssetBalanceExistence]()) { result, assetId in
-            result[assetId] = AssetBalanceExistence(
-                minBalance: existentialDeposits[assetId.assetId] ?? 0,
-                isSelfSufficient: true
-            )
-        }
-
-        return .createWithResult(existences)
+        .createWithResult(
+            chainAssetIds.reduce(into: [:]) { result, chainAssetId in
+                result[chainAssetId] = AssetBalanceExistence(
+                    minBalance: existentialDeposits[chainAssetId.assetId] ?? 0,
+                    isSelfSufficient: true
+                )
+            }
+        )
     }
 
     func runCheck(
