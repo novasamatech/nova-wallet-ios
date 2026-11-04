@@ -2369,3 +2369,7 @@
 "staking.subtensor.mev.protection.title" = "Bảo vệ MEV";
 "staking.subtensor.mev.protection.unavailable" = "Bảo vệ MEV không khả dụng cho lệnh này.";
 "staking.subtensor.result.fee.may.be.charged" = "Có thể bạn đã bị tính phí mạng lưới.";
+"swaps.setup.deposit.alternatives" = "%1$@ hoặc %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · mở trong trình duyệt";
+"swaps.setup.deposit.by.dapp.title" = "Hoán đổi trên %@";
+"swaps.setup.deposit.third.party" = "BÊN THỨ BA";

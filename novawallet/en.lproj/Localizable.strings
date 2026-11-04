@@ -1392,6 +1392,10 @@
 "swaps.setup.deposit.by.cross.chain.transfer.subtitle" = "Transfer %@ from another network";
 "swaps.setup.deposit.by.receive.subtitle" = "Receive %@ with QR or your address";
 "swaps.setup.deposit.by.buy.subtitle" = "Instantly buy %@ with a credit card";
+"swaps.setup.deposit.by.dapp.title" = "Exchange on %@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · opens in the browser";
+"swaps.setup.deposit.alternatives" = "%1$@ or %2$@";
+"swaps.setup.deposit.third.party" = "THIRD-PARTY";
 "swaps.setup.deposit.button.title" = "Get %@";
 "swaps.setup.network.fee.token.title" = "Token for paying network fee";
 "swaps.setup.network.fee.token.hint" = "Network fee is added on top of entered amount";

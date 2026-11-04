@@ -2369,3 +2369,7 @@
 "staking.subtensor.mev.protection.title" = "Protección MEV";
 "staking.subtensor.mev.protection.unavailable" = "La protección MEV no está disponible para esta orden.";
 "staking.subtensor.result.fee.may.be.charged" = "Es posible que se haya cobrado una comisión de red.";
+"swaps.setup.deposit.alternatives" = "%1$@ o %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · se abre en el navegador";
+"swaps.setup.deposit.by.dapp.title" = "Intercambiar en %@";
+"swaps.setup.deposit.third.party" = "DE TERCEROS";

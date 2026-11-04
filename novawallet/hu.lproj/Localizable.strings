@@ -2369,3 +2369,7 @@
 "staking.subtensor.mev.protection.title" = "MEV-védelem";
 "staking.subtensor.mev.protection.unavailable" = "A MEV-védelem ehhez a megrendeléshez nem érhető el.";
 "staking.subtensor.result.fee.may.be.charged" = "Hálózati díj kerülhetett felszámításra.";
+"swaps.setup.deposit.alternatives" = "%1$@ vagy %2$@";
+"swaps.setup.deposit.by.dapp.subtitle" = "%@ · megnyílik a böngészőben";
+"swaps.setup.deposit.by.dapp.title" = "Csere itt: %@";
+"swaps.setup.deposit.third.party" = "HARMADIK FÉLTŐL";
