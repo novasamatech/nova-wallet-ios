@@ -86,7 +86,16 @@ extension SwapErrorPresentable where Self: AlertPresentable & CommonRetryable {
         retryAction: @escaping () -> Void,
         locale: Locale
     ) {
-        presentRequestStatus(on: view, locale: locale, retryAction: retryAction)
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentRequestStatus(
+            on: view,
+            title: strings.commonErrorGeneralTitle(),
+            message: strings.commonRequestRetry(),
+            cancelAction: strings.commonClose(),
+            locale: locale,
+            retryAction: retryAction
+        )
     }
 }
 
