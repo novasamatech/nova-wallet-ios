@@ -40,6 +40,7 @@ extension GetTokenOptionsPresentable {
                     locale: locale
                 )
             case let .changeNow(url):
+                view?.controller.view.endEditing(true)
                 openBrowser(with: .query(string: url.absoluteString))
             }
         }
