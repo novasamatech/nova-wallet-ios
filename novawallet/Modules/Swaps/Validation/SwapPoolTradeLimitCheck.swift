@@ -48,7 +48,7 @@ extension AssetExchangeRoute {
                     .extractNoCancellableResultData()
                     .mapValues(\.minBalance)
             } catch {
-                return .minBalanceUnavailable
+                return self.poolLimitCheckWithoutMinBalances(verdicts: verdicts)
             }
 
             return self.poolTradeLimitCheck(
@@ -112,6 +112,12 @@ private extension AssetExchangeRoute {
         }
 
         return .withinLimits
+    }
+
+    func poolLimitCheckWithoutMinBalances(verdicts: [AssetExchangeTradeLimitVerdict]) -> SwapPoolTradeLimitCheck {
+        let poolLimitCheck = poolTradeLimitCheck(verdicts: verdicts, routerDeposits: [], minBalances: [:])
+
+        return poolLimitCheck == .withinLimits ? .minBalanceUnavailable : poolLimitCheck
     }
 
     func isUserAmountHop(at index: Int) -> Bool {
