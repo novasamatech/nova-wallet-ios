@@ -82,12 +82,12 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
         let coderFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
 
-        let minTradingLimitWrapper = HydraExchangeTradeLimits.createMinTradingLimitWrapper(
+        let minTradingLimitOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
             for: HydraStableswap.minTradingLimitPath,
             dependingOn: coderFactoryOperation
         )
 
-        minTradingLimitWrapper.addDependency(operations: [coderFactoryOperation])
+        minTradingLimitOperation.addDependency(coderFactoryOperation)
 
         let poolPair = HydraStableswap.PoolPair(
             poolAsset: poolAsset,
@@ -96,7 +96,7 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
         )
 
         let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
-            let minTradingLimit = try minTradingLimitWrapper.targetOperation.extractNoCancellableResultData()
+            let minTradingLimit = try HydraExchangeTradeLimits.optionalMinTradingLimit(from: minTradingLimitOperation)
 
             guard let minTradingLimit else {
                 return .withinLimit
@@ -110,11 +110,11 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
             )
         }
 
-        verdictOperation.addDependency(minTradingLimitWrapper.targetOperation)
+        verdictOperation.addDependency(minTradingLimitOperation)
 
         return CompoundOperationWrapper(
             targetOperation: verdictOperation,
-            dependencies: [coderFactoryOperation] + minTradingLimitWrapper.allOperations
+            dependencies: [coderFactoryOperation, minTradingLimitOperation]
         )
     }
 }

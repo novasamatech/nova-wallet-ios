@@ -188,13 +188,15 @@ extension HydraExchangeTradeLimits {
 
         maxOutRatioOperation.addDependency(coderFactoryOperation)
 
-        let minTradingLimitWrapper = createMinTradingLimitWrapper(
+        let minTradingLimitOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
             for: constants.minTradingLimitPath,
             dependingOn: coderFactoryOperation
         )
 
+        minTradingLimitOperation.addDependency(coderFactoryOperation)
+
         let mergeOperation = ClosureOperation<PoolLimits?> {
-            let minTradingLimit = try minTradingLimitWrapper.targetOperation.extractNoCancellableResultData()
+            let minTradingLimit = try optionalMinTradingLimit(from: minTradingLimitOperation)
 
             do {
                 let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
@@ -212,35 +214,19 @@ extension HydraExchangeTradeLimits {
 
         mergeOperation.addDependency(maxInRatioOperation)
         mergeOperation.addDependency(maxOutRatioOperation)
-        mergeOperation.addDependency(minTradingLimitWrapper.targetOperation)
+        mergeOperation.addDependency(minTradingLimitOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [maxInRatioOperation, maxOutRatioOperation] + minTradingLimitWrapper.allOperations
+            dependencies: [maxInRatioOperation, maxOutRatioOperation, minTradingLimitOperation]
         )
     }
 
-    static func createMinTradingLimitWrapper(
-        for path: ConstantCodingPath,
-        dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<Balance?> {
-        let constantOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: path,
-            dependingOn: coderFactoryOperation
-        )
-
-        constantOperation.addDependency(coderFactoryOperation)
-
-        let mapOperation = ClosureOperation<Balance?> {
-            do {
-                return try constantOperation.extractNoCancellableResultData()
-            } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
-                return nil
-            }
+    static func optionalMinTradingLimit(from operation: BaseOperation<Balance>) throws -> Balance? {
+        do {
+            return try operation.extractNoCancellableResultData()
+        } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
+            return nil
         }
-
-        mapOperation.addDependency(constantOperation)
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [constantOperation])
     }
 }
