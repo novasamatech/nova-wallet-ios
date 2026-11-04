@@ -2373,3 +2373,6 @@
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · s’ouvre dans le navigateur";
 "swaps.setup.deposit.by.dapp.title" = "Échanger sur %@";
 "swaps.setup.deposit.third.party" = "TIERS";
+"swap.failure.pool.trade.minimum.message" = "Le montant minimum pour cet échange est de %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Cette route ne peut pas traiter un montant aussi faible. Essayez un montant plus élevé.";
+"swap.failure.pool.trade.minimum.title" = "Le montant est trop faible";

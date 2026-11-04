@@ -2373,3 +2373,6 @@
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · ブラウザで開く";
 "swaps.setup.deposit.by.dapp.title" = "%@で交換";
 "swaps.setup.deposit.third.party" = "第三者";
+"swap.failure.pool.trade.minimum.message" = "このスワップの最小数量は%@です。";
+"swap.failure.pool.trade.minimum.route.message" = "このルートでは、このような少量を処理できません。より大きな数量をお試しください。";
+"swap.failure.pool.trade.minimum.title" = "数量が少なすぎます";

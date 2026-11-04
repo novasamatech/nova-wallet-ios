@@ -130,6 +130,10 @@ extension HydraOmnipoolQuoteFactory {
         params: HydraOmnipoolApi.Params,
         limits: HydraExchangeTradeLimits.PoolLimits
     ) throws -> AssetExchangeTradeLimitVerdict {
+        if let minTradingLimit = limits.minTradingLimit, amount < minTradingLimit {
+            return .belowMinimum(minTradingLimit)
+        }
+
         let amountIn: Balance
         let amountOut: Balance
 

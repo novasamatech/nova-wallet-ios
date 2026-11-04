@@ -49,41 +49,47 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         feeCallStore.cancel()
     }
 
+    private func createAssetBalanceExistenceWrapper(
+        for chainAssetIds: Set<ChainAssetId>
+    ) throws -> CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]> {
+        let chainAssetIdList = Array(chainAssetIds)
+
+        let wrappers = try chainAssetIdList.map { chainAssetId in
+            let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
+
+            return assetStorageFactory.createAssetBalanceExistenceOperation(
+                chainId: chainAsset.chain.chainId,
+                asset: chainAsset.asset,
+                runtimeProvider: runtimeService,
+                operationQueue: operationQueue
+            )
+        }
+
+        let mappingOperation = ClosureOperation<[ChainAssetId: AssetBalanceExistence]> {
+            let balanceExistences = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+
+            return zip(chainAssetIds, balanceExistences).reduce(
+                into: [ChainAssetId: AssetBalanceExistence]()
+            ) {
+                $0[$1.0] = $1.1
+            }
+        }
+
+        wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
     private func fetchAssetBalanceExistence(
         for chainAssetIds: Set<ChainAssetId>,
         completion: @escaping (Result<[ChainAssetId: AssetBalanceExistence], Error>) -> Void
     ) {
         do {
-            let chainAssetIdList = Array(chainAssetIds)
-
-            let wrappers = try chainAssetIdList.map { chainAssetId in
-                let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
-                let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
-                let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
-
-                return assetStorageFactory.createAssetBalanceExistenceOperation(
-                    chainId: chainAsset.chain.chainId,
-                    asset: chainAsset.asset,
-                    runtimeProvider: runtimeService,
-                    operationQueue: operationQueue
-                )
-            }
-
-            let mappingOperation = ClosureOperation<[ChainAssetId: AssetBalanceExistence]> {
-                let balanceExistences = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
-
-                return zip(chainAssetIds, balanceExistences).reduce(
-                    into: [ChainAssetId: AssetBalanceExistence]()
-                ) {
-                    $0[$1.0] = $1.1
-                }
-            }
-
-            wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-
-            let dependencies = wrappers.flatMap(\.allOperations)
-
-            let totalWrapper = CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+            let totalWrapper = try createAssetBalanceExistenceWrapper(for: chainAssetIds)
 
             execute(
                 wrapper: totalWrapper,
@@ -342,10 +348,16 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingPoolTradeLimits(
         for route: AssetExchangeRoute,
+        slippage: BigRational,
         completion: @escaping (SwapPoolTradeLimitCheck) -> Void
     ) {
+        let wrapper = route.poolTradeLimitCheckWrapper(
+            slippage: slippage,
+            balanceExistenceWrapperFactory: createAssetBalanceExistenceWrapper
+        )
+
         execute(
-            wrapper: route.poolTradeLimitCheckWrapper(),
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in

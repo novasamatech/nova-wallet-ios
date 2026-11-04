@@ -43,6 +43,7 @@ extension SwapDisplayError.PoolTradeLimit {
     static func build(
         from failure: AssetExchangeTradeLimitFailure,
         canApply: Bool,
+        chargesCommission: Bool,
         viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
         locale: Locale
     ) -> SwapDisplayError.PoolTradeLimit? {
@@ -81,7 +82,7 @@ extension SwapDisplayError.PoolTradeLimit {
             )
         }
 
-        guard let suggestion = failure.suggestion() else {
+        guard let suggestion = failure.suggestion(chargesCommission: chargesCommission) else {
             return nil
         }
 
@@ -93,5 +94,26 @@ extension SwapDisplayError.PoolTradeLimit {
             ),
             applyTitle: canApply ? strings.commonSwapMax() : nil
         )
+    }
+}
+
+extension AssetExchangeTradeMinimumFailure {
+    func formattedUserMinimum(
+        for asset: ChainAsset,
+        chargesCommission: Bool,
+        viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
+        locale: Locale
+    ) -> String? {
+        guard let minimum = userMinimum(chargesCommission: chargesCommission) else {
+            return nil
+        }
+
+        let assetInfo = asset.assetDisplayInfo
+
+        return viewModelFactory.amountFromValue(
+            targetAssetInfo: assetInfo,
+            value: minimum.decimal(assetInfo: assetInfo),
+            roundingMode: .up
+        ).value(for: locale)
     }
 }

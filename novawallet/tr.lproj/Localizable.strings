@@ -2373,3 +2373,6 @@
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · tarayıcıda açılır";
 "swaps.setup.deposit.by.dapp.title" = "%@ üzerinden takas yap";
 "swaps.setup.deposit.third.party" = "ÜÇÜNCÜ TARAF";
+"swap.failure.pool.trade.minimum.message" = "Bu takas için minimum miktar %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Bu rota bu kadar küçük bir miktarı işleyemez. Daha büyük bir miktar deneyin.";
+"swap.failure.pool.trade.minimum.title" = "Miktar çok küçük";

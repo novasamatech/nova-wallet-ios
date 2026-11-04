@@ -66,6 +66,37 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         applyAction: @escaping () -> Void,
         locale: Locale
     )
+
+    func presentPoolTradeMinimum(
+        from view: ControllerBackedProtocol?,
+        minAmount: String?,
+        locale: Locale
+    )
+
+    func presentMinBalanceUnavailable(
+        from view: ControllerBackedProtocol,
+        retryAction: @escaping () -> Void,
+        locale: Locale
+    )
+}
+
+extension SwapErrorPresentable where Self: AlertPresentable & CommonRetryable {
+    func presentMinBalanceUnavailable(
+        from view: ControllerBackedProtocol,
+        retryAction: @escaping () -> Void,
+        locale: Locale
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentRequestStatus(
+            on: view,
+            title: strings.commonErrorGeneralTitle(),
+            message: strings.commonRequestRetry(),
+            cancelAction: strings.commonClose(),
+            locale: locale,
+            retryAction: retryAction
+        )
+    }
 }
 
 extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -311,6 +342,24 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentPoolTradeMinimum(
+        from view: ControllerBackedProtocol?,
+        minAmount: String?,
+        locale: Locale
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let message = minAmount.map { strings.swapFailurePoolTradeMinimumMessage($0) }
+            ?? strings.swapFailurePoolTradeMinimumRouteMessage()
+
+        present(
+            message: message,
+            title: strings.swapFailurePoolTradeMinimumTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
     }
 
     func presentIntemediateAmountBelowMinimum(

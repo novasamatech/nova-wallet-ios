@@ -2373,3 +2373,6 @@
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · 브라우저에서 열기";
 "swaps.setup.deposit.by.dapp.title" = "%@에서 교환";
 "swaps.setup.deposit.third.party" = "제3자";
+"swap.failure.pool.trade.minimum.message" = "이 스왑의 최소 금액은 %@입니다.";
+"swap.failure.pool.trade.minimum.route.message" = "이 경로에서는 이렇게 적은 금액을 처리할 수 없습니다. 더 큰 금액을 시도해 보세요.";
+"swap.failure.pool.trade.minimum.title" = "금액이 너무 적음";

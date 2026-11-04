@@ -2373,3 +2373,6 @@
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · megnyílik a böngészőben";
 "swaps.setup.deposit.by.dapp.title" = "Csere itt: %@";
 "swaps.setup.deposit.third.party" = "HARMADIK FÉLTŐL";
+"swap.failure.pool.trade.minimum.message" = "A csere minimális összege: %@.";
+"swap.failure.pool.trade.minimum.route.message" = "Ez az útvonal nem tud ilyen kis összeget feldolgozni. Próbálj meg nagyobb összeget.";
+"swap.failure.pool.trade.minimum.title" = "Az összeg túl kicsi";
