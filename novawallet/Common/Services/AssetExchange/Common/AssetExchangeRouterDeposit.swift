@@ -60,6 +60,11 @@ private extension AssetExchangeRoute {
                 )
             }
 
+            // the intermediate ED validation owns the output of a run that feeds a later operation
+            guard index < run.upperBound || index == items.count - 1 else {
+                return
+            }
+
             deposits.append(
                 AssetExchangeRouterDeposit(
                     itemIndex: index,
