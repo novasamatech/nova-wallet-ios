@@ -17,13 +17,13 @@ protocol RampInteractorInputProtocol: AnyObject {
 protocol RampInteractorOutputProtocol: AnyObject {
     func didReceive(model: RampModel)
     func didCompleteOperation(action: RampAction)
-    func didRequestTransfer(for model: PayCardTopupModel)
+    func didRequestTransfer(for model: OffRampTransferModel)
 }
 
 protocol RampWireframeProtocol: AnyObject {
     func showSend(
         from view: ControllerBackedProtocol?,
-        with transferModel: PayCardTopupModel
+        with transferModel: OffRampTransferModel
     )
 
     func complete(

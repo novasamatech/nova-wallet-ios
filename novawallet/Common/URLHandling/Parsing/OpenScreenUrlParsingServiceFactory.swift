@@ -71,8 +71,6 @@ extension OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactory
             )
         case .dApp:
             return OpenDAppUrlParsingService()
-        case .card:
-            return OpenCardUrlParsingService()
         case .assetHubMigration:
             return OpenAHMUrlParsingService(operationQueue: operationQueue)
         case .gift:

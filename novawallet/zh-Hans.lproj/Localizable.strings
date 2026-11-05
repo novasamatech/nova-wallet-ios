@@ -1784,15 +1784,7 @@
 "chart.period.year" = "去年";
 "chart.period.max" = "所有时间";
 "common.pay" = "支付";
-"common.card.issued" = "卡已发行";
-"card.top.up.dot.setup.title" = "使用DOT充值卡";
-"common.manage.debit.card" = "管理借记卡";
 "common.estimated.timer" = "预计 ~%@";
-"card.open.pending.sheet.title" = "您的卡正在发行！";
-"card.open.pending.sheet.message" = "最多可能需要%@。\n此窗口将自动关闭。";
-"card.open.failed.alert.title" = "联系支持";
-"card.open.failed.alert.message" = "请联系support@novawallet.io。包括您用于发卡的电子邮件地址。";
-"card.topup.pending.sheet.title" = "您的卡正在充值中！";
 "staking.restake.message" = "您的奖励将添加到您的质押中";
 "unified.address.popup.title" = "新统一地址";
 "unified.address.popup.subtitle" = "一些交易所可能仍然需要传统格式\n在他们更新期间进行操作。";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "无效的调用数据";
 "enter.call.data" = "输入调用数据";
 "multisig.wallet.details.threshold" = "阈值 %li 中的 %li";
-"feature.unsupported.sheet.message.card" = "要管理您的借记卡，请切换到不同类型的钱包。";
 "feature.unsupported.sheet.message.sell" = "要将加密货币出售为法币，请切换到不同类型的钱包。";
 "multisig.operation.status.created" = "由您创建";
 "multisig.operation.signing.progress.format" = "签署中（%li / %li）";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@ 至少需要 %@ 来支付此交易费用，并保持高于最低网络余额。您需要在余额中添加 %@。";
 "multisig.validation.insuffisient.balance.message" = "%@ 没有足够的余额支付 %@ 的网络费用并放置 %@ 的多签存款。您需要在余额中添加 %@。";
 "feature.unsupported.sheet.title.sell" = "%@ 钱包不支持卖出功能";
-"feature.unsupported.sheet.title.card" = "借记卡不支持%@钱包";
 "multisig.transaction.created.sheet.message" = "其他签署人现在可以确认交易。您可以在 %@ 中跟踪其状态。";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova 已自动切换到您的多签钱包，以便查看待处理交易。";
 "multisig.other.signatories" = "其他签署人";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "此调用数据用于另一个调用哈希为 %@ 的操作";
 "call.data.validation.error.message" = "您提供的通话数据无效或格式错误。请确保其正确后再试一次。";
 "feature.unsupported.sheet.title.sell.proxied" = "不支持此代理钱包的卖出功能";
-"feature.unsupported.sheet.title.card.proxied" = "借记卡不支持此代理钱包";
 "feature.unsupported.sheet.message.sell.proxied" = "要将加密货币兑换成法定货币，请切换到其他钱包。";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "在 Nova 中使用您的 Trust Wallet 账户";

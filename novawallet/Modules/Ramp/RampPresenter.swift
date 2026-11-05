@@ -56,7 +56,7 @@ extension RampPresenter: RampInteractorOutputProtocol {
         view?.didReceive(model: model)
     }
 
-    func didRequestTransfer(for model: PayCardTopupModel) {
+    func didRequestTransfer(for model: OffRampTransferModel) {
         wireframe.showSend(
             from: view,
             with: model

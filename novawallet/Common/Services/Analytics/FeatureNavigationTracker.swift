@@ -4,7 +4,6 @@ import NovaAnalytics
 protocol FeatureNavigationTracking: AnyObject {
     func trackTabSwitched(to tab: AnalyticsTab)
     func trackFeatureOpened(_ feature: FeatureId)
-    func trackNovaCardOpened()
 }
 
 final class FeatureNavigationTracker {
@@ -51,9 +50,5 @@ extension FeatureNavigationTracker: FeatureNavigationTracking {
         }
 
         analytics.track(.featureOpened(feature))
-    }
-
-    func trackNovaCardOpened() {
-        analytics.track(.novaCardOpened())
     }
 }

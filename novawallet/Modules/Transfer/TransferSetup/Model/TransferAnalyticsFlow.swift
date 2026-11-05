@@ -3,7 +3,6 @@ import Foundation
 enum TransferAnalyticsFlow {
     case send
     case offRamp
-    case cardTopUp
     case crossChainTopUp
 }
 
@@ -12,7 +11,7 @@ extension TransferAnalyticsFlow {
         switch self {
         case .send:
             true
-        case .offRamp, .cardTopUp, .crossChainTopUp:
+        case .offRamp, .crossChainTopUp:
             false
         }
     }

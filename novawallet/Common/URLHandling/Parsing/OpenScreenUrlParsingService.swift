@@ -12,7 +12,6 @@ enum OpenScreenUrlParsingError: Error {
     case openGovScreen(GovScreenError)
     case openDAppScreen(DAppError)
     case openAHMScreen(AHMError)
-    case cardScreen(CardError)
     case openGiftClaimScreen(GiftClaimError)
     case openStakingScreen(StakingScreenError)
 
@@ -37,10 +36,6 @@ enum OpenScreenUrlParsingError: Error {
         case unknownURL
     }
 
-    enum CardError: Error {
-        case unsupportedProvider
-    }
-
     enum AHMError: Error {
         case migrationDataNotFound
     }
@@ -63,8 +58,6 @@ enum OpenScreenUrlParsingError: Error {
             giftError.message(locale: locale)
         case let .openStakingScreen(stakingError):
             stakingError.message(locale: locale)
-        case .cardScreen:
-            nil
         }
     }
 }

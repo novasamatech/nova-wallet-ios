@@ -4,13 +4,7 @@ import Foundation_iOS
 
 typealias FlowStatusPresentingClosure = (ModalAlertPresenting, ControllerBackedProtocol?) -> Void
 
-final class MainTabBarWireframe {
-    private let cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol
-
-    init(cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol) {
-        self.cardScreenNavigationFactory = cardScreenNavigationFactory
-    }
-}
+final class MainTabBarWireframe {}
 
 // MARK: - Private
 
@@ -62,36 +56,6 @@ private extension MainTabBarWireframe {
         let stakingView = navigationController?.viewControllers.first as? StakingDashboardViewProtocol
 
         stakingView?.cancelStakingOpening()
-    }
-
-    func openCardScreen(
-        in view: MainTabBarViewProtocol?,
-        cardNavigation: PayCardNavigation?
-    ) {
-        guard
-            let view,
-            let tabBarController = view.controller as? UITabBarController
-        else { return }
-
-        checkingSupport(
-            of: .card,
-            for: SelectedWalletSettings.shared.value,
-            sheetPresentingView: view
-        ) { [weak self] in
-            tabBarController.selectedIndex = MainTabBarIndex.wallet
-            let viewController = tabBarController.viewControllers?[MainTabBarIndex.wallet]
-            let navigationController = viewController as? UINavigationController
-            navigationController?.popToRootViewController(animated: true)
-
-            guard let cardView = self?.cardScreenNavigationFactory.createCardScreen(using: cardNavigation) else {
-                return
-            }
-
-            navigationController?.pushViewController(
-                cardView.controller,
-                animated: true
-            )
-        }
     }
 
     func openAssetDetailsScreen(
@@ -431,8 +395,6 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                 openStakingScreen(in: controller, navigation: navigation)
             case let .gov(rederendumIndex):
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
-            case let .card(cardNavigation):
-                openCardScreen(in: view, cardNavigation: cardNavigation)
             case let .assetHubMigration(ahmNavigation):
                 openAssetHubMigrationInfoScreen(in: view, with: ahmNavigation.config)
             case let .giftClaim(giftNavigation):

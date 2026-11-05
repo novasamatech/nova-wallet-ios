@@ -25,7 +25,7 @@ extension OperationCheckCommonResult {
             walletType == .multisig ? .multisigUnsupported : .proxy
         case .noSigning:
             .watchOnly
-        case .noCardSupport, .noSellSupport, .noGiftSupport, .noRampActions, .available:
+        case .noSellSupport, .noGiftSupport, .noRampActions, .available:
             nil
         }
     }

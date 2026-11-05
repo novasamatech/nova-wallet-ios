@@ -3,14 +3,7 @@ import UIKit_iOS
 import Kingfisher
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
-    let cellBackgroundView: RoundedView = .create { view in
-        view.applyCellBackgroundStyle()
-        view.cornerRadius = 12
-    }
-
     let totalView = AssetListTotalBalanceView()
-
-    let cardView = AssetListCardView()
 
     var locale: Locale {
         get {
@@ -19,7 +12,6 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
         set {
             totalView.locale = newValue
-            cardView.locale = newValue
         }
     }
 
@@ -39,20 +31,10 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(cellBackgroundView)
-
-        let cellContentView = UIView.vStack(spacing: 0, [totalView, cardView])
-
-        contentView.addSubview(cellContentView)
-        cellContentView.snp.makeConstraints { make in
+        contentView.addSubview(totalView)
+        totalView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.bottom.equalToSuperview()
-        }
-
-        cellBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(totalView.snp.centerY)
-            make.bottom.equalToSuperview()
         }
     }
 }
