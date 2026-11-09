@@ -360,9 +360,7 @@ struct SwapModel {
             return nil
         }
 
-        let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-
-        if !isSelfSufficient, nativeTokenProviderWillBeKilled {
+        if noProviderLeftAfterSwap {
             let utilityMinBalance = utilityAssetExistense?.minBalance ?? 0
             let precision = utilityChainAsset.asset.precision
             return .noProvider(
@@ -383,7 +381,7 @@ struct SwapModel {
 
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
 
-        guard !isSelfSufficient, !hasAccountProviderOnDestChain else {
+        guard !isSelfSufficient || receiveChainAsset.mayBackHydraAaveLoan, !hasAccountProviderOnDestChain else {
             return nil
         }
 
@@ -413,7 +411,7 @@ struct SwapModel {
         let balance = payAssetTotalBalanceAfterSwap
         let minBalance = payAssetExistense?.minBalance ?? 0
 
-        guard balance > 0, balance < minBalance else {
+        guard !payChainAsset.mayBackHydraAaveLoan, balance > 0, balance < minBalance else {
             return nil
         }
 
