@@ -161,7 +161,7 @@ Core (novasama-maintained):
 
 Third-party: `SnapKit` 5.0.1, `Kingfisher` 6.3.0, `SwiftyBeaver` 2.1.1, `R.swift` 7.8.0,
 `Cuckoo` 2.1.1, `Charts` 5.1.0 (DGCharts), `lottie-spm` 4.5.2, `SwiftDraw` 0.18.0,
-`firebase-ios-sdk` 11.3.0, `BigInt` 5.5.1, `CryptoSwift` 1.9.0, `QRCode` 18.6.0,
+`firebase-ios-sdk` 13.1.1, `BigInt` 5.5.1, `CryptoSwift` 1.9.0, `QRCode` 18.6.0,
 `Reachability.swift` 5.2.4, `CDMarkdownKit` 2.5.2, `ZMarkupParser` 1.6.1,
 `ios-branch-sdk-spm` 3.10.0, `swift-algorithms` 1.2.1, `EthereumSignTypedDataUtil` 0.1.3,
 `SwiftRLP` 1.2.0.
