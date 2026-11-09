@@ -170,7 +170,7 @@ Bumping a dependency touches `project.pbxproj` **and** `Package.resolved` — bo
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/`), runners `macos-26`, Xcode 26.2, shared setup in
+GitHub Actions (`.github/workflows/`), runners `macos-26`, Xcode 26.5, shared setup in
 `.github/actions/install` (Mint cache, Scaleway secrets, SPM cache, Google plist).
 
 | Workflow                | Trigger              | Does                                                    |
