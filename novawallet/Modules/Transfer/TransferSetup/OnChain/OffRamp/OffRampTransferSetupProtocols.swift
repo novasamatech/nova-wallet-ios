@@ -1,6 +1,6 @@
-protocol CardTopUpTransferSetupViewProtocol: TransferSetupViewProtocol {}
+protocol OffRampTransferSetupViewProtocol: TransferSetupViewProtocol {}
 
-extension CardTopUpTransferSetupViewProtocol {
+extension OffRampTransferSetupViewProtocol {
     func didSwitchCrossChain() {}
     func didSwitchOnChain() {}
     func changeYourWalletsViewState(_: YourWalletsControl.State) {}

@@ -73,23 +73,7 @@ enum TransferSetupViewFactory {
             from: chainAsset,
             recepient: recepient,
             amount: amount,
-            transferCompletion: transferCompletion,
-            flowType: .offRamp
-        )
-    }
-
-    static func createCardTopUpView(
-        from chainAsset: ChainAsset,
-        recepient: DisplayAddress?,
-        amount: Decimal? = nil,
-        transferCompletion: TransferCompletionClosure? = nil
-    ) -> TransferSetupViewProtocol? {
-        createRampTransferSetupView(
-            from: chainAsset,
-            recepient: recepient,
-            amount: amount,
-            transferCompletion: transferCompletion,
-            flowType: .cardTopUp
+            transferCompletion: transferCompletion
         )
     }
 
@@ -208,9 +192,8 @@ private extension TransferSetupViewFactory {
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
         amount: Decimal? = nil,
-        transferCompletion: TransferCompletionClosure? = nil,
-        flowType: RampFlowTransferType
-    ) -> CardTopUpTransferSetupViewController? {
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> OffRampTransferSetupViewController? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -236,7 +219,7 @@ private extension TransferSetupViewFactory {
 
         let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
 
-        let analyticsFlow = flowType.analyticsFlow
+        let analyticsFlow: TransferAnalyticsFlow = .offRamp
 
         let presenterFactory = createPresenterFactory(
             for: wallet,
@@ -267,18 +250,11 @@ private extension TransferSetupViewFactory {
             logger: Logger.shared
         )
 
-        let title = switch flowType {
-        case .offRamp:
-            LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.sellNamedToken(chainAsset.asset.symbol)
-            }
-        case .cardTopUp:
-            LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.cardTopUpDotSetupTitle()
-            }
+        let title = LocalizableResource { locale in
+            R.string(preferredLanguages: locale.rLanguages).localizable.sellNamedToken(chainAsset.asset.symbol)
         }
 
-        let view = CardTopUpTransferSetupViewController(
+        let view = OffRampTransferSetupViewController(
             presenter: presenter,
             localizationManager: localizationManager,
             titleResource: title
@@ -325,21 +301,5 @@ private extension TransferSetupViewFactory {
             web3NamesService: web3NameService,
             operationQueue: operationQueue
         )
-    }
-}
-
-private extension TransferSetupViewFactory {
-    enum RampFlowTransferType {
-        case offRamp
-        case cardTopUp
-
-        var analyticsFlow: TransferAnalyticsFlow {
-            switch self {
-            case .offRamp:
-                .offRamp
-            case .cardTopUp:
-                .cardTopUp
-            }
-        }
     }
 }

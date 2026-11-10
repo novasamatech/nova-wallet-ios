@@ -41,7 +41,6 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionSwap()
     func actionGift()
     func actionChangeAssetListStyle()
-    func actionCardOpen()
     func actionTogglePrivacy()
     func actionAlertLearnMore(_ alertType: InlinableAlertView.Model.AlertType)
 }
@@ -91,7 +90,6 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentSearch()
     func presentAssetsManage()
     func presentLocks()
-    func presentCard()
     func send()
     func receive()
     func buySell()
@@ -180,11 +178,6 @@ protocol AssetListWireframeProtocol: AnyObject,
     )
 
     func showStaking(from view: AssetListViewProtocol?)
-
-    func showCard(
-        from view: AssetListViewProtocol?,
-        wallet: MetaAccountModel
-    )
 
     func dropModalFlow(
         from view: AssetListViewProtocol?,

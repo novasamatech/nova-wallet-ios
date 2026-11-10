@@ -296,24 +296,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showCard(
-        from view: AssetListViewProtocol?,
-        wallet: MetaAccountModel
-    ) {
-        checkingSupport(
-            of: .card,
-            for: wallet,
-            sheetPresentingView: view
-        ) {
-            guard let payCardView = PayCardViewFactory.createView() else {
-                return
-            }
-
-            payCardView.controller.hidesBottomBarWhenPushed = true
-            view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
-        }
-    }
-
     func dropModalFlow(
         from view: AssetListViewProtocol?,
         completion: @escaping () -> Void

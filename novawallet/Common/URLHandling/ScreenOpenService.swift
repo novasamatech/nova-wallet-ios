@@ -9,7 +9,6 @@ enum UrlHandlingScreen {
     case staking(StakingNavigation?)
     case gov(Referenda.ReferendumIndex)
     case dApp(DAppNavigation)
-    case card(PayCardNavigation?)
     case assetHubMigration(AHMNavigation)
     case giftClaim(GiftClaimNavigation)
     case error(UrlHandlingScreenError)
@@ -24,8 +23,6 @@ extension UrlHandlingScreen {
             self = .gov(referendumIndex)
         case let .dApp(url):
             self = .dApp(.init(url: url))
-        case let .card(provider):
-            self = .card(.init(rawValue: provider ?? ""))
         case let .assetHubMigration(config):
             self = .assetHubMigration(.init(config: config))
         case let .giftClaim(payload, amount):
@@ -41,8 +38,6 @@ extension UrlHandlingScreen {
             .governance(referendumIndex)
         case let .dApp(navigation):
             .dApp(navigation.url)
-        case let .card(navigation):
-            .card(navigation?.rawValue)
         case let .assetHubMigration(navigation):
             .assetHubMigration(config: navigation.config)
         case let .giftClaim(navigation):

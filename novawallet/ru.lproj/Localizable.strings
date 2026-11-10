@@ -1784,15 +1784,7 @@
 "chart.period.year" = "Прошлый год";
 "chart.period.max" = "Все время";
 "common.pay" = "Оплатить";
-"common.card.issued" = "Карта выпущена";
-"card.top.up.dot.setup.title" = "Пополнить карту с помощью DOT";
-"common.manage.debit.card" = "Управление картой";
 "common.estimated.timer" = "Примерно ~%@";
-"card.open.pending.sheet.title" = "Ваша карта выпускается!";
-"card.open.pending.sheet.message" = "Это может занять до %@.\nЭто окно закроется автоматически.";
-"card.open.failed.alert.title" = "Связаться с поддержкой";
-"card.open.failed.alert.message" = "Пожалуйста, обратитесь в support@novawallet.io. Укажите адрес электронной почты, который вы использовали для выпуска карты.";
-"card.topup.pending.sheet.title" = "Ваша карта пополняется!";
 "staking.restake.message" = "Ваши награды будут добавлены к вашему стекингу";
 "unified.address.popup.title" = "Новый Унифицированный Адрес";
 "unified.address.popup.subtitle" = "Некоторые обменники могут по-прежнему требовать старый формат для операций, пока они обновляются.";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "Некорректные данные вызова";
 "enter.call.data" = "Введите данные вызова";
 "multisig.wallet.details.threshold" = "Порог %li из %li";
-"feature.unsupported.sheet.message.card" = "Чтобы управлять своей дебетовой картой, пожалуйста, переключитесь на другой тип кошелька.";
 "feature.unsupported.sheet.message.sell" = "Чтобы продать криптовалюту за фиат, пожалуйста, переключитесь на другой тип кошелька.";
 "multisig.operation.status.created" = "Создано вами";
 "multisig.operation.signing.progress.format" = "Подписание (%li из %li)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@ необходимо иметь как минимум %@, чтобы оплатить комиссию за эту транзакцию и остаться выше минимального сетевого баланса. Вам необходимо добавить ещё %@ на ваш баланс.";
 "multisig.validation.insuffisient.balance.message" = "У %@ недостаточно средств для оплаты сетевого сбора в размере %@ и размещения депозита мультиподписи в размере %@. Вам необходимо добавить ещё %@ на ваш баланс.";
 "feature.unsupported.sheet.title.sell" = "Продажа не поддерживается для %@ кошельков";
-"feature.unsupported.sheet.title.card" = "Дебетовая карта не поддерживается для %@ кошельков";
 "multisig.transaction.created.sheet.message" = "Другие подписанты теперь могут подтвердить транзакцию. Вы можете отслеживать её статус в %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova автоматически переключилась на ваш кошелек с мультиподписью, чтобы вы могли просматривать ожидающие транзакции.";
 "multisig.other.signatories" = "Другие подписанты";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "Эти данные вызова для другой операции с хэшом вызова %@";
 "call.data.validation.error.message" = "Предоставленные вами данные вызова недействительны или имеют неправильный формат. Пожалуйста, убедитесь, что они верны, и попробуйте снова.";
 "feature.unsupported.sheet.title.sell.proxied" = "Продажа не поддерживается для этого проксид кошелька";
-"feature.unsupported.sheet.title.card.proxied" = "Дебетовая карта не поддерживается для этого проксид кошелька";
 "feature.unsupported.sheet.message.sell.proxied" = "Чтобы продать криптовалюту за фиатные деньги, пожалуйста, переключитесь на другой кошелек.";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "Используйте свои аккаунты Trust Wallet в Nova";

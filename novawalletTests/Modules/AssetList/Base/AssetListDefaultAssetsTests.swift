@@ -342,7 +342,6 @@ private final class AssetListPresenterStub: AssetListPresenterProtocol {
     func presentSearch() {}
     func presentAssetsManage() {}
     func presentLocks() {}
-    func presentCard() {}
     func send() {}
     func receive() {}
     func buySell() {}

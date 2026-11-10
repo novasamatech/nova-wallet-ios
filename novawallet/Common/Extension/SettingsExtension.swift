@@ -23,7 +23,6 @@ enum SettingsKey: String {
     case integrateNetworksBannerSeen
     case assetListGroupStyle
     case assetIconsAppearance
-    case novaCardOpenTimestamp
     case closedBanners
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
@@ -320,20 +319,6 @@ extension SettingsManagerProtocol {
                 value: newValue.rawValue,
                 for: SettingsKey.assetIconsAppearance.rawValue
             )
-        }
-    }
-
-    var novaCardOpenTimestamp: UInt64? {
-        get {
-            string(for: SettingsKey.novaCardOpenTimestamp.rawValue).flatMap { UInt64($0) }
-        }
-
-        set {
-            if let value = newValue {
-                set(value: String(value), for: SettingsKey.novaCardOpenTimestamp.rawValue)
-            } else {
-                removeValue(for: SettingsKey.novaCardOpenTimestamp.rawValue)
-            }
         }
     }
 

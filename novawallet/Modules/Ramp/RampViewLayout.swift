@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-final class PayCardViewLayout: UIView {
+final class RampViewLayout: UIView {
     let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()

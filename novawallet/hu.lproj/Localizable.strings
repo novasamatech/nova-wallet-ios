@@ -1784,15 +1784,7 @@
 "chart.period.year" = "Elmúlt év";
 "chart.period.max" = "Teljes idő";
 "common.pay" = "Fizetés";
-"common.card.issued" = "Kártya kiállítva";
-"card.top.up.dot.setup.title" = "Töltsd fel a kártyát DOT-tal";
-"common.manage.debit.card" = "Bankkártya kezelése";
 "common.estimated.timer" = "Becsült ~%@";
-"card.open.pending.sheet.title" = "<font>A kártyád kiállítása folyamatban van!</font>";
-"card.open.pending.sheet.message" = "Eltarthat akár %@-ig.\nEz az ablak automatikusan bezáródik.";
-"card.open.failed.alert.title" = "Lépj kapcsolatba a támogatással";
-"card.open.failed.alert.message" = "Kérjük, vedd fel a kapcsolatot a support@novawallet.io címen. Add meg az e-mail címed, amelyet használtál a kártya kiállításához.";
-"card.topup.pending.sheet.title" = "A kártyád feltöltése folyamatban van!";
 "staking.restake.message" = "A jutalmaid hozzáadódnak a stakingedhez";
 "unified.address.popup.title" = "Új egységes cím";
 "unified.address.popup.subtitle" = "Egyes cseréknek még szükségük lehet az örökölt formátumra,\namíg frissítik a rendszert.";
@@ -1884,7 +1876,6 @@
 "call.data.validation.error.title" = "Érvénytelen hívás adatok";
 "enter.call.data" = "Adja meg a hívás adatokat";
 "multisig.wallet.details.threshold" = "Küszöb %li a %li-ből";
-"feature.unsupported.sheet.message.card" = "A bankkártya kezeléséhez kérjük, váltson más típusú tárcára.";
 "feature.unsupported.sheet.message.sell" = "Kriptopénz eladása fiat pénzért, kérjük, váltson más típusú tárcára.";
 "multisig.operation.status.created" = "Ön által létrehozva";
 "multisig.operation.signing.progress.format" = "Aláírás (%li a %li-ből)";
@@ -1894,7 +1885,6 @@
 "multisig.validation.not.enough.for.fee.message" = "%@ legalább %@ forintra van szüksége a tranzakciós díj megfizetéséhez és a minimális hálózati egyenleg felett maradáshoz. Még %@ forintot kell hozzáadnia az egyenlegéhez.";
 "multisig.validation.insuffisient.balance.message" = "%@ nem rendelkezik elegendő egyenleggel a hálózati díj %@ megfizetéséhez és a multisig letét %@ elhelyezéséhez. Még %@ forintot kell hozzáadnia az egyenlegéhez.";
 "feature.unsupported.sheet.title.sell" = "Az eladás nem támogatott a %@ pénztárcák esetében";
-"feature.unsupported.sheet.title.card" = "A bankkártya nem támogatott a %@ pénztárcákhoz";
 "multisig.transaction.created.sheet.message" = "Más aláírók most megerősíthetik a tranzakciót. Követheti státuszát a %@-ban.";
 "multisig.transactioncreated.sheet.proxied.hint" = "A Nova automatikusan átváltott a multisig tárcájára, így megtekintheti a függő tranzakciókat.";
 "multisig.other.signatories" = "Más aláírók";
@@ -1912,7 +1902,6 @@
 "call.data.validation.hash.matching.error.message" = "Ez a hívás adatkészlet egy másik művelethez, hívás hash: %@";
 "call.data.validation.error.message" = "A megadott hívásadatok érvénytelenek vagy nem megfelelő formátumúak. Kérjük, ellenőrizze, hogy helyesek-e, és próbálja újra.";
 "feature.unsupported.sheet.title.sell.proxied" = "Az eladás nem támogatott ennél a Proxyzott tárcánál";
-"feature.unsupported.sheet.title.card.proxied" = "A bankkártya nem támogatott ennél a közvetített pénztárcánál";
 "feature.unsupported.sheet.message.sell.proxied" = "A kripto fiat pénzre váltásához kérjük, váltson másik pénztárcára.";
 "common.trust.wallet" = "Trust Wallet";
 "trust.wallet.import.description" = "Használd a Trust Wallet fiókjaidat a Novában";

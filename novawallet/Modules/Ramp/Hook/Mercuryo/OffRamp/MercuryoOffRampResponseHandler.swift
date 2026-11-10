@@ -49,7 +49,7 @@ extension MercuryoOffRampResponseHandler: OffRampMessageHandling {
 
             switch data.status {
             case .new:
-                let model = PayCardTopupModel(
+                let model = OffRampTransferModel(
                     chainAsset: chainAsset,
                     amount: data.amounts.request.amount.decimalValue,
                     recipientAddress: data.address

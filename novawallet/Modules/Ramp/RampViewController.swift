@@ -2,7 +2,7 @@ import UIKit
 import WebKit
 
 final class RampViewController: UIViewController, ViewHolder {
-    typealias RootViewType = PayCardViewLayout
+    typealias RootViewType = RampViewLayout
 
     private var scriptsHandler: DAppBrowserScriptHandler?
 
@@ -11,7 +11,7 @@ final class RampViewController: UIViewController, ViewHolder {
     private var isSetupPresenter: Bool = false
 
     override func loadView() {
-        view = PayCardViewLayout()
+        view = RampViewLayout()
     }
 
     override func viewDidLoad() {
@@ -40,7 +40,7 @@ final class RampViewController: UIViewController, ViewHolder {
         rootView.webView.uiDelegate = self
     }
 
-    func load(resource: PayCardResource) {
+    func load(resource: RampResource) {
         let request = URLRequest(url: resource.url)
 
         rootView.webView.load(request)

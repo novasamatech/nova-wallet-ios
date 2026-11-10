@@ -38,7 +38,7 @@ extension TransakOffRampResponseHandler: OffRampMessageHandling {
 
             switch transferEvent {
             case let .orderCreated(data) where data.status == .awaitingPayment:
-                let model = PayCardTopupModel(
+                let model = OffRampTransferModel(
                     chainAsset: chainAsset,
                     amount: data.cryptoAmount,
                     recipientAddress: data.cryptoPaymentData.paymentAddress
