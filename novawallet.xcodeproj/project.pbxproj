@@ -4970,6 +4970,10 @@
 		849014DD24AA8F60008F705E /* MainTabBarViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014CF24AA8F60008F705E /* MainTabBarViewFactory.swift */; };
 		849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D024AA8F60008F705E /* MainTabBarInteractor.swift */; };
 		849014DF24AA8F60008F705E /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D124AA8F60008F705E /* MainTabBarViewController.swift */; };
+		44869A6857999987D50FC632 /* MainTabBarViewController+More.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0857FF912B1E8C64EDE4226 /* MainTabBarViewController+More.swift */; };
+		FD0729DAFF449C19577C4C6E /* MainTabBarMoreMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ACF24D12CB9B7142E11251 /* MainTabBarMoreMenuView.swift */; };
+		6769C9586FDFA18D6BB8DECC /* SwapsTabPlaceholderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 627BB283265837B93F277185 /* SwapsTabPlaceholderViewController.swift */; };
+		AD76972CF63D5D87E3FBC70B /* SwapsTabPlaceholderViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9B18CEAAB5D217221CF754 /* SwapsTabPlaceholderViewLayout.swift */; };
 		849014E024AA8F60008F705E /* MainTabBarWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D224AA8F60008F705E /* MainTabBarWireframe.swift */; };
 		849014E824AA925C008F705E /* ScrollsToTop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014E724AA925C008F705E /* ScrollsToTop.swift */; };
 		849014FC24AA9939008F705E /* Charset+Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014FB24AA9939008F705E /* Charset+Mnemonic.swift */; };
@@ -11891,6 +11895,10 @@
 		849014CF24AA8F60008F705E /* MainTabBarViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewFactory.swift; sourceTree = "<group>"; };
 		849014D024AA8F60008F705E /* MainTabBarInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarInteractor.swift; sourceTree = "<group>"; };
 		849014D124AA8F60008F705E /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
+		B0857FF912B1E8C64EDE4226 /* MainTabBarViewController+More.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainTabBarViewController+More.swift"; sourceTree = "<group>"; };
+		22ACF24D12CB9B7142E11251 /* MainTabBarMoreMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarMoreMenuView.swift; sourceTree = "<group>"; };
+		627BB283265837B93F277185 /* SwapsTabPlaceholderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsTabPlaceholderViewController.swift; sourceTree = "<group>"; };
+		5D9B18CEAAB5D217221CF754 /* SwapsTabPlaceholderViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsTabPlaceholderViewLayout.swift; sourceTree = "<group>"; };
 		849014D224AA8F60008F705E /* MainTabBarWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarWireframe.swift; sourceTree = "<group>"; };
 		849014E724AA925C008F705E /* ScrollsToTop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollsToTop.swift; sourceTree = "<group>"; };
 		849014FB24AA9939008F705E /* Charset+Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charset+Mnemonic.swift"; sourceTree = "<group>"; };
@@ -26868,6 +26876,10 @@
 				849014D024AA8F60008F705E /* MainTabBarInteractor.swift */,
 				8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */,
 				849014D124AA8F60008F705E /* MainTabBarViewController.swift */,
+				B0857FF912B1E8C64EDE4226 /* MainTabBarViewController+More.swift */,
+				22ACF24D12CB9B7142E11251 /* MainTabBarMoreMenuView.swift */,
+				627BB283265837B93F277185 /* SwapsTabPlaceholderViewController.swift */,
+				5D9B18CEAAB5D217221CF754 /* SwapsTabPlaceholderViewLayout.swift */,
 				849014D224AA8F60008F705E /* MainTabBarWireframe.swift */,
 				0C21D77F2AB432B100EB2DBD /* MainTabBarIndex.swift */,
 				E0DB3702730ED133BBEA68C3 /* MainTabBarIndex+Analytics.swift */,
@@ -34990,6 +35002,10 @@
 				84BEE0F02562897100D05EB3 /* AccountImportJsonFactory.swift in Sources */,
 				841E5545282D793900C8438F /* ParachainStakingSharedState.swift in Sources */,
 				849014DF24AA8F60008F705E /* MainTabBarViewController.swift in Sources */,
+				44869A6857999987D50FC632 /* MainTabBarViewController+More.swift in Sources */,
+				FD0729DAFF449C19577C4C6E /* MainTabBarMoreMenuView.swift in Sources */,
+				6769C9586FDFA18D6BB8DECC /* SwapsTabPlaceholderViewController.swift in Sources */,
+				AD76972CF63D5D87E3FBC70B /* SwapsTabPlaceholderViewLayout.swift in Sources */,
 				84D9C8F128AD9913007FB23B /* LedgerPathBuilder.swift in Sources */,
 				843E9B2F27C8B17F009C143A /* FileDownloadOperation.swift in Sources */,
 				88E8CF5E28E3789600C90112 /* CrowdloanEmptyView.swift in Sources */,

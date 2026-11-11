@@ -87,6 +87,7 @@ public enum AnalyticsTab: String, CaseIterable, AnalyticsPropertyConvertible {
     case assets
     case vote
     case dapps
+    case swaps
     case staking
     case settings
 }

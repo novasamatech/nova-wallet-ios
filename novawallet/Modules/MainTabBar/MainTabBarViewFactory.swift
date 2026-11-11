@@ -4,9 +4,6 @@ import Operation_iOS
 import Keystore_iOS
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
-    static let walletIndex: Int = 0
-    static let crowdloanIndex: Int = 1
-
     static func createView() -> MainTabBarViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let preSyncServiceCoordinator = PreSyncServiceCoordinator.createDefault()
@@ -17,10 +14,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
                 preSyncServiceCoordinator: preSyncServiceCoordinator,
                 serviceCoordinator: serviceCoordinator
             ),
-            let indexedControllers = createIndexedControllers(
+            let controllers = createControllers(
                 localizationManager: localizationManager,
-                serviceCoordinator: serviceCoordinator,
-                preSyncServiceCoordinator: preSyncServiceCoordinator
+                serviceCoordinator: serviceCoordinator
             )
         else { return nil }
 
@@ -31,7 +27,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             localizationManager: LocalizationManager.shared
         )
 
-        view.viewControllers = indexedControllers.map(\.1)
+        view.moreControllers = controllers.moreItems
+        view.viewControllers = controllers.tabs
 
         let wireframe = MainTabBarWireframe(
             cardScreenNavigationFactory: CardScreenNavigationFactory()
@@ -111,11 +108,10 @@ private extension MainTabBarViewFactory {
         return interactor
     }
 
-    static func createIndexedControllers(
+    static func createControllers(
         localizationManager: LocalizationManagerProtocol,
-        serviceCoordinator: ServiceCoordinatorProtocol,
-        preSyncServiceCoordinator _: PreSyncServiceCoordinatorProtocol
-    ) -> [(Int, UIViewController)]? {
+        serviceCoordinator: ServiceCoordinatorProtocol
+    ) -> (tabs: [UIViewController], moreItems: [MainTabBarMoreItem: UIViewController])? {
         let dAppMediator = serviceCoordinator.dappMediator
         let walletNotificationService = serviceCoordinator.walletNotificationService
         let delegatedAccountSyncService = serviceCoordinator.delegatedAccountSyncService
@@ -136,7 +132,6 @@ private extension MainTabBarViewFactory {
                 assetListObservable: assetListObservable
             ),
             let voteController = createVoteController(
-                for: localizationManager,
                 walletNotificationService: walletNotificationService,
                 delegatedAccountSyncService: delegatedAccountSyncService
             ),
@@ -145,23 +140,28 @@ private extension MainTabBarViewFactory {
                 walletNotificationService: walletNotificationService,
                 delegatedAccountSyncService: delegatedAccountSyncService
             ),
-            let settingsController = createProfileController(
-                for: localizationManager,
-                serviceCoordinator: serviceCoordinator
-            )
+            let settingsController = createProfileController(serviceCoordinator: serviceCoordinator)
         else {
             return nil
         }
 
-        return [
+        let swapsController = createSwapsController(for: localizationManager)
+
+        let moreTabBarItem = createMoreTabBarItem(for: localizationManager)
+        voteController.tabBarItem = moreTabBarItem
+        settingsController.tabBarItem = moreTabBarItem
+
+        let tabs = [
             (MainTabBarIndex.wallet, walletController),
-            (MainTabBarIndex.vote, voteController),
             (MainTabBarIndex.dapps, dappsController),
+            (MainTabBarIndex.swaps, swapsController),
             (MainTabBarIndex.staking, stakingController),
-            (MainTabBarIndex.settings, settingsController)
+            (MainTabBarIndex.more, voteController)
         ].sorted { cont1, cont2 in
             cont1.0 < cont2.0
-        }
+        }.map(\.1)
+
+        return (tabs, [.governance: voteController, .settings: settingsController])
     }
 
     static func createWalletController(
@@ -252,47 +252,15 @@ private extension MainTabBarViewFactory {
         return navigationController
     }
 
-    static func createProfileController(
-        for localizationManager: LocalizationManagerProtocol,
-        serviceCoordinator: ServiceCoordinatorProtocol
-    ) -> UIViewController? {
+    static func createProfileController(serviceCoordinator: ServiceCoordinatorProtocol) -> UIViewController? {
         guard let view = SettingsViewFactory.createView(
             with: serviceCoordinator
         ) else { return nil }
 
-        let viewController = view.controller
-
-        let navigationController = NovaNavigationController(rootViewController: viewController)
-
-        let localizableTitle = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarSettingsTitle()
-        }
-
-        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabSettings()
-        let selectedIconImage = R.image.iconTabSettingsFilled()
-
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
-            .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
-            .withRenderingMode(.alwaysOriginal)
-
-        navigationController.tabBarItem = createTabBarItem(
-            title: currentTitle,
-            normalImage: commonIcon,
-            selectedImage: selectedIcon
-        )
-
-        localizationManager.addObserver(with: navigationController) { [weak navigationController] _, _ in
-            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-            navigationController?.tabBarItem.title = currentTitle
-        }
-
-        return navigationController
+        return NovaNavigationController(rootViewController: view.controller)
     }
 
     static func createVoteController(
-        for localizationManager: LocalizationManagerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> UIViewController? {
@@ -303,33 +271,63 @@ private extension MainTabBarViewFactory {
             return nil
         }
 
-        let navigationController = NovaNavigationController(rootViewController: view.controller)
+        return NovaNavigationController(rootViewController: view.controller)
+    }
+
+    static func createSwapsController(for localizationManager: LocalizationManagerProtocol) -> UIViewController {
+        let viewController = SwapsTabPlaceholderViewController(localizationManager: localizationManager)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarVoteTitle()
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarSwapsTitle()
         }
 
-        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabVote()
-        let selectedIconImage = R.image.iconTabVoteFilled()
+        viewController.tabBarItem = createTabBarItem(
+            title: localizableTitle,
+            normalIconImage: R.image.iconTabSwaps(),
+            selectedIconImage: R.image.iconTabSwapsFilled(),
+            localizationManager: localizationManager
+        )
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        return NovaNavigationController(rootViewController: viewController)
+    }
+
+    static func createMoreTabBarItem(for localizationManager: LocalizationManagerProtocol) -> UITabBarItem {
+        let localizableTitle = LocalizableResource { locale in
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarMoreTitle()
+        }
+
+        return createTabBarItem(
+            title: localizableTitle,
+            normalIconImage: R.image.iconTabMore(),
+            selectedIconImage: R.image.iconMore(),
+            localizationManager: localizationManager
+        )
+    }
+
+    static func createTabBarItem(
+        title localizableTitle: LocalizableResource<String>,
+        normalIconImage: UIImage?,
+        selectedIconImage: UIImage?,
+        localizationManager: LocalizationManagerProtocol
+    ) -> UITabBarItem {
+        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+
+        let commonIcon = normalIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
         let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
-        navigationController.tabBarItem = createTabBarItem(
+        let tabBarItem = createTabBarItem(
             title: currentTitle,
             normalImage: commonIcon,
             selectedImage: selectedIcon
         )
 
-        localizationManager.addObserver(with: navigationController) { [weak navigationController] _, _ in
-            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-            navigationController?.tabBarItem.title = currentTitle
+        localizationManager.addObserver(with: tabBarItem) { [weak tabBarItem] _, _ in
+            tabBarItem?.title = localizableTitle.value(for: localizationManager.selectedLocale)
         }
 
-        return navigationController
+        return tabBarItem
     }
 
     static func createDappsController(

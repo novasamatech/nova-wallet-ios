@@ -9,7 +9,7 @@ enum MainTransitionPostProcessing {
 
 enum MainTransitionHelper {
     static func transitToMainTabBarController(
-        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
+        selectingIndex: Int = MainTabBarIndex.wallet,
         closing controller: UIViewController,
         flowStatusClosure: FlowStatusPresentingClosure? = nil,
         animated: Bool
@@ -29,7 +29,7 @@ enum MainTransitionHelper {
     }
 
     static func transitToMainTabBarController(
-        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
+        selectingIndex: Int = MainTabBarIndex.wallet,
         closing controller: UIViewController,
         postProcessing: MainTransitionPostProcessing,
         animated: Bool
