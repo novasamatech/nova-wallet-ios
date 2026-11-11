@@ -1376,6 +1376,9 @@
 "swaps.setup.slippage.description" = "Swap slippage is a common occurrence in decentralized trading where the final price of a swap transaction might slightly differ from the expected price, due to changing market conditions.";
 "swaps.network.fee.description" = "A network fees charged by the blockchain to process and validate any transactions. May vary depending on network conditions or transaction speed.";
 "swaps.setup.asset.action.select.pay" = "Select a token to pay";
+"swaps.setup.chart.placeholder" = "Select a token to receive\nto see its price chart";
+"swaps.setup.chart.failed.title" = "Couldn’t load the data";
+"swaps.setup.chart.failed.message" = "Check your connection and try again.";
 "swaps.not.enough.liquidity" = "Not enough liquidity";
 "swaps.not.enough.tokens" = "Not enough tokens to swap";
 "common.receive.at.least.ed.error" = "You can’t receive less than %@";

@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorSparklineView: UIView {
+final class PriceSparklineView: UIView {
     private let lineLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.fillColor = UIColor.clear.cgColor
@@ -47,7 +47,7 @@ final class SubtensorSparklineView: UIView {
     }
 }
 
-private extension SubtensorSparklineView {
+private extension PriceSparklineView {
     func updatePath() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)

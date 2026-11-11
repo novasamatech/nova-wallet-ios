@@ -8,5 +8,7 @@ enum PriceChangeType {
 struct PricePeriodChangeViewModel {
     let changeType: PriceChangeType
     let changeText: String?
+    let percentText: String?
+    let percentChangeType: PriceChangeType
     let changeDateText: String?
 }

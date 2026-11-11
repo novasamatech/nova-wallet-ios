@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 import NovaAnalytics
+import Keystore_iOS
 
 struct SwapSetupViewFactory {
     static func createView(
@@ -22,6 +23,7 @@ struct SwapSetupViewFactory {
         state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
         source: SwapSource,
+        placement: SwapSetupPlacement = .flow,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         guard
@@ -75,11 +77,15 @@ struct SwapSetupViewFactory {
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
             source: source,
+            placement: placement,
             logger: Logger.shared
         )
 
+        guard let chartView = createChartView(for: presenter) else { return nil }
+
         let view = SwapSetupViewController(
             presenter: presenter,
+            chartViewProvider: chartView,
             localizationManager: LocalizationManager.shared
         )
 
@@ -110,6 +116,8 @@ struct SwapSetupViewFactory {
             assetStorageFactory: assetStorageFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
+            settingsManager: SettingsManager.shared,
+            chartSession: SwapPriceChartSession.shared,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue,
@@ -117,5 +125,26 @@ struct SwapSetupViewFactory {
         )
 
         return interactor
+    }
+
+    private static func createChartView(for presenter: SwapSetupPresenter) -> AssetPriceChartCompactProviderProtocol? {
+        guard let currencyManager = CurrencyManager.shared else { return nil }
+
+        let params = AssetPriceChartViewFactory.Params(
+            asset: nil,
+            periods: [.day, .week, .month, .year, .allTime],
+            selectedPeriod: SwapPriceChartSession.shared.selectedPeriod,
+            placeholder: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupChartPlaceholder()
+            },
+            locale: LocalizationManager.shared.selectedLocale,
+            currency: currencyManager.selectedCurrency
+        )
+
+        return AssetPriceChartViewFactory.createCompactView(
+            output: presenter,
+            inputOwner: presenter,
+            params: params
+        )
     }
 }

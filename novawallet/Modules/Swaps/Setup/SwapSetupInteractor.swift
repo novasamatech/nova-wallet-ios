@@ -2,9 +2,12 @@ import UIKit
 import Operation_iOS
 import BigInt
 import SubstrateSdk
+import Keystore_iOS
 
 final class SwapSetupInteractor: SwapBaseInteractor {
     let storageRepository: AnyDataProviderRepository<ChainStorageItem>
+    let settingsManager: SettingsManagerProtocol
+    let chartSession: SwapPriceChartSession
 
     private var canPayFeeInAssetCall = CancellableCallStore()
 
@@ -62,12 +65,16 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
+        settingsManager: SettingsManagerProtocol,
+        chartSession: SwapPriceChartSession,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.storageRepository = storageRepository
+        self.settingsManager = settingsManager
+        self.chartSession = chartSession
 
         super.init(
             state: state,
@@ -202,6 +209,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             provideCanPayFee(for: payChainAsset)
         }
     }
+
+    override func setup() {
+        super.setup()
+
+        presenter?.didReceiveChartExpansion(settingsManager.swapPriceChartExpanded)
+    }
 }
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
@@ -247,5 +260,13 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         feeChainAsset.map {
             setFeeChainAssetSubscriptions($0)
         }
+    }
+
+    func saveChartExpansion(_ isExpanded: Bool) {
+        settingsManager.swapPriceChartExpanded = isExpanded
+    }
+
+    func saveChartPeriod(_ period: PriceHistoryPeriod) {
+        chartSession.selectedPeriod = period
     }
 }

@@ -3,6 +3,8 @@ import BigInt
 import Foundation_iOS
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
+    var isChartVisiblyExpanded: Bool { get }
+
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel)
     func didReceiveAmount(payInputViewModel inputViewModel: AmountInputViewModelProtocol)
@@ -21,6 +23,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])
     func didReceive(focus: TextFieldFocus?)
+    func didReceiveChart(viewModel: SwapPriceChartViewModel)
     func didStartLoading()
     func didStopLoading()
 }
@@ -39,6 +42,8 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRouteDetails()
     func selectMaxPayAmount()
     func depositInsufficientToken()
+    func selectChartExpansion(_ isExpanded: Bool)
+    func didChangeChartVisibility()
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -46,11 +51,14 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
+    func saveChartExpansion(_ isExpanded: Bool)
+    func saveChartPeriod(_ period: PriceHistoryPeriod)
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
+    func didReceiveChartExpansion(_ isExpanded: Bool?)
 }
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,

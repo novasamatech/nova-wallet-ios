@@ -39,6 +39,7 @@ enum SettingsKey: String {
     case legalConsentPendingSync
     case subtensorEarnSlippageTolerance
     case subtensorEarnFavouriteSubnets
+    case swapPriceChartExpanded
 }
 
 extension SettingsManagerProtocol {
@@ -160,6 +161,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.stakingNetworkExpansion.rawValue)
+        }
+    }
+
+    var swapPriceChartExpanded: Bool? {
+        get {
+            bool(for: SettingsKey.swapPriceChartExpanded.rawValue)
+        }
+
+        set {
+            if let newValue {
+                set(value: newValue, for: SettingsKey.swapPriceChartExpanded.rawValue)
+            } else {
+                removeValue(for: SettingsKey.swapPriceChartExpanded.rawValue)
+            }
         }
     }
 

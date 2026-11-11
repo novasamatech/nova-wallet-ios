@@ -6,9 +6,9 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
 
     let priceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let asset: AssetModel
     let operationQueue: OperationQueue
 
+    var asset: AssetModel?
     var currency: Currency
 
     private var priceProvider: StreamableProvider<PriceData>?
@@ -17,7 +17,7 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
     init(
         priceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        asset: AssetModel,
+        asset: AssetModel?,
         operationQueue: OperationQueue,
         currency: Currency
     ) {
@@ -37,6 +37,10 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
 
 private extension AssetPriceChartInteractor {
     func fetchAndSubscribe() {
+        guard let asset else {
+            return
+        }
+
         guard let priceId = asset.priceId else {
             presenter?.didReceive(.missingPriceId)
             return
@@ -91,6 +95,19 @@ extension AssetPriceChartInteractor: AssetPriceChartInteractorInputProtocol {
     func setup() {
         fetchAndSubscribe()
     }
+
+    func updateAsset(_ asset: AssetModel?) {
+        self.asset = asset
+
+        callStore.cancel()
+        clear(streamableProvider: &priceProvider)
+
+        fetchAndSubscribe()
+    }
+
+    func reload() {
+        fetchAndSubscribe()
+    }
 }
 
 // MARK: PriceLocalStorageSubscriber
@@ -98,8 +115,12 @@ extension AssetPriceChartInteractor: AssetPriceChartInteractorInputProtocol {
 extension AssetPriceChartInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(
         result: Result<PriceData?, Error>,
-        priceId _: AssetModel.PriceId
+        priceId: AssetModel.PriceId
     ) {
+        guard priceId == asset?.priceId else {
+            return
+        }
+
         switch result {
         case let .success(priceData):
             presenter?.didReceive(price: priceData)

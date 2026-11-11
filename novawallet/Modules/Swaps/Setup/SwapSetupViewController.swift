@@ -5,14 +5,22 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapSetupViewLayout
 
     let presenter: SwapSetupPresenterProtocol
+    let chartViewProvider: AssetPriceChartCompactProviderProtocol
+
+    var keyboardHandler: KeyboardHandler?
+    var chartViewModel: SwapPriceChartViewModel?
+    var isKeyboardVisible = false
+    var isOnScreen = false
 
     private var toggledDetailsManually: Bool = false
 
     init(
         presenter: SwapSetupPresenterProtocol,
+        chartViewProvider: AssetPriceChartCompactProviderProtocol,
         localizationManager: LocalizationManager
     ) {
         self.presenter = presenter
+        self.chartViewProvider = chartViewProvider
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -32,7 +40,34 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         setupHandlers()
         setupLocalization()
         setupNavigationItem()
+        setupPriceChart()
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupKeyboardHandler()
+        keyboardHandler?.delegate = self
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        isOnScreen = true
+        presenter.didChangeChartVisibility()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        isOnScreen = false
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupHandlers() {

@@ -9,11 +9,15 @@ final class SwapSetupPresenter: SwapBasePresenter {
     let interactor: SwapSetupInteractorInputProtocol
     let initState: SwapSetupInitState
     let source: SwapSource
+    let placement: SwapSetupPlacement
     let abandonTracker = AnalyticsAbandonTracker {
         AnalyticsEvent.swapAbandoned(stage: .setup)
     }
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
+
+    weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
+    var chartContext = SwapPriceChartContext()
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
@@ -55,6 +59,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
         source: SwapSource,
+        placement: SwapSetupPlacement,
         logger: LoggerProtocol
     ) {
         self.initState = initState
@@ -68,6 +73,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         slippage = slippageConfig.defaultSlippage
 
         self.source = source
+        self.placement = placement
 
         super.init(
             selectedWallet: selectedWallet,
@@ -733,6 +739,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         interactor.update(feeChainAsset: feeChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
 
+        provideChartAsset()
+
         if let amount = initState.amount, let direction = initState.direction {
             switch direction {
             case .sell:
@@ -760,6 +768,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.provideSettingsState()
             self?.provideFeeViewModel()
             self?.provideIssues()
+            self?.provideChartAsset()
 
             self?.interactor.update(payChainAsset: chainAsset)
             self?.interactor.update(feeChainAsset: feeChainAsset)
@@ -781,6 +790,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.provideIssues()
+            self?.provideChartAsset()
 
             self?.interactor.update(receiveChainAsset: chainAsset)
 
@@ -857,6 +867,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideSettingsState()
         provideFeeViewModel()
         provideIssues()
+        provideChartAsset()
 
         view?.didReceive(focus: newFocus)
     }
@@ -865,37 +876,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         maxCorrectionCounter.resetCounter()
 
         applySwapMax()
-    }
-
-    func showFeeInfo() {
-        guard let quote, let fee else {
-            return
-        }
-
-        wireframe.showFeeDetails(
-            from: view,
-            operations: quote.metaOperations,
-            fee: fee
-        )
-    }
-
-    func showRateInfo() {
-        wireframe.showRateInfo(
-            from: view,
-            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
-        )
-    }
-
-    func showRouteDetails() {
-        guard let quote, let fee else {
-            return
-        }
-
-        wireframe.showRouteDetails(
-            from: view,
-            quote: quote,
-            fee: fee
-        )
     }
 
     func proceed() {
@@ -995,6 +975,7 @@ extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateViews()
+            assetPriceChartModule?.updateLocale(selectedLocale)
         }
     }
 }

@@ -2,6 +2,12 @@ import UIKit
 import UIKit_iOS
 
 final class SwapSetupViewLayout: ScrollableContainerLayoutView {
+    let chartContainerView: UIView = .create {
+        $0.backgroundColor = R.color.colorBlockBackground()
+        $0.layer.cornerRadius = Constants.chartCollapsedCornerRadius
+        $0.clipsToBounds = true
+    }
+
     let payAmountView = SwapSetupTitleView(frame: .zero)
 
     let payAmountInputView = SwapAmountInputView()
@@ -114,6 +120,11 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
+        addArrangedSubview(chartContainerView, spacingAfter: Constants.chartSpacingAfter)
+        chartContainerView.snp.makeConstraints {
+            $0.height.equalTo(0)
+        }
+
         addArrangedSubview(payAmountView, spacingAfter: 8)
         payAmountView.snp.makeConstraints {
             $0.height.equalTo(18)
@@ -172,6 +183,16 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         networkFeeCell.titleButton.invalidateLayout()
     }
 
+    func setChartHeight(_ height: CGFloat, isExpanded: Bool) {
+        chartContainerView.snp.updateConstraints {
+            $0.height.equalTo(height)
+        }
+
+        chartContainerView.layer.cornerRadius = isExpanded
+            ? Constants.chartExpandedCornerRadius
+            : Constants.chartCollapsedCornerRadius
+    }
+
     func changeDepositTokenButtonVisibility(hidden: Bool) {
         if hidden {
             stackView.setCustomSpacing(24, after: payAmountInputView)
@@ -217,5 +238,13 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         stackView.setCustomSpacing(16, after: receiveAmountInputView)
 
         receiveAmountInputView.applyInput(style: .normal)
+    }
+}
+
+extension SwapSetupViewLayout {
+    enum Constants {
+        static let chartSpacingAfter: CGFloat = 16
+        static let chartExpandedCornerRadius: CGFloat = 16
+        static let chartCollapsedCornerRadius: CGFloat = 12
     }
 }

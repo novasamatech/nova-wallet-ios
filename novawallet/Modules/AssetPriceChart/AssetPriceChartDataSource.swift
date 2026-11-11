@@ -21,6 +21,10 @@ protocol AssetPriceChartViewDataSourceProtocol {
 
     func getTitle() -> String?
 
+    func getSymbol() -> String?
+
+    func getPlaceholder() -> String?
+
     func getCurrentPrice() -> LoadableViewModelState<String?>?
 
     func getPeriodChange() -> LoadableViewModelState<PricePeriodChangeViewModel>?
@@ -31,8 +35,13 @@ protocol AssetPriceChartViewDataSourceProtocol {
 }
 
 final class AssetPriceChartViewDataSource {
+    private let style: AssetPriceChartStyle
     private var widgetViewModel: AssetPriceChartWidgetViewModel?
     private var entryIndexesByX: [Double: Int]?
+
+    init(style: AssetPriceChartStyle) {
+        self.style = style
+    }
 }
 
 // MARK: Private
@@ -55,6 +64,15 @@ private extension AssetPriceChartViewDataSource {
         lineDataSet.highlightColor = R.color.colorNeutralPriceChartLine()!
 
         return lineDataSet
+    }
+
+    func lineChangeType(of chartModel: PriceChartViewModel) -> PriceChangeType {
+        switch style {
+        case .regular:
+            chartModel.changeType
+        case .compact:
+            chartModel.percentChangeType
+        }
     }
 }
 
@@ -157,7 +175,7 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
         }
 
         let colors = if let chartModel = widgetViewModel.chartModel.value {
-            switch chartModel.changeType {
+            switch lineChangeType(of: chartModel) {
             case .increase:
                 AssetPriceChart.Colors(
                     chartHighlightedLineColor: R.color.colorPositivePriceChartLine()!,
@@ -201,6 +219,14 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
 
     func getTitle() -> String? {
         widgetViewModel?.title
+    }
+
+    func getSymbol() -> String? {
+        widgetViewModel?.symbol
+    }
+
+    func getPlaceholder() -> String? {
+        widgetViewModel?.placeholder
     }
 
     func getCurrentPrice() -> LoadableViewModelState<String?>? {
