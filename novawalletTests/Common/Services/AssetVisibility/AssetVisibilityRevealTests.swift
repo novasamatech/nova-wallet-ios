@@ -594,8 +594,8 @@ private final class SwapExecutionOutputSpy: SwapExecutionInteractorOutputProtoco
         expectation.fulfill()
     }
 
-    func didFailExecution(with error: Error) {
-        self.error = error
+    func didFailExecution(with failure: AssetExchangeOperationFailure) {
+        error = failure.error
         expectation.fulfill()
     }
 }

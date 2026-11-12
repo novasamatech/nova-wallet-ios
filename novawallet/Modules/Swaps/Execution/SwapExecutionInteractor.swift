@@ -52,7 +52,7 @@ extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
                 self?.revealChainAssetOut(for: initiatingMetaId)
                 self?.presenter?.didCompleteFullExecution(received: amount)
             case let .failure(error):
-                self?.presenter?.didFailExecution(with: error)
+                self?.presenter?.didFailExecution(with: AssetExchangeOperationFailure(wrapping: error))
             }
         }
     }

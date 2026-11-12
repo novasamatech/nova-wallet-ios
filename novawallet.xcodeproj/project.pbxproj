@@ -539,6 +539,7 @@
 		0C32523B2E6773A200E322DB /* web3swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C32523A2E6773A200E322DB /* web3swift */; };
 		0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */; };
 		0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */; };
+		5C5025E405F83DA63FB6B2BB /* AssetExchangeOperationFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95B66CF4256572D81F629BF /* AssetExchangeOperationFailure.swift */; };
 		0C32728F2CD203F000FC1B42 /* XcmTotalFeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */; };
 		0C3272912CD2409B00FC1B42 /* AssetExchangeOperationFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */; };
 		0C3272932CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272922CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift */; };
@@ -2900,6 +2901,7 @@
 		3EE29545824B68594751769C /* SwapSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB494F0B16C9588325CF0D84 /* SwapSetupPresenter.swift */; };
 		3F3AE7490C59A0CE0BF2D7A7 /* DAppWalletAuthViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4A5B4E6779AA27F10713C6 /* DAppWalletAuthViewFactory.swift */; };
 		3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */; };
+		539FDBC06266B0876F774204 /* AssetExchangeOperationFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D4818D5E9072D0A29ADFC91 /* AssetExchangeOperationFailureTests.swift */; };
 		3F677FBDE35747C9BB19648C /* SubtensorOperationResultState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F66F8E2D2DE479BA3F23CAC /* SubtensorOperationResultState.swift */; };
 		3F7D4E4606084D05AE2F58EA /* SubtensorSubnetMarketsOperationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E90D29068564E38902DA201 /* SubtensorSubnetMarketsOperationFactoryProtocol.swift */; };
 		3F7F10D0E1BDE09CBE64BD2D /* CrowdloanYourContributionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC155A29FA8777D90A46913D /* CrowdloanYourContributionsViewFactory.swift */; };
@@ -7799,6 +7801,7 @@
 		0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeOutputModel.swift; sourceTree = "<group>"; };
 		0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeAtomicOperationArgs.swift; sourceTree = "<group>"; };
 		0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeSwapLimit.swift; sourceTree = "<group>"; };
+		D95B66CF4256572D81F629BF /* AssetExchangeOperationFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationFailure.swift; sourceTree = "<group>"; };
 		0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTotalFeeModel.swift; sourceTree = "<group>"; };
 		0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationFee.swift; sourceTree = "<group>"; };
 		0C3272922CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetExchangeOperationFee+Crosschain.swift"; sourceTree = "<group>"; };
@@ -8783,6 +8786,7 @@
 		15E09DD01C1CC61EA5CDED9C /* InAppUpdatesInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InAppUpdatesInteractor.swift; sourceTree = "<group>"; };
 		15E1472817503D3FB44BDC46 /* GovernanceDelegateSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSetupInteractor.swift; sourceTree = "<group>"; };
 		15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeAtomicOperationTests.swift; sourceTree = "<group>"; };
+		1D4818D5E9072D0A29ADFC91 /* AssetExchangeOperationFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationFailureTests.swift; sourceTree = "<group>"; };
 		16094B1C4B90408138FD49AE /* SubtensorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfigTests.swift; sourceTree = "<group>"; };
 		162613CB7849452298689326 /* SubtensorFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowState.swift; sourceTree = "<group>"; };
 		16A05911AC400226DD29AE20 /* DAppWalletAuthViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppWalletAuthViewLayout.swift; sourceTree = "<group>"; };
@@ -15275,6 +15279,7 @@
 				0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */,
 				0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */,
 				0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */,
+				D95B66CF4256572D81F629BF /* AssetExchangeOperationFailure.swift */,
 				0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */,
 				0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */,
 				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
@@ -32320,6 +32325,7 @@
 				F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */,
 				A3BC3F73E3EA1C3C95EDBE6C /* HydraExchangeExtrinsicParamsFactoryTests.swift */,
 				15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */,
+				1D4818D5E9072D0A29ADFC91 /* AssetExchangeOperationFailureTests.swift */,
 				0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */,
 				8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */,
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
@@ -38463,6 +38469,7 @@
 				0CE9B7222DE9F1C9007C7F5A /* MessageSheetViewController+LedgerMeasurement.swift in Sources */,
 				2D7C8A932C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift in Sources */,
 				0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */,
+				5C5025E405F83DA63FB6B2BB /* AssetExchangeOperationFailure.swift in Sources */,
 				2DFF39EC2E184DE800529984 /* MultilineTextInputView.swift in Sources */,
 				0C85F5C32E140D90003789DC /* Multisig+Signatory.swift in Sources */,
 				2DB586512EB761B600950F7D /* SubstrateGiftSubmissionFactoryProtocol.swift in Sources */,
@@ -40259,6 +40266,7 @@
 				3185E9401279423ECA14DC29 /* AssetExchangeCommissionPolicyTests.swift in Sources */,
 				8196EBD22DDAD2737F3767F8 /* HydraExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */,
+				539FDBC06266B0876F774204 /* AssetExchangeOperationFailureTests.swift in Sources */,
 				2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */,
 				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,

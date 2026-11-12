@@ -28,7 +28,7 @@ protocol SwapExecutionInteractorInputProtocol: AnyObject {
 protocol SwapExecutionInteractorOutputProtocol: AnyObject {
     func didStartExecution(for operationIndex: Int)
     func didCompleteFullExecution(received amount: Balance)
-    func didFailExecution(with error: Error)
+    func didFailExecution(with failure: AssetExchangeOperationFailure)
 }
 
 protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetPresentable, AlertPresentable,

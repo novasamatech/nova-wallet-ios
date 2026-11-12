@@ -354,13 +354,13 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
         trackSwapCompleted()
     }
 
-    func didFailExecution(with error: Error) {
-        trackAnalytics(.swapFailed(reason: error.analyticsSwapFailureReason))
+    func didFailExecution(with failure: AssetExchangeOperationFailure) {
+        trackAnalytics(.swapFailed(reason: failure.error.analyticsSwapFailureReason))
 
-        updateFailedStateIfNeeded(with: error)
+        updateFailedStateIfNeeded(with: failure.error)
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(
-            error,
+            failure.error,
             view: view,
             closeAction: .dismissAllModals,
             completionClosure: nil

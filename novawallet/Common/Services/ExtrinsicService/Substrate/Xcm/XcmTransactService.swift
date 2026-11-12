@@ -85,6 +85,13 @@ extension XcmTransactService: XcmTransactServiceProtocol {
         let dependencies = monitoringWrapper.allOperations + [submittionOperation]
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+            .failingWithSubmissionStage {
+                guard case let .success(submission) = submittionOperation.result else {
+                    return nil
+                }
+
+                return submission.submittedModel.txHash
+            }
     }
 
     func submitTransferWrapper(
