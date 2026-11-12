@@ -48,7 +48,7 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
     }
 
-    private var state: SwapExecutionState?
+    private(set) var state: SwapExecutionState?
     private var execTimer: CountdownTimer?
 
     var executionStartedAt: Date?
@@ -84,15 +84,19 @@ final class SwapExecutionPresenter {
                 remainedTime: execTimer?.remainedInterval ?? 0,
                 locale: selectedLocale
             )
-        case let .completed(date):
+        case let .completed(date, receivedAmount):
             executionViewModelFactory.createCompletedViewModel(
-                quote: quote,
                 for: date,
+                receivedAmount: detailsViewModelFactory.assetViewModel(
+                    chainAsset: chainAssetOut,
+                    amount: receivedAmount,
+                    priceData: nil,
+                    locale: selectedLocale
+                ).amount,
                 locale: selectedLocale
             )
         case let .failed(failure):
             executionViewModelFactory.createFailedViewModel(
-                quote: quote,
                 failure: failure,
                 locale: selectedLocale
             )
@@ -232,15 +236,15 @@ final class SwapExecutionPresenter {
         provideExecutionViewModel()
     }
 
-    private func updateCompletedStateIfNeeded() {
+    private func updateCompletedStateIfNeeded(receivedAmount: Balance) {
         clearTimer()
 
-        state = .completed(Date())
+        state = .completed(date: Date(), receivedAmount: receivedAmount)
 
         provideExecutionViewModel()
     }
 
-    private func updateFailedStateIfNeeded(with error: Error) {
+    private func updateFailedStateIfNeeded(with failure: AssetExchangeOperationFailure) {
         guard case let .inProgress(operationIndex) = state else { return }
 
         clearTimer()
@@ -248,12 +252,14 @@ final class SwapExecutionPresenter {
         let model = SwapExecutionState.Failure(
             operationIndex: operationIndex,
             date: Date(),
-            error: error
+            error: failure.error,
+            txHash: failure.submittedTxHash
         )
 
         state = .failed(model)
 
         provideExecutionViewModel()
+        provideStepsViewModel()
     }
 }
 
@@ -327,6 +333,10 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         wireframe.complete(on: view, receiveChainAsset: chainAssetOut)
     }
 
+    func activateClose() {
+        wireframe.close(on: view)
+    }
+
     func activateTryAgain() {
         guard case let .failed(model) = state else {
             return
@@ -348,8 +358,8 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
         updateInProgressStateIfNeeded(for: operationIndex)
     }
 
-    func didCompleteFullExecution(received _: Balance) {
-        updateCompletedStateIfNeeded()
+    func didCompleteFullExecution(received amount: Balance) {
+        updateCompletedStateIfNeeded(receivedAmount: amount)
 
         trackSwapCompleted()
     }
@@ -357,7 +367,7 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
     func didFailExecution(with failure: AssetExchangeOperationFailure) {
         trackAnalytics(.swapFailed(reason: failure.error.analyticsSwapFailureReason))
 
-        updateFailedStateIfNeeded(with: failure.error)
+        updateFailedStateIfNeeded(with: failure)
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(
             failure.error,
@@ -372,6 +382,7 @@ extension SwapExecutionPresenter: Localizable {
     func applyLocalization() {
         if let view, view.isSetup {
             provideExecutionViewModel()
+            provideStepsViewModel()
             updateSwapAssets()
             updateSwapDetails()
         }

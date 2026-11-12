@@ -1764,7 +1764,6 @@
 "swaps.execution.transfer.details" = "Átvitel: %@ a(z) %@-ra";
 "swaps.execution.swap.details" = "Csere: %@-ról %@-ra a(z) %@-on";
 "common.of" = "%@ a(z) %@ közül";
-"swaps.execution.swap.failure" = "Sikertelen művelet: #%@ (%@)";
 "swaps.label.crosschain" = "Láncok közötti átutalás";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "A csere végrehajtása során a köztes kapott összeg %@, ami kevesebb, mint a minimális egyenleg %@. Próbáljon meg nagyobb csereösszeget megadni.";
 "common.fee.amount.prefixed" = "Díj: %@";

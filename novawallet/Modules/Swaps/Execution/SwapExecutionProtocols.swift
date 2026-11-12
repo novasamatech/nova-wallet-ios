@@ -8,6 +8,7 @@ protocol SwapExecutionViewProtocol: ControllerBackedProtocol {
     func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?)
     func didReceiveSlippage(viewModel: String)
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveSteps(viewModel: [SwapExecutionStepViewModel])
 }
 
 protocol SwapExecutionPresenterProtocol: AnyObject {
@@ -19,6 +20,8 @@ protocol SwapExecutionPresenterProtocol: AnyObject {
     func showRouteDetails()
     func activateDone()
     func activateTryAgain()
+    func activateClose()
+    func showFailedTransaction()
 }
 
 protocol SwapExecutionInteractorInputProtocol: AnyObject {
@@ -32,7 +35,7 @@ protocol SwapExecutionInteractorOutputProtocol: AnyObject {
 }
 
 protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetPresentable, AlertPresentable,
-    ErrorPresentable, ExtrinsicSigningErrorHandling {
+    ErrorPresentable, ExtrinsicSigningErrorHandling, OperationIdOptionsPresentable {
     func complete(
         on view: ControllerBackedProtocol?,
         receiveChainAsset: ChainAsset
@@ -43,6 +46,8 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     )
+
+    func close(on view: ControllerBackedProtocol?)
 
     func showRouteDetails(
         from view: ControllerBackedProtocol?,

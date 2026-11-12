@@ -1764,7 +1764,6 @@
 "swaps.execution.transfer.details" = "将 %@ 转移到 %@";
 "swaps.execution.swap.details" = "在 %@ 上将 %@ 兑换为 %@";
 "common.of" = "%@ 的 %@";
-"swaps.execution.swap.failure" = "在第 %@ 次操作（%@）中失败";
 "swaps.label.crosschain" = "跨链转账";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "在交换执行过程中，中间接收金额为 %@，低于最小余额 %@。请尝试指定更大的交换金额。";
 "common.fee.amount.prefixed" = "费用：%@";

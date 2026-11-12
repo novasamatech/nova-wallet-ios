@@ -1764,7 +1764,6 @@
 "swaps.execution.transfer.details" = "Transferindo %@ para %@";
 "swaps.execution.swap.details" = "Trocando %@ para %@ em %@";
 "common.of" = "%@ de %@";
-"swaps.execution.swap.failure" = "Falha na operação #%@ (%@)";
 "swaps.label.crosschain" = "Transferência entre cadeias";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Durante a execução da troca, o valor intermediário recebido é %@, o que é menor que o saldo mínimo de %@. Tente especificar um valor maior para a troca.";
 "common.fee.amount.prefixed" = "Taxa: %@";

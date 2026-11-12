@@ -39,47 +39,36 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
 
         rootView.statusView.updateAnimationOnAppear()
     }
+}
 
-    private func setupHandlers() {
-        rootView.detailsView.delegate = self
-
-        rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+private extension SwapExecutionViewController {
+    func setupHandlers() {
         rootView.routeCell.addTarget(self, action: #selector(routeAction), for: .touchUpInside)
-        rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
-        rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
-        rootView.totalFeeCell.addTarget(self, action: #selector(totalFeeAction), for: .touchUpInside)
+        rootView.closeButton.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         rootView.setup(locale: selectedLocale)
     }
 
-    @objc private func rateAction() {
-        presenter.showRateInfo()
-    }
-
-    @objc private func priceDifferenceAction() {
-        presenter.showPriceDifferenceInfo()
-    }
-
-    @objc private func routeAction() {
+    @objc func routeAction() {
         presenter.showRouteDetails()
     }
 
-    @objc private func slippageAction() {
-        presenter.showSlippageInfo()
+    @objc func closeAction() {
+        presenter.activateClose()
     }
 
-    @objc private func totalFeeAction() {
-        presenter.showTotalFeeInfo()
-    }
-
-    @objc private func actionDone() {
+    @objc func doneAction() {
         presenter.activateDone()
     }
 
-    @objc private func actionTryAgain() {
+    @objc func tryAgainAction() {
         presenter.activateTryAgain()
+    }
+
+    @objc func viewTransactionAction() {
+        presenter.showFailedTransaction()
     }
 }
 
@@ -89,11 +78,15 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
 
         switch viewModel {
         case .completed:
+            rootView.setFinished()
+
             let doneButton = rootView.setupDoneButton(for: selectedLocale)
-            doneButton.addTarget(self, action: #selector(actionDone), for: .touchUpInside)
+            doneButton.addTarget(self, action: #selector(doneAction), for: .touchUpInside)
         case .failed:
+            rootView.setFinished()
+
             let tryAgainButton = rootView.setupTryAgainButton(for: selectedLocale)
-            tryAgainButton.addTarget(self, action: #selector(actionTryAgain), for: .touchUpInside)
+            tryAgainButton.addTarget(self, action: #selector(tryAgainAction), for: .touchUpInside)
         case .inProgress:
             break
         }
@@ -104,11 +97,11 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
     }
 
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
-        rootView.pairsView.leftAssetView.bind(viewModel: viewModel)
+        rootView.pairsView.payCardView.bind(viewModel: viewModel)
     }
 
     func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel) {
-        rootView.pairsView.rigthAssetView.bind(viewModel: viewModel)
+        rootView.pairsView.receiveCardView.bind(viewModel: viewModel)
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
@@ -119,30 +112,23 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
         rootView.routeCell.bind(loadableRouteViewModel: viewModel)
     }
 
-    func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?) {
-        if let viewModel {
-            rootView.priceDifferenceCell.isHidden = false
-            rootView.priceDifferenceCell.bind(differenceViewModel: viewModel)
-        } else {
-            rootView.priceDifferenceCell.isHidden = true
-        }
-    }
+    func didReceivePriceDifference(viewModel _: LoadableViewModelState<DifferenceViewModel>?) {}
 
-    func didReceiveSlippage(viewModel: String) {
-        rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel))
-    }
+    func didReceiveSlippage(viewModel _: String) {}
 
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.totalFeeCell.bind(loadableViewModel: viewModel)
-    }
-}
-
-extension SwapExecutionViewController: CollapsableContainerViewDelegate {
-    func animateAlongsideWithInfo(sender _: AnyObject?) {
-        rootView.containerView.scrollView.layoutIfNeeded()
+        rootView.totalFeeCell.bind(loadableFeeViewModel: viewModel)
     }
 
-    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {}
+    func didReceiveSteps(viewModel: [SwapExecutionStepViewModel]) {
+        rootView.stepsView.isHidden = viewModel.isEmpty
+        rootView.stepsView.bind(viewModel: viewModel, locale: selectedLocale)
+        rootView.stepsView.viewTransactionButton?.addTarget(
+            self,
+            action: #selector(viewTransactionAction),
+            for: .touchUpInside
+        )
+    }
 }
 
 extension SwapExecutionViewController: ModalCardPresentationControllerDelegate {

@@ -14,7 +14,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         selectedWallet.fetch(for: initState.chainAssetOut.chain.accountRequest())?.accountId
     }
 
-    private var viewModelFactory: SwapDetailsViewModelFactoryProtocol
+    let viewModelFactory: SwapDetailsViewModelFactoryProtocol
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
@@ -358,6 +358,7 @@ extension SwapConfirmPresenter {
         provideSlippageViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
+        provideCommissionDisclosureViewModel()
     }
 
     private func submit() {

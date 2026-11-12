@@ -12,6 +12,7 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveWallet(viewModel: WalletAccountViewModel?)
     func didReceiveWarning(viewModel: String?)
+    func didReceiveCommissionDisclosure(viewModel: String?)
     func didReceiveStartLoading()
     func didReceiveStopLoading()
 }

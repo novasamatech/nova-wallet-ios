@@ -1786,7 +1786,6 @@
 "swaps.execution.transfer.details" = "Transferring %@ to %@";
 "swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
 "common.of" = "%@ of %@";
-"swaps.execution.swap.failure" = "Failed on operation #%@ (%@)";
 "swaps.execution.completed.title" = "Swapped";
 "swaps.execution.step.transfer" = "Transfer %@ from %@ to %@";
 "swaps.execution.step.swap" = "Swap %@ → %@ on %@";

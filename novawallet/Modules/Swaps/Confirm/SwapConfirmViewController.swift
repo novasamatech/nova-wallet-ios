@@ -41,7 +41,6 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
         rootView.routeCell.addTarget(self, action: #selector(routeAction), for: .touchUpInside)
-        rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
         rootView.accountCell.addTarget(self, action: #selector(addressAction), for: .touchUpInside)
@@ -50,10 +49,6 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     @objc private func rateAction() {
         presenter.showRateInfo()
-    }
-
-    @objc private func priceDifferenceAction() {
-        presenter.showPriceDifferenceInfo()
     }
 
     @objc private func slippageAction() {
@@ -79,11 +74,11 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
 extension SwapConfirmViewController: SwapConfirmViewProtocol {
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
-        rootView.pairsView.leftAssetView.bind(viewModel: viewModel)
+        rootView.pairsView.payCardView.bind(viewModel: viewModel)
     }
 
     func didReceiveAssetOut(viewModel: LoadableViewModelState<SwapAssetAmountViewModel>) {
-        rootView.pairsView.rigthAssetView.bind(loadableViewModel: viewModel)
+        rootView.pairsView.receiveCardView.bind(loadableViewModel: viewModel)
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
@@ -98,38 +93,29 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.execTimeCell.bind(loadableViewModel: viewModel)
     }
 
-    func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?) {
-        if let viewModel = viewModel {
-            rootView.priceDifferenceCell.isHidden = false
-            rootView.priceDifferenceCell.bind(differenceViewModel: viewModel)
-        } else {
-            rootView.priceDifferenceCell.isHidden = true
-        }
-    }
+    func didReceivePriceDifference(viewModel _: LoadableViewModelState<DifferenceViewModel>?) {}
 
     func didReceiveSlippage(viewModel: String) {
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel))
     }
 
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.networkFeeCell.bind(loadableViewModel: viewModel)
+        rootView.networkFeeCell.bind(loadableFeeViewModel: viewModel)
     }
 
     func didReceiveWallet(viewModel: WalletAccountViewModel?) {
-        guard let viewModel = viewModel else {
+        guard let viewModel else {
             rootView.walletTableView.isHidden = true
             return
         }
-        rootView.walletTableView.isHidden = false
-        rootView.walletCell.bind(viewModel: .init(
-            details: viewModel.walletName ?? "",
-            imageViewModel: viewModel.walletIcon
-        ))
 
-        rootView.accountCell.bind(viewModel: .init(
-            details: viewModel.address,
-            imageViewModel: viewModel.addressIcon
-        ))
+        rootView.walletTableView.isHidden = false
+        rootView.walletCell.bind(details: viewModel.walletName ?? "", iconViewModel: nil)
+        rootView.accountCell.bind(details: viewModel.address.truncated, iconViewModel: viewModel.addressIcon)
+    }
+
+    func didReceiveCommissionDisclosure(viewModel: String?) {
+        rootView.set(commissionDisclosure: viewModel)
     }
 
     func didReceiveWarning(viewModel: String?) {

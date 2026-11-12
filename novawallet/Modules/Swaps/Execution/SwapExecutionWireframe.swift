@@ -1,27 +1,26 @@
 import Foundation
-import NovaAnalytics
 
 final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
     let flowState: SwapTokensFlowStateProtocol
-    let completionClosure: SwapCompletionClosure?
+    let flowHandler: SwapExecutionFlowHandling
 
     init(
         flowState: SwapTokensFlowStateProtocol,
-        completionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) {
         self.flowState = flowState
-        self.completionClosure = completionClosure
+        self.flowHandler = flowHandler
     }
 
     func complete(
         on view: ControllerBackedProtocol?,
         receiveChainAsset: ChainAsset
     ) {
-        let presenter = view?.controller.presentingViewController
+        flowHandler.completeFlow(from: view, receiveChainAsset: receiveChainAsset)
+    }
 
-        presenter?.dismiss(animated: true) {
-            self.completionClosure?(receiveChainAsset)
-        }
+    func close(on view: ControllerBackedProtocol?) {
+        flowHandler.closeFlow(from: view)
     }
 
     func showSwapSetup(
@@ -29,25 +28,11 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     ) {
-        guard let swapView = SwapSetupViewFactory.createView(
-            state: flowState,
-            initState: .init(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset),
-            source: .retry,
-            swapCompletionClosure: completionClosure
-        ) else {
-            return
-        }
-
-        let presenter = view?.controller.presentingViewController
-
-        let navigationController = NovaNavigationController(rootViewController: swapView.controller)
-
-        presenter?.dismiss(animated: true) {
-            presenter?.presentWithCardLayout(
-                navigationController,
-                animated: true
-            )
-        }
+        flowHandler.retryFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
     }
 
     func showRouteDetails(

@@ -2,14 +2,14 @@ import Foundation
 
 final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
     let flowState: SwapTokensFlowStateProtocol
-    let completionClosure: SwapCompletionClosure?
+    let flowHandler: SwapExecutionFlowHandling
 
     init(
         flowState: SwapTokensFlowStateProtocol,
-        completionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) {
         self.flowState = flowState
-        self.completionClosure = completionClosure
+        self.flowHandler = flowHandler
     }
 
     func showSwapExecution(
@@ -20,15 +20,15 @@ final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
             let swapExecutionView = SwapExecutionViewFactory.createView(
                 for: model,
                 flowState: flowState,
-                completionClosure: completionClosure
+                flowHandler: flowHandler
             ) else {
             return
         }
 
-        let presenter = view?.controller.navigationController?.presentingViewController
+        let flowHost = view?.controller.navigationController?.presentingViewController
 
-        presenter?.dismiss(animated: true) {
-            presenter?.present(swapExecutionView.controller, animated: true)
+        flowHost?.dismiss(animated: true) {
+            flowHost?.presentWithCardLayout(swapExecutionView.controller, animated: true)
         }
     }
 

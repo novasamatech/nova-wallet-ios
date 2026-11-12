@@ -1764,7 +1764,6 @@
 "swaps.execution.transfer.details" = "Перевод %@ на %@";
 "swaps.execution.swap.details" = "Обмен %@ на %@ на %@";
 "common.of" = "%@ из %@";
-"swaps.execution.swap.failure" = "Ошибка в операции #%@ (%@)";
 "swaps.label.crosschain" = "Межсетевой перевод";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Во время выполнения обмена промежуточная полученная сумма составляет %@, что меньше минимального баланса в %@. Попробуйте указать большую сумму обмена.";
 "common.fee.amount.prefixed" = "Комиссия: %@";

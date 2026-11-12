@@ -5,7 +5,7 @@ struct SwapExecutionViewFactory {
     static func createView(
         for model: SwapExecutionModel,
         flowState: SwapTokensFlowStateProtocol,
-        completionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) -> SwapExecutionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
@@ -18,7 +18,7 @@ struct SwapExecutionViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let wireframe = SwapExecutionWireframe(flowState: flowState, completionClosure: completionClosure)
+        let wireframe = SwapExecutionWireframe(flowState: flowState, flowHandler: flowHandler)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(

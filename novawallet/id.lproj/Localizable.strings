@@ -1764,7 +1764,6 @@
 "swaps.execution.transfer.details" = "Mentransfer %@ ke %@";
 "swaps.execution.swap.details" = "Menukar %@ ke %@ di %@";
 "common.of" = "%@ dari %@";
-"swaps.execution.swap.failure" = "Gagal pada operasi #%@ (%@)";
 "swaps.label.crosschain" = "Transfer lintas rantai";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Selama eksekusi swap, jumlah terima sementara adalah %@ yang kurang dari saldo minimum %@. Coba tentukan jumlah swap yang lebih besar.";
 "common.fee.amount.prefixed" = "Biaya: %@";
