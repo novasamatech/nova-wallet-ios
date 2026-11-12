@@ -361,11 +361,7 @@ extension SwapConfirmPresenter {
         provideCommissionDisclosureViewModel()
     }
 
-    private func submit() {
-        guard let fee, let quote else {
-            return
-        }
-
+    private func submit(fee: AssetExchangeFee, quote: AssetExchangeQuote) {
         let executionModel = SwapExecutionModel(
             chainAssetIn: initState.chainAssetIn,
             chainAssetOut: initState.chainAssetOut,
@@ -380,11 +376,16 @@ extension SwapConfirmPresenter {
     }
 
     private func handleValidatedConfirmation() {
+        guard let fee, let quote else {
+            view?.didReceiveStopLoading()
+            return
+        }
+
         abandonTracker.markProceeded()
 
         trackSwapConfirmed()
 
-        submit()
+        submit(fee: fee, quote: quote)
     }
 }
 
