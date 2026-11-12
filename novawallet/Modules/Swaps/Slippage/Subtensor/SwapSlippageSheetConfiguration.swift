@@ -7,6 +7,7 @@ struct SwapSlippageSheetConfiguration {
     let explanation: LocalizableResource<String>?
     let actionTitle: LocalizableResource<String>
     let allowsReset: Bool
+    let showsSlippageInfo: Bool
 }
 
 extension SwapSlippageSheetConfiguration {
@@ -19,7 +20,8 @@ extension SwapSlippageSheetConfiguration {
             R.string(preferredLanguages: $0.rLanguages).localizable.stakingSubtensorUiSlippageExplanation()
         },
         actionTitle: LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonDone() },
-        allowsReset: false
+        allowsReset: false,
+        showsSlippageInfo: false
     )
 
     static let swap = SwapSlippageSheetConfiguration(
@@ -31,6 +33,7 @@ extension SwapSlippageSheetConfiguration {
         },
         explanation: nil,
         actionTitle: LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonApply() },
-        allowsReset: true
+        allowsReset: true,
+        showsSlippageInfo: true
     )
 }

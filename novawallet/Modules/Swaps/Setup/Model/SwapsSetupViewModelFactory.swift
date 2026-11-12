@@ -31,6 +31,14 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
         bounds: SlippageBounds,
         locale: Locale
     ) -> SwapSetupSlippageViewModel
+
+    func minReceivedViewModel(
+        for quote: AssetExchangeQuote,
+        slippage: BigRational,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> String
+
     func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel
 
     func amountInputViewModel(
@@ -87,7 +95,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             return strings.swapsSetupActionNotEnoughToken(payChainAsset.asset.symbol)
         }
 
-        if case let .failure(error) = params.quoteResult, SwapSetupQuoteState.isNoRoute(error) {
+        if case let .failure(error) = params.quoteResult, SwapQuoteFailure(error: error) == .noRoute {
             return strings.swapsSetupActionNoRoute()
         }
 
@@ -128,6 +136,26 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectSubtitle()
         )
     }
+
+    private static func minReceived(for quote: AssetExchangeQuote, slippage: BigRational) -> Balance {
+        let slippageBoundOperations = switch quote.route.direction {
+        case .sell:
+            quote.metaOperations[...]
+        case .buy:
+            quote.metaOperations.dropFirst()
+        }
+
+        let slippageBoundSwapCount = slippageBoundOperations.filter { $0.label == .swap }.count
+
+        let amountOut = quote.route.amountOut
+        let compoundedAmountOutMin = (0 ..< slippageBoundSwapCount).reduce(amountOut) { amount, _ in
+            amount.subtractOrZero(slippage.mul(value: amount))
+        }
+
+        let slippageLoss = amountOut - compoundedAmountOutMin
+
+        return quote.commissionNetFlow().netFinalAmountOut.subtractOrZero(slippageLoss)
+    }
 }
 
 extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
@@ -146,7 +174,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
                     locale: $0
                 )
             },
-            enabled: dataFullFilled && issues.isEmpty && !issueParams.isQuoting
+            enabled: dataFullFilled && issueParams.hasEnteredAmount && issues.isEmpty && !issueParams.isQuoting
         )
     }
 
@@ -232,6 +260,22 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             value: valueString,
             hasWarning: bounds.warning(for: value, locale: locale) != nil
         )
+    }
+
+    func minReceivedViewModel(
+        for quote: AssetExchangeQuote,
+        slippage: BigRational,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> String {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let minReceived = Self.minReceived(for: quote, slippage: slippage)
+
+        return balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: assetDisplayInfo,
+            value: minReceived.decimal(assetInfo: assetDisplayInfo),
+            roundingMode: .down
+        ).value(for: locale)
     }
 
     func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel {

@@ -69,10 +69,15 @@ final class SwapIssueViewModelFactory {
     }
 
     func detectNoLiquidity(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
-        if case .failure = model.quoteResult {
-            return .noLiqudity
-        } else {
+        guard case let .failure(error) = model.quoteResult else {
             return nil
+        }
+
+        switch SwapQuoteFailure(error: error) {
+        case .noLiquidity:
+            return .noLiqudity
+        case .noRoute, .fetchFailed:
+            return .quoteUnavailable
         }
     }
 }

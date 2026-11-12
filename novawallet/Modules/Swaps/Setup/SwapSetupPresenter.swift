@@ -18,6 +18,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
     var chartContext = SwapPriceChartContext()
+    var quoteFailureAlertState = SwapQuoteFailureAlertState.armed
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
@@ -29,6 +30,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     override var quoteResult: Result<AssetExchangeQuote, Error>? {
         didSet {
             provideQuoteState()
+            provideMinReceivedViewModel()
         }
     }
 
@@ -147,6 +149,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         payAmountInput = .rate(1)
         providePayAssetViews()
         refreshQuote(direction: .sell)
+        armQuoteFailureAlert()
         provideButtonState()
         provideIssues()
     }
@@ -176,11 +179,13 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
 
         provideCommissionDisclosureViewModel()
-        presentQuoteFailureIfNeeded(for: error)
+        startQuoteFailureEpisodeIfNeeded(for: error)
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
         logger.debug("New quote: \(quote)")
+
+        armQuoteFailureAlert()
 
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
@@ -236,6 +241,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
                 !isMaxCorrectionConverged(for: correctionDirection),
                 maxCorrectionCounter.incrementCounterIfPossible() {
                 refreshQuote(direction: correctionDirection, forceUpdate: false)
+                armQuoteFailureAlert()
             } else {
                 maxCorrectionCounter.resetCounter()
             }
@@ -311,6 +317,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         if case .rate = payAmountInput {
             refreshQuote(direction: .sell, forceUpdate: false)
+            armQuoteFailureAlert()
         }
     }
 }
@@ -799,6 +806,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             } else {
                 self?.refreshQuote(direction: .buy, forceUpdate: false)
             }
+
+            self?.armQuoteFailureAlert()
         }
     }
 
@@ -820,12 +829,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             } else {
                 self?.refreshQuote(direction: .sell, forceUpdate: false)
             }
+
+            self?.armQuoteFailureAlert()
         }
     }
 
     func updatePayAmount(_ amount: Decimal?) {
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
+        armQuoteFailureAlert()
         providePayInputPriceViewModel()
         provideReceiveInputPriceViewModel()
         provideButtonState()
@@ -835,6 +847,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func updateReceiveAmount(_ amount: Decimal?) {
         receiveAmountInput = amount
         refreshQuote(direction: .buy)
+        armQuoteFailureAlert()
         provideReceiveInputPriceViewModel()
         providePayInputPriceViewModel()
         provideButtonState()
@@ -880,6 +893,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             receiveAmountInput = nil
         }
 
+        armQuoteFailureAlert()
+
         providePayAssetViews()
         provideReceiveAssetViews()
         provideButtonState()
@@ -897,48 +912,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         applySwapMax()
     }
 
-    func proceed() {
-        guard let swapModel = getSwapModel() else {
-            return
-        }
-
-        let validators = getBaseValidations(for: swapModel, interactor: interactor, locale: selectedLocale)
-
-        DataValidationRunner(validators: validators).runValidation(
-            notifyingOnSuccess: { [weak self] in
-                self?.view?.didStopLoading()
-
-                guard let slippage = self?.slippage,
-                      let quote = self?.quote,
-                      let quoteArgs = self?.quoteArgs else {
-                    return
-                }
-
-                let confirmInitState = SwapConfirmInitState(
-                    chainAssetIn: swapModel.payChainAsset,
-                    chainAssetOut: swapModel.receiveChainAsset,
-                    feeChainAsset: swapModel.feeChainAsset,
-                    slippage: slippage,
-                    quote: quote,
-                    quoteArgs: quoteArgs,
-                    payAssetCollateralLimit: swapModel.payAssetCollateralLimit
-                )
-
-                self?.trackProceededToConfirmation(for: swapModel, quote: quote)
-
-                self?.wireframe.showConfirmation(
-                    from: self?.view,
-                    initState: confirmInitState
-                )
-            },
-            notifyingOnStop: { [weak self] _ in
-                self?.view?.didStopLoading()
-            }, notifyingOnResume: { [weak self] _ in
-                self?.view?.didStartLoading()
-            }
-        )
-    }
-
     func showSettings() {
         guard let payChainAsset = payChainAsset else {
             return
@@ -953,6 +926,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             }
             self?.slippage = slippageValue
             self?.provideSlippageViewModel()
+            self?.provideMinReceivedViewModel()
             self?.estimateFee()
         }
     }

@@ -63,6 +63,12 @@ final class SwapDetailsView: UIView {
         $0.rowContentView.selectable = false
     }
 
+    let minReceivedCell: SwapInfoViewCell = .create {
+        SwapDetailsView.configure(cell: $0)
+        $0.rowContentView.selectable = false
+        $0.isUserInteractionEnabled = false
+    }
+
     private let rowsView: UIStackView = .create {
         $0.axis = .vertical
         $0.isHidden = true
@@ -146,7 +152,15 @@ private extension SwapDetailsView {
             make.height.equalTo(Constants.separatorHeight)
         }
 
-        let rows: [UIView] = [rateCell, routeCell, execTimeCell, networkFeeCell, priceDifferenceCell, slippageCell]
+        let rows: [UIView] = [
+            rateCell,
+            routeCell,
+            execTimeCell,
+            networkFeeCell,
+            priceDifferenceCell,
+            slippageCell,
+            minReceivedCell
+        ]
 
         rows.forEach { row in
             rowsView.addArrangedSubview(row)

@@ -4,6 +4,7 @@ import Foundation_iOS
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     var isChartVisiblyExpanded: Bool { get }
+    var isFrontmost: Bool { get }
 
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel)
@@ -26,8 +27,10 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveChart(viewModel: SwapPriceChartViewModel)
     func didReceive(quoteState: SwapSetupQuoteState)
     func didReceiveSlippage(viewModel: SwapSetupSlippageViewModel)
+    func didReceiveMinReceived(viewModel: LoadableViewModelState<String>)
     func didStartLoading()
     func didStopLoading()
+    func notifyWhenFrontmost()
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -47,6 +50,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func depositInsufficientToken()
     func selectChartExpansion(_ isExpanded: Bool)
     func didChangeChartVisibility()
+    func didBecomeFrontmost()
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -112,5 +116,6 @@ enum SwapSetupViewIssue: Equatable {
     case insufficientBalance
     case minBalanceViolation(String)
     case noLiqudity
+    case quoteUnavailable
     case zeroReceiveAmount
 }

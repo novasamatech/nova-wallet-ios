@@ -99,6 +99,7 @@ private extension SwapSetupAssetHeaderView {
         }
 
         titleView.buttonTitle.apply(style: showsBalance ? .footnoteSecondary : .footnoteAccentText)
+        titleView.buttonValue.apply(style: showsBalance ? .footnoteSecondary : .footnotePrimary)
         maxButton.isUserInteractionEnabled = !showsBalance
     }
 }

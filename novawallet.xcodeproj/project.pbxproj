@@ -7226,6 +7226,7 @@
 		5CB3AE303F50C771B95FC286 /* SwapAssetPairId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E247D321ECF4A7A688EE41 /* SwapAssetPairId.swift */; };
 		DF22680B228152893CF1DB1C /* SwapSetupQuoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */; };
 		D3BCC60E45446FC3FA13FE44 /* SwapSetupPresenter+Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */; };
+		F4161248E9CC6FD3B6CEC57B /* SwapSetupPresenter+Proceed.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECBDDB69055C04446D2921B /* SwapSetupPresenter+Proceed.swift */; };
 		984BCDF1A95B966A0FF2E2D7 /* SwapSetupViewController+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */; };
 		D656130EB040498D4F7D1AD3 /* SwapSetupViewFactory+SwapsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */; };
 		8CA3047B16376558344AC912 /* SwapSetupAssetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392D2819369DCB3776A54F38 /* SwapSetupAssetHeaderView.swift */; };
@@ -14202,6 +14203,7 @@
 		77E247D321ECF4A7A688EE41 /* SwapAssetPairId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetPairId.swift; sourceTree = "<group>"; };
 		BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSetupQuoteState.swift; sourceTree = "<group>"; };
 		2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Form.swift"; sourceTree = "<group>"; };
+		EECBDDB69055C04446D2921B /* SwapSetupPresenter+Proceed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Proceed.swift"; sourceTree = "<group>"; };
 		45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupViewController+Protocol.swift"; sourceTree = "<group>"; };
 		63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupViewFactory+SwapsTab.swift"; sourceTree = "<group>"; };
 		392D2819369DCB3776A54F38 /* SwapSetupAssetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSetupAssetHeaderView.swift; sourceTree = "<group>"; };
@@ -18075,6 +18077,7 @@
 				21BFB88AFA39D4273B224261 /* SwapSetupViewController+PriceChart.swift */,
 				6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */,
 				2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */,
+				EECBDDB69055C04446D2921B /* SwapSetupPresenter+Proceed.swift */,
 				45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */,
 				63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */,
 				9DC8E315CEFCA8966DF080A6 /* TokenSelection */,
@@ -39385,6 +39388,7 @@
 				0C5F987FC46AAB0D1A2B523A /* SwapSetupPresenter+Details.swift in Sources */,
 				88D6B5760D4388B5718185A0 /* SwapSetupPresenter+PriceChart.swift in Sources */,
 				D3BCC60E45446FC3FA13FE44 /* SwapSetupPresenter+Form.swift in Sources */,
+				F4161248E9CC6FD3B6CEC57B /* SwapSetupPresenter+Proceed.swift in Sources */,
 				8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */,
 				14856B6F02B66ECA496EFC94 /* SwapSetupViewController+PriceChart.swift in Sources */,
 				984BCDF1A95B966A0FF2E2D7 /* SwapSetupViewController+Protocol.swift in Sources */,

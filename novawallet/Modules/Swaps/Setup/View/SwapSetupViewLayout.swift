@@ -223,7 +223,7 @@ private extension SwapSetupViewLayout {
 
         addArrangedSubview(rateContainerView, spacingAfter: Constants.rateSpacingAfter)
         rateContainerView.snp.makeConstraints {
-            $0.height.equalTo(Constants.rateHeight)
+            $0.height.equalTo(Constants.rateTapHeight)
         }
 
         addArrangedSubview(detailsView)
@@ -259,17 +259,20 @@ private extension SwapSetupViewLayout {
 
     func setupSwitchButtonLayout() {
         containerView.scrollView.addSubview(switchButton)
+        let balanceView = receiveHeaderView.maxButton
+
         switchButton.snp.makeConstraints {
             $0.size.equalTo(Constants.switchSize)
             $0.centerY.equalTo(receiveHeaderView)
-            $0.centerX.equalTo(receiveHeaderView)
+            $0.centerX.equalTo(receiveHeaderView).priority(.medium)
+            $0.trailing.lessThanOrEqualTo(balanceView.snp.leading).offset(-Constants.switchBalanceSpacing)
         }
     }
 }
 
 extension SwapSetupViewLayout {
     enum Constants {
-        static let contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 100, right: 16)
+        static let contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 100, right: 16)
         static let tabHeaderHeight: CGFloat = 50
         static let tabButtonSize: CGFloat = 44
         static let tabButtonTopInset: CGFloat = 6
@@ -284,14 +287,17 @@ extension SwapSetupViewLayout {
         static let depositSpacingAfter: CGFloat = 12
         static let depositHeight: CGFloat = 44
         static let receiveIssueSpacing: CGFloat = 6
-        static let receiveToRateSpacing: CGFloat = 14
         static let receiveToDetailsSpacing: CGFloat = 12
         static let rateHeight: CGFloat = 18
+        static let rateTapHeight: CGFloat = 44
+        static let rateTapOutset: CGFloat = (rateTapHeight - rateHeight) / 2
+        static let receiveToRateSpacing: CGFloat = 14 - rateTapOutset
         static let rateHorizontalInset: CGFloat = 4
         static let rateIconSpacing: CGFloat = 16
-        static let rateSpacingAfter: CGFloat = 16
+        static let rateSpacingAfter: CGFloat = 16 - rateTapOutset
         static let commissionSpacing: CGFloat = 8
         static let switchSize: CGFloat = 36
         static let switchBorderWidth: CGFloat = 2
+        static let switchBalanceSpacing: CGFloat = 8
     }
 }

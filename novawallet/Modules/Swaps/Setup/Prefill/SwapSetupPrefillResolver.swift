@@ -37,77 +37,97 @@ final class SwapSetupPrefillResolver {
 // MARK: Private
 
 private extension SwapSetupPrefillResolver {
-    func createCandidatesWrapper() -> CompoundOperationWrapper<[SwapAssetPairId]> {
-        let savedPair = lastPairStore.lastPair
+    func createInitStateWrapper(for wallet: MetaAccountModel) -> CompoundOperationWrapper<SwapSetupInitState> {
+        let savedPairWrapper = createResolutionWrapper(for: lastPairStore.lastPair, wallet: wallet)
+
+        let resultWrapper = OperationCombiningService<SwapSetupInitState>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            if let initState = try savedPairWrapper.targetOperation.extractNoCancellableResultData() {
+                return .createWithResult(initState)
+            }
+
+            return self.createConfigPairInitStateWrapper(for: wallet)
+        }
+
+        resultWrapper.addDependency(wrapper: savedPairWrapper)
+
+        return resultWrapper.insertingHead(operations: savedPairWrapper.allOperations)
+    }
+
+    func createConfigPairInitStateWrapper(
+        for wallet: MetaAccountModel
+    ) -> CompoundOperationWrapper<SwapSetupInitState> {
         let configWrapper = globalConfigProvider.createConfigWrapper()
 
-        let mappingOperation = ClosureOperation<[SwapAssetPairId]> { [weak self] in
+        let resolutionWrapper = OperationCombiningService<SwapSetupInitState?>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
             let configPair: SwapAssetPairId?
 
             do {
                 configPair = try configWrapper.targetOperation.extractNoCancellableResultData().defaultSwapPair
             } catch {
-                self?.logger.warning("Swap default pair unavailable: \(error)")
+                self.logger.warning("Swap default pair unavailable: \(error)")
                 configPair = nil
             }
 
-            return [savedPair, configPair].compactMap { $0 }
+            return self.createResolutionWrapper(for: configPair, wallet: wallet)
         }
 
-        mappingOperation.addDependency(configWrapper.targetOperation)
+        resolutionWrapper.addDependency(wrapper: configWrapper)
 
-        return configWrapper.insertingTail(operation: mappingOperation)
+        let mappingOperation = ClosureOperation<SwapSetupInitState> {
+            try resolutionWrapper.targetOperation.extractNoCancellableResultData() ??
+                SwapSetupInitState(payChainAsset: nil)
+        }
+
+        mappingOperation.addDependency(resolutionWrapper.targetOperation)
+
+        return resolutionWrapper
+            .insertingHead(operations: configWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
     }
 
     func createResolutionWrapper(
-        for candidatesWrapper: CompoundOperationWrapper<[SwapAssetPairId]>,
+        for pair: SwapAssetPairId?,
         wallet: MetaAccountModel
-    ) -> CompoundOperationWrapper<SwapSetupInitState> {
-        let resolutionWrapper = OperationCombiningService<SwapSetupInitState>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [chainRegistry] in
-            let candidates = try candidatesWrapper.targetOperation.extractNoCancellableResultData()
-            let chainIds = Set(candidates.flatMap { [$0.pay.chainId, $0.receive.chainId] })
-
-            let chainWrappers = chainIds.map { chainRegistry.asyncWaitChainWrapper(for: $0) }
-
-            let mappingOperation = ClosureOperation<SwapSetupInitState> {
-                let chains = try chainWrappers.compactMap { try $0.targetOperation.extractNoCancellableResultData() }
-                let chainsById = chains.reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
-
-                return Self.resolveInitState(from: candidates, chains: chainsById, wallet: wallet)
-            }
-
-            chainWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-
-            return CompoundOperationWrapper(
-                targetOperation: mappingOperation,
-                dependencies: chainWrappers.flatMap(\.allOperations)
-            )
+    ) -> CompoundOperationWrapper<SwapSetupInitState?> {
+        guard let pair else {
+            return .createWithResult(nil)
         }
 
-        resolutionWrapper.addDependency(wrapper: candidatesWrapper)
+        let chainIds = Set([pair.pay.chainId, pair.receive.chainId])
+        let chainWrappers = chainIds.map { chainRegistry.asyncWaitChainWrapper(for: $0) }
 
-        return resolutionWrapper.insertingHead(operations: candidatesWrapper.allOperations)
+        let mappingOperation = ClosureOperation<SwapSetupInitState?> {
+            let chains = try chainWrappers.compactMap { try $0.targetOperation.extractNoCancellableResultData() }
+            let chainsById = chains.reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
+
+            return Self.resolveInitState(from: pair, chains: chainsById, wallet: wallet)
+        }
+
+        chainWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: chainWrappers.flatMap(\.allOperations)
+        )
     }
 
     static func resolveInitState(
-        from candidates: [SwapAssetPairId],
+        from pair: SwapAssetPairId,
         chains: [ChainModel.Id: ChainModel],
         wallet: MetaAccountModel
-    ) -> SwapSetupInitState {
-        for candidate in candidates {
-            guard
-                let payChainAsset = resolveChainAsset(candidate.pay, chains: chains, wallet: wallet),
-                let receiveChainAsset = resolveChainAsset(candidate.receive, chains: chains, wallet: wallet),
-                payChainAsset.chainAssetId != receiveChainAsset.chainAssetId else {
-                continue
-            }
-
-            return SwapSetupInitState(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset)
+    ) -> SwapSetupInitState? {
+        guard
+            let payChainAsset = resolveChainAsset(pair.pay, chains: chains, wallet: wallet),
+            let receiveChainAsset = resolveChainAsset(pair.receive, chains: chains, wallet: wallet),
+            payChainAsset.chainAssetId != receiveChainAsset.chainAssetId else {
+            return nil
         }
 
-        return SwapSetupInitState(payChainAsset: nil)
+        return SwapSetupInitState(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset)
     }
 
     static func resolveChainAsset(
@@ -135,8 +155,7 @@ extension SwapSetupPrefillResolver: SwapSetupPrefillResolving {
     ) {
         callStore.cancel()
 
-        let candidatesWrapper = createCandidatesWrapper()
-        let wrapper = createResolutionWrapper(for: candidatesWrapper, wallet: wallet)
+        let wrapper = createInitStateWrapper(for: wallet)
 
         executeCancellable(
             wrapper: wrapper,

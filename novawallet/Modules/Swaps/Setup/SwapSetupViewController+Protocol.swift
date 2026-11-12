@@ -43,7 +43,7 @@ extension SwapSetupViewController {
             receiveLoading = direction == .sell
             payMasked = false
             receiveMasked = false
-        case let .noRoute(direction):
+        case let .noRoute(direction), let .noLiquidity(direction):
             payLoading = false
             receiveLoading = false
             payMasked = direction == .buy
@@ -59,6 +59,46 @@ extension SwapSetupViewController {
         rootView.receiveAmountInputView.setLoading(receiveLoading)
         rootView.payAmountInputView.setValueMasked(payMasked)
         rootView.receiveAmountInputView.setValueMasked(receiveMasked)
+    }
+
+    func updateFrontmostCheck() {
+        guard isFrontmostRequested else {
+            stopFrontmostCheck()
+            return
+        }
+
+        if isFrontmost {
+            isFrontmostRequested = false
+            stopFrontmostCheck()
+            presenter.didBecomeFrontmost()
+        } else if isOnScreen {
+            startFrontmostCheck()
+        } else {
+            stopFrontmostCheck()
+        }
+    }
+
+    func startFrontmostCheck() {
+        guard frontmostCheckTimer == nil else {
+            return
+        }
+
+        frontmostCheckTimer = Timer.scheduledTimer(
+            withTimeInterval: Constants.frontmostCheckInterval,
+            repeats: true
+        ) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+
+            updateFrontmostCheck()
+        }
+    }
+
+    func stopFrontmostCheck() {
+        frontmostCheckTimer?.invalidate()
+        frontmostCheckTimer = nil
     }
 
     func applyIssues(_ issues: [SwapSetupViewIssue]) {
@@ -81,6 +121,8 @@ extension SwapSetupViewController {
             case let .minBalanceViolation(minBalance):
                 receiveIssue = strings.commonReceiveAtLeastEdError(minBalance)
             case .noLiqudity:
+                payIssue = strings.swapsNotEnoughLiquidity()
+            case .quoteUnavailable:
                 break
             }
         }
@@ -95,6 +137,12 @@ extension SwapSetupViewController {
 // MARK: SwapSetupViewProtocol
 
 extension SwapSetupViewController: SwapSetupViewProtocol {
+    var isFrontmost: Bool {
+        let isMoreMenuShown = (tabBarController as? MainTabBarViewController)?.moreMenuView != nil
+
+        return isOnScreen && presentedViewController == nil && !isMoreMenuShown
+    }
+
     func didReceiveButtonState(title: String, enabled: Bool) {
         rootView.actionButton.applyState(title: title, enabled: enabled)
     }
@@ -206,6 +254,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         cell.bind(attention: viewModel.hasWarning ? .medium : .low)
     }
 
+    func didReceiveMinReceived(viewModel: LoadableViewModelState<String>) {
+        rootView.detailsView.minReceivedCell.bind(loadableViewModel: viewModel)
+    }
+
     func didReceive(quoteState: SwapSetupQuoteState) {
         self.quoteState = quoteState
 
@@ -232,5 +284,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func didStopLoading() {
         rootView.loadableActionView.stopLoading()
+    }
+
+    func notifyWhenFrontmost() {
+        isFrontmostRequested = true
+        updateFrontmostCheck()
     }
 }

@@ -119,6 +119,8 @@ extension SwapsTabHostViewController: EventVisitorProtocol {
         needsRebuild = true
         prefillResolver.cancel()
 
+        install(SwapsTabPlaceholderViewController(localizationManager: localizationManager))
+
         if viewIfLoaded?.window != nil {
             rebuildIfNeeded()
         }

@@ -12,6 +12,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     var chartViewModel: SwapPriceChartViewModel?
     var isKeyboardVisible = false
     var isOnScreen = false
+    var isFrontmostRequested = false
+    var frontmostCheckTimer: Timer?
 
     var quoteState: SwapSetupQuoteState = .idle
     var isDetailsAvailable = false
@@ -63,12 +65,14 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         isOnScreen = true
         applyPendingFocus()
         presenter.didChangeChartVisibility()
+        updateFrontmostCheck()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         isOnScreen = false
+        updateFrontmostCheck()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -135,6 +139,7 @@ private extension SwapSetupViewController {
         detailsView.networkFeeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsTotalFee()
         detailsView.priceDifferenceCell.titleButton.imageWithTitleView?.title = strings.swapsSetupPriceDifference()
         detailsView.slippageCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsMaxSlippage()
+        detailsView.minReceivedCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsMinReceived()
 
         [
             detailsView.rateCell.titleButton,
@@ -142,7 +147,8 @@ private extension SwapSetupViewController {
             detailsView.execTimeCell.titleButton,
             detailsView.networkFeeCell.titleButton,
             detailsView.priceDifferenceCell.titleButton,
-            detailsView.slippageCell.titleButton
+            detailsView.slippageCell.titleButton,
+            detailsView.minReceivedCell.titleButton
         ].forEach { $0.invalidateLayout() }
 
         detailsView.titleControl.invalidateLayout()
@@ -242,6 +248,7 @@ private extension SwapSetupViewController {
 extension SwapSetupViewController {
     enum Constants {
         static let detailsAnimationDuration: TimeInterval = 0.25
+        static let frontmostCheckInterval: TimeInterval = 0.2
     }
 }
 

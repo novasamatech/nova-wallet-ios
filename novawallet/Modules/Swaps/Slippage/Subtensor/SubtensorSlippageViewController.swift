@@ -39,6 +39,10 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
             rootView.setupResetButton()
         }
 
+        if configuration.showsSlippageInfo {
+            rootView.setupSlippageInfoButton()
+        }
+
         setupLocalization()
         setupHandlers()
         setupAccessoryView()
@@ -54,7 +58,7 @@ private extension SubtensorSlippageViewController {
             title: configuration.title.value(for: selectedLocale),
             explanation: configuration.explanation?.value(for: selectedLocale)
         )
-        rootView.slippageTitleLabel.text = configuration.slippageTitle.value(for: selectedLocale)
+        rootView.bind(slippageTitle: configuration.slippageTitle.value(for: selectedLocale))
         rootView.actionButton.imageWithTitleView?.title = configuration.actionTitle.value(for: selectedLocale)
         rootView.resetButton?.imageWithTitleView?.title = strings.commonReset()
         rootView.amountInput.textField.attributedPlaceholder = NSAttributedString(
@@ -71,6 +75,7 @@ private extension SubtensorSlippageViewController {
     func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
         rootView.resetButton?.addTarget(self, action: #selector(resetButtonAction), for: .touchUpInside)
+        rootView.slippageInfoButton?.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
         rootView.amountInput.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
         rootView.presetsControl.addTarget(self, action: #selector(presetAction), for: .valueChanged)
     }
@@ -143,6 +148,11 @@ private extension SubtensorSlippageViewController {
         presenter.reset()
     }
 
+    @objc func slippageInfoAction() {
+        rootView.amountInput.endEditing(true)
+        presenter.showSlippageInfo()
+    }
+
     @objc func doneButtonAction() {
         rootView.amountInput.endEditing(true)
     }
@@ -179,7 +189,9 @@ extension SubtensorSlippageViewController: SwapSlippageViewProtocol {
         applyInput()
     }
 
-    func didReceiveResetState(available _: Bool) {}
+    func didReceiveResetState(available: Bool) {
+        rootView.setResetEnabled(available)
+    }
 
     func didReceiveButtonState(available: Bool) {
         isApplyAvailable = available

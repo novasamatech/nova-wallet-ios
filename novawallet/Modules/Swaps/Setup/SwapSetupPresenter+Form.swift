@@ -5,6 +5,23 @@ extension SwapSetupPresenter {
     func provideFormViewModels() {
         provideSlippageViewModel()
         provideQuoteState()
+        provideMinReceivedViewModel()
+    }
+
+    func provideMinReceivedViewModel() {
+        guard let quote, let receiveChainAsset = getReceiveChainAsset() else {
+            view?.didReceiveMinReceived(viewModel: .loading)
+            return
+        }
+
+        let viewModel = viewModelFactory.minReceivedViewModel(
+            for: quote,
+            slippage: slippage,
+            chainAsset: receiveChainAsset,
+            locale: selectedLocale
+        )
+
+        view?.didReceiveMinReceived(viewModel: .loaded(value: viewModel))
     }
 
     func provideQuoteState() {
@@ -49,15 +66,42 @@ extension SwapSetupPresenter {
 
     func retryQuote() {
         refreshQuote(direction: getQuoteArgs()?.direction ?? .sell)
+        armQuoteFailureAlert()
     }
 
-    func presentQuoteFailureIfNeeded(for error: SwapBaseError) {
+    func armQuoteFailureAlert() {
+        quoteFailureAlertState = .armed
+    }
+
+    func startQuoteFailureEpisodeIfNeeded(for error: SwapBaseError) {
         guard
             case let .quote(quoteError, args) = error,
             shouldHandleRoute(for: args),
-            !SwapSetupQuoteState.isNoRoute(quoteError) else {
+            SwapQuoteFailure(error: quoteError) == .fetchFailed else {
             return
         }
+
+        if quoteFailureAlertState == .armed {
+            quoteFailureAlertState = .pending
+        }
+
+        presentPendingQuoteFailure()
+    }
+
+    func presentPendingQuoteFailure() {
+        guard
+            quoteFailureAlertState == .pending,
+            case let .failure(error) = quoteResult,
+            SwapQuoteFailure(error: error) == .fetchFailed else {
+            return
+        }
+
+        guard view?.isFrontmost == true else {
+            view?.notifyWhenFrontmost()
+            return
+        }
+
+        quoteFailureAlertState = .ended
 
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
@@ -71,6 +115,10 @@ extension SwapSetupPresenter {
             },
             skipAction: {}
         )
+    }
+
+    func didBecomeFrontmost() {
+        presentPendingQuoteFailure()
     }
 }
 

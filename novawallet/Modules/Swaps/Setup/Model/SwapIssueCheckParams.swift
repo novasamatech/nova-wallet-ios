@@ -15,10 +15,27 @@ struct SwapIssueCheckParams {
 
 extension SwapIssueCheckParams {
     var hasEnteredAmount: Bool {
-        (payAmount ?? 0) > 0 || (receiveAmount ?? 0) > 0
+        Self.isQuotable(amount: payAmount, chainAsset: payChainAsset) ||
+            Self.isQuotable(amount: receiveAmount, chainAsset: receiveChainAsset)
     }
 
     var isQuoting: Bool {
         payChainAsset != nil && receiveChainAsset != nil && hasEnteredAmount && quoteResult == nil
+    }
+}
+
+private extension SwapIssueCheckParams {
+    static func isQuotable(amount: Decimal?, chainAsset: ChainAsset?) -> Bool {
+        guard let amount, amount > 0 else {
+            return false
+        }
+
+        guard let chainAsset else {
+            return true
+        }
+
+        let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 0
+
+        return amountInPlank > 0
     }
 }

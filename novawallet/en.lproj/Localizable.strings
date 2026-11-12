@@ -2395,4 +2395,5 @@ Do you want to continue?";
 "swaps.setup.action.not.enough.token" = "Not enough %@";
 "swaps.setup.action.no.route" = "No route for this pair";
 "swaps.setup.details.max.slippage" = "Max slippage";
+"swaps.setup.details.min.received" = "Min received";
 

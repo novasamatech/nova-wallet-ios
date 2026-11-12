@@ -19,6 +19,8 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
     }
 
     private(set) var resetButton: TriangularedButton?
+    private(set) var slippageInfoButton: RoundedButton?
+    private lazy var slippageTitleView: UIView = slippageTitleLabel
 
     let errorLabel = UILabel(style: .caption1Negative, textAlignment: .left, numberOfLines: 0)
     private var warningView: InlineAlertView?
@@ -64,10 +66,62 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
         if let explanation {
             explanationLabel.apply(text: explanation, lineHeight: Constants.explanationLineHeight)
             explanationLabel.isHidden = false
-            stackView.setCustomSpacing(Constants.slippageTitleSpacing, after: slippageTitleLabel)
+            stackView.setCustomSpacing(Constants.slippageTitleSpacing, after: slippageTitleView)
         } else {
             explanationLabel.isHidden = true
-            stackView.setCustomSpacing(Constants.slippageTitleSpacingNoExplanation, after: slippageTitleLabel)
+            stackView.setCustomSpacing(Constants.slippageTitleSpacingNoExplanation, after: slippageTitleView)
+        }
+    }
+
+    func bind(slippageTitle: String) {
+        slippageTitleLabel.text = slippageTitle
+        slippageInfoButton?.imageWithTitleView?.title = slippageTitle
+        slippageInfoButton?.invalidateLayout()
+    }
+
+    func setupSlippageInfoButton() {
+        guard
+            slippageInfoButton == nil,
+            let index = stackView.arrangedSubviews.firstIndex(of: slippageTitleLabel) else {
+            return
+        }
+
+        let button: RoundedButton = .create {
+            $0.applyIconStyle()
+            $0.imageWithTitleView?.titleFont = slippageTitleLabel.font
+            $0.imageWithTitleView?.titleColor = slippageTitleLabel.textColor
+            $0.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
+            $0.imageWithTitleView?.layoutType = .horizontalLabelFirst
+            $0.imageWithTitleView?.spacingBetweenLabelAndIcon = Constants.slippageInfoIconSpacing
+            $0.contentInsets = .zero
+        }
+
+        let titleRow = UIView.hStack([button, FlexibleSpaceView()])
+        let spacingAfter = stackView.customSpacing(after: slippageTitleLabel)
+
+        slippageTitleLabel.removeFromSuperview()
+        stackView.insertArrangedSubview(titleRow, at: index)
+        stackView.setCustomSpacing(spacingAfter, after: titleRow)
+
+        titleRow.snp.makeConstraints { make in
+            make.height.equalTo(Constants.slippageTitleHeight)
+        }
+
+        slippageTitleView = titleRow
+        slippageInfoButton = button
+    }
+
+    func setResetEnabled(_ isEnabled: Bool) {
+        guard let resetButton else {
+            return
+        }
+
+        resetButton.isEnabled = isEnabled
+
+        if isEnabled {
+            resetButton.applySecondaryEnabledStyle()
+        } else {
+            resetButton.applyDisabledStyle()
         }
     }
 
@@ -134,6 +188,7 @@ private extension SubtensorSlippageViewLayout {
         static let slippageTitleSpacing: CGFloat = 4
         static let slippageTitleSpacingNoExplanation: CGFloat = 12
         static let actionsSpacing: CGFloat = 12
+        static let slippageInfoIconSpacing: CGFloat = 4
     }
 }
 
