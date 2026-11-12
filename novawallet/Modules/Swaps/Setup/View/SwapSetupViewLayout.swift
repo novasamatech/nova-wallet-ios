@@ -2,28 +2,83 @@ import UIKit
 import UIKit_iOS
 
 final class SwapSetupViewLayout: ScrollableContainerLayoutView {
+    let backgroundView = MultigradientView.background
+
+    let tabHeaderView = UIView()
+
+    let tabTitleLabel: UILabel = .create {
+        $0.apply(style: .boldTitle1Primary)
+    }
+
+    let tabSettingsButton: RoundedButton = .create {
+        $0.applyIconStyle()
+        $0.roundedBackgroundView?.fillColor = R.color.colorChipsBackground()!
+        $0.roundedBackgroundView?.highlightedFillColor = R.color.colorChipsBackground()!
+        $0.roundedBackgroundView?.cornerRadius = Constants.tabButtonSize / 2
+        $0.imageWithTitleView?.iconImage = R.image.iconSettings()
+    }
+
     let chartContainerView: UIView = .create {
         $0.backgroundColor = R.color.colorBlockBackground()
         $0.layer.cornerRadius = Constants.chartCollapsedCornerRadius
         $0.clipsToBounds = true
     }
 
-    let payAmountView = SwapSetupTitleView(frame: .zero)
+    let payHeaderView = SwapSetupAssetHeaderView()
 
     let payAmountInputView = SwapAmountInputView()
 
+    let payIssueLabel: UILabel = .create {
+        $0.apply(style: .caption1Negative)
+        $0.numberOfLines = 0
+    }
+
+    private lazy var payIssueContainer = createIssueContainer(for: payIssueLabel)
+
     let depositTokenButton: TriangularedButton = .create {
         $0.applySecondaryDefaultStyle()
-        $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
+        $0.isHidden = true
     }
 
-    let receiveAmountView: TitleHorizontalMultiValueView = .create {
-        $0.titleView.apply(style: .footnoteSecondary)
-        $0.detailsTitleLabel.apply(style: .footnoteSecondary)
-        $0.detailsValueLabel.apply(style: .footnotePrimary)
-    }
+    let receiveHeaderView = SwapSetupAssetHeaderView()
 
     let receiveAmountInputView = SwapAmountInputView()
+
+    let receiveIssueLabel: UILabel = .create {
+        $0.apply(style: .caption1Negative)
+        $0.numberOfLines = 0
+    }
+
+    private lazy var receiveIssueContainer = createIssueContainer(for: receiveIssueLabel)
+
+    let switchButton: RoundedButton = .create {
+        $0.applyIconStyle()
+        $0.roundedBackgroundView?.fillColor = R.color.colorBlockBackground()!
+        $0.roundedBackgroundView?.highlightedFillColor = R.color.colorBlockBackground()!
+        $0.roundedBackgroundView?.strokeColor = R.color.colorSecondaryScreenBackground()!
+        $0.roundedBackgroundView?.highlightedStrokeColor = R.color.colorSecondaryScreenBackground()!
+        $0.roundedBackgroundView?.strokeWidth = Constants.switchBorderWidth
+        $0.roundedBackgroundView?.cornerRadius = Constants.switchSize / 2
+        $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
+    }
+
+    let rateButton: RoundedButton = .create {
+        $0.applyIconStyle()
+        $0.imageWithTitleView?.titleFont = .regularFootnote
+        $0.imageWithTitleView?.titleColor = R.color.colorTextPrimary()
+        $0.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
+        $0.imageWithTitleView?.layoutType = .horizontalLabelFirst
+        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = Constants.rateIconSpacing
+        $0.contentInsets = .zero
+    }
+
+    let detailsView: SwapDetailsView = .create {
+        $0.isHidden = true
+    }
+
+    private let rateContainerView: UIView = .create {
+        $0.isHidden = true
+    }
 
     let loadableActionView = LoadableActionView()
 
@@ -31,87 +86,22 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         loadableActionView.actionButton
     }
 
-    let switchButton: RoundedButton = .create {
-        $0.applyIconStyle()
-        $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
-    }
-
-    let detailsView: SwapDetailsView = .create {
-        $0.contentInsets = .zero
-        $0.setExpanded(false, animated: false)
-    }
-
-    var rateCell: SwapInfoViewCell {
-        detailsView.rateCell
-    }
-
-    var routeCell: SwapRouteViewCell {
-        detailsView.routeCell
-    }
-
-    var execTimeCell: SwapInfoViewCell {
-        detailsView.execTimeCell
-    }
-
-    var networkFeeCell: SwapNetworkFeeViewCell {
-        detailsView.networkFeeCell
-    }
-
     private var commissionDisclosureView: UILabel?
-
-    func setCommissionDisclosure(_ text: String?) {
-        applyCaption(
-            on: &commissionDisclosureView,
-            after: detailsView,
-            text: text,
-            spacing: 8
-        )
-    }
-
-    var payIssueLabel: UILabel?
-
-    var receiveIssueLabel: UILabel?
-
-    private func setupPayIssueLabel() -> UILabel {
-        if let payIssueLabel = payIssueLabel {
-            return payIssueLabel
-        }
-
-        let label = UILabel(style: .caption1Negative)
-        label.numberOfLines = 0
-
-        insertArrangedSubview(label, after: payAmountInputView, spacingAfter: 8)
-        stackView.setCustomSpacing(8, after: payAmountInputView)
-
-        payIssueLabel = label
-
-        return label
-    }
-
-    private func setupReceiveIssueLabel() -> UILabel {
-        if let receiveIssueLabel = receiveIssueLabel {
-            return receiveIssueLabel
-        }
-
-        let label = UILabel(style: .caption1Negative)
-        label.numberOfLines = 0
-
-        insertArrangedSubview(label, after: receiveAmountInputView, spacingAfter: 8)
-        stackView.setCustomSpacing(8, after: receiveAmountInputView)
-
-        receiveIssueLabel = label
-
-        return label
-    }
 
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 
     override func setupLayout() {
+        insertSubview(backgroundView, at: 0)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         super.setupLayout()
 
-        stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
+        stackView.layoutMargins = Constants.contentInsets
+        stackView.insetsLayoutMarginsFromSafeArea = false
 
         addSubview(loadableActionView)
         loadableActionView.snp.makeConstraints { make in
@@ -120,67 +110,47 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addArrangedSubview(chartContainerView, spacingAfter: Constants.chartSpacingAfter)
-        chartContainerView.snp.makeConstraints {
-            $0.height.equalTo(0)
-        }
-
-        addArrangedSubview(payAmountView, spacingAfter: 8)
-        payAmountView.snp.makeConstraints {
-            $0.height.equalTo(18)
-        }
-        addArrangedSubview(payAmountInputView, spacingAfter: 12)
-        payAmountInputView.snp.makeConstraints {
-            $0.height.equalTo(64)
-        }
-        addArrangedSubview(depositTokenButton, spacingAfter: 24)
-        depositTokenButton.snp.makeConstraints {
-            $0.height.equalTo(44)
-        }
-        addArrangedSubview(receiveAmountView, spacingAfter: 8)
-        receiveAmountView.snp.makeConstraints {
-            $0.height.equalTo(18)
-        }
-        addArrangedSubview(receiveAmountInputView, spacingAfter: 16)
-        receiveAmountInputView.snp.makeConstraints {
-            $0.height.equalTo(64)
-        }
-
-        addArrangedSubview(detailsView, spacingAfter: 8)
-
-        addSubview(switchButton)
-        switchButton.snp.makeConstraints {
-            $0.height.equalTo(switchButton.snp.width)
-            $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-4)
-            $0.centerX.equalTo(payAmountInputView.snp.centerX)
-        }
+        setupContentLayout()
+        setupSwitchButtonLayout()
     }
 
-    func setup(locale: Locale) {
-        detailsView.titleControl.titleLabel.text = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupDetailsTitle()
+    func setupTabHeader() {
+        addSubview(tabHeaderView)
+        tabHeaderView.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.tabHeaderHeight)
+        }
 
-        rateCell.titleButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupDetailsRate()
+        tabHeaderView.addSubview(tabSettingsButton)
+        tabSettingsButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(Constants.tabButtonTopInset)
+            make.size.equalTo(Constants.tabButtonSize)
+        }
 
-        routeCell.titleButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsDetailsRoute()
+        tabHeaderView.addSubview(tabTitleLabel)
+        tabTitleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.lessThanOrEqualTo(tabSettingsButton.snp.leading).offset(-UIConstants.horizontalInset)
+            make.centerY.equalTo(tabSettingsButton)
+        }
 
-        execTimeCell.titleButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsDetailsExecTime()
+        containerView.snp.remakeConstraints { make in
+            make.top.equalTo(tabHeaderView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
 
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsDetailsTotalFee()
+        stackView.layoutMargins.top = Constants.tabContentTopInset
+    }
 
-        rateCell.titleButton.invalidateLayout()
-        routeCell.titleButton.invalidateLayout()
-        execTimeCell.titleButton.invalidateLayout()
-        networkFeeCell.titleButton.invalidateLayout()
+    func setCommissionDisclosure(_ text: String?) {
+        applyCaption(
+            on: &commissionDisclosureView,
+            after: detailsView,
+            text: text,
+            spacing: Constants.commissionSpacing
+        )
     }
 
     func setChartHeight(_ height: CGFloat, isExpanded: Bool) {
@@ -193,58 +163,135 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             : Constants.chartCollapsedCornerRadius
     }
 
-    func changeDepositTokenButtonVisibility(hidden: Bool) {
-        if hidden {
-            stackView.setCustomSpacing(24, after: payAmountInputView)
-        } else {
-            stackView.setCustomSpacing(12, after: payAmountInputView)
-        }
-        depositTokenButton.isHidden = hidden
-        setNeedsLayout()
+    func setRateVisible(_ isVisible: Bool) {
+        rateContainerView.isHidden = !isVisible
+
+        updateReceiveSpacings()
+    }
+
+    func setDepositTokenButtonVisible(_ isVisible: Bool) {
+        depositTokenButton.isHidden = !isVisible
     }
 
     func hideIssues() {
-        hidePayIssue()
-        hideReceiveIssue()
+        displayPayIssue(with: nil)
+        displayReceiveIssue(with: nil)
     }
 
-    func displayPayIssue(with text: String) {
-        let payIssueLabel = setupPayIssueLabel()
+    func displayPayIssue(with text: String?) {
         payIssueLabel.text = text
-
-        payAmountInputView.applyInput(style: .error)
+        payIssueContainer.isHidden = text == nil
+        payAmountInputView.applyInput(style: text == nil ? .normal : .error)
     }
 
-    func hidePayIssue() {
-        payIssueLabel?.removeFromSuperview()
-        payIssueLabel = nil
-
-        stackView.setCustomSpacing(12, after: payAmountInputView)
-
-        payAmountInputView.applyInput(style: .normal)
-    }
-
-    func displayReceiveIssue(with text: String) {
-        let receiveIssueLabel = setupReceiveIssueLabel()
+    func displayReceiveIssue(with text: String?) {
         receiveIssueLabel.text = text
+        receiveIssueContainer.isHidden = text == nil
+        receiveAmountInputView.applyInput(style: text == nil ? .normal : .error)
 
-        receiveAmountInputView.applyInput(style: .error)
+        updateReceiveSpacings()
+    }
+}
+
+// MARK: Private
+
+private extension SwapSetupViewLayout {
+    func setupContentLayout() {
+        addArrangedSubview(chartContainerView, spacingAfter: Constants.chartSpacingAfter)
+        chartContainerView.snp.makeConstraints {
+            $0.height.equalTo(0)
+        }
+
+        addArrangedSubview(payHeaderView, spacingAfter: Constants.headerSpacingAfter)
+        addArrangedSubview(payAmountInputView, spacingAfter: Constants.cardSpacingAfter)
+        addArrangedSubview(payIssueContainer, spacingAfter: Constants.issueSpacingAfter)
+        addArrangedSubview(depositTokenButton, spacingAfter: Constants.depositSpacingAfter)
+        depositTokenButton.snp.makeConstraints {
+            $0.height.equalTo(Constants.depositHeight)
+        }
+
+        addArrangedSubview(receiveHeaderView, spacingAfter: Constants.headerSpacingAfter)
+        addArrangedSubview(receiveAmountInputView, spacingAfter: Constants.receiveToRateSpacing)
+        addArrangedSubview(receiveIssueContainer, spacingAfter: Constants.receiveToRateSpacing)
+
+        rateContainerView.addSubview(rateButton)
+        rateButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Constants.rateHorizontalInset)
+            make.top.bottom.equalToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
+        }
+
+        addArrangedSubview(rateContainerView, spacingAfter: Constants.rateSpacingAfter)
+        rateContainerView.snp.makeConstraints {
+            $0.height.equalTo(Constants.rateHeight)
+        }
+
+        addArrangedSubview(detailsView)
+
+        updateReceiveSpacings()
     }
 
-    func hideReceiveIssue() {
-        receiveIssueLabel?.removeFromSuperview()
-        receiveIssueLabel = nil
+    func createIssueContainer(for label: UILabel) -> UIView {
+        let container = UIView()
+        container.isHidden = true
+        container.addSubview(label)
 
-        stackView.setCustomSpacing(16, after: receiveAmountInputView)
+        label.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(Constants.issueHorizontalInset)
+        }
 
-        receiveAmountInputView.applyInput(style: .normal)
+        return container
+    }
+
+    func updateReceiveSpacings() {
+        let spacingAfterReceive = rateContainerView.isHidden
+            ? Constants.receiveToDetailsSpacing
+            : Constants.receiveToRateSpacing
+
+        if receiveIssueContainer.isHidden {
+            stackView.setCustomSpacing(spacingAfterReceive, after: receiveAmountInputView)
+        } else {
+            stackView.setCustomSpacing(Constants.receiveIssueSpacing, after: receiveAmountInputView)
+            stackView.setCustomSpacing(spacingAfterReceive, after: receiveIssueContainer)
+        }
+    }
+
+    func setupSwitchButtonLayout() {
+        containerView.scrollView.addSubview(switchButton)
+        switchButton.snp.makeConstraints {
+            $0.size.equalTo(Constants.switchSize)
+            $0.centerY.equalTo(receiveHeaderView)
+            $0.centerX.equalTo(receiveHeaderView)
+        }
     }
 }
 
 extension SwapSetupViewLayout {
     enum Constants {
-        static let chartSpacingAfter: CGFloat = 16
+        static let contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 100, right: 16)
+        static let tabHeaderHeight: CGFloat = 50
+        static let tabButtonSize: CGFloat = 44
+        static let tabButtonTopInset: CGFloat = 6
+        static let tabContentTopInset: CGFloat = 10
+        static let chartSpacingAfter: CGFloat = 10
         static let chartExpandedCornerRadius: CGFloat = 16
         static let chartCollapsedCornerRadius: CGFloat = 12
+        static let headerSpacingAfter: CGFloat = 2
+        static let cardSpacingAfter: CGFloat = 6
+        static let issueSpacingAfter: CGFloat = 10
+        static let issueHorizontalInset: CGFloat = 4
+        static let depositSpacingAfter: CGFloat = 12
+        static let depositHeight: CGFloat = 44
+        static let receiveIssueSpacing: CGFloat = 6
+        static let receiveToRateSpacing: CGFloat = 14
+        static let receiveToDetailsSpacing: CGFloat = 12
+        static let rateHeight: CGFloat = 18
+        static let rateHorizontalInset: CGFloat = 4
+        static let rateIconSpacing: CGFloat = 16
+        static let rateSpacingAfter: CGFloat = 16
+        static let commissionSpacing: CGFloat = 8
+        static let switchSize: CGFloat = 36
+        static let switchBorderWidth: CGFloat = 2
     }
 }

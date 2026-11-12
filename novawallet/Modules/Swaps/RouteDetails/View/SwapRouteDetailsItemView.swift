@@ -8,8 +8,21 @@ final class SwapRouteDetailsItemView: GenericBorderedView<SwapRouteDetailsItemCo
     }
 
     private func configure() {
-        contentInsets = UIEdgeInsets(verticalInset: 12, horizontalInset: 16)
-        backgroundView.cornerRadius = 12
+        contentInsets = Constants.contentInsets
+        backgroundView.fillColor = R.color.colorBlockBackground()!
+        backgroundView.highlightedFillColor = R.color.colorBlockBackground()!
+        backgroundView.strokeColor = R.color.colorContainerBorder()!
+        backgroundView.highlightedStrokeColor = R.color.colorContainerBorder()!
+        backgroundView.strokeWidth = Constants.borderWidth
+        backgroundView.cornerRadius = Constants.cornerRadius
+    }
+}
+
+private extension SwapRouteDetailsItemView {
+    enum Constants {
+        static let contentInsets = UIEdgeInsets(top: 14, left: 16, bottom: 16, right: 16)
+        static let borderWidth: CGFloat = 1
+        static let cornerRadius: CGFloat = 16
     }
 }
 
@@ -34,13 +47,14 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
     }
 
     private func configure() {
-        titleLabel.apply(style: .regularSubhedlinePrimary)
+        titleLabel.textColor = R.color.colorTextPrimary()
+        titleLabel.font = .regularCallout
         titleLabel.textAlignment = .left
 
-        feeView.apply(style: .caption1Secondary)
+        feeView.apply(style: .footnoteSecondary)
 
-        spacing = 12
-        valueBottom.setVerticalAndSpacing(12)
+        spacing = 10
+        valueBottom.setVerticalAndSpacing(10)
     }
 
     private func configureAmountItemsConstraints(_ items: [AssetAmountRouteItemView]) {
@@ -80,8 +94,8 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
             items: viewModel.amountItems,
             itemStyle: AssetAmountRouteItemView.Style(
                 imageSize: 24,
-                amountStyle: .semiboldBodyPrimary,
-                spacing: 4
+                amountStyle: .semiboldCalloutPrimary,
+                spacing: 6
             ),
             separatorStyle: R.image.iconForward()
         )
@@ -90,7 +104,7 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
 
         networkView.bind(
             items: viewModel.networkItems,
-            itemStyle: .caption1Secondary,
+            itemStyle: .footnoteSecondary,
             separatorStyle: R.image.iconForward()
         )
 

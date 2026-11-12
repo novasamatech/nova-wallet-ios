@@ -2389,4 +2389,10 @@ Do you want to continue?";
 "common.new.badge" = "New";
 "tabbar.more.title" = "More";
 "tabbar.swaps.title" = "Swaps";
+"swaps.setup.asset.balance" = "Balance:";
+"swaps.setup.action.enter.an.amount" = "Enter an amount";
+"swaps.setup.action.getting.rate" = "Getting the best rate…";
+"swaps.setup.action.not.enough.token" = "Not enough %@";
+"swaps.setup.action.no.route" = "No route for this pair";
+"swaps.setup.details.max.slippage" = "Max slippage";
 

@@ -22,6 +22,13 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
             provideDetailsViewModel()
+            provideQuoteState()
+        }
+    }
+
+    override var quoteResult: Result<AssetExchangeQuote, Error>? {
+        didSet {
+            provideQuoteState()
         }
     }
 
@@ -33,7 +40,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private var receiveChainAsset: ChainAsset?
     private var feeChainAsset: ChainAsset?
 
-    private var slippage: BigRational
+    private(set) var slippage: BigRational
+    let slippageBounds: SlippageBounds
 
     private var detailsAvailable: Bool {
         !quoteResult.hasError() && quoteArgs != nil
@@ -71,6 +79,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         slippage = slippageConfig.defaultSlippage
+        slippageBounds = SlippageBounds(config: slippageConfig)
 
         self.source = source
         self.placement = placement
@@ -167,6 +176,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
 
         provideCommissionDisclosureViewModel()
+        presentQuoteFailureIfNeeded(for: error)
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
@@ -254,6 +264,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func handleNewBalance(_: AssetBalance?, for chainAsset: ChainAssetId) {
+        if receiveChainAsset?.chainAssetId == chainAsset {
+            provideReceiveTitle()
+        }
+
         if payChainAsset?.chainAssetId == chainAsset {
             providePayTitle()
 
@@ -396,9 +410,11 @@ extension SwapSetupPresenter {
         view?.didReceiveAmountInputPrice(payViewModel: inputPriceViewModel)
     }
 
-    private func provideReceiveTitle() {
+    func provideReceiveTitle() {
         let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel(
-            for: selectedLocale
+            assetDisplayInfo: receiveChainAsset?.assetDisplayInfo,
+            balance: receiveAssetBalance?.transferable,
+            locale: selectedLocale
         )
 
         view?.didReceiveTitle(receiveViewModel: receiveTitleViewModel)
@@ -493,7 +509,7 @@ extension SwapSetupPresenter {
         provideReceiveAmountInputViewModel()
     }
 
-    private func provideButtonState() {
+    func provideButtonState() {
         let buttonState = viewModelFactory.buttonState(
             for: getIssueParams(),
             locale: selectedLocale
@@ -695,7 +711,7 @@ extension SwapSetupPresenter {
         estimateFee()
     }
 
-    private func updateViews() {
+    func updateViews() {
         providePayAssetViews()
         provideReceiveAssetViews()
         provideDetailsViewModel()
@@ -703,6 +719,7 @@ extension SwapSetupPresenter {
         provideSettingsState()
         provideIssues()
         provideCommissionDisclosureViewModel()
+        provideFormViewModels()
     }
 
     private func switchFeeChainAssetIfNecessary() {
@@ -751,6 +768,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 provideReceiveAssetViews()
             }
         }
+
+        provideInitialFocus()
     }
 
     func selectPayToken() {
@@ -933,6 +952,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 return
             }
             self?.slippage = slippageValue
+            self?.provideSlippageViewModel()
             self?.estimateFee()
         }
     }
@@ -968,14 +988,5 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
         refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         estimateFee()
-    }
-}
-
-extension SwapSetupPresenter: Localizable {
-    func applyLocalization() {
-        if view?.isSetup == true {
-            updateViews()
-            assetPriceChartModule?.updateLocale(selectedLocale)
-        }
     }
 }

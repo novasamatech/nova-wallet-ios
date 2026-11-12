@@ -6,21 +6,27 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     let presenter: SwapSetupPresenterProtocol
     let chartViewProvider: AssetPriceChartCompactProviderProtocol
+    let placement: SwapSetupPlacement
 
     var keyboardHandler: KeyboardHandler?
     var chartViewModel: SwapPriceChartViewModel?
     var isKeyboardVisible = false
     var isOnScreen = false
 
-    private var toggledDetailsManually: Bool = false
+    var quoteState: SwapSetupQuoteState = .idle
+    var isDetailsAvailable = false
+    var hasRate = false
+    var pendingFocus: TextFieldFocus?
 
     init(
         presenter: SwapSetupPresenterProtocol,
         chartViewProvider: AssetPriceChartCompactProviderProtocol,
+        placement: SwapSetupPlacement,
         localizationManager: LocalizationManager
     ) {
         self.presenter = presenter
         self.chartViewProvider = chartViewProvider
+        self.placement = placement
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -37,9 +43,9 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupPlacement()
         setupHandlers()
         setupLocalization()
-        setupNavigationItem()
         setupPriceChart()
         presenter.setup()
     }
@@ -55,6 +61,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         isOnScreen = true
+        applyPendingFocus()
         presenter.didChangeChartVisibility()
     }
 
@@ -69,314 +76,176 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
         clearKeyboardHandler()
     }
+}
 
-    private func setupHandlers() {
-        rootView.payAmountInputView.assetControl.addTarget(
-            self,
-            action: #selector(selectPayTokenAction),
-            for: .touchUpInside
-        )
-        rootView.payAmountView.button.addTarget(
-            self,
-            action: #selector(payMaxAction),
-            for: .touchUpInside
-        )
-        rootView.receiveAmountInputView.assetControl.addTarget(
-            self,
-            action: #selector(selectReceiveTokenAction),
-            for: .touchUpInside
-        )
-        rootView.actionButton.addTarget(
-            self,
-            action: #selector(continueAction),
-            for: .touchUpInside
-        )
-        rootView.switchButton.addTarget(
-            self,
-            action: #selector(swapAction),
-            for: .touchUpInside
-        )
-        rootView.payAmountInputView.textInputView.addTarget(
-            self,
-            action: #selector(payAmountChangeAction),
-            for: .editingChanged
-        )
-        rootView.receiveAmountInputView.textInputView.addTarget(
-            self,
-            action: #selector(receiveAmountChangeAction),
-            for: .editingChanged
-        )
-        rootView.rateCell.addTarget(
-            self,
-            action: #selector(rateInfoAction),
-            for: .touchUpInside
-        )
-        rootView.routeCell.addTarget(
-            self,
-            action: #selector(routeDetailsAction),
-            for: .touchUpInside
-        )
-        rootView.networkFeeCell.addTarget(
-            self,
-            action: #selector(networkFeeInfoAction),
-            for: .touchUpInside
-        )
-        rootView.depositTokenButton.addTarget(
-            self,
-            action: #selector(depositTokenAction),
-            for: .touchUpInside
-        )
+// MARK: Private
 
-        rootView.detailsView.delegate = self
+private extension SwapSetupViewController {
+    func setupPlacement() {
+        switch placement {
+        case .swapsTab:
+            rootView.setupTabHeader()
+        case .flow:
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: R.image.iconSettings(),
+                style: .plain,
+                target: self,
+                action: #selector(settingsAction)
+            )
+        }
     }
 
-    private func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSwapTitle()
-        rootView.setup(locale: selectedLocale)
+    func setupHandlers() {
+        let targets: [(UIControl, Selector, UIControl.Event)] = [
+            (rootView.payAmountInputView.assetControl, #selector(selectPayTokenAction), .touchUpInside),
+            (rootView.payHeaderView.maxButton, #selector(payMaxAction), .touchUpInside),
+            (rootView.payHeaderView.actionButton, #selector(depositTokenAction), .touchUpInside),
+            (rootView.receiveAmountInputView.assetControl, #selector(selectReceiveTokenAction), .touchUpInside),
+            (rootView.actionButton, #selector(continueAction), .touchUpInside),
+            (rootView.switchButton, #selector(swapAction), .touchUpInside),
+            (rootView.payAmountInputView.textInputView, #selector(payAmountChangeAction), .editingChanged),
+            (rootView.receiveAmountInputView.textInputView, #selector(receiveAmountChangeAction), .editingChanged),
+            (rootView.rateButton, #selector(rateInfoAction), .touchUpInside),
+            (rootView.detailsView.rateCell, #selector(rateInfoAction), .touchUpInside),
+            (rootView.detailsView.routeCell, #selector(routeDetailsAction), .touchUpInside),
+            (rootView.detailsView.networkFeeCell, #selector(networkFeeInfoAction), .touchUpInside),
+            (rootView.detailsView.priceDifferenceCell, #selector(priceDifferenceInfoAction), .touchUpInside),
+            (rootView.detailsView.slippageCell, #selector(settingsAction), .touchUpInside),
+            (rootView.detailsView.titleControl, #selector(detailsExpansionAction), .valueChanged),
+            (rootView.depositTokenButton, #selector(depositTokenAction), .touchUpInside),
+            (rootView.tabSettingsButton, #selector(settingsAction), .touchUpInside)
+        ]
+
+        targets.forEach { control, selector, event in
+            control.addTarget(self, action: selector, for: event)
+        }
+    }
+
+    func setupLocalization() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        title = strings.commonSwapTitle()
+        rootView.tabTitleLabel.text = strings.tabbarSwapsTitle()
+
+        let detailsView = rootView.detailsView
+        detailsView.titleControl.titleLabel.text = strings.swapsSetupDetailsTitle()
+        detailsView.rateCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsRate()
+        detailsView.routeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsRoute()
+        detailsView.execTimeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsExecTime()
+        detailsView.networkFeeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsTotalFee()
+        detailsView.priceDifferenceCell.titleButton.imageWithTitleView?.title = strings.swapsSetupPriceDifference()
+        detailsView.slippageCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsMaxSlippage()
+
+        [
+            detailsView.rateCell.titleButton,
+            detailsView.routeCell.titleButton,
+            detailsView.execTimeCell.titleButton,
+            detailsView.networkFeeCell.titleButton,
+            detailsView.priceDifferenceCell.titleButton,
+            detailsView.slippageCell.titleButton
+        ].forEach { $0.invalidateLayout() }
+
+        detailsView.titleControl.invalidateLayout()
+
         setupAccessoryView()
     }
 
-    private func setupAccessoryView() {
-        let accessoryView =
-            UIFactory.default.createDoneAccessoryView(
-                target: self,
-                selector: #selector(doneAction),
-                locale: selectedLocale
-            )
+    func setupAccessoryView() {
+        let accessoryView = UIFactory.default.createDoneAccessoryView(
+            target: self,
+            selector: #selector(doneAction),
+            locale: selectedLocale
+        )
         rootView.payAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
         rootView.receiveAmountInputView.textInputView.textField.inputAccessoryView = accessoryView
     }
 
-    private func setupNavigationItem() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
-            style: .plain,
-            target: self,
-            action: #selector(settingsAction)
-        )
-    }
-
-    @objc private func selectPayTokenAction() {
-        rootView.receiveAmountInputView.endEditing(true)
+    @objc func selectPayTokenAction() {
+        view.endEditing(true)
         presenter.selectPayToken()
     }
 
-    @objc private func selectReceiveTokenAction() {
-        rootView.payAmountInputView.endEditing(true)
+    @objc func selectReceiveTokenAction() {
+        view.endEditing(true)
         presenter.selectReceiveToken()
     }
 
-    @objc private func continueAction() {
+    @objc func continueAction() {
         presenter.proceed()
     }
 
-    @objc private func swapAction() {
-        let currentFocus: TextFieldFocus?
-        if rootView.payAmountInputView.textInputView.textField.isFirstResponder {
-            currentFocus = .payAsset
-        } else if rootView.receiveAmountInputView.textInputView.textField.isFirstResponder {
-            currentFocus = .receiveAsset
+    @objc func swapAction() {
+        let currentFocus: TextFieldFocus? = if rootView.payAmountInputView.isAmountFocused {
+            .payAsset
+        } else if rootView.receiveAmountInputView.isAmountFocused {
+            .receiveAsset
         } else {
-            currentFocus = nil
+            nil
         }
+
         view.endEditing(true)
         presenter.flip(currentFocus: currentFocus)
     }
 
-    @objc private func payAmountChangeAction() {
+    @objc func payAmountChangeAction() {
         let amount = rootView.payAmountInputView.textInputView.inputViewModel?.decimalAmount
         presenter.updatePayAmount(amount)
     }
 
-    @objc private func receiveAmountChangeAction() {
+    @objc func receiveAmountChangeAction() {
         let amount = rootView.receiveAmountInputView.textInputView.inputViewModel?.decimalAmount
         presenter.updateReceiveAmount(amount)
     }
 
-    @objc private func networkFeeInfoAction() {
+    @objc func networkFeeInfoAction() {
         presenter.showFeeInfo()
     }
 
-    @objc private func rateInfoAction() {
+    @objc func rateInfoAction() {
         presenter.showRateInfo()
     }
 
-    @objc private func routeDetailsAction() {
+    @objc func routeDetailsAction() {
         presenter.showRouteDetails()
     }
 
-    @objc private func payMaxAction() {
+    @objc func priceDifferenceInfoAction() {
+        presenter.showPriceDifferenceInfo()
+    }
+
+    @objc func payMaxAction() {
         presenter.selectMaxPayAmount()
     }
 
-    @objc private func doneAction() {
+    @objc func doneAction() {
         view.endEditing(true)
     }
 
-    @objc private func settingsAction() {
+    @objc func settingsAction() {
+        view.endEditing(true)
         presenter.showSettings()
     }
 
-    @objc private func depositTokenAction() {
+    @objc func depositTokenAction() {
         presenter.depositInsufficientToken()
     }
-}
 
-extension SwapSetupViewController: SwapSetupViewProtocol {
-    func didReceiveButtonState(title: String, enabled: Bool) {
-        rootView.actionButton.applyState(title: title, enabled: enabled)
-    }
-
-    func didReceiveTitle(payViewModel viewModel: TitleHorizontalMultiValueView.Model) {
-        rootView.payAmountView.bind(model: viewModel)
-    }
-
-    func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel) {
-        switch viewModel {
-        case let .asset(assetViewModel):
-            rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
-            rootView.depositTokenButton.imageWithTitleView?.title = R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.swapsSetupDepositButtonTitle(assetViewModel.symbol)
-        case let .empty(emptySwapsAssetViewModel):
-            rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
-            rootView.depositTokenButton.imageWithTitleView?.title = nil
+    @objc func detailsExpansionAction() {
+        UIView.animate(withDuration: Constants.detailsAnimationDuration) {
+            self.rootView.detailsView.applyExpansion()
+            self.updateDetailsVisibility()
+            self.rootView.layoutIfNeeded()
         }
-    }
-
-    func didReceiveAmount(payInputViewModel inputViewModel: AmountInputViewModelProtocol) {
-        rootView.payAmountInputView.bind(inputViewModel: inputViewModel)
-    }
-
-    func didReceiveAmountInputPrice(payViewModel viewModel: String?) {
-        rootView.payAmountInputView.bind(priceViewModel: viewModel)
-    }
-
-    func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model) {
-        rootView.receiveAmountView.bind(model: viewModel)
-    }
-
-    func didReceiveInputChainAsset(receiveViewModel viewModel: SwapAssetInputViewModel) {
-        switch viewModel {
-        case let .asset(swapsAssetViewModel):
-            rootView.receiveAmountInputView.bind(assetViewModel: swapsAssetViewModel)
-        case let .empty(emptySwapsAssetViewModel):
-            rootView.receiveAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
-        }
-    }
-
-    func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol) {
-        rootView.receiveAmountInputView.bind(inputViewModel: inputViewModel)
-    }
-
-    func didReceiveAmountInputPrice(receiveViewModel viewModel: SwapPriceDifferenceViewModel?) {
-        rootView.receiveAmountInputView.bind(priceDifferenceViewModel: viewModel)
-    }
-
-    func didReceiveDetailsState(isAvailable: Bool) {
-        rootView.detailsView.isHidden = !isAvailable
-
-        if !isAvailable {
-            toggledDetailsManually = false
-        }
-    }
-
-    func didReceiveRate(viewModel: LoadableViewModelState<String>) {
-        rootView.rateCell.bind(loadableViewModel: viewModel)
-    }
-
-    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {
-        rootView.routeCell.bind(loadableRouteViewModel: viewModel)
-    }
-
-    func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>) {
-        rootView.execTimeCell.bind(loadableViewModel: viewModel)
-    }
-
-    func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
-        rootView.networkFeeCell.bind(loadableViewModel: viewModel)
-
-        if !toggledDetailsManually, !rootView.detailsView.expanded {
-            rootView.detailsView.setExpanded(true, animated: true)
-        }
-    }
-
-    func didReceiveCommissionDisclosure(viewModel: String?) {
-        rootView.setCommissionDisclosure(viewModel)
-    }
-
-    func didReceiveSettingsState(isAvailable: Bool) {
-        navigationItem.rightBarButtonItem?.isEnabled = isAvailable
-    }
-
-    func didReceive(focus: TextFieldFocus?) {
-        switch focus {
-        case .none:
-            rootView.payAmountInputView.set(focused: false)
-            rootView.receiveAmountInputView.set(focused: false)
-        case .payAsset:
-            rootView.payAmountInputView.set(focused: true)
-        case .receiveAsset:
-            rootView.receiveAmountInputView.set(focused: true)
-        }
-    }
-
-    func didReceive(issues: [SwapSetupViewIssue]) {
-        rootView.hideIssues()
-        rootView.changeDepositTokenButtonVisibility(hidden: true)
-
-        issues.forEach { issue in
-            switch issue {
-            case .zeroBalance:
-                rootView.changeDepositTokenButtonVisibility(hidden: false)
-            case .zeroReceiveAmount:
-                let message = R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.commonPositiveAmount()
-
-                rootView.displayReceiveIssue(with: message)
-            case .insufficientBalance:
-                rootView.changeDepositTokenButtonVisibility(hidden: false)
-
-                let message = R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.swapsNotEnoughTokens()
-
-                rootView.displayPayIssue(with: message)
-            case let .minBalanceViolation(minBalance):
-                let message = R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.commonReceiveAtLeastEdError(minBalance)
-
-                rootView.displayReceiveIssue(with: message)
-            case .noLiqudity:
-                let message = R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.swapsNotEnoughLiquidity()
-
-                rootView.displayPayIssue(with: message)
-            }
-        }
-    }
-
-    func didStartLoading() {
-        rootView.loadableActionView.startLoading()
-    }
-
-    func didStopLoading() {
-        rootView.loadableActionView.stopLoading()
     }
 }
 
-extension SwapSetupViewController: CollapsableContainerViewDelegate {
-    func animateAlongsideWithInfo(sender _: AnyObject?) {
-        rootView.containerView.scrollView.layoutIfNeeded()
-    }
-
-    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {
-        toggledDetailsManually = true
+extension SwapSetupViewController {
+    enum Constants {
+        static let detailsAnimationDuration: TimeInterval = 0.25
     }
 }
+
+// MARK: Localizable
 
 extension SwapSetupViewController: Localizable {
     func applyLocalization() {

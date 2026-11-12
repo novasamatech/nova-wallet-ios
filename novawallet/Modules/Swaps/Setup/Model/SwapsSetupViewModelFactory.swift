@@ -20,7 +20,17 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
         locale: Locale
     ) -> String?
 
-    func receiveTitleViewModel(for locale: Locale) -> TitleHorizontalMultiValueView.Model
+    func receiveTitleViewModel(
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
+        balance: Balance?,
+        locale: Locale
+    ) -> TitleHorizontalMultiValueView.Model
+
+    func slippageViewModel(
+        slippage: BigRational,
+        bounds: SlippageBounds,
+        locale: Locale
+    ) -> SwapSetupSlippageViewModel
     func receiveAssetViewModel(chainAsset: ChainAsset?, locale: Locale) -> SwapAssetInputViewModel
 
     func amountInputViewModel(
@@ -60,21 +70,36 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
 
     private static func buttonTitle(
         params: SwapIssueCheckParams,
-        hasIssues: Bool,
+        issues: [SwapSetupViewIssue],
         locale: Locale
     ) -> String {
-        switch (params.payChainAsset, params.receiveChainAsset) {
-        case (nil, nil), (nil, _):
-            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionSelectPay()
-        case (_, nil):
-            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionSelectReceive()
-        default:
-            if (params.payAmount ?? 0) <= 0 || hasIssues {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionEnterAmount()
-            } else {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
-            }
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        guard let payChainAsset = params.payChainAsset else {
+            return strings.swapsSetupAssetActionSelectPay()
         }
+
+        guard params.receiveChainAsset != nil else {
+            return strings.swapsSetupAssetActionSelectReceive()
+        }
+
+        if issues.contains(.insufficientBalance) {
+            return strings.swapsSetupActionNotEnoughToken(payChainAsset.asset.symbol)
+        }
+
+        if case let .failure(error) = params.quoteResult, SwapSetupQuoteState.isNoRoute(error) {
+            return strings.swapsSetupActionNoRoute()
+        }
+
+        if !params.hasEnteredAmount {
+            return strings.swapsSetupActionEnterAnAmount()
+        }
+
+        if params.isQuoting {
+            return strings.swapsSetupActionGettingRate()
+        }
+
+        return strings.commonContinue()
     }
 
     private func assetViewModel(chainAsset: ChainAsset) -> SwapsAssetViewModel {
@@ -103,10 +128,6 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectSubtitle()
         )
     }
-
-    override func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
-        percentFormatter.value(for: locale).stringFromDecimal(amount)?.inParenthesis() ?? ""
-    }
 }
 
 extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
@@ -115,17 +136,17 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             issueParams.receiveChainAsset != nil &&
             (issueParams.payAmount ?? 0) > 0
 
-        let hasIssues = !issuesViewModelFactory.detectIssues(in: issueParams, locale: locale).isEmpty
+        let issues = issuesViewModelFactory.detectIssues(in: issueParams, locale: locale)
 
         return .init(
             title: .init {
                 Self.buttonTitle(
                     params: issueParams,
-                    hasIssues: hasIssues,
+                    issues: issues,
                     locale: $0
                 )
             },
-            enabled: dataFullFilled && !hasIssues
+            enabled: dataFullFilled && issues.isEmpty && !issueParams.isQuoting
         )
     }
 
@@ -169,24 +190,47 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> String? {
-        guard
-            let amount = amount,
-            let priceData = priceData else {
+        guard let priceData = priceData else {
             return nil
         }
         return balanceViewModelFactoryFacade.priceFromAmount(
             targetAssetInfo: assetDisplayInfo,
-            amount: amount,
+            amount: amount ?? 0,
             priceData: priceData
         ).value(for: locale)
     }
 
-    func receiveTitleViewModel(for locale: Locale) -> TitleHorizontalMultiValueView.Model {
-        TitleHorizontalMultiValueView.Model(
-            title:
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectReceiveTitle(),
-            subtitle: "",
-            value: ""
+    func receiveTitleViewModel(
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
+        balance: Balance?,
+        locale: Locale
+    ) -> TitleHorizontalMultiValueView.Model {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let title = strings.swapsSetupAssetSelectReceiveTitle()
+
+        guard let assetDisplayInfo, let balance else {
+            return .init(title: title, subtitle: "", value: "")
+        }
+
+        let balanceString = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: assetDisplayInfo,
+            value: balance.decimal(assetInfo: assetDisplayInfo)
+        ).value(for: locale)
+
+        return .init(title: title, subtitle: strings.swapsSetupAssetBalance(), value: balanceString)
+    }
+
+    func slippageViewModel(
+        slippage: BigRational,
+        bounds: SlippageBounds,
+        locale: Locale
+    ) -> SwapSetupSlippageViewModel {
+        let value = slippage.decimalValue
+        let valueString = value.flatMap { percentFormatter.value(for: locale).stringFromDecimal($0) } ?? ""
+
+        return SwapSetupSlippageViewModel(
+            value: valueString,
+            hasWarning: bounds.warning(for: value, locale: locale) != nil
         )
     }
 

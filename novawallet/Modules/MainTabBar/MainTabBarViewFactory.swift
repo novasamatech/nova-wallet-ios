@@ -145,7 +145,10 @@ private extension MainTabBarViewFactory {
             return nil
         }
 
-        let swapsController = createSwapsController(for: localizationManager)
+        let swapsController = createSwapsController(
+            for: localizationManager,
+            assetListObservable: assetListObservable
+        )
 
         let moreTabBarItem = createMoreTabBarItem(for: localizationManager)
         voteController.tabBarItem = moreTabBarItem
@@ -274,8 +277,17 @@ private extension MainTabBarViewFactory {
         return NovaNavigationController(rootViewController: view.controller)
     }
 
-    static func createSwapsController(for localizationManager: LocalizationManagerProtocol) -> UIViewController {
-        let viewController = SwapsTabPlaceholderViewController(localizationManager: localizationManager)
+    static func createSwapsController(
+        for localizationManager: LocalizationManagerProtocol,
+        assetListObservable: AssetListModelObservable
+    ) -> UIViewController {
+        let viewController = SwapsTabHostViewController(
+            assetListObservable: assetListObservable,
+            prefillResolver: SwapSetupViewFactory.createPrefillResolver(),
+            walletSettings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared,
+            localizationManager: localizationManager
+        )
 
         let localizableTitle = LocalizableResource { locale in
             R.string(preferredLanguages: locale.rLanguages).localizable.tabbarSwapsTitle()

@@ -2,9 +2,12 @@ import UIKit
 
 final class SwapFeeDetailsViewLayout: ScrollableContainerLayoutView {
     let totalFeeView: GenericTitleValueView<UILabel, UILabel> = .create { view in
-        view.titleView.apply(style: .semiboldBodyPrimary)
-        view.valueView.apply(style: .regularSubhedlinePrimary)
+        view.titleView.apply(style: .title3Primary)
+        view.valueView.textColor = R.color.colorTextPrimary()
+        view.valueView.font = .title2
     }
+
+    let backgroundView = MultigradientView.background
 
     private var operationFeeViewList: [SwapOperationFeeView] = []
 
@@ -15,6 +18,11 @@ final class SwapFeeDetailsViewLayout: ScrollableContainerLayoutView {
     }
 
     override func setupLayout() {
+        insertSubview(backgroundView, at: 0)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         super.setupLayout()
 
         addArrangedSubview(totalFeeView, spacingAfter: 8)

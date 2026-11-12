@@ -24,6 +24,8 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(issues: [SwapSetupViewIssue])
     func didReceive(focus: TextFieldFocus?)
     func didReceiveChart(viewModel: SwapPriceChartViewModel)
+    func didReceive(quoteState: SwapSetupQuoteState)
+    func didReceiveSlippage(viewModel: SwapSetupSlippageViewModel)
     func didStartLoading()
     func didStopLoading()
 }
@@ -40,6 +42,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRateInfo()
     func showSettings()
     func showRouteDetails()
+    func showPriceDifferenceInfo()
     func selectMaxPayAmount()
     func depositInsufficientToken()
     func selectChartExpansion(_ isExpanded: Bool)

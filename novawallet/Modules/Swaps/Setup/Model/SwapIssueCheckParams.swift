@@ -12,3 +12,13 @@ struct SwapIssueCheckParams {
     let quoteResult: Result<AssetExchangeQuote, Error>?
     let fee: AssetExchangeFee?
 }
+
+extension SwapIssueCheckParams {
+    var hasEnteredAmount: Bool {
+        (payAmount ?? 0) > 0 || (receiveAmount ?? 0) > 0
+    }
+
+    var isQuoting: Bool {
+        payChainAsset != nil && receiveChainAsset != nil && hasEnteredAmount && quoteResult == nil
+    }
+}

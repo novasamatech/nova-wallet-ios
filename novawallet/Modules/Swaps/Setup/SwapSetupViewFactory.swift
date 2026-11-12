@@ -37,25 +37,15 @@ struct SwapSetupViewFactory {
 
         guard let interactor = createInteractor(for: state) else { return nil }
 
-        let wireframe = SwapSetupWireframe(
-            state: state,
-            swapCompletionClosure: swapCompletionClosure
-        )
-
-        let issuesViewModelFactory = SwapIssueViewModelFactory(
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
-        )
+        let wireframe = createWireframe(state: state, placement: placement, completion: swapCompletionClosure)
 
         let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
         let percentFormatter = NumberFormatter.percentSingle.localizableResource()
 
-        let viewModelFactory = SwapsSetupViewModelFactory(
+        let viewModelFactory = createViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
-            priceAssetInfoFactory: priceInfoFactory,
-            issuesViewModelFactory: issuesViewModelFactory,
-            networkViewModelFactory: NetworkViewModelFactory(),
-            assetIconViewModelFactory: AssetIconViewModelFactory(),
-            priceDifferenceModelFactory: priceDiffModelFactory,
+            priceInfoFactory: priceInfoFactory,
+            priceDiffModelFactory: priceDiffModelFactory,
             percentFormatter: percentFormatter
         )
 
@@ -86,6 +76,7 @@ struct SwapSetupViewFactory {
         let view = SwapSetupViewController(
             presenter: presenter,
             chartViewProvider: chartView,
+            placement: placement,
             localizationManager: LocalizationManager.shared
         )
 
@@ -94,6 +85,40 @@ struct SwapSetupViewFactory {
         dataValidatingFactory.view = view
 
         return view
+    }
+
+    private static func createWireframe(
+        state: SwapTokensFlowStateProtocol,
+        placement: SwapSetupPlacement,
+        completion: SwapCompletionClosure?
+    ) -> SwapSetupWireframe {
+        SwapSetupWireframe(
+            state: state,
+            tokenSelectionFlow: SwapAssetsOperationTokenSelectionFlow(state: state),
+            placement: placement,
+            swapCompletionClosure: completion
+        )
+    }
+
+    private static func createViewModelFactory(
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceInfoFactory: PriceAssetInfoFactoryProtocol,
+        priceDiffModelFactory: SwapPriceDifferenceModelFactoryProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
+    ) -> SwapsSetupViewModelFactory {
+        let issuesViewModelFactory = SwapIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
+        return SwapsSetupViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceInfoFactory,
+            issuesViewModelFactory: issuesViewModelFactory,
+            networkViewModelFactory: NetworkViewModelFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
+            priceDifferenceModelFactory: priceDiffModelFactory,
+            percentFormatter: percentFormatter
+        )
     }
 
     private static func createInteractor(for flowState: SwapTokensFlowStateProtocol) -> SwapSetupInteractor? {

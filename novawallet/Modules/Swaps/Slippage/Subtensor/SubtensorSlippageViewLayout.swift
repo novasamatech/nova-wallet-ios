@@ -18,6 +18,8 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
         $0.applyDefaultStyle()
     }
 
+    private(set) var resetButton: TriangularedButton?
+
     let errorLabel = UILabel(style: .caption1Negative, textAlignment: .left, numberOfLines: 0)
     private var warningView: InlineAlertView?
 
@@ -32,7 +34,7 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(titleLabel, spacingAfter: 16)
 
-        addArrangedSubview(slippageTitleLabel, spacingAfter: 4)
+        addArrangedSubview(slippageTitleLabel, spacingAfter: Constants.slippageTitleSpacing)
         slippageTitleLabel.snp.makeConstraints { make in
             make.height.equalTo(Constants.slippageTitleHeight)
         }
@@ -56,9 +58,43 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
         }
     }
 
-    func bind(title: String, explanation: String) {
+    func bind(title: String, explanation: String?) {
         titleLabel.apply(text: title, lineHeight: Constants.titleLineHeight)
-        explanationLabel.apply(text: explanation, lineHeight: Constants.explanationLineHeight)
+
+        if let explanation {
+            explanationLabel.apply(text: explanation, lineHeight: Constants.explanationLineHeight)
+            explanationLabel.isHidden = false
+            stackView.setCustomSpacing(Constants.slippageTitleSpacing, after: slippageTitleLabel)
+        } else {
+            explanationLabel.isHidden = true
+            stackView.setCustomSpacing(Constants.slippageTitleSpacingNoExplanation, after: slippageTitleLabel)
+        }
+    }
+
+    func setupResetButton() {
+        guard resetButton == nil else {
+            return
+        }
+
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        actionButton.snp.remakeConstraints { make in
+            make.leading.equalTo(button.snp.trailing).offset(Constants.actionsSpacing)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+            make.width.equalTo(button)
+        }
+
+        resetButton = button
     }
 
     func preferredHeight(for width: CGFloat) -> CGFloat {
@@ -95,6 +131,9 @@ private extension SubtensorSlippageViewLayout {
         static let slippageTitleHeight: CGFloat = 20
         static let explanationLineHeight: CGFloat = 18
         static let inputHeight: CGFloat = 52
+        static let slippageTitleSpacing: CGFloat = 4
+        static let slippageTitleSpacingNoExplanation: CGFloat = 12
+        static let actionsSpacing: CGFloat = 12
     }
 }
 

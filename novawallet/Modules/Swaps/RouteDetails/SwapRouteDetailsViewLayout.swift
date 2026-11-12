@@ -12,7 +12,14 @@ final class SwapRouteDetailsViewLayout: ScrollableContainerLayoutView {
 
     let routeDetailsView = SwapRouteDetailsView()
 
+    let backgroundView = MultigradientView.background
+
     override func setupLayout() {
+        insertSubview(backgroundView, at: 0)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         super.setupLayout()
 
         addArrangedSubview(titleView, spacingAfter: 24)

@@ -23,10 +23,20 @@ final class SwapAmountInput: BackgroundedContentControl {
         numberOfLines: 1
     )
 
-    let spacing: CGFloat = 4
+    let placeholderLabel: UILabel = .create {
+        $0.font = .title2
+        $0.textColor = R.color.colorHintText()
+        $0.textAlignment = .right
+        $0.text = "0"
+        $0.isHidden = true
+    }
+
+    var skeletonView: SkrullableView?
+
+    private(set) var isLoading: Bool = false
 
     override var intrinsicContentSize: CGSize {
-        let contentHeight = textField.intrinsicContentSize.height + spacing + priceLabel.intrinsicContentSize.height
+        let contentHeight = Constants.amountHeight + Constants.spacing + Constants.priceHeight
 
         let height = contentInsets.top + contentHeight + contentInsets.bottom
 
@@ -59,49 +69,85 @@ final class SwapAmountInput: BackgroundedContentControl {
         contentView?.frame = bounds
 
         layoutContent()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
-    private func layoutContent() {
-        let availableWidth = bounds.width - contentInsets.left - contentInsets.right
-        let textFieldWidth = max(availableWidth, 0)
+    var isValueMasked: Bool {
+        !placeholderLabel.isHidden
+    }
 
-        let textFieldHeight: CGFloat = textField.intrinsicContentSize.height
-        let textFieldY: CGFloat
-
-        if !priceLabel.text.isNilOrEmpty {
-            textFieldY = bounds.midY - textFieldHeight + spacing
-        } else {
-            textFieldY = bounds.midY - textFieldHeight / 2
+    func setValueMasked(_ masked: Bool) {
+        guard masked != isValueMasked else {
+            return
         }
 
+        placeholderLabel.isHidden = !masked
+        textField.alpha = masked ? 0 : 1
+        priceLabel.alpha = masked ? 0 : 1
+    }
+
+    func setLoading(_ loading: Bool) {
+        guard loading != isLoading else {
+            return
+        }
+
+        if loading {
+            startLoadingIfNeeded()
+        } else {
+            stopLoadingIfNeeded()
+        }
+    }
+}
+
+// MARK: Private
+
+private extension SwapAmountInput {
+    func layoutContent() {
+        let availableWidth = max(bounds.width - contentInsets.left - contentInsets.right, 0)
+
+        let contentHeight = priceLabel.text.isNilOrEmpty
+            ? Constants.amountHeight
+            : Constants.amountHeight + Constants.spacing + Constants.priceHeight
+
         textField.frame = CGRect(
-            x: bounds.maxX - contentInsets.right - textFieldWidth,
-            y: textFieldY,
-            width: textFieldWidth,
-            height: textFieldHeight
+            x: bounds.maxX - contentInsets.right - availableWidth,
+            y: bounds.midY - contentHeight / 2,
+            width: availableWidth,
+            height: Constants.amountHeight
         )
 
         priceLabel.frame = CGRect(
-            x: bounds.maxX - contentInsets.right - textFieldWidth,
-            y: textField.frame.maxY,
-            width: textFieldWidth,
-            height: priceLabel.intrinsicContentSize.height
+            x: bounds.maxX - contentInsets.right - availableWidth,
+            y: textField.frame.maxY + Constants.spacing,
+            width: availableWidth,
+            height: Constants.priceHeight
+        )
+
+        placeholderLabel.frame = CGRect(
+            x: textField.frame.minX,
+            y: bounds.midY - Constants.amountHeight / 2,
+            width: availableWidth,
+            height: Constants.amountHeight
         )
     }
 
-    private func configure() {
+    func configure() {
         backgroundColor = UIColor.clear
 
         configureContentViewIfNeeded()
         configureLocalHandlers()
     }
 
-    private func configureLocalHandlers() {
+    func configureLocalHandlers() {
         addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
         textField.delegate = self
     }
 
-    private func configureContentViewIfNeeded() {
+    func configureContentViewIfNeeded() {
         if contentView == nil {
             let contentView = UIView()
             contentView.backgroundColor = .clear
@@ -111,12 +157,57 @@ final class SwapAmountInput: BackgroundedContentControl {
 
         contentView?.addSubview(priceLabel)
         contentView?.addSubview(textField)
+        contentView?.addSubview(placeholderLabel)
     }
 
-    @objc private func actionTouchUpInside() {
+    @objc func actionTouchUpInside() {
         textField.becomeFirstResponder()
     }
 }
+
+// MARK: SkeletonableView
+
+extension SwapAmountInput: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [textField, priceLabel]
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let amountOffset = CGPoint(
+            x: spaceSize.width - contentInsets.right - Constants.amountSkeletonSize.width,
+            y: spaceSize.height / 2 - Constants.skeletonsHeight / 2
+        )
+
+        let priceOffset = CGPoint(
+            x: spaceSize.width - contentInsets.right - Constants.priceSkeletonSize.width,
+            y: amountOffset.y + Constants.amountSkeletonSize.height + Constants.skeletonsSpacing
+        )
+
+        return [amountOffset, priceOffset].enumerated().map { index, offset in
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: offset,
+                size: index == 0 ? Constants.amountSkeletonSize : Constants.priceSkeletonSize
+            )
+        }
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
+    }
+}
+
+// MARK: UITextFieldDelegate
 
 extension SwapAmountInput: UITextFieldDelegate {
     func textField(
@@ -127,6 +218,8 @@ extension SwapAmountInput: UITextFieldDelegate {
         inputViewModel?.didReceiveReplacement(string, for: range) ?? false
     }
 }
+
+// MARK: AmountInputViewModelObserver
 
 extension SwapAmountInput: AmountInputViewModelObserver {
     func amountInputDidChange() {
@@ -151,40 +244,19 @@ extension SwapAmountInput {
         priceLabel.text = priceViewModel
         setNeedsLayout()
     }
+}
 
-    func bind(priceDifferenceViewModel: SwapPriceDifferenceViewModel?) {
-        let priceString = NSMutableAttributedString()
-        if let price = priceDifferenceViewModel?.price {
-            priceString.append(.init(
-                string: price,
-                attributes: [
-                    .font: UIFont.regularFootnote,
-                    .foregroundColor: R.color.colorTextSecondary()!
-                ]
-            ))
-        }
-        if let difference = priceDifferenceViewModel?.difference {
-            priceString.append(.init(
-                string: " " + difference.details,
-                attributes: [
-                    .font: UIFont.regularFootnote,
-                    .foregroundColor: color(for: difference.attention)
-                ]
-            ))
-        }
+private extension SwapAmountInput {
+    enum Constants {
+        static let amountHeight: CGFloat = 28
+        static let priceHeight: CGFloat = 18
+        static let spacing: CGFloat = 2
+        static let amountSkeletonSize = CGSize(width: 96, height: 20)
+        static let priceSkeletonSize = CGSize(width: 64, height: 12)
+        static let skeletonsSpacing: CGFloat = 8
 
-        priceLabel.attributedText = priceString
-        setNeedsLayout()
-    }
-
-    private func color(for attention: AttentionState) -> UIColor {
-        switch attention {
-        case .high:
-            return R.color.colorTextNegative()!
-        case .medium:
-            return R.color.colorTextWarning()!
-        case .low:
-            return R.color.colorTextSecondary()!
+        static var skeletonsHeight: CGFloat {
+            amountSkeletonSize.height + skeletonsSpacing + priceSkeletonSize.height
         }
     }
 }

@@ -5,6 +5,7 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorSlippageViewLayout
 
     let presenter: SwapSlippagePresenterProtocol
+    let configuration: SwapSlippageSheetConfiguration
 
     private var hasInputError: Bool = false
     private var isApplyAvailable: Bool = false
@@ -13,9 +14,11 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
 
     init(
         presenter: SwapSlippagePresenterProtocol,
+        configuration: SwapSlippageSheetConfiguration = .subtensor,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.configuration = configuration
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -32,6 +35,10 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if configuration.allowsReset {
+            rootView.setupResetButton()
+        }
+
         setupLocalization()
         setupHandlers()
         setupAccessoryView()
@@ -44,11 +51,12 @@ private extension SubtensorSlippageViewController {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
         rootView.bind(
-            title: strings.commonButtonSettings(),
-            explanation: strings.stakingSubtensorUiSlippageExplanation()
+            title: configuration.title.value(for: selectedLocale),
+            explanation: configuration.explanation?.value(for: selectedLocale)
         )
-        rootView.slippageTitleLabel.text = strings.stakingSubtensorInfoSlippageTitle()
-        rootView.actionButton.imageWithTitleView?.title = strings.commonDone()
+        rootView.slippageTitleLabel.text = configuration.slippageTitle.value(for: selectedLocale)
+        rootView.actionButton.imageWithTitleView?.title = configuration.actionTitle.value(for: selectedLocale)
+        rootView.resetButton?.imageWithTitleView?.title = strings.commonReset()
         rootView.amountInput.textField.attributedPlaceholder = NSAttributedString(
             string: strings.stakingSubtensorUiSlippageCustom(),
             attributes: [
@@ -62,6 +70,7 @@ private extension SubtensorSlippageViewController {
 
     func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
+        rootView.resetButton?.addTarget(self, action: #selector(resetButtonAction), for: .touchUpInside)
         rootView.amountInput.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
         rootView.presetsControl.addTarget(self, action: #selector(presetAction), for: .valueChanged)
     }
@@ -127,6 +136,11 @@ private extension SubtensorSlippageViewController {
 
     @objc func applyButtonAction() {
         presenter.apply()
+    }
+
+    @objc func resetButtonAction() {
+        rootView.amountInput.endEditing(true)
+        presenter.reset()
     }
 
     @objc func doneButtonAction() {

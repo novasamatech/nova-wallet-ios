@@ -1,23 +1,16 @@
 import Foundation
 import Foundation_iOS
+import UIKit_iOS
 
 struct SwapSlippageViewFactory {
-    static func createView(
+    static func createSettingsSheet(
         percent: BigRational?,
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) -> SwapSlippageViewProtocol? {
-        let wireframe = SwapSlippageWireframe()
-
-        let amountFormatter = NumberFormatter.amount
-        amountFormatter.maximumFractionDigits = 4
-        amountFormatter.maximumSignificantDigits = 4
-
-        let percentFormatter = NumberFormatter.percentSingle
-
         let presenter = SwapSlippagePresenter(
-            wireframe: wireframe,
-            percentFormatterLocalizable: percentFormatter.localizableResource(),
+            wireframe: SwapSlippageSheetWireframe(),
+            percentFormatterLocalizable: NumberFormatter.percentSingle.localizableResource(),
             localizationManager: LocalizationManager.shared,
             initSlippage: percent,
             config: SlippageConfig.defaultConfig,
@@ -25,12 +18,18 @@ struct SwapSlippageViewFactory {
             completionHandler: completionHandler
         )
 
-        let view = SwapSlippageViewController(
+        let view = SubtensorSlippageViewController(
             presenter: presenter,
+            configuration: .swap,
             localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+
+        view.modalTransitioningFactory = factory
+        view.modalPresentationStyle = .custom
 
         return view
     }

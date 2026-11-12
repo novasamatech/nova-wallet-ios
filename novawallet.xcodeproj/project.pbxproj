@@ -1527,7 +1527,6 @@
 		14003DEC47A69E473B97B3E5 /* AppearanceSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE5115F26D68B9415D3EFF2 /* AppearanceSettingsViewController.swift */; };
 		1401103090F2DD8E6BB5B909 /* SwipeGovSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF073F93EA9D62EB0E607D /* SwipeGovSetupPresenter.swift */; };
 		141BF00B1B59940711773726 /* StakingSelectPoolWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6654DEA68D7ED47AE8E52206 /* StakingSelectPoolWireframe.swift */; };
-		143F6C9044429A337265DF39 /* SwapSlippageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */; };
 		148748ACAE23B7D15144015B /* DAppAuthSettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23EDFB699CAEEADC9263A0D /* DAppAuthSettingsViewFactory.swift */; };
 		14CB8F0D2639C9FDD9923595 /* FeatureNavigationTrackerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C996DFAABD9DBA72FC3AAAD /* FeatureNavigationTrackerFactory.swift */; };
 		14DD3CD30D9D658961078037 /* ReferendumsFiltersViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025FA616E9CFA2BC7C364B74 /* ReferendumsFiltersViewFactory.swift */; };
@@ -1625,7 +1624,6 @@
 		232B205831DF28B772515DF2 /* SwapConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD1FBC9C063951E2520265D /* SwapConfirmWireframe.swift */; };
 		233CB11F486DE1953D977295 /* WalletsListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7073BBC153295FF46FD06FB3 /* WalletsListViewLayout.swift */; };
 		2450083471CD071346371995 /* MessageSheetWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */; };
-		2451E27286A176CDA2DC040D /* SwapSlippageWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088C765E5A0F81B96ADE72D8 /* SwapSlippageWireframe.swift */; };
 		247AE9F0FFC35C35B595EEE3 /* NftDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793046EA14E4CAB096803BCD /* NftDetailsWireframe.swift */; };
 		24EBA5B44D126CF5F20CF75A /* KnownNetworksListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE50B4D81A4DAB2F3313567 /* KnownNetworksListViewLayout.swift */; };
 		25381484F16FB930B8A90CE3 /* SelectValidatorsConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FE5F01FC9364788A91EFA5 /* SelectValidatorsConfirmProtocols.swift */; };
@@ -7178,7 +7176,6 @@
 		F8C0CA3DDBCB5E509295F099 /* MarkdownDescriptionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF9ED27CF12B7DA8B1378CF /* MarkdownDescriptionViewFactory.swift */; };
 		F92E73C24AB577F37B35649E /* WalletConnectSessionDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14339E7BE9FE045C6A2AB52 /* WalletConnectSessionDetailsInteractor.swift */; };
 		F9540A5C434F7E3CE6ED4EB4 /* NetworkManageNodePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78268D2C88E26B680F5CD09D /* NetworkManageNodePresenter.swift */; };
-		F9CEF01779F811AEEED06C43 /* SwapSlippageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */; };
 		F9E6E306BCE32992EA9ABF3E /* NominationPoolBondMoreConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 894A6BB613EA991A09976B30 /* NominationPoolBondMoreConfirmProtocols.swift */; };
 		FA0E6F6A12CA290C7079AC6C /* StakingSetupAmountPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F80E6C0C3AC88D7CDB8204F /* StakingSetupAmountPresenter.swift */; };
 		FA62AACACA15CB04275DE957 /* ParaStkYourCollatorsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A2FD02269432066884F5AF /* ParaStkYourCollatorsInteractor.swift */; };
@@ -7226,6 +7223,19 @@
 		FFE1C7A226D5422D15E63669 /* SubtensorPositionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66488FC0220BEEB63E9478CF /* SubtensorPositionProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
+		5CB3AE303F50C771B95FC286 /* SwapAssetPairId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E247D321ECF4A7A688EE41 /* SwapAssetPairId.swift */; };
+		DF22680B228152893CF1DB1C /* SwapSetupQuoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */; };
+		D3BCC60E45446FC3FA13FE44 /* SwapSetupPresenter+Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */; };
+		984BCDF1A95B966A0FF2E2D7 /* SwapSetupViewController+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */; };
+		D656130EB040498D4F7D1AD3 /* SwapSetupViewFactory+SwapsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */; };
+		8CA3047B16376558344AC912 /* SwapSetupAssetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392D2819369DCB3776A54F38 /* SwapSetupAssetHeaderView.swift */; };
+		FE4BDB3A7C9A4AB721543F31 /* SwapSlippageSheetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB38A47A3D5A85F44374B307 /* SwapSlippageSheetConfiguration.swift */; };
+		A58213AD265CA7DFD4D9F59B /* SwapSlippageSheetWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F687ABCAB6B18F9FE55296C /* SwapSlippageSheetWireframe.swift */; };
+		3B08286A32BF46A24BD43DB2 /* SwapsTabHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B01FF7C98E49DEC70A85D29 /* SwapsTabHostViewController.swift */; };
+		C3B96416C9E87634AEF23934 /* SwapTokenSelectionFlowProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DD8161ACCBCC7839D1ED59 /* SwapTokenSelectionFlowProtocol.swift */; };
+		0942946A32ECFD13919775E1 /* SwapAssetsOperationTokenSelectionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B14172D6AA06CEDF768E841 /* SwapAssetsOperationTokenSelectionFlow.swift */; };
+		455EB241D10FCB364E805C52 /* SwapLastPairStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CCB46296C3DC2A7215CB18 /* SwapLastPairStore.swift */; };
+		C53BF2BF89F5EA8E28DBF17B /* SwapSetupPrefillResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4680572EBA16E83E89FF7D /* SwapSetupPrefillResolver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -7335,7 +7345,6 @@
 		080DF5C2C6DEC79D8324F084 /* NPoolsUnstakeConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmInteractor.swift; sourceTree = "<group>"; };
 		0811515EC834B737A3536329 /* SwipeGovVotingListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListViewLayout.swift; sourceTree = "<group>"; };
 		0816F2A4A5CC1F111E626188 /* SwapSlippagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippagePresenter.swift; sourceTree = "<group>"; };
-		088C765E5A0F81B96ADE72D8 /* SwapSlippageWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageWireframe.swift; sourceTree = "<group>"; };
 		08AA7CAC0897A256B47B52F1 /* SwipeGovVotingListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListWireframe.swift; sourceTree = "<group>"; };
 		08D63836373E5AB433A04596 /* ManualBackupWalletListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupWalletListWireframe.swift; sourceTree = "<group>"; };
 		090900CA298F4CD0BBDD89CC /* SubtensorPriceHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPriceHistoryOperationFactory.swift; sourceTree = "<group>"; };
@@ -9749,7 +9758,6 @@
 		2E1CC73C3A2E423B80C22C70 /* SubtensorConfirmPresenter+Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorConfirmPresenter+Interactor.swift"; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
-		2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewLayout.swift; sourceTree = "<group>"; };
 		2ECD8589BD30A8BE9492AD87 /* StakingRewardPayoutsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsPresenter.swift; sourceTree = "<group>"; };
 		2ECFEE32F8BB4EC28F90183B /* SubtensorTradeQuoteOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorTradeQuoteOperationFactoryTests.swift; sourceTree = "<group>"; };
 		2EEBEF25EE40804C383C0057 /* GenericLedgerAccountSelectionInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionInteractor.swift; sourceTree = "<group>"; };
@@ -14149,7 +14157,6 @@
 		F8C16637ADA10892106DD304 /* GovernanceDelegateInfoWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoWireframe.swift; sourceTree = "<group>"; };
 		F90A76631A8ED5D69C9F0A57 /* GovernanceNotificationsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewFactory.swift; sourceTree = "<group>"; };
 		F9A1BBDF1BE41D7E7A43423C /* WalletMigrateAcceptProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletMigrateAcceptProtocols.swift; sourceTree = "<group>"; };
-		F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewController.swift; sourceTree = "<group>"; };
 		FA1285B676EA226704C14DDB /* SwapExecutionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapExecutionWireframe.swift; sourceTree = "<group>"; };
 		FA18C9D87DC9E878D101CB91 /* SwapFeeDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsViewFactory.swift; sourceTree = "<group>"; };
 		FA3F824117720D3CE65A195F /* LedgerDiscoverPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverPresenter.swift; sourceTree = "<group>"; };
@@ -14192,6 +14199,19 @@
 		FF755EE09598254BB5E59CC2 /* ReferendumVoteSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupViewFactory.swift; sourceTree = "<group>"; };
 		FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsInteractor.swift; sourceTree = "<group>"; };
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
+		77E247D321ECF4A7A688EE41 /* SwapAssetPairId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetPairId.swift; sourceTree = "<group>"; };
+		BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSetupQuoteState.swift; sourceTree = "<group>"; };
+		2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Form.swift"; sourceTree = "<group>"; };
+		45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupViewController+Protocol.swift"; sourceTree = "<group>"; };
+		63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupViewFactory+SwapsTab.swift"; sourceTree = "<group>"; };
+		392D2819369DCB3776A54F38 /* SwapSetupAssetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSetupAssetHeaderView.swift; sourceTree = "<group>"; };
+		AB38A47A3D5A85F44374B307 /* SwapSlippageSheetConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSlippageSheetConfiguration.swift; sourceTree = "<group>"; };
+		3F687ABCAB6B18F9FE55296C /* SwapSlippageSheetWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSlippageSheetWireframe.swift; sourceTree = "<group>"; };
+		1B01FF7C98E49DEC70A85D29 /* SwapsTabHostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsTabHostViewController.swift; sourceTree = "<group>"; };
+		29DD8161ACCBCC7839D1ED59 /* SwapTokenSelectionFlowProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectionFlowProtocol.swift; sourceTree = "<group>"; };
+		0B14172D6AA06CEDF768E841 /* SwapAssetsOperationTokenSelectionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetsOperationTokenSelectionFlow.swift; sourceTree = "<group>"; };
+		D9CCB46296C3DC2A7215CB18 /* SwapLastPairStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapLastPairStore.swift; sourceTree = "<group>"; };
+		0C4680572EBA16E83E89FF7D /* SwapSetupPrefillResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapSetupPrefillResolver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -16215,6 +16235,7 @@
 				0C846B8F2BE5F069000EBFC2 /* GlobalConfigProvider.swift */,
 				0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */,
 				0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */,
+				77E247D321ECF4A7A688EE41 /* SwapAssetPairId.swift */,
 			);
 			path = GlobalConfig;
 			sourceTree = "<group>";
@@ -18016,13 +18037,11 @@
 				7752E16B2AD878A4006E2F92 /* Model */,
 				3FD99C9DAA9DA7ABAE717564 /* Subtensor */,
 				2AE0E677E64DAC7E93562412 /* SwapSlippageProtocols.swift */,
-				088C765E5A0F81B96ADE72D8 /* SwapSlippageWireframe.swift */,
 				0816F2A4A5CC1F111E626188 /* SwapSlippagePresenter.swift */,
-				F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */,
-				2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */,
 				28294C13CF8F62D2FE4D0427 /* SwapSlippageViewFactory.swift */,
 				8F1A32022E5F000100000001 /* SwapSlippageViewFactory+Subtensor.swift */,
 				0C13DFDC2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift */,
+				3F687ABCAB6B18F9FE55296C /* SwapSlippageSheetWireframe.swift */,
 			);
 			path = Slippage;
 			sourceTree = "<group>";
@@ -18055,6 +18074,11 @@
 				BBEB2BC52266AF493D310834 /* SwapSetupViewController.swift */,
 				21BFB88AFA39D4273B224261 /* SwapSetupViewController+PriceChart.swift */,
 				6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */,
+				2C7C825157DDF849105170B7 /* SwapSetupPresenter+Form.swift */,
+				45D133386803A505DA93F888 /* SwapSetupViewController+Protocol.swift */,
+				63749666DED96340C0F858AE /* SwapSetupViewFactory+SwapsTab.swift */,
+				9DC8E315CEFCA8966DF080A6 /* TokenSelection */,
+				BB0BCE93175D4DA7D56CC407 /* Prefill */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -21318,6 +21342,7 @@
 			children = (
 				7695C24250F942309A32190D /* SubtensorSlippageViewController.swift */,
 				9496A8C3397CFF912B79F9C0 /* SubtensorSlippageViewLayout.swift */,
+				AB38A47A3D5A85F44374B307 /* SwapSlippageSheetConfiguration.swift */,
 			);
 			path = Subtensor;
 			sourceTree = "<group>";
@@ -22207,6 +22232,7 @@
 				CDD43373A9159E0A592077BB /* SwapSetupViewLayout.swift */,
 				77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */,
 				77740BC12AD69E3400E8C06F /* SwapMaxButtonView.swift */,
+				392D2819369DCB3776A54F38 /* SwapSetupAssetHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -22535,6 +22561,7 @@
 				0C13DFD42AFA4F1500E5F355 /* SwapIssueCheckParams.swift */,
 				0C13DFD62AFA50A200E5F355 /* SwapIssueViewModelFactory.swift */,
 				0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */,
+				BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -26906,6 +26933,7 @@
 				0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */,
 				0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */,
 				0C2BE78F2E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift */,
+				1B01FF7C98E49DEC70A85D29 /* SwapsTabHostViewController.swift */,
 			);
 			path = MainTabBar;
 			sourceTree = "<group>";
@@ -32930,6 +32958,24 @@
 			path = GlobalConfig;
 			sourceTree = "<group>";
 		};
+		9DC8E315CEFCA8966DF080A6 /* TokenSelection */ = {
+			isa = PBXGroup;
+			children = (
+				29DD8161ACCBCC7839D1ED59 /* SwapTokenSelectionFlowProtocol.swift */,
+				0B14172D6AA06CEDF768E841 /* SwapAssetsOperationTokenSelectionFlow.swift */,
+			);
+			path = TokenSelection;
+			sourceTree = "<group>";
+		};
+		BB0BCE93175D4DA7D56CC407 /* Prefill */ = {
+			isa = PBXGroup;
+			children = (
+				D9CCB46296C3DC2A7215CB18 /* SwapLastPairStore.swift */,
+				0C4680572EBA16E83E89FF7D /* SwapSetupPrefillResolver.swift */,
+			);
+			path = Prefill;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -35023,6 +35069,7 @@
 				44869A6857999987D50FC632 /* MainTabBarViewController+More.swift in Sources */,
 				FD0729DAFF449C19577C4C6E /* MainTabBarMoreMenuView.swift in Sources */,
 				6769C9586FDFA18D6BB8DECC /* SwapsTabPlaceholderViewController.swift in Sources */,
+				3B08286A32BF46A24BD43DB2 /* SwapsTabHostViewController.swift in Sources */,
 				AD76972CF63D5D87E3FBC70B /* SwapsTabPlaceholderViewLayout.swift in Sources */,
 				84D9C8F128AD9913007FB23B /* LedgerPathBuilder.swift in Sources */,
 				843E9B2F27C8B17F009C143A /* FileDownloadOperation.swift in Sources */,
@@ -37670,6 +37717,7 @@
 				2D7A55082E5D000100000002 /* SubtensorApiOperationFactory.swift in Sources */,
 				8F1A32012E5F000100000002 /* SubtensorSlippageConfig.swift in Sources */,
 				8F1A32022E5F000100000002 /* SwapSlippageViewFactory+Subtensor.swift in Sources */,
+				A58213AD265CA7DFD4D9F59B /* SwapSlippageSheetWireframe.swift in Sources */,
 				3E5C11022E5E000300000002 /* SubtensorUnstakeModel.swift in Sources */,
 				4C8E90012E5E000300000002 /* SubtensorUnstakeBasis.swift in Sources */,
 				3E5C11042E5E000300000002 /* SubtensorConfirmModel.swift in Sources */,
@@ -38321,6 +38369,7 @@
 				849B036B2A14FCC3009624D9 /* PriceHistoryItem.swift in Sources */,
 				2DFF39EA2E18308500529984 /* MultilineTextInputViewDelegate.swift in Sources */,
 				0C8FC2172E6063B500034ED3 /* GlobalConfig.swift in Sources */,
+				5CB3AE303F50C771B95FC286 /* SwapAssetPairId.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */,
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
@@ -38346,6 +38395,7 @@
 				2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,
+				8CA3047B16376558344AC912 /* SwapSetupAssetHeaderView.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
 				2D7748902C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift in Sources */,
 				842E9EA02A2DC23900759972 /* StakingDashboardBuilderProtocol.swift in Sources */,
@@ -39085,6 +39135,7 @@
 				77F9FB0B2A9D97A100820625 /* NominationPoolBondMoreSetupWireframe.swift in Sources */,
 				F0C3DCA3CD4F850C16406716 /* GovernanceDelegateSearchViewFactory.swift in Sources */,
 				0C13DFD52AFA4F1500E5F355 /* SwapIssueCheckParams.swift in Sources */,
+				DF22680B228152893CF1DB1C /* SwapSetupQuoteState.swift in Sources */,
 				77A502F12B63E3830062FA51 /* ProxyAccountSubscription.swift in Sources */,
 				0C0F6D8D2D3A943C00943A7C /* CollatorStakingServiceFactory.swift in Sources */,
 				C98A02D4DEAC6E4CACB9E47E /* StakingRebagConfirmProtocols.swift in Sources */,
@@ -39320,6 +39371,10 @@
 				0C3976582C2D7B9000998DD6 /* MigrationLedgerPolkadotApplication.swift in Sources */,
 				92984DFE797C52644C084377 /* SwapSetupProtocols.swift in Sources */,
 				5B02D050E6E067906A05B46B /* SwapSetupWireframe.swift in Sources */,
+				455EB241D10FCB364E805C52 /* SwapLastPairStore.swift in Sources */,
+				C53BF2BF89F5EA8E28DBF17B /* SwapSetupPrefillResolver.swift in Sources */,
+				C3B96416C9E87634AEF23934 /* SwapTokenSelectionFlowProtocol.swift in Sources */,
+				0942946A32ECFD13919775E1 /* SwapAssetsOperationTokenSelectionFlow.swift in Sources */,
 				0C846B902BE5F069000EBFC2 /* GlobalConfigProvider.swift in Sources */,
 				3EE29545824B68594751769C /* SwapSetupPresenter.swift in Sources */,
 				D857129E9EB65137973E6F97 /* SwapSetupPresenter+PoolTradeLimit.swift in Sources */,
@@ -39329,14 +39384,17 @@
 				B7834841AABA430277895F78 /* SwapSetupPresenter+Analytics.swift in Sources */,
 				0C5F987FC46AAB0D1A2B523A /* SwapSetupPresenter+Details.swift in Sources */,
 				88D6B5760D4388B5718185A0 /* SwapSetupPresenter+PriceChart.swift in Sources */,
+				D3BCC60E45446FC3FA13FE44 /* SwapSetupPresenter+Form.swift in Sources */,
 				8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */,
 				14856B6F02B66ECA496EFC94 /* SwapSetupViewController+PriceChart.swift in Sources */,
+				984BCDF1A95B966A0FF2E2D7 /* SwapSetupViewController+Protocol.swift in Sources */,
 				772AB22A2B3E157B0099DB73 /* AccountManagementHintView.swift in Sources */,
 				350B8A18C9C91DF07D2E53C5 /* SwapSetupViewLayout.swift in Sources */,
 				0C7104A42C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift in Sources */,
 				77F8A1982B73769C00B25F9B /* PushNotificationsFacadeFactory.swift in Sources */,
 				2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */,
 				66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */,
+				D656130EB040498D4F7D1AD3 /* SwapSetupViewFactory+SwapsTab.swift in Sources */,
 				2DF3C2882EA2301D0099417C /* GiftsOnboardingHeaderView.swift in Sources */,
 				EB280B977471EA442D91395E /* SwapConfirmProtocols.swift in Sources */,
 				232B205831DF28B772515DF2 /* SwapConfirmWireframe.swift in Sources */,
@@ -39351,12 +39409,9 @@
 				C61286217D7D54EC70E3F1AA /* SwapConfirmViewFactory.swift in Sources */,
 				94A6747402550FB39D2E2BE7 /* SwapSlippageProtocols.swift in Sources */,
 				2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */,
-				2451E27286A176CDA2DC040D /* SwapSlippageWireframe.swift in Sources */,
 				0C39766D2C3261A000998DD6 /* HydraXYK+Storages.swift in Sources */,
 				07D1F0F4FAE24BED8A1CF257 /* SwapSlippagePresenter.swift in Sources */,
 				0C0F6DEA2D42653B00943A7C /* CollatorStakingSelectionInfoProtocol.swift in Sources */,
-				143F6C9044429A337265DF39 /* SwapSlippageViewController.swift in Sources */,
-				F9CEF01779F811AEEED06C43 /* SwapSlippageViewLayout.swift in Sources */,
 				0C3D1B1E2DA3BE0A0008057B /* XcmDynamicModelFactory.swift in Sources */,
 				80603DA36CD481AE310CDFE1 /* SwapSlippageViewFactory.swift in Sources */,
 				0CA72A8A2D4A38DE00B3FD02 /* CollatorStkFullUnstakeSetupVC.swift in Sources */,
@@ -40121,6 +40176,7 @@
 				0A189ED9A4B9A01C9C08318A /* SubtensorValidatorPickerViewModelFactory.swift in Sources */,
 				0B68565A4152D96598B6FCE7 /* SubtensorSlippageViewController.swift in Sources */,
 				02FCB19B8F67B33626BD4D2D /* SubtensorSlippageViewLayout.swift in Sources */,
+				FE4BDB3A7C9A4AB721543F31 /* SwapSlippageSheetConfiguration.swift in Sources */,
 				D22E35F15DBFB15CF668D30C /* SubtensorSubnetFiltersProtocols.swift in Sources */,
 				B0466BF58B213F5D4A32176F /* SubtensorSubnetFiltersPresenter.swift in Sources */,
 				9C1BB0D279E91A64474E1104 /* SubtensorSubnetFiltersWireframe.swift in Sources */,

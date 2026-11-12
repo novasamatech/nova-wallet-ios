@@ -24,6 +24,7 @@ public enum SwapSource: String, CaseIterable, AnalyticsPropertyConvertible {
     case mainScreen = "main_screen"
     case operationDetails = "operation_details"
     case retry
+    case swapsTab = "swaps_tab"
 }
 
 public enum SwapFailureReason: String, CaseIterable, AnalyticsPropertyConvertible {
