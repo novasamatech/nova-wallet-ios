@@ -86,7 +86,8 @@ private extension SwapsTabHostViewController {
     func installForm(with initState: SwapSetupInitState) {
         if let formView = SwapSetupViewFactory.createSwapsTabView(
             initState: initState,
-            assetListObservable: assetListObservable
+            assetListObservable: assetListObservable,
+            formHost: self
         ) {
             install(formView.controller)
         } else {
@@ -126,6 +127,10 @@ extension SwapsTabHostViewController: EventVisitorProtocol {
         }
     }
 }
+
+// MARK: SwapsTabFormResetting
+
+extension SwapsTabHostViewController: SwapsTabFormResetting {}
 
 // MARK: HiddableBarWhenPushed
 

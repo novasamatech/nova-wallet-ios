@@ -32,6 +32,26 @@ final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
         }
     }
 
+    func completeDelayedSubmission(
+        from view: SwapConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        locale: Locale
+    ) {
+        presentExtrinsicSubmission(
+            from: view,
+            sender: sender,
+            completionAction: .dismiss,
+            locale: locale
+        )
+
+        flowHandler.completeDelayedSubmission(
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
+    }
+
     func showRouteDetails(
         from view: ControllerBackedProtocol?,
         quote: AssetExchangeQuote,

@@ -23,8 +23,26 @@ struct SwapSetupViewFactory {
         state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
         source: SwapSource,
-        placement: SwapSetupPlacement = .flow,
         swapCompletionClosure: SwapCompletionClosure?
+    ) -> SwapSetupViewProtocol? {
+        createView(
+            state: state,
+            initState: initState,
+            source: source,
+            placement: .flow,
+            flowHandler: SwapExecutionPresentedFlowHandler(
+                flowState: state,
+                completionClosure: swapCompletionClosure
+            )
+        )
+    }
+
+    static func createView(
+        state: SwapTokensFlowStateProtocol,
+        initState: SwapSetupInitState,
+        source: SwapSource,
+        placement: SwapSetupPlacement,
+        flowHandler: SwapExecutionFlowHandling
     ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -37,7 +55,7 @@ struct SwapSetupViewFactory {
 
         guard let interactor = createInteractor(for: state) else { return nil }
 
-        let wireframe = createWireframe(state: state, placement: placement, completion: swapCompletionClosure)
+        let wireframe = createWireframe(state: state, placement: placement, flowHandler: flowHandler)
 
         let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
         let percentFormatter = NumberFormatter.percentSingle.localizableResource()
@@ -90,13 +108,13 @@ struct SwapSetupViewFactory {
     private static func createWireframe(
         state: SwapTokensFlowStateProtocol,
         placement: SwapSetupPlacement,
-        completion: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) -> SwapSetupWireframe {
         SwapSetupWireframe(
             state: state,
             tokenSelectionFlow: SwapAssetsOperationTokenSelectionFlow(state: state),
             placement: placement,
-            swapCompletionClosure: completion
+            flowHandler: flowHandler
         )
     }
 

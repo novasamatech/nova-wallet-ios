@@ -38,6 +38,7 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
     ErrorPresentable, ExtrinsicSigningErrorHandling, OperationIdOptionsPresentable {
     func complete(
         on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     )
 
@@ -47,7 +48,12 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
         receiveChainAsset: ChainAsset
     )
 
-    func close(on view: ControllerBackedProtocol?)
+    func close(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        isSwapCompleted: Bool
+    )
 
     func showRouteDetails(
         from view: ControllerBackedProtocol?,

@@ -330,11 +330,18 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
     }
 
     func activateDone() {
-        wireframe.complete(on: view, receiveChainAsset: chainAssetOut)
+        wireframe.complete(on: view, payChainAsset: chainAssetIn, receiveChainAsset: chainAssetOut)
     }
 
     func activateClose() {
-        wireframe.close(on: view)
+        let isSwapCompleted = if case .completed = state { true } else { false }
+
+        wireframe.close(
+            on: view,
+            payChainAsset: chainAssetIn,
+            receiveChainAsset: chainAssetOut,
+            isSwapCompleted: isSwapCompleted
+        )
     }
 
     func activateTryAgain() {

@@ -45,6 +45,14 @@ protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptions
         model: SwapExecutionModel
     )
 
+    func completeDelayedSubmission(
+        from view: SwapConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        locale: Locale
+    )
+
     func showRouteDetails(
         from view: ControllerBackedProtocol?,
         quote: AssetExchangeQuote,

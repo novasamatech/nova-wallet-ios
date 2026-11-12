@@ -7,7 +7,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     let state: SwapTokensFlowStateProtocol
     let tokenSelectionFlow: SwapTokenSelectionFlowProtocol
     let placement: SwapSetupPlacement
-    let swapCompletionClosure: SwapCompletionClosure?
+    let flowHandler: SwapExecutionFlowHandling
 
     var assetListObservable: AssetListModelObservable { state.assetListObservable }
 
@@ -15,12 +15,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         state: SwapTokensFlowStateProtocol,
         tokenSelectionFlow: SwapTokenSelectionFlowProtocol,
         placement: SwapSetupPlacement,
-        swapCompletionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) {
         self.state = state
         self.tokenSelectionFlow = tokenSelectionFlow
         self.placement = placement
-        self.swapCompletionClosure = swapCompletionClosure
+        self.flowHandler = flowHandler
     }
 
     func showPayTokenSelection(
@@ -81,7 +81,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         guard let confimView = SwapConfirmViewFactory.createView(
             initState: initState,
             flowState: state,
-            completionClosure: swapCompletionClosure
+            flowHandler: flowHandler
         ) else {
             return
         }

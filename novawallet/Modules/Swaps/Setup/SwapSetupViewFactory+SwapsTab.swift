@@ -4,7 +4,8 @@ import Keystore_iOS
 extension SwapSetupViewFactory {
     static func createSwapsTabView(
         initState: SwapSetupInitState,
-        assetListObservable: AssetListModelObservable
+        assetListObservable: AssetListModelObservable,
+        formHost: SwapsTabFormResetting
     ) -> SwapSetupViewProtocol? {
         let state = SwapTokensFlowState(
             assetListObservable: assetListObservable,
@@ -18,7 +19,10 @@ extension SwapSetupViewFactory {
             initState: initState,
             source: .swapsTab,
             placement: .swapsTab,
-            swapCompletionClosure: nil
+            flowHandler: SwapExecutionTabFlowHandler(
+                formHost: formHost,
+                lastPairStore: SwapLastPairStore(settingsManager: SettingsManager.shared)
+            )
         )
     }
 

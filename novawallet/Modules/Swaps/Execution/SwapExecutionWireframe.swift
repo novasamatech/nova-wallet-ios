@@ -14,13 +14,28 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
 
     func complete(
         on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     ) {
-        flowHandler.completeFlow(from: view, receiveChainAsset: receiveChainAsset)
+        flowHandler.completeFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
     }
 
-    func close(on view: ControllerBackedProtocol?) {
-        flowHandler.closeFlow(from: view)
+    func close(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        isSwapCompleted: Bool
+    ) {
+        flowHandler.closeFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            isSwapCompleted: isSwapCompleted
+        )
     }
 
     func showSwapSetup(

@@ -1,7 +1,11 @@
 import UIKit
 
 protocol SwapExecutionFlowHandling {
-    func completeFlow(from view: ControllerBackedProtocol?, receiveChainAsset: ChainAsset)
+    func completeFlow(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    )
 
     func retryFlow(
         from view: ControllerBackedProtocol?,
@@ -9,7 +13,20 @@ protocol SwapExecutionFlowHandling {
         receiveChainAsset: ChainAsset
     )
 
-    func closeFlow(from view: ControllerBackedProtocol?)
+    func closeFlow(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        isSwapCompleted: Bool
+    )
+
+    func completeDelayedSubmission(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset)
+}
+
+extension SwapExecutionFlowHandling {
+    func flowHost(of executionView: ControllerBackedProtocol?) -> UIViewController? {
+        executionView?.controller.presentingViewController
+    }
 }
 
 final class SwapExecutionPresentedFlowHandler {
@@ -25,19 +42,13 @@ final class SwapExecutionPresentedFlowHandler {
     }
 }
 
-private extension SwapExecutionPresentedFlowHandler {
-    func flowPresenter(for view: ControllerBackedProtocol?) -> UIViewController? {
-        let flowHost = view?.controller.presentingViewController
-
-        return flowHost?.presentingViewController ?? flowHost
-    }
-}
-
 extension SwapExecutionPresentedFlowHandler: SwapExecutionFlowHandling {
-    func completeFlow(from view: ControllerBackedProtocol?, receiveChainAsset: ChainAsset) {
-        let presenter = flowPresenter(for: view)
-
-        presenter?.dismiss(animated: true) {
+    func completeFlow(
+        from view: ControllerBackedProtocol?,
+        payChainAsset _: ChainAsset,
+        receiveChainAsset: ChainAsset
+    ) {
+        flowHost(of: view)?.dismiss(animated: true) {
             self.completionClosure?(receiveChainAsset)
         }
     }
@@ -56,16 +67,23 @@ extension SwapExecutionPresentedFlowHandler: SwapExecutionFlowHandling {
             return
         }
 
-        let presenter = flowPresenter(for: view)
+        let host = flowHost(of: view)
 
         let navigationController = NovaNavigationController(rootViewController: swapView.controller)
 
-        presenter?.dismiss(animated: true) {
-            presenter?.presentWithCardLayout(navigationController, animated: true)
+        host?.dismiss(animated: true) {
+            host?.presentWithCardLayout(navigationController, animated: true)
         }
     }
 
-    func closeFlow(from view: ControllerBackedProtocol?) {
-        flowPresenter(for: view)?.dismiss(animated: true)
+    func closeFlow(
+        from view: ControllerBackedProtocol?,
+        payChainAsset _: ChainAsset,
+        receiveChainAsset _: ChainAsset,
+        isSwapCompleted _: Bool
+    ) {
+        flowHost(of: view)?.dismiss(animated: true)
     }
+
+    func completeDelayedSubmission(payChainAsset _: ChainAsset, receiveChainAsset _: ChainAsset) {}
 }

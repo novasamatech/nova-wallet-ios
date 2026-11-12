@@ -501,10 +501,11 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
         case let .success(model):
             trackSwapCompleted()
 
-            wireframe.presentExtrinsicSubmission(
+            wireframe.completeDelayedSubmission(
                 from: view,
                 sender: model.sender,
-                completionAction: .dismiss,
+                payChainAsset: initState.chainAssetIn,
+                receiveChainAsset: initState.chainAssetOut,
                 locale: selectedLocale
             )
         case let .failure(error):
