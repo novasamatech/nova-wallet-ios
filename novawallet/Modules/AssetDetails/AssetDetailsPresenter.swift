@@ -291,6 +291,10 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
+    func didReceive(selectedCurrency: Currency) {
+        assetPriceChartModule?.updateSelectedCurrency(selectedCurrency)
+    }
+
     func didReceive(availableOperations: AssetDetailsOperation) {
         self.availableOperations = availableOperations
         updateView()
@@ -312,6 +316,7 @@ extension AssetDetailsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateView()
+            assetPriceChartModule?.updateLocale(selectedLocale)
         }
     }
 }
