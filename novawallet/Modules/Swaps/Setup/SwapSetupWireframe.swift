@@ -6,7 +6,6 @@ import UIKit_iOS
 final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     let state: SwapTokensFlowStateProtocol
     let tokenSelectionFlow: SwapTokenSelectionFlowProtocol
-    let placement: SwapSetupPlacement
     let flowHandler: SwapExecutionFlowHandling
 
     var assetListObservable: AssetListModelObservable { state.assetListObservable }
@@ -14,12 +13,10 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     init(
         state: SwapTokensFlowStateProtocol,
         tokenSelectionFlow: SwapTokenSelectionFlowProtocol,
-        placement: SwapSetupPlacement,
         flowHandler: SwapExecutionFlowHandling
     ) {
         self.state = state
         self.tokenSelectionFlow = tokenSelectionFlow
-        self.placement = placement
         self.flowHandler = flowHandler
     }
 
@@ -86,16 +83,9 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        switch placement {
-        case .swapsTab:
-            let navigationController = NovaNavigationController(rootViewController: confimView.controller)
-            view?.controller.presentWithCardLayout(navigationController, animated: true)
-        case .flow:
-            view?.controller.navigationController?.pushViewController(
-                confimView.controller,
-                animated: true
-            )
-        }
+        let navigationController = NovaNavigationController(rootViewController: confimView.controller)
+
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showRouteDetails(

@@ -1,9 +1,11 @@
 import Foundation
 import Keystore_iOS
+import NovaAnalytics
 
 extension SwapSetupViewFactory {
     static func createSwapsTabView(
         initState: SwapSetupInitState,
+        source: SwapSource,
         assetListObservable: AssetListModelObservable,
         formHost: SwapsTabFormResetting
     ) -> SwapSetupViewProtocol? {
@@ -17,7 +19,7 @@ extension SwapSetupViewFactory {
         return createView(
             state: state,
             initState: initState,
-            source: .swapsTab,
+            source: source,
             placement: .swapsTab,
             flowHandler: SwapExecutionTabFlowHandler(
                 formHost: formHost,

@@ -101,8 +101,6 @@ extension SwapSetupPresenter {
             return
         }
 
-        quoteFailureAlertState = .ended
-
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
         wireframe.presentRequestStatus(
@@ -115,6 +113,13 @@ extension SwapSetupPresenter {
             },
             skipAction: {}
         )
+
+        guard view?.isFrontmost == false else {
+            view?.notifyWhenFrontmost()
+            return
+        }
+
+        quoteFailureAlertState = .ended
     }
 
     func didBecomeFrontmost() {

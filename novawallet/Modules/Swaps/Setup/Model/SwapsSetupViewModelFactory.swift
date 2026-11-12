@@ -138,21 +138,29 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     }
 
     private static func minReceived(for quote: AssetExchangeQuote, slippage: BigRational) -> Balance {
-        let slippageBoundOperations = switch quote.route.direction {
+        let firstSlippageBoundIndex = switch quote.route.direction {
         case .sell:
-            quote.metaOperations[...]
+            0
         case .buy:
-            quote.metaOperations.dropFirst()
+            1
         }
 
-        let slippageBoundSwapCount = slippageBoundOperations.filter { $0.label == .swap }.count
+        var compoundedAmountOutMin: Balance?
+
+        for (index, operation) in quote.metaOperations.enumerated() {
+            let amountOut = compoundedAmountOutMin.map { amountIn in
+                operation.amountIn > 0 ? amountIn * operation.amountOut / operation.amountIn : 0
+            } ?? operation.amountOut
+
+            let isSlippageBound = index >= firstSlippageBoundIndex && operation.label == .swap
+
+            compoundedAmountOutMin = isSlippageBound
+                ? amountOut.subtractOrZero(slippage.mul(value: amountOut))
+                : amountOut
+        }
 
         let amountOut = quote.route.amountOut
-        let compoundedAmountOutMin = (0 ..< slippageBoundSwapCount).reduce(amountOut) { amount, _ in
-            amount.subtractOrZero(slippage.mul(value: amount))
-        }
-
-        let slippageLoss = amountOut - compoundedAmountOutMin
+        let slippageLoss = amountOut.subtractOrZero(compoundedAmountOutMin ?? amountOut)
 
         return quote.commissionNetFlow().netFinalAmountOut.subtractOrZero(slippageLoss)
     }

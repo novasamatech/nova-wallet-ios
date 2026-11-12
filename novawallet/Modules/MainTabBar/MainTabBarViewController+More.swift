@@ -59,6 +59,12 @@ extension MainTabBarViewController {
     }
 }
 
+extension MainTabBarViewController: TabBarOverlayShowing {
+    var isOverlayShown: Bool {
+        moreMenuView != nil
+    }
+}
+
 extension MainTabBarViewController: MainTabBarMoreMenuViewDelegate {
     func moreMenuView(_: MainTabBarMoreMenuView, didSelect item: MainTabBarMoreItem) {
         hideMoreMenu(animated: true)

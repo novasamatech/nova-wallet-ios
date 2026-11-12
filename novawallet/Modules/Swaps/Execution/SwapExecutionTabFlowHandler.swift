@@ -1,7 +1,8 @@
 import UIKit
+import NovaAnalytics
 
 protocol SwapsTabFormResetting: AnyObject {
-    func resetForm(prefilledWith initState: SwapSetupInitState?)
+    func resetForm(prefilledWith initState: SwapSetupInitState?, source: SwapSource)
 }
 
 final class SwapExecutionTabFlowHandler {
@@ -21,7 +22,8 @@ private extension SwapExecutionTabFlowHandler {
     func returnToForm(
         from view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset
+        receiveChainAsset: ChainAsset,
+        source: SwapSource = .swapsTab
     ) {
         flowHost(of: view)?.dismiss(animated: true)
 
@@ -29,7 +31,8 @@ private extension SwapExecutionTabFlowHandler {
             prefilledWith: SwapSetupInitState(
                 payChainAsset: payChainAsset,
                 receiveChainAsset: receiveChainAsset
-            )
+            ),
+            source: source
         )
     }
 
@@ -69,7 +72,8 @@ extension SwapExecutionTabFlowHandler: SwapExecutionFlowHandling {
         returnToForm(
             from: view,
             payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset
+            receiveChainAsset: receiveChainAsset,
+            source: .retry
         )
     }
 
@@ -94,14 +98,22 @@ extension SwapExecutionTabFlowHandler: SwapExecutionFlowHandling {
         }
     }
 
-    func completeDelayedSubmission(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset) {
+    func completeDelayedSubmission(
+        from reviewView: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        presentingSubmission: (ControllerBackedProtocol?) -> Void
+    ) {
+        presentingSubmission(reviewView)
+
         lastPairStore.save(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset)
 
         formHost?.resetForm(
             prefilledWith: SwapSetupInitState(
                 payChainAsset: payChainAsset,
                 receiveChainAsset: receiveChainAsset
-            )
+            ),
+            source: .swapsTab
         )
     }
 }

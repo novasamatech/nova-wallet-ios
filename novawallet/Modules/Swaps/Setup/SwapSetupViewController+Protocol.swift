@@ -138,9 +138,9 @@ extension SwapSetupViewController {
 
 extension SwapSetupViewController: SwapSetupViewProtocol {
     var isFrontmost: Bool {
-        let isMoreMenuShown = (tabBarController as? MainTabBarViewController)?.moreMenuView != nil
+        let isTabBarOverlayShown = (tabBarController as? TabBarOverlayShowing)?.isOverlayShown ?? false
 
-        return isOnScreen && presentedViewController == nil && !isMoreMenuShown
+        return isOnScreen && presentedViewController == nil && !isTabBarOverlayShown
     }
 
     func didReceiveButtonState(title: String, enabled: Bool) {
@@ -288,6 +288,9 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
     func notifyWhenFrontmost() {
         isFrontmostRequested = true
-        updateFrontmostCheck()
+
+        if isOnScreen {
+            startFrontmostCheck()
+        }
     }
 }

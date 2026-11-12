@@ -8,7 +8,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let initState: SwapSetupInitState
-    let source: SwapSource
+    var source: SwapSource
     let placement: SwapSetupPlacement
     let abandonTracker = AnalyticsAbandonTracker {
         AnalyticsEvent.swapAbandoned(stage: .setup)
@@ -317,7 +317,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         if case .rate = payAmountInput {
             refreshQuote(direction: .sell, forceUpdate: false)
-            armQuoteFailureAlert()
         }
     }
 }
@@ -808,6 +807,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             }
 
             self?.armQuoteFailureAlert()
+            self?.endRetryAttemptIfPairChanged()
         }
     }
 
@@ -831,6 +831,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             }
 
             self?.armQuoteFailureAlert()
+            self?.endRetryAttemptIfPairChanged()
         }
     }
 
@@ -894,6 +895,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         }
 
         armQuoteFailureAlert()
+        endRetryAttemptIfPairChanged()
 
         providePayAssetViews()
         provideReceiveAssetViews()

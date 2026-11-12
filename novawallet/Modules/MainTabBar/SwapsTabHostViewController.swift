@@ -1,6 +1,7 @@
 import UIKit
 import SnapKit
 import Foundation_iOS
+import NovaAnalytics
 
 final class SwapsTabHostViewController: UIViewController {
     let assetListObservable: AssetListModelObservable
@@ -49,14 +50,14 @@ final class SwapsTabHostViewController: UIViewController {
         rebuildIfNeeded()
     }
 
-    func resetForm(prefilledWith initState: SwapSetupInitState?) {
+    func resetForm(prefilledWith initState: SwapSetupInitState?, source: SwapSource) {
         needsRebuild = false
         prefillResolver.cancel()
 
         if let initState {
-            installForm(with: initState)
+            installForm(with: initState, source: source)
         } else {
-            resolveAndInstallForm()
+            resolveAndInstallForm(source: source)
         }
     }
 }
@@ -69,23 +70,24 @@ private extension SwapsTabHostViewController {
             return
         }
 
-        resetForm(prefilledWith: nil)
+        resetForm(prefilledWith: nil, source: .swapsTab)
     }
 
-    func resolveAndInstallForm() {
+    func resolveAndInstallForm(source: SwapSource) {
         guard let wallet = walletSettings.value else {
-            installForm(with: SwapSetupInitState(payChainAsset: nil))
+            installForm(with: SwapSetupInitState(payChainAsset: nil), source: source)
             return
         }
 
         prefillResolver.resolveInitState(for: wallet) { [weak self] initState in
-            self?.installForm(with: initState)
+            self?.installForm(with: initState, source: source)
         }
     }
 
-    func installForm(with initState: SwapSetupInitState) {
+    func installForm(with initState: SwapSetupInitState, source: SwapSource) {
         if let formView = SwapSetupViewFactory.createSwapsTabView(
             initState: initState,
+            source: source,
             assetListObservable: assetListObservable,
             formHost: self
         ) {

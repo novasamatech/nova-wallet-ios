@@ -4945,6 +4945,7 @@
 		8490142D24A935FE008F705E /* WebPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142824A935FE008F705E /* WebPresentable.swift */; };
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
 		8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */; };
+		B5837E7576AB8BF0F21139A1 /* TabBarOverlayShowing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C248D59E0CC1CD8DFF6C2D25 /* TabBarOverlayShowing.swift */; };
 		8490143024A935FE008F705E /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142B24A935FE008F705E /* AlertPresentable.swift */; };
 		8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144A24A93D0B008F705E /* NovaNavigationController.swift */; };
 		8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144E24A93E2E008F705E /* UIImage+Drawing.swift */; };
@@ -11895,6 +11896,7 @@
 		8490142824A935FE008F705E /* WebPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPresentable.swift; sourceTree = "<group>"; };
 		8490142924A935FE008F705E /* LoadableViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadableViewProtocol.swift; sourceTree = "<group>"; };
 		8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerBackedProtocol.swift; sourceTree = "<group>"; };
+		C248D59E0CC1CD8DFF6C2D25 /* TabBarOverlayShowing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarOverlayShowing.swift; sourceTree = "<group>"; };
 		8490142B24A935FE008F705E /* AlertPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
 		8490144A24A93D0B008F705E /* NovaNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaNavigationController.swift; sourceTree = "<group>"; };
 		8490144E24A93E2E008F705E /* UIImage+Drawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Drawing.swift"; sourceTree = "<group>"; };
@@ -26407,6 +26409,7 @@
 				842876B524AE05C700D91AD8 /* EmailPresentable.swift */,
 				8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */,
 				849014E724AA925C008F705E /* ScrollsToTop.swift */,
+				C248D59E0CC1CD8DFF6C2D25 /* TabBarOverlayShowing.swift */,
 				8490149824AA7892008F705E /* SharingPresentable.swift */,
 				8490142724A935FE008F705E /* ErrorPresentable.swift */,
 				8490142824A935FE008F705E /* WebPresentable.swift */,
@@ -35425,6 +35428,7 @@
 				84B677D626AED45500863DC6 /* SharedList.swift in Sources */,
 				84C5ADD32811F6D0006D7388 /* WalletAccountView.swift in Sources */,
 				8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */,
+				B5837E7576AB8BF0F21139A1 /* TabBarOverlayShowing.swift in Sources */,
 				F41CEBEA273161DE00C06154 /* CrowdloanRewardDestinationView.swift in Sources */,
 				0C1998EA2C4A22FD000EBFB8 /* BalancesRemoteSubscriptionService+Protocol.swift in Sources */,
 				848B2FFE286EDA4700465BA2 /* WalletServiceFacade.swift in Sources */,

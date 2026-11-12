@@ -25,16 +25,22 @@ struct SwapSetupViewFactory {
         source: SwapSource,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
-        createView(
+        let flowHandler = SwapExecutionPresentedFlowHandler(
+            flowState: state,
+            completionClosure: swapCompletionClosure
+        )
+
+        let view = createView(
             state: state,
             initState: initState,
             source: source,
             placement: .flow,
-            flowHandler: SwapExecutionPresentedFlowHandler(
-                flowState: state,
-                completionClosure: swapCompletionClosure
-            )
+            flowHandler: flowHandler
         )
+
+        flowHandler.formView = view
+
+        return view
     }
 
     static func createView(
@@ -55,7 +61,7 @@ struct SwapSetupViewFactory {
 
         guard let interactor = createInteractor(for: state) else { return nil }
 
-        let wireframe = createWireframe(state: state, placement: placement, flowHandler: flowHandler)
+        let wireframe = createWireframe(state: state, flowHandler: flowHandler)
 
         let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
         let percentFormatter = NumberFormatter.percentSingle.localizableResource()
@@ -107,13 +113,11 @@ struct SwapSetupViewFactory {
 
     private static func createWireframe(
         state: SwapTokensFlowStateProtocol,
-        placement: SwapSetupPlacement,
         flowHandler: SwapExecutionFlowHandling
     ) -> SwapSetupWireframe {
         SwapSetupWireframe(
             state: state,
             tokenSelectionFlow: SwapAssetsOperationTokenSelectionFlow(state: state),
-            placement: placement,
             flowHandler: flowHandler
         )
     }
