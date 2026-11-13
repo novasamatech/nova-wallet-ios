@@ -3,11 +3,39 @@ import Foundation_iOS
 
 extension SwapSetupViewController {
     var isChartVisiblyExpanded: Bool {
-        guard isOnScreen, !isKeyboardVisible, presentedViewController == nil else {
+        guard isOnScreen, presentedViewController == nil else {
             return false
         }
 
-        return chartViewModel?.isExpanded ?? false
+        return isChartShownExpanded
+    }
+
+    var isChartShownExpanded: Bool {
+        let isExpanded = chartViewModel?.isExpanded ?? false
+
+        return isExpanded && !isKeyboardVisible && !isChartCollapsedByDetails
+    }
+
+    var isChartCollapsedByDetails: Bool {
+        isChartCollapseRequestedByDetails && !isDetailsCardSettledHidden
+    }
+
+    func updateChartExpansion(animated: Bool) {
+        let isExpanded = isChartShownExpanded
+
+        chartViewProvider.setExpansion(
+            isExpanded: isExpanded,
+            isExpandable: chartViewModel?.isExpandable ?? true,
+            animated: animated
+        )
+
+        rootView.setChartHeight(chartViewProvider.getProposedHeight(), isExpanded: isExpanded)
+    }
+
+    func applyChartCollapseByDetailsChange() {
+        applyChartExpansion(animated: viewIfLoaded?.window != nil) {
+            self.presenter.didChangeChartVisibility()
+        }
     }
 
     func setupPriceChart() {
@@ -33,25 +61,23 @@ extension SwapSetupViewController {
 // MARK: Private
 
 private extension SwapSetupViewController {
-    func applyChartExpansion(animated: Bool) {
-        let viewModel = chartViewModel ?? SwapPriceChartViewModel(isExpanded: false, isExpandable: true)
-        let isExpanded = viewModel.isExpanded && !isKeyboardVisible
-
-        chartViewProvider.setExpansion(
-            isExpanded: isExpanded,
-            isExpandable: viewModel.isExpandable,
-            animated: animated
-        )
-
-        rootView.setChartHeight(chartViewProvider.getProposedHeight(), isExpanded: isExpanded)
+    func applyChartExpansion(animated: Bool, completion: (() -> Void)? = nil) {
+        updateChartExpansion(animated: animated)
 
         guard animated else {
+            completion?()
             return
         }
 
-        UIView.animate(withDuration: AssetPriceChartViewLayout.CompactConstants.animationDuration) {
-            self.rootView.layoutIfNeeded()
-        }
+        UIView.animate(
+            withDuration: AssetPriceChartViewLayout.CompactConstants.animationDuration,
+            animations: {
+                self.rootView.layoutIfNeeded()
+            },
+            completion: { _ in
+                completion?()
+            }
+        )
     }
 
     func focusedInputView() -> UIView? {
@@ -71,6 +97,11 @@ extension SwapSetupViewController: AssetPriceChartExpansionDelegate {
     func priceChartDidRequestExpansion(_ isExpanded: Bool) {
         if isExpanded {
             view.endEditing(true)
+
+            if isChartCollapseRequestedByDetails {
+                isChartCollapseRequestedByDetails = false
+                applyChartExpansion(animated: true)
+            }
         }
 
         presenter.selectChartExpansion(isExpanded)
@@ -84,7 +115,8 @@ extension SwapSetupViewController: KeyboardAdoptable {
         let localKeyboardFrame = view.convert(frame, from: nil)
         let bottomInset = max(0, view.bounds.height - localKeyboardFrame.minY)
         let scrollView = rootView.containerView.scrollView
-        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+        let scrollViewFrame = view.convert(scrollView.bounds, from: scrollView)
+        let scrollViewOffset = view.bounds.height - scrollViewFrame.maxY
 
         var contentInsets = scrollView.contentInset
         contentInsets.bottom = max(0, bottomInset - scrollViewOffset)

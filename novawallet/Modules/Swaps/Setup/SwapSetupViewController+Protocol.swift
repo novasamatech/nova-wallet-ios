@@ -3,11 +3,23 @@ import Foundation_iOS
 
 extension SwapSetupViewController {
     func updateDetailsVisibility() {
+        let wasChartCollapsedByDetails = isChartCollapsedByDetails
         let isQuoted = quoteState == .loaded
+        let isQuoteLoading = if case .loading = quoteState { true } else { false }
         let detailsVisible = isDetailsAvailable && isQuoted
 
         rootView.detailsView.isHidden = !detailsVisible
         rootView.setRateVisible(detailsVisible && hasRate && !rootView.detailsView.expanded)
+
+        if detailsVisible {
+            isDetailsCardSettledHidden = false
+        } else if !(isDetailsAvailable && isQuoteLoading) {
+            isDetailsCardSettledHidden = true
+        }
+
+        if isChartCollapsedByDetails != wasChartCollapsedByDetails {
+            applyChartCollapseByDetailsChange()
+        }
     }
 
     func applyPendingFocus() {

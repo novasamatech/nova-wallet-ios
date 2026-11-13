@@ -148,8 +148,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         applyCaption(
             on: &commissionDisclosureView,
             after: detailsView,
-            text: text,
-            spacing: Constants.commissionSpacing
+            text: text
         )
     }
 
@@ -163,10 +162,50 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             : Constants.chartCollapsedCornerRadius
     }
 
+    func scrollDetailsIntoView() {
+        let scrollView = containerView.scrollView
+        let insets = scrollView.adjustedContentInset
+        let offset = scrollView.contentOffset.y
+        let detailsBottomView = commissionDisclosureView ?? detailsView
+
+        let detailsTop = scrollView.convert(detailsView.bounds, from: detailsView).minY
+        let detailsBottom = scrollView.convert(detailsBottomView.bounds, from: detailsBottomView).maxY
+        let actionTop = scrollView.convert(loadableActionView.bounds, from: loadableActionView).minY
+
+        let visibleTop = offset + insets.top
+        let visibleBottom = min(
+            offset + scrollView.bounds.height - insets.bottom,
+            actionTop - Constants.detailsActionSpacing
+        )
+
+        let shift = min(detailsBottom - visibleBottom, detailsTop - visibleTop)
+
+        guard shift > 0 else {
+            return
+        }
+
+        let maxOffset = max(-insets.top, scrollView.contentSize.height + insets.bottom - scrollView.bounds.height)
+
+        scrollView.contentOffset.y = min(offset + shift, maxOffset)
+    }
+
+    func scrollToContentTop() {
+        let scrollView = containerView.scrollView
+        scrollView.contentOffset.y = -scrollView.adjustedContentInset.top
+    }
+
+    var isRateVisible: Bool {
+        !rateContainerView.isHidden
+    }
+
     func setRateVisible(_ isVisible: Bool) {
         rateContainerView.isHidden = !isVisible
 
         updateReceiveSpacings()
+    }
+
+    func setRateFaded(_ isFaded: Bool) {
+        rateContainerView.alpha = isFaded ? 0 : 1
     }
 
     func setDepositTokenButtonVisible(_ isVisible: Bool) {
@@ -226,7 +265,7 @@ private extension SwapSetupViewLayout {
             $0.height.equalTo(Constants.rateTapHeight)
         }
 
-        addArrangedSubview(detailsView)
+        addArrangedSubview(detailsView, spacingAfter: Constants.commissionSpacing)
 
         updateReceiveSpacings()
     }
@@ -296,6 +335,7 @@ extension SwapSetupViewLayout {
         static let rateIconSpacing: CGFloat = 16
         static let rateSpacingAfter: CGFloat = 16 - rateTapOutset
         static let commissionSpacing: CGFloat = 8
+        static let detailsActionSpacing: CGFloat = 10
         static let switchSize: CGFloat = 36
         static let switchBorderWidth: CGFloat = 2
         static let switchBalanceSpacing: CGFloat = 8

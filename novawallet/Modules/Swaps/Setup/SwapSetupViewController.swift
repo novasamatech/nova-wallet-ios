@@ -11,6 +11,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     var keyboardHandler: KeyboardHandler?
     var chartViewModel: SwapPriceChartViewModel?
     var isKeyboardVisible = false
+    var isChartCollapseRequestedByDetails = false
+    var isDetailsCardSettledHidden = true
     var isOnScreen = false
     var isFrontmostRequested = false
     var frontmostCheckTimer: Timer?
@@ -19,6 +21,8 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     var isDetailsAvailable = false
     var hasRate = false
     var pendingFocus: TextFieldFocus?
+
+    private var detailsAnimationGeneration = 0
 
     init(
         presenter: SwapSetupPresenterProtocol,
@@ -237,15 +241,81 @@ private extension SwapSetupViewController {
     }
 
     @objc func detailsExpansionAction() {
-        UIView.animate(withDuration: Constants.detailsAnimationDuration) {
-            self.rootView.detailsView.applyExpansion()
-            self.updateDetailsVisibility()
-            self.rootView.layoutIfNeeded()
+        detailsAnimationGeneration += 1
+
+        let isExpanding = rootView.detailsView.expanded
+        isChartCollapseRequestedByDetails = isExpanding
+
+        let steps = isExpanding ? detailsExpansionSteps() : detailsCollapseSteps()
+
+        runDetailsAnimation(steps[...], generation: detailsAnimationGeneration)
+    }
+
+    func detailsExpansionSteps() -> [DetailsAnimationStep] {
+        let revealDetails = {
+            guard self.isChartCollapsedByDetails else {
+                return
+            }
+
+            self.rootView.scrollDetailsIntoView()
+        }
+
+        guard rootView.isRateVisible else {
+            rootView.setRateFaded(true)
+            return [applyDetailsLayout, revealDetails]
+        }
+
+        let hideRate = {
+            self.rootView.setRateFaded(true)
+        }
+
+        return [hideRate, applyDetailsLayout, revealDetails]
+    }
+
+    func detailsCollapseSteps() -> [DetailsAnimationStep] {
+        let revealRate = {
+            self.rootView.setRateFaded(false)
+        }
+
+        return [applyDetailsLayout, revealRate]
+    }
+
+    func runDetailsAnimation(_ steps: ArraySlice<DetailsAnimationStep>, generation: Int) {
+        guard let step = steps.first else {
+            presenter.didChangeChartVisibility()
+            return
+        }
+
+        UIView.animate(
+            withDuration: Constants.detailsAnimationDuration,
+            delay: 0,
+            options: .beginFromCurrentState,
+            animations: step,
+            completion: { _ in
+                guard generation == self.detailsAnimationGeneration else {
+                    return
+                }
+
+                self.runDetailsAnimation(steps.dropFirst(), generation: generation)
+            }
+        )
+    }
+
+    func applyDetailsLayout() {
+        rootView.detailsView.applyExpansion()
+        updateDetailsVisibility()
+        updateChartExpansion(animated: true)
+        rootView.layoutIfNeeded()
+
+        if !rootView.detailsView.expanded, isChartShownExpanded {
+            rootView.scrollToContentTop()
         }
     }
 }
 
 extension SwapSetupViewController {
+    typealias DetailsAnimationStep = () -> Void
+
     enum Constants {
         static let detailsAnimationDuration: TimeInterval = 0.25
         static let frontmostCheckInterval: TimeInterval = 0.2
