@@ -1,6 +1,8 @@
 import UIKit
 
 final class SwapTokenSelectWireframe: SwapTokenSelectWireframeProtocol {
+    private weak var networksView: SwapTokenSelectNetworksViewProtocol?
+
     func close(view: SwapTokenSelectViewProtocol?) {
         view?.controller.dismiss(animated: true)
     }
@@ -17,6 +19,28 @@ final class SwapTokenSelectWireframe: SwapTokenSelectWireframeProtocol {
             return
         }
 
+        self.networksView = networksView
+
         view?.controller.present(networksView.controller, animated: true)
+    }
+
+    func presentRoutesRetry(
+        on view: SwapTokenSelectViewProtocol?,
+        locale: Locale,
+        retryAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) -> Bool {
+        let rootController = view?.controller.viewIfLoaded?.window?.rootViewController
+        let topControllerBefore = rootController?.topModalViewController
+        let presentingView: ControllerBackedProtocol? = networksView ?? view
+
+        presentRequestStatus(
+            on: presentingView,
+            locale: locale,
+            retryAction: retryAction,
+            skipAction: skipAction
+        )
+
+        return rootController?.topModalViewController !== topControllerBefore
     }
 }

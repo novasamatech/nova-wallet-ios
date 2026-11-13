@@ -3,7 +3,11 @@ import Foundation
 enum SwapTokenSelectQuickNetworks {
     static let chainIds: [ChainModel.Id] = [
         KnowChainId.polkadotAssetHub,
-        KnowChainId.hydra
+        KnowChainId.hydra,
+        KnowChainId.bittensor,
+        KnowChainId.ethereum,
+        KnowChainId.mythos,
+        KnowChainId.astar
     ]
 }
 
@@ -21,7 +25,7 @@ enum SwapTokenSelectNetworksArranger {
 
         var chipIds: [ChainModel.Id] = []
 
-        for chainId in savedNetworks + SwapTokenSelectQuickNetworks.chainIds
+        for chainId in SwapTokenSelectQuickNetworks.chainIds + savedNetworks
             where networksById[chainId] != nil && !chipIds.contains(chainId) {
             chipIds.append(chainId)
         }

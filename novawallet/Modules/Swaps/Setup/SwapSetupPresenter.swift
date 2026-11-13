@@ -758,16 +758,16 @@ extension SwapSetupPresenter {
         switch pickedSide {
         case .pay:
             receiveChainAsset = nil
-            receiveAmountInput = nil
             interactor.update(receiveChainAsset: nil)
         case .receive:
             payChainAsset = nil
-            payAmountInput = nil
             feeChainAsset = nil
             interactor.update(payChainAsset: nil)
             interactor.update(feeChainAsset: nil)
         }
 
+        payAmountInput = nil
+        receiveAmountInput = nil
         quoteArgs = nil
         quoteResult = nil
         fee = nil

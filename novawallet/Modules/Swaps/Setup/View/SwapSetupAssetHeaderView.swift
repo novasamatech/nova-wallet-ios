@@ -83,6 +83,9 @@ private extension SwapSetupAssetHeaderView {
 
         actionButton.setContentHuggingPriority(.required, for: .horizontal)
         actionButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        let buttonInsets = maxButton.contentInsets
+        maxButton.preferredHeight = titleView.buttonValue.font.lineHeight + buttonInsets.top + buttonInsets.bottom
     }
 
     func applyModel() {

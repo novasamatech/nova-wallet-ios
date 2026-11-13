@@ -31,4 +31,5 @@ struct SwapTokenSelectListParams {
     let swappable: Set<ChainAssetId>?
     let query: String
     let networkFilter: Set<ChainModel.Id>
+    let showsPendingBalances: Bool
 }

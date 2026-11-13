@@ -1,8 +1,12 @@
 import Foundation
+import Foundation_iOS
 
 struct SwapTokenSelectListViewModelParams {
     let currentChainAssetId: ChainAssetId?
+    let pendingChainAssetId: ChainAssetId?
     let counterpartSymbol: String?
+    let isSearching: Bool
+    let isFiltering: Bool
 }
 
 protocol SwapTokenSelectViewModelFactoryProtocol {
@@ -29,17 +33,20 @@ final class SwapTokenSelectViewModelFactory {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let formattingCache: AssetFormattingCacheProtocol
+    let quantityFormatter: LocalizableResource<NumberFormatter>
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
-        formattingCache: AssetFormattingCacheProtocol
+        formattingCache: AssetFormattingCacheProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
         self.networkViewModelFactory = networkViewModelFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
         self.formattingCache = formattingCache
+        self.quantityFormatter = quantityFormatter
     }
 }
 
@@ -48,17 +55,17 @@ final class SwapTokenSelectViewModelFactory {
 private extension SwapTokenSelectViewModelFactory {
     func createTokenRows(
         from items: [SwapTokenSelectItem],
-        currentChainAssetId: ChainAssetId?,
+        params: SwapTokenSelectListViewModelParams,
         locale: Locale
     ) -> [SwapTokenSelectRowViewModel] {
         items.map { item in
-            .token(createTokenViewModel(from: item, currentChainAssetId: currentChainAssetId, locale: locale))
+            .token(createTokenViewModel(from: item, params: params, locale: locale))
         }
     }
 
     func createTokenViewModel(
         from item: SwapTokenSelectItem,
-        currentChainAssetId: ChainAssetId?,
+        params: SwapTokenSelectListViewModelParams,
         locale: Locale
     ) -> SwapTokenSelectTokenViewModel {
         let chainAsset = item.chainAsset
@@ -71,7 +78,8 @@ private extension SwapTokenSelectViewModelFactory {
             tokenIcon: assetIconViewModelFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             networkIcon: network.icon,
             balance: createBalanceViewModel(from: item, locale: locale),
-            isCurrent: chainAsset.chainAssetId == currentChainAssetId
+            isCurrent: chainAsset.chainAssetId == params.currentChainAssetId,
+            isPending: chainAsset.chainAssetId == params.pendingChainAssetId
         )
     }
 
@@ -101,18 +109,12 @@ private extension SwapTokenSelectViewModelFactory {
         locale: Locale
     ) -> [SwapTokenSelectSectionViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let currentId = params.currentChainAssetId
 
-        let yourRows = createTokenRows(from: list.yourTokens, currentChainAssetId: currentId, locale: locale)
+        let yourRows = createTokenRows(from: list.yourTokens, params: params, locale: locale)
             + (list.balancesLoading ? [.loading] : [])
 
-        let otherRows = createTokenRows(from: list.otherTokens, currentChainAssetId: currentId, locale: locale)
-
-        let notSwappableRows = createTokenRows(
-            from: list.notSwappable,
-            currentChainAssetId: currentId,
-            locale: locale
-        )
+        let otherRows = createTokenRows(from: list.otherTokens, params: params, locale: locale)
+        let notSwappableRows = createTokenRows(from: list.notSwappable, params: params, locale: locale)
 
         let sections = [
             SwapTokenSelectSectionViewModel(title: strings.swapsTokenSelectYourTokens(), rows: yourRows),
@@ -124,6 +126,18 @@ private extension SwapTokenSelectViewModelFactory {
         ]
 
         return sections.filter { !$0.rows.isEmpty }
+    }
+
+    func createEmptyText(for params: SwapTokenSelectListViewModelParams, locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if params.isSearching {
+            return strings.swapsTokenSelectSearchEmpty()
+        } else if params.isFiltering {
+            return strings.swapsTokenSelectFilterEmpty()
+        } else {
+            return strings.swapsTokenSelectEmpty()
+        }
     }
 }
 
@@ -140,7 +154,7 @@ extension SwapTokenSelectViewModelFactory: SwapTokenSelectViewModelFactoryProtoc
         }
 
         guard !list.isEmpty else {
-            return .empty(R.string(preferredLanguages: locale.rLanguages).localizable.assetsSearchEmpty())
+            return .empty(createEmptyText(for: params, locale: locale))
         }
 
         return .sections(createSections(from: list, params: params, locale: locale))
@@ -175,9 +189,13 @@ extension SwapTokenSelectViewModelFactory: SwapTokenSelectViewModelFactoryProtoc
             return [allChip] + networkChips
         }
 
+        let remainingCount = quantityFormatter.value(for: locale).string(
+            from: NSNumber(value: chipRow.remainingCount)
+        ) ?? ""
+
         let moreChip = SwapTokenSelectChipViewModel(
             kind: .more,
-            title: strings.swapsTokenSelectMoreNetworks(String(chipRow.remainingCount)),
+            title: strings.swapsTokenSelectMoreNetworks(remainingCount),
             icon: R.image.iconAllNetworks().map { StaticImageViewModel(image: $0) },
             isSelected: false
         )

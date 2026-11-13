@@ -29,7 +29,8 @@ enum SwapTokenSelectViewFactory {
             ),
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
-            formattingCache: AssetFormattingCache(factory: AssetBalanceFormatterFactory())
+            formattingCache: AssetFormattingCache(factory: AssetBalanceFormatterFactory()),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
         let presenter = SwapTokenSelectPresenter(

@@ -19,6 +19,11 @@ final class SwapTokenSelectPresenter {
     private var query: String = ""
     private var list: SwapTokenSelectList?
     private var pendingSelection: ChainAsset?
+    private var isFinished = false
+    private var needsRoutesRefresh = false
+    private var isRoutesRetryShown = false
+    private var balancesLoadingTimedOut = false
+    private lazy var balancesLoadingScheduler = Scheduler(with: self, callbackQueue: .main)
 
     init(
         interactor: SwapTokenSelectInteractorInputProtocol,
@@ -67,19 +72,32 @@ private extension SwapTokenSelectPresenter {
                     routeUniverse: routeUniverse,
                     swappable: swappable,
                     query: query,
-                    networkFilter: selectedNetworks
+                    networkFilter: selectedNetworks,
+                    showsPendingBalances: !balancesLoadingTimedOut
                 )
             )
         }
 
+        scheduleBalancesLoadingTimeoutIfNeeded()
         provideList()
         provideChips()
+    }
+
+    func scheduleBalancesLoadingTimeoutIfNeeded() {
+        guard list?.balancesLoading == true, !balancesLoadingScheduler.isScheduled else {
+            return
+        }
+
+        balancesLoadingScheduler.notifyAfter(Constants.balancesLoadingTimeout)
     }
 
     func provideList() {
         let params = SwapTokenSelectListViewModelParams(
             currentChainAssetId: context.current?.chainAssetId,
-            counterpartSymbol: context.counterpart?.asset.symbol
+            pendingChainAssetId: pendingSelection?.chainAssetId,
+            counterpartSymbol: context.counterpart?.asset.symbol,
+            isSearching: !query.isEmpty,
+            isFiltering: !selectedNetworks.isEmpty
         )
 
         let viewModel = viewModelFactory.createListViewModel(
@@ -113,13 +131,15 @@ private extension SwapTokenSelectPresenter {
 
         let viewModels = viewModelFactory.createNetworkViewModels(
             from: SwapTokenSelectNetworksArranger.sheetOrder(of: networks),
-            selectedNetworks: Set(savedNetworks)
+            selectedNetworks: selectedNetworks
         )
+
+        let shownNetworks = Set(networks.map(\.chainId))
 
         wireframe.showNetworkSelection(from: view, viewModels: viewModels) { [weak self] chainIds in
             self?.selectedNetworks = Set(chainIds)
-            self?.interactor.save(networks: chainIds)
-            self?.view?.didResetChipsScroll()
+            self?.interactor.save(networks: chainIds, replacing: shownNetworks)
+            self?.view?.didCompleteNetworkSelection()
         }
     }
 
@@ -141,6 +161,8 @@ private extension SwapTokenSelectPresenter {
 
         guard let swappable else {
             pendingSelection = chainAsset
+            provideList()
+            refreshRoutesIfFailed()
             return
         }
 
@@ -152,9 +174,29 @@ private extension SwapTokenSelectPresenter {
     }
 
     func complete(with result: SwapTokenSelectionResult) {
-        pendingSelection = nil
+        guard !isFinished else {
+            return
+        }
+
+        finish()
         completion(result)
+    }
+
+    func finish() {
+        isFinished = true
+        pendingSelection = nil
         wireframe.close(view: view)
+    }
+
+    func refreshRoutesIfFailed() {
+        isRoutesRetryShown = false
+
+        guard needsRoutesRefresh else {
+            return
+        }
+
+        needsRoutesRefresh = false
+        interactor.refreshRoutes()
     }
 }
 
@@ -189,19 +231,27 @@ extension SwapTokenSelectPresenter: SwapTokenSelectPresenterProtocol {
     }
 
     func selectToken(with chainAssetId: ChainAssetId) {
-        guard pendingSelection == nil, let chainAsset = findChainAsset(for: chainAssetId) else {
+        guard !isFinished, let chainAsset = findChainAsset(for: chainAssetId) else {
             return
         }
 
         if chainAssetId == context.current?.chainAssetId {
-            wireframe.close(view: view)
+            finish()
         } else {
             completeSelectionIfPossible(of: chainAsset)
         }
     }
 
+    func selectLoadingRow() {
+        refreshRoutesIfFailed()
+    }
+
     func close() {
-        wireframe.close(view: view)
+        guard !isFinished else {
+            return
+        }
+
+        finish()
     }
 }
 
@@ -235,13 +285,36 @@ extension SwapTokenSelectPresenter: SwapTokenSelectInteractorOutputProtocol {
     func didReceive(error: SwapTokenSelectError) {
         logger.error("Token select error: \(error)")
 
-        wireframe.presentRequestStatus(
+        needsRoutesRefresh = true
+
+        if pendingSelection != nil {
+            pendingSelection = nil
+            provideList()
+        }
+
+        guard !isRoutesRetryShown else {
+            return
+        }
+
+        isRoutesRetryShown = wireframe.presentRoutesRetry(
             on: view,
             locale: selectedLocale,
             retryAction: { [weak self] in
-                self?.interactor.refreshRoutes()
+                self?.refreshRoutesIfFailed()
+            },
+            skipAction: { [weak self] in
+                self?.isRoutesRetryShown = false
             }
         )
+    }
+}
+
+// MARK: SchedulerDelegate
+
+extension SwapTokenSelectPresenter: SchedulerDelegate {
+    func didTrigger(scheduler _: SchedulerProtocol) {
+        balancesLoadingTimedOut = true
+        rebuildList()
     }
 }
 
@@ -256,5 +329,13 @@ extension SwapTokenSelectPresenter: Localizable {
         provideTitle()
         provideList()
         provideChips()
+    }
+}
+
+// MARK: Constants
+
+private extension SwapTokenSelectPresenter {
+    enum Constants {
+        static let balancesLoadingTimeout: TimeInterval = 3
     }
 }

@@ -37,7 +37,8 @@ enum SwapTokenSelectListBuilder {
             yourTokens: yourTokens,
             otherTokens: otherTokens,
             notSwappable: notSwappable,
-            balancesLoading: hasPendingBalances(in: filteredAssets, assetList: params.assetList),
+            balancesLoading: params.showsPendingBalances
+                && hasPendingBalances(in: filteredAssets, assetList: params.assetList),
             networks: extractNetworks(from: universe)
         )
     }
@@ -51,26 +52,23 @@ enum SwapTokenSelectListBuilder {
 
 private extension SwapTokenSelectListBuilder {
     static func createUniverse(from params: SwapTokenSelectListParams) -> [ChainAsset]? {
+        guard let routeUniverse = params.routeUniverse else {
+            return nil
+        }
+
         let assetList = params.assetList
         let relayIds = relayChainIds(in: Array(assetList.chainsIncludingHidden.values))
         let counterpartId = params.context.counterpart?.chainAssetId
 
-        let chainAssets = assetList.chains(includingHidden: params.side == .receive)
+        return assetList.chains(includingHidden: params.side == .receive)
             .values
-            .filter { !relayIds.contains($0.chainId) }
+            .filter { !relayIds.contains($0.chainId) && !isPaused($0) }
             .flatMap { chain in chain.assets.map { ChainAsset(chain: chain, asset: $0) } }
-            .filter { $0.chainAssetId != counterpartId }
+            .filter { $0.chainAssetId != counterpartId && routeUniverse.contains($0.chainAssetId) }
+    }
 
-        switch params.side {
-        case .pay:
-            guard let routeUniverse = params.routeUniverse else {
-                return nil
-            }
-
-            return chainAssets.filter { routeUniverse.contains($0.chainAssetId) }
-        case .receive:
-            return chainAssets
-        }
+    static func isPaused(_ chain: ChainModel) -> Bool {
+        chain.name.range(of: Constants.pausedNetworkMarker, options: .caseInsensitive) != nil
     }
 
     static func filter(_ chainAssets: [ChainAsset], by networkIds: Set<ChainModel.Id>) -> [ChainAsset] {
@@ -199,5 +197,13 @@ private extension SwapTokenSelectListBuilder {
         }
 
         return Array(chains.values).sortedUsingDefaultComparator()
+    }
+}
+
+// MARK: Constants
+
+private extension SwapTokenSelectListBuilder {
+    enum Constants {
+        static let pausedNetworkMarker = "(PAUSED)"
     }
 }

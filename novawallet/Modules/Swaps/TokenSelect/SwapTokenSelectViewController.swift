@@ -152,8 +152,9 @@ extension SwapTokenSelectViewController: SwapTokenSelectViewProtocol {
         }
     }
 
-    func didResetChipsScroll() {
-        rootView.chipsView.scrollToStart()
+    func didCompleteNetworkSelection() {
+        rootView.chipsView.scrollToSelection()
+        scrollListToTop()
     }
 }
 
@@ -202,11 +203,12 @@ extension SwapTokenSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard case let .token(viewModel) = sections[indexPath.section].rows[indexPath.row] else {
-            return
+        switch sections[indexPath.section].rows[indexPath.row] {
+        case let .token(viewModel):
+            presenter.selectToken(with: viewModel.chainAssetId)
+        case .loading:
+            presenter.selectLoadingRow()
         }
-
-        presenter.selectToken(with: viewModel.chainAssetId)
     }
 }
 
@@ -260,7 +262,8 @@ private extension SwapTokenSelectSectionViewModel {
                     viewModel.chainAssetId.stringValue,
                     viewModel.balance?.amount ?? "",
                     viewModel.balance?.price ?? "",
-                    String(viewModel.isCurrent)
+                    String(viewModel.isCurrent),
+                    String(viewModel.isPending)
                 ].joined(with: .slash)
             case .loading:
                 "loading"

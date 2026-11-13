@@ -13,6 +13,7 @@ struct SwapTokenSelectTokenViewModel {
     let networkIcon: ImageViewModelProtocol?
     let balance: SwapTokenSelectBalanceViewModel?
     let isCurrent: Bool
+    let isPending: Bool
 }
 
 enum SwapTokenSelectRowViewModel {

@@ -13,6 +13,7 @@ final class SwapTokenSelectInteractor {
     private var assetExchangeService: AssetsExchangeServiceProtocol?
     private let universeCallStore = CancellableCallStore()
     private let swappableCallStore = CancellableCallStore()
+    private var hasReportedRoutesFailure = false
 
     init(
         state: SwapTokensFlowStateProtocol,
@@ -55,10 +56,14 @@ private extension SwapTokenSelectInteractor {
     }
 
     func fetchRouteUniverse(using service: AssetsExchangeServiceProtocol) {
-        fetch(
-            wrapper: service.fetchAssetsInWrapper(given: nil),
-            callStore: universeCallStore
-        ) { [weak self] chainAssetIds in
+        let wrapper = switch side {
+        case .pay:
+            service.fetchAssetsInWrapper(given: nil)
+        case .receive:
+            service.fetchAssetsOutWrapper(given: nil)
+        }
+
+        fetch(wrapper: wrapper, callStore: universeCallStore) { [weak self] chainAssetIds in
             self?.presenter?.didReceive(routeUniverse: chainAssetIds)
         }
     }
@@ -93,9 +98,18 @@ private extension SwapTokenSelectInteractor {
             case let .success(chainAssetIds):
                 completion(chainAssetIds)
             case let .failure(error):
-                self?.presenter?.didReceive(error: .routes(error))
+                self?.reportRoutesFailure(error)
             }
         }
+    }
+
+    func reportRoutesFailure(_ error: Error) {
+        guard !hasReportedRoutesFailure else {
+            return
+        }
+
+        hasReportedRoutesFailure = true
+        presenter?.didReceive(error: .routes(error))
     }
 }
 
@@ -114,17 +128,20 @@ extension SwapTokenSelectInteractor: SwapTokenSelectInteractorInputProtocol {
             return
         }
 
-        if side == .pay {
-            fetchRouteUniverse(using: assetExchangeService)
-        }
+        hasReportedRoutesFailure = false
+
+        fetchRouteUniverse(using: assetExchangeService)
 
         if let counterpartId = counterpart?.chainAssetId {
             fetchSwappable(with: counterpartId, using: assetExchangeService)
         }
     }
 
-    func save(networks: [ChainModel.Id]) {
-        networksStore.save(networks: networks)
-        presenter?.didReceive(savedNetworks: networks)
+    func save(networks: [ChainModel.Id], replacing shownNetworks: Set<ChainModel.Id>) {
+        let keptNetworks = networksStore.savedNetworks.filter { !shownNetworks.contains($0) }
+        let savedNetworks = networks + keptNetworks
+
+        networksStore.save(networks: savedNetworks)
+        presenter?.didReceive(savedNetworks: savedNetworks)
     }
 }

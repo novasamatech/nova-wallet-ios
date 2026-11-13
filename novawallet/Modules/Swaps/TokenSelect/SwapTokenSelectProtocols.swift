@@ -4,7 +4,7 @@ protocol SwapTokenSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(title: String)
     func didReceive(chips: [SwapTokenSelectChipViewModel])
     func didReceive(list: SwapTokenSelectListViewModel)
-    func didResetChipsScroll()
+    func didCompleteNetworkSelection()
 }
 
 protocol SwapTokenSelectPresenterProtocol: AnyObject {
@@ -12,13 +12,14 @@ protocol SwapTokenSelectPresenterProtocol: AnyObject {
     func search(query: String)
     func selectChip(_ kind: SwapTokenSelectChipViewModel.Kind)
     func selectToken(with chainAssetId: ChainAssetId)
+    func selectLoadingRow()
     func close()
 }
 
 protocol SwapTokenSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refreshRoutes()
-    func save(networks: [ChainModel.Id])
+    func save(networks: [ChainModel.Id], replacing shownNetworks: Set<ChainModel.Id>)
 }
 
 protocol SwapTokenSelectInteractorOutputProtocol: AnyObject {
@@ -37,6 +38,13 @@ protocol SwapTokenSelectWireframeProtocol: AlertPresentable, ErrorPresentable, C
         viewModels: [SwapTokenSelectNetworkViewModel],
         completion: @escaping ([ChainModel.Id]) -> Void
     )
+
+    func presentRoutesRetry(
+        on view: SwapTokenSelectViewProtocol?,
+        locale: Locale,
+        retryAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) -> Bool
 }
 
 enum SwapTokenSelectError: Error {

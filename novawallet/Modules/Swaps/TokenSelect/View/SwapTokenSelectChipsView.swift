@@ -21,6 +21,7 @@ final class SwapTokenSelectChipsView: UIView {
     }
 
     private var chipViews: [SwapTokenSelectChipView] = []
+    private var selectedChipView: SwapTokenSelectChipView?
 
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: Constants.height)
@@ -43,19 +44,32 @@ final class SwapTokenSelectChipsView: UIView {
         zip(chipViews, viewModels).forEach { chipView, viewModel in
             chipView.bind(viewModel: viewModel)
         }
+
+        selectedChipView = viewModels.firstIndex(where: \.isSelected).map { chipViews[$0] }
     }
 
-    func scrollToStart() {
-        scrollView.setContentOffset(
-            CGPoint(x: -scrollView.contentInset.left, y: 0),
-            animated: false
-        )
+    func scrollToSelection() {
+        guard let selectedChipView else {
+            scrollToStart()
+            return
+        }
+
+        layoutIfNeeded()
+
+        scrollView.scrollRectToVisible(selectedChipView.frame, animated: false)
     }
 }
 
 // MARK: Private
 
 private extension SwapTokenSelectChipsView {
+    func scrollToStart() {
+        scrollView.setContentOffset(
+            CGPoint(x: -scrollView.contentInset.left, y: 0),
+            animated: false
+        )
+    }
+
     func setupLayout() {
         addSubview(scrollView)
         scrollView.snp.makeConstraints { make in

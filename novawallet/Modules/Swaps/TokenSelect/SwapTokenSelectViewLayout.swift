@@ -27,6 +27,7 @@ final class SwapTokenSelectViewLayout: UIView {
         view.textField.autocorrectionType = .no
         view.textField.autocapitalizationType = .none
         view.textField.returnKeyType = .done
+        view.textField.clearButtonMode = .always
     }
 
     let chipsView = SwapTokenSelectChipsView()
@@ -81,6 +82,7 @@ private extension SwapTokenSelectViewLayout {
             make.centerY.equalTo(closeButton)
             make.centerX.equalToSuperview()
             make.leading.greaterThanOrEqualTo(closeButton.snp.trailing).offset(Constants.titleHorizontalSpacing)
+            make.trailing.lessThanOrEqualToSuperview().inset(Constants.titleTrailingInset)
         }
 
         addSubview(searchBar)
@@ -119,6 +121,7 @@ private extension SwapTokenSelectViewLayout {
         static let closeButtonTopInset: CGFloat = 16
         static let closeButtonSize: CGFloat = 44
         static let titleHorizontalSpacing: CGFloat = 8
+        static let titleTrailingInset: CGFloat = UIConstants.horizontalInset + closeButtonSize + titleHorizontalSpacing
         static let searchTopInset: CGFloat = 64
         static let searchHeight: CGFloat = 36
         static let searchCornerRadius: CGFloat = 10

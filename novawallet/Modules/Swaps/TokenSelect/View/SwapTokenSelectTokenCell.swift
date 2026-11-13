@@ -49,6 +49,12 @@ final class SwapTokenSelectTokenCell: UITableViewCell {
         view.textAlignment = .right
     }
 
+    let activityIndicator: UIActivityIndicatorView = .create { view in
+        view.style = .medium
+        view.color = R.color.colorIconPrimary()
+        view.hidesWhenStopped = true
+    }
+
     private var networkIconViewModel: ImageViewModelProtocol?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -96,14 +102,27 @@ final class SwapTokenSelectTokenCell: UITableViewCell {
         amountLabel.text = viewModel.balance?.amount
         priceLabel.text = viewModel.balance?.price
 
-        currentBackgroundView.isHidden = !viewModel.isCurrent
+        currentBackgroundView.isHidden = !viewModel.isCurrent && !viewModel.isPending
         accentView.isHidden = !viewModel.isCurrent
+
+        bind(isPending: viewModel.isPending)
     }
 }
 
 // MARK: Private
 
 private extension SwapTokenSelectTokenCell {
+    func bind(isPending: Bool) {
+        amountLabel.isHidden = isPending
+        priceLabel.isHidden = isPending
+
+        if isPending {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
+    }
+
     func setupLayout() {
         contentView.addSubview(currentBackgroundView)
         currentBackgroundView.snp.makeConstraints { make in
@@ -164,6 +183,12 @@ private extension SwapTokenSelectTokenCell {
 
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         priceLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        contentView.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+        }
     }
 }
 
