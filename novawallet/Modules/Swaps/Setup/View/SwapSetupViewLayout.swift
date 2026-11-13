@@ -55,10 +55,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.applyIconStyle()
         $0.roundedBackgroundView?.fillColor = R.color.colorBlockBackground()!
         $0.roundedBackgroundView?.highlightedFillColor = R.color.colorBlockBackground()!
-        $0.roundedBackgroundView?.strokeColor = R.color.colorSecondaryScreenBackground()!
-        $0.roundedBackgroundView?.highlightedStrokeColor = R.color.colorSecondaryScreenBackground()!
-        $0.roundedBackgroundView?.strokeWidth = Constants.switchBorderWidth
         $0.roundedBackgroundView?.cornerRadius = Constants.switchSize / 2
+        $0.roundedBackgroundView?.layer.cornerRadius = Constants.switchSize / 2
+        $0.roundedBackgroundView?.layer.borderWidth = Constants.switchBorderWidth
+        $0.roundedBackgroundView?.layer.borderColor = R.color.colorSecondaryScreenBackground()!.cgColor
         $0.imageWithTitleView?.iconImage = R.image.iconActionSwap()
     }
 
@@ -302,7 +302,7 @@ private extension SwapSetupViewLayout {
 
         switchButton.snp.makeConstraints {
             $0.size.equalTo(Constants.switchSize)
-            $0.centerY.equalTo(receiveHeaderView)
+            $0.bottom.equalTo(receiveAmountInputView.snp.top).offset(-Constants.switchReceiveSpacing)
             $0.centerX.equalTo(receiveHeaderView).priority(.medium)
             $0.trailing.lessThanOrEqualTo(balanceView.snp.leading).offset(-Constants.switchBalanceSpacing)
         }
@@ -338,6 +338,7 @@ extension SwapSetupViewLayout {
         static let detailsActionSpacing: CGFloat = 10
         static let switchSize: CGFloat = 36
         static let switchBorderWidth: CGFloat = 2
+        static let switchReceiveSpacing: CGFloat = 2
         static let switchBalanceSpacing: CGFloat = 8
     }
 }
