@@ -41,6 +41,7 @@ enum SettingsKey: String {
     case subtensorEarnFavouriteSubnets
     case swapPriceChartExpanded
     case swapLastPair
+    case swapTokenSelectNetworks
 }
 
 extension SettingsManagerProtocol {

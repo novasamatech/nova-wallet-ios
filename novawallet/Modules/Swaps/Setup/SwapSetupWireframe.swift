@@ -22,36 +22,28 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     ) {
         tokenSelectionFlow.showTokenSelection(
             from: view,
             side: .pay,
-            counterpart: chainAsset
-        ) { result in
-            switch result {
-            case let .selected(selectedChainAsset):
-                completionHandler(selectedChainAsset)
-            }
-        }
+            context: context,
+            completion: completionHandler
+        )
     }
 
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     ) {
         tokenSelectionFlow.showTokenSelection(
             from: view,
             side: .receive,
-            counterpart: chainAsset
-        ) { result in
-            switch result {
-            case let .selected(selectedChainAsset):
-                completionHandler(selectedChainAsset)
-            }
-        }
+            context: context,
+            completion: completionHandler
+        )
     }
 
     func showSettings(

@@ -74,13 +74,13 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,

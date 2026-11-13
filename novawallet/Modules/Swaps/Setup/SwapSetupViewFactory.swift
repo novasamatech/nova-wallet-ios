@@ -117,7 +117,7 @@ struct SwapSetupViewFactory {
     ) -> SwapSetupWireframe {
         SwapSetupWireframe(
             state: state,
-            tokenSelectionFlow: SwapAssetsOperationTokenSelectionFlow(state: state),
+            tokenSelectionFlow: SwapTokenSelectFlow(state: state),
             flowHandler: flowHandler
         )
     }

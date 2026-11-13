@@ -1419,6 +1419,10 @@
 "swaps.setup.asset.select.receive.title" = "You receive";
 "swaps.setup.details.title" = "Swap details";
 "swaps.setup.asset.action.select.receive" = "Select a token to receive";
+"swaps.token.select.your.tokens" = "Your tokens";
+"swaps.token.select.other.tokens" = "Other tokens";
+"swaps.token.select.not.swappable" = "Not swappable with %@";
+"swaps.token.select.more.networks" = "%@+";
 "common.swap.action" = "Swap";
 "swaps.setup.asset.action.enter.amount" = "Enter amount";
 "common.swap.title" = "Swap";

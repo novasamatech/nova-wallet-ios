@@ -749,6 +749,30 @@ extension SwapSetupPresenter {
             updateFeeChainAsset(newFeeAsset)
         }
     }
+
+    private func clearCounterpartIfNeeded(for result: SwapTokenSelectionResult, pickedSide: SwapTokenSelectionSide) {
+        guard result.clearsCounterpart else {
+            return
+        }
+
+        switch pickedSide {
+        case .pay:
+            receiveChainAsset = nil
+            receiveAmountInput = nil
+            interactor.update(receiveChainAsset: nil)
+        case .receive:
+            payChainAsset = nil
+            payAmountInput = nil
+            feeChainAsset = nil
+            interactor.update(payChainAsset: nil)
+            interactor.update(feeChainAsset: nil)
+        }
+
+        quoteArgs = nil
+        quoteResult = nil
+        fee = nil
+        updateViews()
+    }
 }
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
@@ -779,7 +803,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectPayToken() {
-        wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
+        let context = SwapTokenSelectionContext(current: payChainAsset, counterpart: receiveChainAsset)
+        wireframe.showPayTokenSelection(from: view, context: context) { [weak self] result in
+            self?.clearCounterpartIfNeeded(for: result, pickedSide: .pay)
+            let chainAsset = result.chainAsset
             self?.payChainAsset = chainAsset
             let feeChainAsset = chainAsset.chain.utilityChainAsset()
 
@@ -812,7 +839,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectReceiveToken() {
-        wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
+        let context = SwapTokenSelectionContext(current: receiveChainAsset, counterpart: payChainAsset)
+        wireframe.showReceiveTokenSelection(from: view, context: context) { [weak self] result in
+            self?.clearCounterpartIfNeeded(for: result, pickedSide: .receive)
+            let chainAsset = result.chainAsset
             self?.receiveChainAsset = chainAsset
             self?.quoteResult = nil
             self?.provideReceiveAssetViews()
