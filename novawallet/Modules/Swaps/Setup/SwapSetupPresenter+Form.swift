@@ -135,3 +135,9 @@ extension SwapSetupPresenter: Localizable {
         }
     }
 }
+
+extension SwapSetupPresenter: SwapSetupModuleInputProtocol {
+    var currentPairInitState: SwapSetupInitState {
+        SwapSetupInitState(payChainAsset: getPayChainAsset(), receiveChainAsset: getReceiveChainAsset())
+    }
+}

@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "因高滑点而可能遭受前置交易。";
 "swaps.setup.slippage" = "滑点";
 "swaps.setup.settings.title" = "交换设置";
-"swaps.pay.token.selection.title" = "要支付的代币";
-"swaps.receive.token.selection.title" = "要接收的代币";
 "swaps.setup.asset.select.subtitle" = "选择一个代币";
 "swaps.setup.asset.pay.title" = "支付";
 "swaps.setup.asset.receive.title" = "接收";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "选择发送%@的网络";
 "buy.operation.network.list.title" = "选择购买%@的网络";
 "receive.operation.network.list.title" = "选择接收%@的网络";
-"swap.operation.network.list.title" = "选择交换%@的网络";
 "settings.appearance" = "外观";
 "settings.appearance.token.icons.title" = "代币图标";
 "settings.appearance.token.icons.option.white" = "白色图标";

@@ -6,6 +6,7 @@ struct GetTokenOptionsModel {
     let receiveAccount: MetaChainAccountResponse?
     let buyOptions: [RampAction]
     let changeNowUrl: URL?
+    let swapState: SwapTokensFlowStateProtocol?
 }
 
 extension GetTokenOptionsModel {
@@ -15,7 +16,8 @@ extension GetTokenOptionsModel {
             xcmTransfers: nil,
             receiveAccount: nil,
             buyOptions: [],
-            changeNowUrl: nil
+            changeNowUrl: nil,
+            swapState: nil
         )
     }
 }

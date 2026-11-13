@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "높은 슬리피지로 인해 거래가 프론트런 당할 수 있습니다.";
 "swaps.setup.slippage" = "슬리페이지";
 "swaps.setup.settings.title" = "교환 설정";
-"swaps.pay.token.selection.title" = "지불할 토큰";
-"swaps.receive.token.selection.title" = "받을 토큰";
 "swaps.setup.asset.select.subtitle" = "토큰 선택";
 "swaps.setup.asset.pay.title" = "지불할 금액";
 "swaps.setup.asset.receive.title" = "받을 금액";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "%@ 전송을 위한 네트워크 선택";
 "buy.operation.network.list.title" = "%@ 구매를 위한 네트워크 선택";
 "receive.operation.network.list.title" = "%@ 수신을 위한 네트워크 선택";
-"swap.operation.network.list.title" = "%@ 교환을 위한 네트워크 선택";
 "settings.appearance" = "외관";
 "settings.appearance.token.icons.title" = "토큰 아이콘";
 "settings.appearance.token.icons.option.white" = "화이트";

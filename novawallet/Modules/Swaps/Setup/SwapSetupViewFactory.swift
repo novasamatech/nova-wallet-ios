@@ -7,20 +7,6 @@ import Keystore_iOS
 struct SwapSetupViewFactory {
     static func createView(
         state: SwapTokensFlowStateProtocol,
-        payChainAsset: ChainAsset,
-        source: SwapSource,
-        swapCompletionClosure: SwapCompletionClosure?
-    ) -> SwapSetupViewProtocol? {
-        createView(
-            state: state,
-            initState: .init(payChainAsset: payChainAsset),
-            source: source,
-            swapCompletionClosure: swapCompletionClosure
-        )
-    }
-
-    static func createView(
-        state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
         source: SwapSource,
         swapCompletionClosure: SwapCompletionClosure?
@@ -48,7 +34,8 @@ struct SwapSetupViewFactory {
         initState: SwapSetupInitState,
         source: SwapSource,
         placement: SwapSetupPlacement,
-        flowHandler: SwapExecutionFlowHandling
+        flowHandler: SwapExecutionFlowHandling,
+        inputOwner: SwapSetupModuleInputOwnerProtocol? = nil
     ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -107,6 +94,7 @@ struct SwapSetupViewFactory {
         presenter.view = view
         interactor.basePresenter = presenter
         dataValidatingFactory.view = view
+        inputOwner?.swapSetupModule = presenter
 
         return view
     }

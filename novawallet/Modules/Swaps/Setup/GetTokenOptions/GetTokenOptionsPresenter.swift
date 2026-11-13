@@ -11,6 +11,10 @@ final class GetTokenOptionsPresenter {
 
     private var model: GetTokenOptionsModel?
 
+    var operations: [GetTokenOperation] {
+        allOperations.filter { $0 != .swap || model?.swapState != nil }
+    }
+
     init(
         interactor: GetTokenOptionsInteractorInputProtocol,
         wireframe: GetTokenOptionsWireframeProtocol,
@@ -29,6 +33,8 @@ final class GetTokenOptionsPresenter {
         }
 
         switch operation {
+        case .swap:
+            return model.swapState != nil
         case .crosschain:
             return !model.availableXcmOrigins.isEmpty
         case .receive:
@@ -41,7 +47,7 @@ final class GetTokenOptionsPresenter {
     }
 
     private func provideViewModel() {
-        let viewModels = allOperations.map { operation in
+        let viewModels = operations.map { operation in
             let isActive = isOperationAvailable(operation)
             let token = destinationChainAsset.asset.symbol
 
@@ -70,11 +76,17 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
     }
 
     func selectOption(at index: Int) {
-        guard let model = model else {
+        let visibleOperations = operations
+
+        guard let model, visibleOperations.indices.contains(index) else {
             return
         }
 
-        switch allOperations[index] {
+        switch visibleOperations[index] {
+        case .swap:
+            if let swapState = model.swapState {
+                wireframe.complete(on: view, result: .swap(swapState))
+            }
         case .crosschain:
             if let xcmTransfers = model.xcmTransfers {
                 wireframe.complete(

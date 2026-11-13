@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 enum GetTokenOperation {
+    case swap
     case crosschain
     case receive
     case buy
@@ -17,6 +18,8 @@ extension GetTokenOperation {
 
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
+        case .swap:
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapAction()
         case .crosschain:
             return R.string(
                 preferredLanguages: locale.rLanguages
@@ -34,6 +37,8 @@ extension GetTokenOperation {
 
     func subtitleForLocale(_ locale: Locale, token: String) -> String {
         switch self {
+        case .swap:
+            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositBySwapSubtitle(token)
         case .crosschain:
             return R.string(
                 preferredLanguages: locale.rLanguages
@@ -57,7 +62,7 @@ extension GetTokenOperation {
 
     func chipForLocale(_ locale: Locale) -> String? {
         switch self {
-        case .crosschain, .receive, .buy:
+        case .swap, .crosschain, .receive, .buy:
             return nil
         case .changeNow:
             return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositThirdParty()
@@ -66,6 +71,8 @@ extension GetTokenOperation {
 
     var icon: UIImage? {
         switch self {
+        case .swap:
+            return R.image.iconActionChange()
         case .crosschain:
             return R.image.iconCrossChainTransfer()
         case .receive:

@@ -284,6 +284,7 @@ private extension MainTabBarViewFactory {
         let viewController = SwapsTabHostViewController(
             assetListObservable: assetListObservable,
             prefillResolver: SwapSetupViewFactory.createPrefillResolver(),
+            pairPrefillResolver: SwapSetupViewFactory.createPrefillResolver(),
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             localizationManager: localizationManager

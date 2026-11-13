@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "高いスリッページのため、トランザクションがフロントランされる可能性があります。";
 "swaps.setup.slippage" = "スリッページ";
 "swaps.setup.settings.title" = "スワップ設定";
-"swaps.pay.token.selection.title" = "支払い用トークン";
-"swaps.receive.token.selection.title" = "受け取り用トークン";
 "swaps.setup.asset.select.subtitle" = "トークンを選択";
 "swaps.setup.asset.pay.title" = "支払う";
 "swaps.setup.asset.receive.title" = "受け取る";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "送信するネットワークを選択 %@";
 "buy.operation.network.list.title" = "購入するネットワークを選択 %@";
 "receive.operation.network.list.title" = "受信するネットワークを選択 %@";
-"swap.operation.network.list.title" = "スワップするネットワークを選択 %@";
 "settings.appearance" = "外観";
 "settings.appearance.token.icons.title" = "トークンアイコン";
 "settings.appearance.token.icons.option.white" = "ホワイト";

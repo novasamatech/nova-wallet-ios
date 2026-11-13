@@ -3,12 +3,19 @@ import SnapKit
 import Foundation_iOS
 import NovaAnalytics
 
+protocol SwapsTabPairProviding: AnyObject {
+    func provideTabPair(completion: @escaping (SwapSetupInitState) -> Void)
+}
+
 final class SwapsTabHostViewController: UIViewController {
     let assetListObservable: AssetListModelObservable
     let prefillResolver: SwapSetupPrefillResolving
+    let pairPrefillResolver: SwapSetupPrefillResolving
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let localizationManager: LocalizationManagerProtocol
+
+    weak var swapSetupModule: SwapSetupModuleInputProtocol?
 
     private var contentController: UIViewController?
     private var needsRebuild = true
@@ -16,12 +23,14 @@ final class SwapsTabHostViewController: UIViewController {
     init(
         assetListObservable: AssetListModelObservable,
         prefillResolver: SwapSetupPrefillResolving,
+        pairPrefillResolver: SwapSetupPrefillResolving,
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.assetListObservable = assetListObservable
         self.prefillResolver = prefillResolver
+        self.pairPrefillResolver = pairPrefillResolver
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
         self.localizationManager = localizationManager
@@ -41,7 +50,7 @@ final class SwapsTabHostViewController: UIViewController {
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        install(SwapsTabPlaceholderViewController(localizationManager: localizationManager))
+        installPlaceholder()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -93,8 +102,14 @@ private extension SwapsTabHostViewController {
         ) {
             install(formView.controller)
         } else {
-            install(SwapsTabPlaceholderViewController(localizationManager: localizationManager))
+            installPlaceholder()
         }
+    }
+
+    func installPlaceholder() {
+        swapSetupModule = nil
+
+        install(SwapsTabPlaceholderViewController(localizationManager: localizationManager))
     }
 
     func install(_ controller: UIViewController) {
@@ -121,8 +136,9 @@ extension SwapsTabHostViewController: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         needsRebuild = true
         prefillResolver.cancel()
+        pairPrefillResolver.cancel()
 
-        install(SwapsTabPlaceholderViewController(localizationManager: localizationManager))
+        installPlaceholder()
 
         if viewIfLoaded?.window != nil {
             rebuildIfNeeded()
@@ -133,6 +149,34 @@ extension SwapsTabHostViewController: EventVisitorProtocol {
 // MARK: SwapsTabFormResetting
 
 extension SwapsTabHostViewController: SwapsTabFormResetting {}
+
+// MARK: SwapSetupModuleInputOwnerProtocol
+
+extension SwapsTabHostViewController: SwapSetupModuleInputOwnerProtocol {}
+
+// MARK: SwapsTabPairProviding
+
+extension SwapsTabHostViewController: SwapsTabPairProviding {
+    func provideTabPair(completion: @escaping (SwapSetupInitState) -> Void) {
+        if let swapSetupModule {
+            completion(swapSetupModule.currentPairInitState)
+            return
+        }
+
+        guard let wallet = walletSettings.value else {
+            completion(SwapSetupInitState(payChainAsset: nil))
+            return
+        }
+
+        pairPrefillResolver.resolveInitState(for: wallet) { [weak self] initState in
+            guard self?.walletSettings.value?.metaId == wallet.metaId else {
+                return
+            }
+
+            completion(initState)
+        }
+    }
+}
 
 // MARK: HiddableBarWhenPushed
 

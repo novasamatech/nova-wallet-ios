@@ -1395,6 +1395,7 @@
 "swaps.setup.deposit.by.cross.chain.transfer.subtitle" = "Transfer %@ from another network";
 "swaps.setup.deposit.by.receive.subtitle" = "Receive %@ with QR or your address";
 "swaps.setup.deposit.by.buy.subtitle" = "Instantly buy %@ with a credit card";
+"swaps.setup.deposit.by.swap.subtitle" = "Swap another token for %@";
 "swaps.setup.deposit.by.dapp.title" = "Exchange on %@";
 "swaps.setup.deposit.by.dapp.subtitle" = "%@ · opens in the browser";
 "swaps.setup.deposit.alternatives" = "%1$@ or %2$@";
@@ -1407,8 +1408,6 @@
 "swaps.setup.slippage.warning.high.amount" = "Transaction might be frontrun because of high slippage.";
 "swaps.setup.slippage" = "Slippage";
 "swaps.setup.settings.title" = "Swap settings";
-"swaps.pay.token.selection.title" = "Token to pay";
-"swaps.receive.token.selection.title" = "Token to receive";
 "swaps.setup.asset.select.subtitle" = "Select a token";
 "swaps.setup.asset.pay.title" = "Pay";
 "swaps.setup.asset.receive.title" = "Receive";
@@ -1776,7 +1775,6 @@
 "send.operation.network.list.title" = "Select network for sending %@";
 "buy.operation.network.list.title" = "Select network for buying %@";
 "receive.operation.network.list.title" = "Select network for receiving %@";
-"swap.operation.network.list.title" = "Select network for swapping %@";
 "settings.appearance" = "Appearance";
 "settings.appearance.token.icons.title" = "Token icons";
 "settings.appearance.token.icons.option.white" = "White";

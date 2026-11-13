@@ -7,7 +7,7 @@ extension SwapSetupViewFactory {
         initState: SwapSetupInitState,
         source: SwapSource,
         assetListObservable: AssetListModelObservable,
-        formHost: SwapsTabFormResetting
+        formHost: SwapsTabFormResetting & SwapSetupModuleInputOwnerProtocol
     ) -> SwapSetupViewProtocol? {
         let state = SwapTokensFlowState(
             assetListObservable: assetListObservable,
@@ -24,7 +24,8 @@ extension SwapSetupViewFactory {
             flowHandler: SwapExecutionTabFlowHandler(
                 formHost: formHost,
                 lastPairStore: SwapLastPairStore(settingsManager: SettingsManager.shared)
-            )
+            ),
+            inputOwner: formHost
         )
     }
 

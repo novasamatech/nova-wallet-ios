@@ -5,6 +5,7 @@ enum GetTokenOptionsResult {
     case receive(MetaChainAccountResponse)
     case buy([RampAction])
     case changeNow(URL)
+    case swap(SwapTokensFlowStateProtocol)
 }
 
 typealias GetTokenOptionsCompletion = (GetTokenOptionsResult) -> Void

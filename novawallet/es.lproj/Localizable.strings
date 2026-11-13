@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "La transacción podría ser adelantada debido al alto deslizamiento.";
 "swaps.setup.slippage" = "Deslizamiento";
 "swaps.setup.settings.title" = "Configuraciones de intercambio";
-"swaps.pay.token.selection.title" = "Token para pagar";
-"swaps.receive.token.selection.title" = "Token para recibir";
 "swaps.setup.asset.select.subtitle" = "Selecciona un token";
 "swaps.setup.asset.pay.title" = "Pagar";
 "swaps.setup.asset.receive.title" = "Recibir";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "Seleccionar red para enviar %@";
 "buy.operation.network.list.title" = "Seleccionar red para comprar %@";
 "receive.operation.network.list.title" = "Seleccionar red para recibir %@";
-"swap.operation.network.list.title" = "Seleccionar red para intercambiar %@";
 "settings.appearance" = "Apariencia";
 "settings.appearance.token.icons.title" = "iconos de token";
 "settings.appearance.token.icons.option.white" = "Blanco";

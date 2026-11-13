@@ -53,6 +53,14 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func didBecomeFrontmost()
 }
 
+protocol SwapSetupModuleInputProtocol: AnyObject {
+    var currentPairInitState: SwapSetupInitState { get }
+}
+
+protocol SwapSetupModuleInputOwnerProtocol: AnyObject {
+    var swapSetupModule: SwapSetupModuleInputProtocol? { get set }
+}
+
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func setup()
     func update(receiveChainAsset: ChainAsset?)
