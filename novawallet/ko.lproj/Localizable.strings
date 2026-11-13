@@ -1761,7 +1761,6 @@
 "swaps.execution.transfer.details" = "%@로 옮기는 중";
 "swaps.execution.swap.details" = "%@를 %@로 %@에서 스왑하는 중";
 "common.of" = "%@의 %@";
-"swaps.label.crosschain" = "크로스체인 전송";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "스왑 실행 중 중간 수신 금액이 %@로 최소 잔액 %@보다 적습니다. 더 큰 스왑 금액을 지정해 보세요.";
 "common.fee.amount.prefixed" = "수수료: %@";
 "common.not.enough.to.pay.fee.message" = "네트워크 수수료 %@를 지불할 충분한 잔액이 없습니다. 현재 잔액은 %@입니다";

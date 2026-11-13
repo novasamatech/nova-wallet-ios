@@ -7261,7 +7261,6 @@
 		44556D92BAF76A1AECDEB69C /* SwapTokenSelectViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301D8C52F64C95AC57743DD7 /* SwapTokenSelectViewLayout.swift */; };
 		0182B35BBF1AFF1DCC912A2B /* SwapTokenSelectWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BD80005FEE4942DC334A6B /* SwapTokenSelectWireframe.swift */; };
 		830190A237F10C5587CD3192 /* SwapTokenSelectViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36D2E94B53A816CB778D67F2 /* SwapTokenSelectViewModelFactory.swift */; };
-		3A79CFDD70D4D32E9231EC6E /* SwapTokenSelectEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F23C30F2443ABCA17C1C9C5 /* SwapTokenSelectEmptyView.swift */; };
 		E731726BA9103B437D34D93B /* SwapTokenSelectSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3C33C61031EE1D3E67EC48 /* SwapTokenSelectSectionHeaderView.swift */; };
 		F7E917CF2BB3BDE0C051C0DA /* SwapTokenSelectSkeletonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85BF8DD1B9CC268454C8DC3 /* SwapTokenSelectSkeletonCell.swift */; };
 		25461D880E66CB3ACB93EB14 /* SwapTokenSelectTokenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F3396E1DB34115D16BA691 /* SwapTokenSelectTokenCell.swift */; };
@@ -14267,7 +14266,6 @@
 		301D8C52F64C95AC57743DD7 /* SwapTokenSelectViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectViewLayout.swift; sourceTree = "<group>"; };
 		E0BD80005FEE4942DC334A6B /* SwapTokenSelectWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectWireframe.swift; sourceTree = "<group>"; };
 		36D2E94B53A816CB778D67F2 /* SwapTokenSelectViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectViewModelFactory.swift; sourceTree = "<group>"; };
-		6F23C30F2443ABCA17C1C9C5 /* SwapTokenSelectEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectEmptyView.swift; sourceTree = "<group>"; };
 		4E3C33C61031EE1D3E67EC48 /* SwapTokenSelectSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectSectionHeaderView.swift; sourceTree = "<group>"; };
 		B85BF8DD1B9CC268454C8DC3 /* SwapTokenSelectSkeletonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectSkeletonCell.swift; sourceTree = "<group>"; };
 		B2F3396E1DB34115D16BA691 /* SwapTokenSelectTokenCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectTokenCell.swift; sourceTree = "<group>"; };
@@ -33068,7 +33066,6 @@
 			children = (
 				F425A8428767057791ACE816 /* SwapTokenSelectChipView.swift */,
 				39B3BD67250025D2A9A3574D /* SwapTokenSelectChipsView.swift */,
-				6F23C30F2443ABCA17C1C9C5 /* SwapTokenSelectEmptyView.swift */,
 				4E3C33C61031EE1D3E67EC48 /* SwapTokenSelectSectionHeaderView.swift */,
 				B85BF8DD1B9CC268454C8DC3 /* SwapTokenSelectSkeletonCell.swift */,
 				B2F3396E1DB34115D16BA691 /* SwapTokenSelectTokenCell.swift */,
@@ -40354,7 +40351,6 @@
 				44556D92BAF76A1AECDEB69C /* SwapTokenSelectViewLayout.swift in Sources */,
 				0182B35BBF1AFF1DCC912A2B /* SwapTokenSelectWireframe.swift in Sources */,
 				830190A237F10C5587CD3192 /* SwapTokenSelectViewModelFactory.swift in Sources */,
-				3A79CFDD70D4D32E9231EC6E /* SwapTokenSelectEmptyView.swift in Sources */,
 				E731726BA9103B437D34D93B /* SwapTokenSelectSectionHeaderView.swift in Sources */,
 				F7E917CF2BB3BDE0C051C0DA /* SwapTokenSelectSkeletonCell.swift in Sources */,
 				25461D880E66CB3ACB93EB14 /* SwapTokenSelectTokenCell.swift in Sources */,

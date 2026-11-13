@@ -1761,7 +1761,6 @@
 "swaps.execution.transfer.details" = "%@を%@へ転送中";
 "swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
 "common.of" = "%@ の %@";
-"swaps.label.crosschain" = "クロスチェーントランスファー";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "スワップ実行中に中間の受取額が%@で、最小残高%@を下回っています。より大きなスワップ額を指定してみてください。";
 "common.fee.amount.prefixed" = "手数料: %@";
 "common.not.enough.to.pay.fee.message" = "ネットワーク手数料%@を支払うための残高が不足しています。現在の残高は%@";

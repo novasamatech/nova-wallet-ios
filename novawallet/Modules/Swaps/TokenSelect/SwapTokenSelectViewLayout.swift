@@ -41,8 +41,12 @@ final class SwapTokenSelectViewLayout: UIView {
         view.contentInset = UIEdgeInsets(top: Constants.listTopInset, left: 0, bottom: 0, right: 0)
     }
 
-    let emptyView: SwapTokenSelectEmptyView = .create { view in
-        view.isHidden = true
+    let emptyStateContainer: UIView = .create { view in
+        view.isUserInteractionEnabled = false
+    }
+
+    var emptyStateSpacing: CGFloat {
+        Constants.emptyStateSpacing
     }
 
     override init(frame: CGRect) {
@@ -104,10 +108,11 @@ private extension SwapTokenSelectViewLayout {
             make.leading.trailing.bottom.equalToSuperview()
         }
 
-        addSubview(emptyView)
-        emptyView.snp.makeConstraints { make in
+        addSubview(emptyStateContainer)
+        emptyStateContainer.snp.makeConstraints { make in
             make.top.equalTo(chipsView.snp.bottom).offset(Constants.emptyTopOffset)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(Constants.emptyStateHeight)
         }
     }
 }
@@ -127,5 +132,9 @@ private extension SwapTokenSelectViewLayout {
         static let searchCornerRadius: CGFloat = 10
         static let listTopInset: CGFloat = 4
         static let emptyTopOffset: CGFloat = 94
+        static let emptyImageSize: CGFloat = 96
+        static let emptyStateSpacing: CGFloat = 1
+
+        static let emptyStateHeight: CGFloat = 2 * emptyImageSize + emptyStateSpacing
     }
 }

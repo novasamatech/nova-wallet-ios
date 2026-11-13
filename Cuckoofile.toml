@@ -154,6 +154,8 @@ sources = [
     "novawallet/Common/Services/AssetExchange/AssetHubExchange/AssetHubExchangeHost.swift",
     "novawallet/Common/Services/AssetExchange/AssetHubExchange/AssetHubExchangeExtrinsicParamsFactory.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/Xcm/XcmTransferService+Protocol.swift",
+    "novawallet/Common/Services/ExtrinsicService/Substrate/Xcm/XcmTransferResolutionService.swift",
+    "novawallet/Common/Services/AssetExchange/CrosschainExchange/CrosschainExchangeHost.swift",
     "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
 ]
 

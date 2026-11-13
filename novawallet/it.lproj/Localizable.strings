@@ -1761,7 +1761,6 @@
 "swaps.execution.transfer.details" = "Trasferimento di %@ a %@";
 "swaps.execution.swap.details" = "Scambiando %@ con %@ su %@";
 "common.of" = "%@ di %@";
-"swaps.label.crosschain" = "Trasferimento tra catene";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Durante l'esecuzione dello swap, l'importo intermedio ricevuto è %@ che è inferiore al saldo minimo di %@. Prova a specificare un importo di swap maggiore.";
 "common.fee.amount.prefixed" = "Tassa: %@";
 "common.not.enough.to.pay.fee.message" = "Non hai abbastanza saldo per pagare la tassa di rete di %@. Il saldo attuale è %@";

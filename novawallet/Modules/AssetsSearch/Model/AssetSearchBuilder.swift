@@ -272,6 +272,12 @@ private extension AssetSearchBuilder {
             chainAssets = chainAssets.filter(filter)
         }
 
+        return Self.search(in: chainAssets, query: query)
+    }
+}
+
+extension AssetSearchBuilder {
+    static func search(in chainAssets: [ChainAsset], query: String) -> [ChainAsset] {
         guard !query.isEmpty else {
             return chainAssets
         }
@@ -288,29 +294,16 @@ private extension AssetSearchBuilder {
 
         let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
 
-        var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
-            let match = SearchMatch.matchInclusion(
+        let allMatchedChains = chainAssets.filter { chainAsset in
+            guard !matchedChainAssetsIds.contains(chainAsset.chainAssetId) else {
+                return false
+            }
+
+            return SearchMatch.matchInclusion(
                 for: query,
-                recordField: chain.name,
-                record: chain
-            )
-
-            guard match != nil else {
-                return
-            }
-
-            chain.assets.forEach { asset in
-                let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-
-                if !matchedChainAssetsIds.contains(chainAssetId) {
-                    let chainAsset = ChainAsset(chain: chain, asset: asset)
-                    result.append(chainAsset)
-                }
-            }
-        }
-
-        if let filter = filter {
-            allMatchedChains = allMatchedChains.filter(filter)
+                recordField: chainAsset.chain.name,
+                record: chainAsset.chain
+            ) != nil
         }
 
         return allMatchedAssets + allMatchedChains

@@ -1795,7 +1795,6 @@
 "swaps.execution.step.transfer" = "Transfer %@ from %@ to %@";
 "swaps.execution.step.swap" = "Swap %@ → %@ on %@";
 "swaps.execution.view.transaction" = "View transaction";
-"swaps.label.crosschain" = "Cross-chain transfer";
 "swaps.label.swap" = "Swap";
 "swaps.label.transfer" = "Transfer";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "During swap execution intermediate receive amount is %@ which is less than minimum balance of %@. Try specifying larger swap amount.";

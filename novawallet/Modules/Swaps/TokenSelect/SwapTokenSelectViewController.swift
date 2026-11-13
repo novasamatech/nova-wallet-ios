@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import UIKit_iOS
 
 final class SwapTokenSelectViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapTokenSelectViewLayout
@@ -11,6 +12,7 @@ final class SwapTokenSelectViewController: UIViewController, ViewHolder {
     private var sections: [SwapTokenSelectSectionViewModel] = []
     private var listSignature: [String]?
     private var chipsSignature: [String]?
+    private var emptyStateText: String?
 
     init(presenter: SwapTokenSelectPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -91,6 +93,15 @@ private extension SwapTokenSelectViewController {
         )
     }
 
+    func apply(emptyStateText newText: String?) {
+        guard newText != emptyStateText else {
+            return
+        }
+
+        emptyStateText = newText
+        reloadEmptyState(animated: false)
+    }
+
     func apply(sections newSections: [SwapTokenSelectSectionViewModel]) {
         let newSignature = newSections.flatMap(\.signature)
 
@@ -140,14 +151,13 @@ extension SwapTokenSelectViewController: SwapTokenSelectViewProtocol {
     func didReceive(list: SwapTokenSelectListViewModel) {
         switch list {
         case .loading:
-            rootView.emptyView.isHidden = true
+            apply(emptyStateText: nil)
             apply(sections: [.loadingPlaceholder])
         case let .empty(text):
-            rootView.emptyView.detailsLabel.text = text
-            rootView.emptyView.isHidden = false
+            apply(emptyStateText: text)
             apply(sections: [])
         case let .sections(sections):
-            rootView.emptyView.isHidden = true
+            apply(emptyStateText: nil)
             apply(sections: sections)
         }
     }
@@ -231,6 +241,36 @@ extension SwapTokenSelectViewController: KeyboardAdoptable {
 
         tableView.contentInset.bottom = overlap
         tableView.verticalScrollIndicatorInsets.bottom = overlap
+    }
+}
+
+// MARK: EmptyStateViewOwnerProtocol
+
+extension SwapTokenSelectViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+    var contentViewForEmptyState: UIView { rootView.emptyStateContainer }
+}
+
+// MARK: EmptyStateDataSource
+
+extension SwapTokenSelectViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        let emptyView = EmptyStateView()
+        emptyView.image = R.image.iconEmptyList()
+        emptyView.title = emptyStateText
+        emptyView.titleColor = R.color.colorTextSecondary()!
+        emptyView.titleFont = .regularFootnote
+        emptyView.verticalSpacing = rootView.emptyStateSpacing
+        return emptyView
+    }
+}
+
+// MARK: EmptyStateDelegate
+
+extension SwapTokenSelectViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        emptyStateText != nil
     }
 }
 

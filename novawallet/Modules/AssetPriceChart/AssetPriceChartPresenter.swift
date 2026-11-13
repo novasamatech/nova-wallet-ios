@@ -192,7 +192,14 @@ extension AssetPriceChartPresenter: AssetPriceChartModuleInputProtocol {
     }
 
     func updateSelectedCurrency(_ currency: Currency) {
+        resetChartData()
+
+        if assetModel != nil {
+            provideChartState(.loading)
+        }
+
         interactor.updateSelectedCurrency(currency)
+        provideViewModel()
     }
 
     func updateAsset(_ asset: AssetModel?) {

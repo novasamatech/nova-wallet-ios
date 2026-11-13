@@ -86,8 +86,7 @@ final class SwapAmountInput: BackgroundedContentControl {
         }
 
         placeholderLabel.isHidden = !masked
-        textField.alpha = masked ? 0 : 1
-        priceLabel.alpha = masked ? 0 : 1
+        updateValueVisibility()
     }
 
     func setLoading(_ loading: Bool) {
@@ -106,6 +105,13 @@ final class SwapAmountInput: BackgroundedContentControl {
 // MARK: Private
 
 private extension SwapAmountInput {
+    func updateValueVisibility() {
+        let alpha: CGFloat = isValueMasked || isLoading ? 0 : 1
+
+        textField.alpha = alpha
+        priceLabel.alpha = alpha
+    }
+
     func layoutContent() {
         let availableWidth = max(bounds.width - contentInsets.left - contentInsets.right, 0)
 
@@ -200,10 +206,12 @@ extension SwapAmountInput: SkeletonableView {
 
     func didStartSkeleton() {
         isLoading = true
+        updateValueVisibility()
     }
 
     func didStopSkeleton() {
         isLoading = false
+        updateValueVisibility()
     }
 }
 

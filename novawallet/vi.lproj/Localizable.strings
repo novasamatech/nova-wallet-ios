@@ -1761,7 +1761,6 @@
 "swaps.execution.transfer.details" = "Chuyển %@ tới %@";
 "swaps.execution.swap.details" = "Đang hoán đổi từ %@ sang %@ trên %@";
 "common.of" = "%@ của %@";
-"swaps.label.crosschain" = "Chuyển liên chuỗi";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Trong quá trình thực hiện giao dịch, số tiền nhận trung gian là %@, thấp hơn số dư tối thiểu là %@. Thử chỉ định số lượng swap lớn hơn.";
 "common.fee.amount.prefixed" = "Phí: %@";
 "common.not.enough.to.pay.fee.message" = "Bạn không có đủ số dư để trả phí mạng %@. Số dư hiện tại là %@";

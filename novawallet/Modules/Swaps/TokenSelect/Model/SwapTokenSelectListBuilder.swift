@@ -6,7 +6,7 @@ enum SwapTokenSelectListBuilder {
             return nil
         }
 
-        let filteredAssets = search(
+        let filteredAssets = AssetSearchBuilder.search(
             in: filter(universe, by: params.networkFilter),
             query: params.query
         )
@@ -77,42 +77,6 @@ private extension SwapTokenSelectListBuilder {
         }
 
         return chainAssets.filter { networkIds.contains($0.chain.chainId) }
-    }
-
-    static func search(in chainAssets: [ChainAsset], query: String) -> [ChainAsset] {
-        guard !query.isEmpty else {
-            return chainAssets
-        }
-
-        let symbolMatches = chainAssets.compactMap { chainAsset in
-            SearchMatch<ChainAsset>.matchString(
-                for: query,
-                recordField: chainAsset.asset.symbol,
-                record: chainAsset
-            )
-        }
-
-        let symbolMatchedAssets = symbolMatches.map(\.item)
-
-        if symbolMatches.contains(where: \.isFull) {
-            return symbolMatchedAssets
-        }
-
-        let matchedIds = Set(symbolMatchedAssets.map(\.chainAssetId))
-
-        let networkMatchedAssets = chainAssets.filter { chainAsset in
-            guard !matchedIds.contains(chainAsset.chainAssetId) else {
-                return false
-            }
-
-            return SearchMatch.matchInclusion(
-                for: query,
-                recordField: chainAsset.chain.name,
-                record: chainAsset.chain
-            ) != nil
-        }
-
-        return symbolMatchedAssets + networkMatchedAssets
     }
 
     static func createItem(for chainAsset: ChainAsset, assetList: AssetListModel) -> SwapTokenSelectItem {

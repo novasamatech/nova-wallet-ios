@@ -1761,7 +1761,6 @@
 "swaps.execution.transfer.details" = "%@'yı %@'ye aktarıyor";
 "swaps.execution.swap.details" = "%@'yı %@'ye %@ üzerinde takas ediyor";
 "common.of" = "%@ / %@";
-"swaps.label.crosschain" = "Çapraz zincir transferi";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Takas işlemi sırasında alınan ara miktar %@ olup, minimum bakiye olan %@'dan daha azdır. Daha büyük bir takas miktarı belirtmeyi deneyin.";
 "common.fee.amount.prefixed" = "Ücret: %@";
 "common.not.enough.to.pay.fee.message" = "Ağ ücreti olan %@'yi ödemek için yeterli bakiyeniz yok. Mevcut bakiye %@";

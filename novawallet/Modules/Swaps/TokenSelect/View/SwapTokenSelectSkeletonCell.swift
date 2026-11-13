@@ -1,8 +1,11 @@
 import UIKit
 import UIKit_iOS
 
-final class SwapTokenSelectSkeletonCell: UITableViewCell {
-    private var skeletonView: SkrullableView?
+final class SwapTokenSelectSkeletonCell: UITableViewCell, SkeletonableView {
+    var skeletonView: SkrullableView?
+    var skeletonSuperview: UIView { contentView }
+    var skeletonSpaceSize: CGSize { contentView.bounds.size }
+    var hidingViews: [UIView] { [] }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -19,38 +22,21 @@ final class SwapTokenSelectSkeletonCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        updateSkeleton()
+        if skeletonView == nil {
+            startLoadingIfNeeded()
+        } else if skeletonView?.bounds.size != skeletonSpaceSize {
+            updateLoadingState()
+        }
     }
-}
 
-// MARK: Private
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
 
-private extension SwapTokenSelectSkeletonCell {
-    func updateSkeleton() {
-        let spaceSize = contentView.bounds.size
-
-        guard spaceSize.width > 0, spaceSize.height > 0 else {
-            return
-        }
-
-        let builder = Skrull(size: spaceSize, decorations: [], skeletons: createSkeletons(for: spaceSize))
-
-        if let skeletonView {
-            builder.updateSkeletons(in: skeletonView)
+        if window == nil {
+            skeletonView?.stopSkrulling()
         } else {
-            let view = builder
-                .fillSkeletonStart(R.color.colorSkeletonStart()!)
-                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-                .build()
-            view.autoresizingMask = []
-            contentView.addSubview(view)
-
-            skeletonView = view
-
-            view.startSkrulling()
+            skeletonView?.restartSkrulling()
         }
-
-        skeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {

@@ -64,6 +64,22 @@ private extension AssetExchangeOperationFailureTests {
     static let blockHash = Data(repeating: 8, count: 32).toHex(includePrefix: true)
     static let xcmCallPath = CallCodingPath(moduleName: "XcmPallet", callName: "transfer_assets")
 
+    static let emptyXcmTransfers = XcmTransfers(
+        legacyTransfers: XcmLegacyTransfers(
+            assetsLocation: [:],
+            instructions: [:],
+            networkDeliveryFee: nil,
+            networkBaseWeight: [:],
+            chains: []
+        ),
+        dynamicTransfers: XcmDynamicTransfers(
+            assetsLocation: [:],
+            reserveIdOverrides: [:],
+            customTeleports: nil,
+            chains: []
+        )
+    )
+
     static let swapLimit = AssetExchangeSwapLimit(
         direction: .sell,
         amountIn: 1_000_000,
@@ -223,6 +239,9 @@ private extension AssetExchangeOperationFailureTests {
     func performFailingCrosschainHop(
         submitResult: XcmSubmitExtrinsicResult
     ) throws -> AssetExchangeOperationFailure {
+        let origin = CommissionTestFixtures.chainAsset(0)
+        let destination = createAssetWithoutArrivalDetection()
+
         let transferService = MockXcmTransferServiceProtocol()
         stub(transferService) { stub in
             when(stub.submit(
@@ -235,23 +254,45 @@ private extension AssetExchangeOperationFailureTests {
             }
         }
 
-        let transactService = XcmTransactService(
-            chainRegistry: MockChainRegistryProtocol(),
-            transferService: transferService,
-            workingQueue: .global(),
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
+        let parties = createTransferParties(from: origin, to: destination)
+
+        let resolutionFactory = MockXcmTransferResolutionFactoryProtocol()
+        stub(resolutionFactory) { stub in
+            when(stub.createResolutionWrapper(
+                for: any(),
+                transferDestinationId: any(),
+                xcmTransfers: any()
+            )).then { _, _, _ in .createWithResult(parties) }
+        }
+
+        let host = MockCrosschainExchangeHostProtocol()
+        stub(host) { stub in
+            when(stub.allChains.get).thenReturn([
+                origin.chain.chainId: origin.chain,
+                destination.chain.chainId: destination.chain
+            ])
+            when(stub.wallet.get).thenReturn(AccountGenerator.generateMetaAccount())
+            when(stub.resolutionFactory.get).thenReturn(resolutionFactory)
+            when(stub.xcmTransfers.get).thenReturn(Self.emptyXcmTransfers)
+            when(stub.signingWrapperFactory.get).thenReturn(DummySigningWrapperFactory())
+            when(stub.chainRegistry.get).thenReturn(MockChainRegistryProtocol())
+            when(stub.xcmService.get).thenReturn(transferService)
+            when(stub.operationQueue.get).thenReturn(OperationQueue())
+            when(stub.logger.get).thenReturn(Logger.shared)
+        }
+
+        let operation = CrosschainExchangeAtomicOperation(
+            host: host,
+            edge: StubAssetExchangeEdge(
+                origin: origin.chainAssetId,
+                destination: destination.chainAssetId,
+                type: .crossChain,
+                chain: origin.chain
+            ),
+            operationArgs: operationArgs
         )
 
-        let destination = createAssetWithoutArrivalDetection()
-
-        let wrapper = try transactService.transferAndWaitArrivalWrapper(
-            createTransferRequest(to: destination),
-            destinationChainAsset: destination,
-            signer: DummySigner(cryptoType: .sr25519)
-        )
-
-        return try performFailingHop(wrapper)
+        return try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
     }
 
     func createAssetWithoutArrivalDetection() -> ChainAsset {
@@ -275,9 +316,7 @@ private extension AssetExchangeOperationFailureTests {
         return ChainAsset(chain: chain, asset: asset)
     }
 
-    func createTransferRequest(to destination: ChainAsset) -> XcmTransferRequest {
-        let origin = CommissionTestFixtures.chainAsset(0)
-
+    func createTransferParties(from origin: ChainAsset, to destination: ChainAsset) -> XcmTransferParties {
         let metadata = XcmTransferMetadata(
             callType: .xcmpalletTransferAssets,
             reserve: .init(reserveId: origin.chain.chainId, path: .init(type: .relative, path: .null)),
@@ -287,18 +326,15 @@ private extension AssetExchangeOperationFailureTests {
             usesTeleport: false
         )
 
-        return XcmTransferRequest(
-            unweighted: XcmUnweightedTransferRequest(
-                origin: XcmTransferOrigin(chainAsset: origin, parachainId: nil),
-                destination: XcmTransferDestination(
-                    chainAsset: destination,
-                    parachainId: nil,
-                    accountId: AccountId(repeating: 2, count: 20)
-                ),
-                reserve: XcmTransferReserve(chain: origin.chain, parachainId: nil),
-                metadata: metadata,
-                amount: Self.swapLimit.amountIn
-            )
+        return XcmTransferParties(
+            origin: XcmTransferOrigin(chainAsset: origin, parachainId: nil),
+            destination: XcmTransferDestination(
+                chainAsset: destination,
+                parachainId: nil,
+                accountId: AccountId(repeating: 2, count: 20)
+            ),
+            reserve: XcmTransferReserve(chain: origin.chain, parachainId: nil),
+            metadata: metadata
         )
     }
 

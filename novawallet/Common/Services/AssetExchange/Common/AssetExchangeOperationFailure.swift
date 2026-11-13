@@ -63,3 +63,13 @@ extension BaseOperation where ResultType == ExtrinsicMonitorSubmission {
         return submission.extrinsicSubmittedModel.txHash
     }
 }
+
+extension BaseOperation where ResultType == XcmSubmitExtrinsic {
+    var submittedTxHash: ExtrinsicHash? {
+        guard case let .success(submission) = result else {
+            return nil
+        }
+
+        return submission.submittedModel.txHash
+    }
+}
