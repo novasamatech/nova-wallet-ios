@@ -7,8 +7,6 @@ final class SwapFeeDetailsViewLayout: ScrollableContainerLayoutView {
         view.valueView.font = .title2
     }
 
-    let backgroundView = MultigradientView.background
-
     private var operationFeeViewList: [SwapOperationFeeView] = []
 
     override func setupStyle() {
@@ -18,10 +16,7 @@ final class SwapFeeDetailsViewLayout: ScrollableContainerLayoutView {
     }
 
     override func setupLayout() {
-        insertSubview(backgroundView, at: 0)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        insertSwapBackground()
 
         super.setupLayout()
 

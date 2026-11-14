@@ -3413,6 +3413,7 @@
 		77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */; };
 		77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */; };
 		77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */; };
+		A2869AD88EA3AF3637AC7377 /* UIView+SwapBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E0FE92D3B7DA22AB2A1A47 /* UIView+SwapBackground.swift */; };
 		77740BC22AD69E3400E8C06F /* SwapMaxButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC12AD69E3400E8C06F /* SwapMaxButtonView.swift */; };
 		77740BC42AD8145500E8C06F /* PercentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC32AD8145500E8C06F /* PercentInputView.swift */; };
 		77740BC62AD849D100E8C06F /* SlippagePercentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */; };
@@ -10432,6 +10433,7 @@
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
 		77740BBD2AD4A7F500E8C06F /* SwapDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDetailsView.swift; sourceTree = "<group>"; };
 		77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInfoView.swift; sourceTree = "<group>"; };
+		D1E0FE92D3B7DA22AB2A1A47 /* UIView+SwapBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+SwapBackground.swift"; sourceTree = "<group>"; };
 		77740BC12AD69E3400E8C06F /* SwapMaxButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMaxButtonView.swift; sourceTree = "<group>"; };
 		77740BC32AD8145500E8C06F /* PercentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInputView.swift; sourceTree = "<group>"; };
 		77740BC52AD849D100E8C06F /* SlippagePercentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlippagePercentViewModel.swift; sourceTree = "<group>"; };
@@ -22167,6 +22169,7 @@
 				771901A52AE8FF7E00D9C918 /* SwapInfoViewCell.swift */,
 				77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */,
 				0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */,
+				D1E0FE92D3B7DA22AB2A1A47 /* UIView+SwapBackground.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -38820,6 +38823,7 @@
 				7D2906130F25492872637EFC /* ReferendumDetailsPresenter.swift in Sources */,
 				5E3B1E6B9E94848B186FD4D1 /* ReferendumDetailsInteractor.swift in Sources */,
 				77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */,
+				A2869AD88EA3AF3637AC7377 /* UIView+SwapBackground.swift in Sources */,
 				0CA8AF392D88C33C00DB4E6A /* BalancesPallet+Calls.swift in Sources */,
 				0C495B9B2B452CD600B8D339 /* DelegationResolutionGraph.swift in Sources */,
 				0CB1B23F2EC13CDD00D92158 /* CrowdloanContribution.swift in Sources */,

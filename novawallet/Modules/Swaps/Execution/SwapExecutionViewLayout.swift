@@ -67,6 +67,8 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     }
 
     override func setupLayout() {
+        insertSwapBackground()
+
         super.setupLayout()
 
         stackView.layoutMargins = Constants.contentInsets

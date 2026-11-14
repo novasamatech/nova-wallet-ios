@@ -2,8 +2,6 @@ import UIKit
 import UIKit_iOS
 
 final class SwapSetupViewLayout: ScrollableContainerLayoutView {
-    let backgroundView = MultigradientView.background
-
     let tabHeaderView = UIView()
 
     let tabTitleLabel: UILabel = .create {
@@ -93,10 +91,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     }
 
     override func setupLayout() {
-        insertSubview(backgroundView, at: 0)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        insertSwapBackground()
 
         super.setupLayout()
 
