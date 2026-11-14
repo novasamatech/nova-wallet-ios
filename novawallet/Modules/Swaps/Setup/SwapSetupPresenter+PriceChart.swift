@@ -39,6 +39,10 @@ extension SwapSetupPresenter {
 
         provideChartViewModel()
     }
+
+    func didReceive(selectedCurrency: Currency) {
+        assetPriceChartModule?.updateSelectedCurrency(selectedCurrency)
+    }
 }
 
 // MARK: Private

@@ -74,6 +74,8 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
     func didReceiveChartExpansion(_ isExpanded: Bool?)
+    func didReceive(selectedCurrency: Currency)
+    func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
 }
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,

@@ -8,6 +8,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     let storageRepository: AnyDataProviderRepository<ChainStorageItem>
     let settingsManager: SettingsManagerProtocol
     let chartSession: SwapPriceChartSession
+    let assetListObservable: AssetListModelObservable
 
     private var canPayFeeInAssetCall = CancellableCallStore()
 
@@ -75,6 +76,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         self.storageRepository = storageRepository
         self.settingsManager = settingsManager
         self.chartSession = chartSession
+        assetListObservable = state.assetListObservable
 
         super.init(
             state: state,
@@ -210,10 +212,40 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
     }
 
+    private func provideChangedPrices(from oldModel: AssetListModel, to newModel: AssetListModel) {
+        let oldPrices = (try? oldModel.priceResult?.get()) ?? [:]
+        let newPrices = (try? newModel.priceResult?.get()) ?? [:]
+
+        let changedPriceIds = [payChainAsset, receiveChainAsset, feeChainAsset].reduce(
+            into: [AssetModel.PriceId: ChainAssetId]()
+        ) { accum, chainAsset in
+            guard
+                let chainAsset,
+                let priceId = chainAsset.asset.priceId,
+                oldPrices[chainAsset.chainAssetId] != newPrices[chainAsset.chainAssetId] else {
+                return
+            }
+
+            accum[priceId] = chainAsset.chainAssetId
+        }
+
+        changedPriceIds.forEach { priceId, chainAssetId in
+            presenter?.didReceive(price: newPrices[chainAssetId], priceId: priceId)
+        }
+    }
+
+    override func applyCurrency() {
+        presenter?.didReceive(selectedCurrency: selectedCurrency)
+    }
+
     override func setup() {
         super.setup()
 
         presenter?.didReceiveChartExpansion(settingsManager.swapPriceChartExpanded)
+
+        assetListObservable.addObserver(with: self, queue: .main) { [weak self] oldState, newState in
+            self?.provideChangedPrices(from: oldState.value, to: newState.value)
+        }
     }
 }
 

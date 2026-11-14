@@ -10,7 +10,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -42,7 +41,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         self.assetStorageFactory = assetStorageFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
-        self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
         self.logger = logger
@@ -51,6 +49,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
+
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -251,6 +251,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func performUpdateOnGraphChange() {
         logger.debug("Asset Exchange graph did change")
     }
+
+    func applyCurrency() {}
 
     func fee(route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
         feeCallStore.cancel()
@@ -480,3 +482,5 @@ extension SwapBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorage
         }
     }
 }
+
+extension SwapBaseInteractor: SelectedCurrencyDepending {}

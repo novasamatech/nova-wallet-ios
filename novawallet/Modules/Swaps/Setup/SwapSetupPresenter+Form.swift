@@ -30,6 +30,10 @@ extension SwapSetupPresenter {
         provideButtonState()
     }
 
+    func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
+        handleNewPrice(price, priceId: priceId)
+    }
+
     func provideSlippageViewModel() {
         let viewModel = viewModelFactory.slippageViewModel(
             slippage: slippage,
