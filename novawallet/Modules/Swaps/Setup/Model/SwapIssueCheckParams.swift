@@ -11,6 +11,10 @@ struct SwapIssueCheckParams {
     let receiveAssetExistense: AssetBalanceExistence?
     let quoteResult: Result<AssetExchangeQuote, Error>?
     let fee: AssetExchangeFee?
+    let isFeePending: Bool
+    let refreshOrigin: SwapRefreshOrigin
+    let isPayAmountHidden: Bool
+    let wasShowingInsufficientBalance: Bool
 }
 
 extension SwapIssueCheckParams {
@@ -20,7 +24,15 @@ extension SwapIssueCheckParams {
     }
 
     var isQuoting: Bool {
-        payChainAsset != nil && receiveChainAsset != nil && hasEnteredAmount && quoteResult == nil
+        payChainAsset != nil && receiveChainAsset != nil && hasEnteredAmount && (quoteResult == nil || isFeePending)
+    }
+
+    var hasNoRoute: Bool {
+        guard case let .failure(error) = quoteResult else {
+            return false
+        }
+
+        return SwapQuoteFailure(error: error) == .noRoute
     }
 }
 

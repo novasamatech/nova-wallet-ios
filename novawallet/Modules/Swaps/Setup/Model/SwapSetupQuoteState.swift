@@ -39,6 +39,11 @@ enum SwapQuoteFailureAlertState {
     case ended
 }
 
+enum SwapRefreshOrigin {
+    case user
+    case background
+}
+
 enum SwapQuoteFailure: Equatable {
     case noRoute
     case noLiquidity

@@ -91,11 +91,11 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             return strings.swapsSetupAssetActionSelectReceive()
         }
 
-        if issues.contains(.insufficientBalance) {
+        if issues.contains(.insufficientBalance), !(params.hasNoRoute && issues.contains(.zeroBalance)) {
             return strings.swapsSetupActionNotEnoughToken(payChainAsset.asset.symbol)
         }
 
-        if case let .failure(error) = params.quoteResult, SwapQuoteFailure(error: error) == .noRoute {
+        if params.hasNoRoute {
             return strings.swapsSetupActionNoRoute()
         }
 
@@ -103,11 +103,23 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             return strings.swapsSetupActionEnterAnAmount()
         }
 
-        if params.isQuoting {
+        if isGettingRate(params: params, issues: issues) {
             return strings.swapsSetupActionGettingRate()
         }
 
         return strings.commonContinue()
+    }
+
+    private static func isGettingRate(params: SwapIssueCheckParams, issues: [SwapSetupViewIssue]) -> Bool {
+        guard params.isQuoting else {
+            return false
+        }
+
+        guard params.quoteResult != nil else {
+            return true
+        }
+
+        return params.refreshOrigin == .user && issues.isEmpty
     }
 
     private func assetViewModel(chainAsset: ChainAsset) -> SwapsAssetViewModel {
@@ -170,6 +182,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
     func buttonState(for issueParams: SwapIssueCheckParams, locale: Locale) -> ButtonState {
         let dataFullFilled = issueParams.payChainAsset != nil &&
             issueParams.receiveChainAsset != nil &&
+            issueParams.payAssetBalance != nil &&
             (issueParams.payAmount ?? 0) > 0
 
         let issues = issuesViewModelFactory.detectIssues(in: issueParams, locale: locale)

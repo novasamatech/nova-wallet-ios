@@ -30,6 +30,30 @@ extension SwapSetupPresenter {
         provideButtonState()
     }
 
+    var isPayAmountHidden: Bool {
+        getQuoteArgs()?.direction == .buy && quote == nil
+    }
+
+    var isReceiveAmountHidden: Bool {
+        getQuoteArgs()?.direction == .sell && quote == nil
+    }
+
+    func updateRefreshOrigin(replacing oldQuoteResult: Result<AssetExchangeQuote, Error>?) {
+        if quoteResult == nil {
+            refreshOrigin = .user
+        } else if oldQuoteResult != nil {
+            markBackgroundRefresh()
+        }
+    }
+
+    func markBackgroundRefresh() {
+        guard quoteResult != nil, !(isFeePending && quote != nil) else {
+            return
+        }
+
+        refreshOrigin = .background
+    }
+
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
         handleNewPrice(price, priceId: priceId)
     }
@@ -71,6 +95,7 @@ extension SwapSetupPresenter {
     func retryQuote() {
         refreshQuote(direction: getQuoteArgs()?.direction ?? .sell)
         armQuoteFailureAlert()
+        provideIssues()
     }
 
     func armQuoteFailureAlert() {

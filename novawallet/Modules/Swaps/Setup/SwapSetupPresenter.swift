@@ -19,6 +19,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
     var chartContext = SwapPriceChartContext()
     var quoteFailureAlertState = SwapQuoteFailureAlertState.armed
+    var refreshOrigin = SwapRefreshOrigin.user
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
@@ -29,6 +30,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     override var quoteResult: Result<AssetExchangeQuote, Error>? {
         didSet {
+            updateRefreshOrigin(replacing: oldValue)
             provideQuoteState()
             provideMinReceivedViewModel()
         }
@@ -41,6 +43,9 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private var payChainAsset: ChainAsset?
     private var receiveChainAsset: ChainAsset?
     private var feeChainAsset: ChainAsset?
+
+    private(set) var isFeePending = false
+    private var wasShowingInsufficientBalance = false
 
     private(set) var slippage: BigRational
     let slippageBounds: SlippageBounds
@@ -138,9 +143,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
         }
 
         fee = nil
+        isFeePending = true
         provideFeeViewModel()
         provideCommissionDisclosureViewModel()
         updateReceiveAmountFromQuote()
+        provideButtonState()
 
         interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
     }
@@ -167,6 +174,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func handleBaseError(_ error: SwapBaseError) {
+        if case .fetchFeeFailed = error {
+            isFeePending = false
+            markBackgroundRefresh()
+        }
+
         handleBaseError(
             error,
             view: view,
@@ -176,6 +188,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         )
 
         provideIssues()
+        provideButtonState()
         provideDetailsViewModel()
 
         provideCommissionDisclosureViewModel()
@@ -213,15 +226,17 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideCommissionDisclosureViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
-        provideButtonState()
         provideDetailsViewModel()
         estimateFee()
+        provideIssues()
+        provideButtonState()
     }
 
     override func handleNewFee(
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
+        isFeePending = false
         provideFeeViewModel()
         provideCommissionDisclosureViewModel()
         updateReceiveAmountFromQuote()
@@ -253,6 +268,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideRouteViewModel()
         providePayTitle()
         switchFeeChainAssetIfNecessary()
+        markBackgroundRefresh()
     }
 
     override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
@@ -280,11 +296,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
             if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
                 providePayAmountInputViewModel()
-                provideButtonState()
             }
         }
 
         provideIssues()
+        provideButtonState()
         switchFeeChainAssetIfNecessary()
     }
 
@@ -348,14 +364,18 @@ extension SwapSetupPresenter {
         .init(
             payChainAsset: payChainAsset,
             receiveChainAsset: receiveChainAsset,
-            payAmount: getSpendingInputAmount(),
-            receiveAmount: receiveAmountInput,
+            payAmount: isPayAmountHidden ? nil : getSpendingInputAmount(),
+            receiveAmount: isReceiveAmountHidden ? nil : receiveAmountInput,
             payAssetBalance: payAssetBalance,
             receiveAssetBalance: receiveAssetBalance,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
             quoteResult: quoteResult,
-            fee: fee
+            fee: fee,
+            isFeePending: isFeePending && quote != nil,
+            refreshOrigin: refreshOrigin,
+            isPayAmountHidden: isPayAmountHidden,
+            wasShowingInsufficientBalance: wasShowingInsufficientBalance
         )
     }
 
@@ -556,65 +576,9 @@ extension SwapSetupPresenter {
         view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
     }
 
-    private func provideRouteViewModel() {
-        guard let quote else {
-            view?.didReceiveRoute(viewModel: .loading)
-            return
-        }
-
-        let viewModel = viewModelFactory.routeViewModel(from: quote.metaOperations)
-
-        view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
-    }
-
-    private func provideFeeViewModel() {
-        guard
-            let operations = quote?.metaOperations,
-            let totalFeeInFiat = fee?.calculateTotalFeeInFiat(
-                matching: operations,
-                priceStore: priceStore
-            ) else {
-            view?.didReceiveNetworkFee(viewModel: .loading)
-            return
-        }
-
-        let viewModel = viewModelFactory.feeViewModel(
-            amountInFiat: totalFeeInFiat,
-            isEditable: false,
-            currencyId: feeAssetPriceData?.currencyId,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
-    }
-
-    private func provideCommissionDisclosureViewModel() {
-        let viewModel = chargesCommission
-            ? viewModelFactory.commissionDisclosureViewModel(
-                rate: AssetExchangeCommissionConstants.rate,
-                locale: selectedLocale
-            )
-            : nil
-
-        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
-    }
-
-    private func provideExecutionTimeViewModel() {
-        guard let quote else {
-            view?.didReceiveExecutionTime(viewModel: .loading)
-            return
-        }
-
-        let viewModel = viewModelFactory.executionTimeViewModel(
-            from: quote.totalExecutionTime(),
-            locale: selectedLocale
-        )
-
-        view?.didReceiveExecutionTime(viewModel: .loaded(value: viewModel))
-    }
-
-    private func provideIssues() {
+    func provideIssues() {
         let issues = viewModelFactory.detectIssues(in: getIssueParams(), locale: selectedLocale)
+        wasShowingInsufficientBalance = issues.contains(.insufficientBalance)
         view?.didReceive(issues: issues)
     }
 
@@ -959,6 +923,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.slippage = slippageValue
             self?.provideSlippageViewModel()
             self?.provideMinReceivedViewModel()
+            self?.markBackgroundRefresh()
             self?.estimateFee()
         }
     }
@@ -992,6 +957,7 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     func didReceiveQuoteDataChanged() {
         logger.debug("Requote request received")
 
+        markBackgroundRefresh()
         refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         estimateFee()
     }
