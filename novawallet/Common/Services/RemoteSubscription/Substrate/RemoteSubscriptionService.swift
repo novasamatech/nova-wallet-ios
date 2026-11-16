@@ -165,6 +165,16 @@ class RemoteSubscriptionService {
         }
     }
 
+    func restartActiveSubscription(_ cacheKey: String) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        activeSubscriptions[cacheKey]?.container.resubscribe()
+    }
+
     private func subscriptionOperation(
         using requests: [SubscriptionRequestProtocol],
         chainId: ChainModel.Id,

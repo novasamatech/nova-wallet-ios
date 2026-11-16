@@ -19,6 +19,8 @@ protocol BalanceRemoteSubscriptionServiceProtocol {
         closure: RemoteSubscriptionClosure?
     )
 
+    func restartBalances(for accountId: AccountId, chainId: ChainModel.Id)
+
     func attachToAssetBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,

@@ -64,6 +64,7 @@ final class AssetVisibilityRevealTests: XCTestCase {
             selectedWalletSettings: walletSettings,
             visibilityWriter: writer,
             osMediator: OperatingSystemMediatorStub(),
+            eventCenter: MockEventCenterProtocol().applyingDefaultStub(),
             operationQueue: operationQueue
         )
 
@@ -104,6 +105,7 @@ final class AssetVisibilityRevealTests: XCTestCase {
             selectedWalletSettings: walletSettings,
             visibilityWriter: writer,
             osMediator: OperatingSystemMediatorStub(),
+            eventCenter: MockEventCenterProtocol().applyingDefaultStub(),
             operationQueue: operationQueue
         )
         interactor.presenter = output

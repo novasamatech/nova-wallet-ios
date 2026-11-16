@@ -15,6 +15,7 @@ struct SwapExecutionViewFactory {
             selectedWalletSettings: SelectedWalletSettings.shared,
             visibilityWriter: AssetVisibilityWriter.shared,
             osMediator: OperatingSystemMediator(),
+            eventCenter: EventCenter.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
