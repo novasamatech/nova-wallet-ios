@@ -207,7 +207,8 @@ private extension SwapModelTests {
             accountInfo: AccountInfo(nonce: 0, providers: providers, sufficients: 0, data: AccountData(free: 0, reserved: 0)),
             destAccountInfo: nil,
             destUtilityAssetExistence: nil,
-            payAssetCollateralLimit: nil
+            payAssetCollateralLimit: nil,
+            maxAmountFeeModel: nil
         )
     }
 
@@ -274,7 +275,8 @@ private extension SwapModelTests {
             accountInfo: nil,
             destAccountInfo: nil,
             destUtilityAssetExistence: nil,
-            payAssetCollateralLimit: .limited(limit)
+            payAssetCollateralLimit: .limited(limit),
+            maxAmountFeeModel: nil
         )
     }
 
@@ -376,7 +378,8 @@ private extension SwapModelTests {
             accountInfo: nil,
             destAccountInfo: nil,
             destUtilityAssetExistence: nil,
-            payAssetCollateralLimit: nil
+            payAssetCollateralLimit: nil,
+            maxAmountFeeModel: nil
         )
     }
 }

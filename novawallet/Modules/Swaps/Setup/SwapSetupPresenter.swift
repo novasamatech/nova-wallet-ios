@@ -23,6 +23,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
+            quoteArgsMaxAmountFee = quoteArgs?.direction == .sell && payAmountInput?.isMax == true ? fee : nil
             provideDetailsViewModel()
             provideQuoteState()
         }
@@ -37,6 +38,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     private var payAmountInput: AmountInputResult?
+    private var quoteArgsMaxAmountFee: AssetExchangeFee?
+    private(set) var quotedMaxAmountFee: AssetExchangeFee?
     private var receiveAmountInput: Decimal?
 
     private var canPayFeeInPayAsset: Bool = false
@@ -111,6 +114,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         let maxAmount = getMaxModel().calculate()
         return payAmountInput.absoluteValue(from: maxAmount)
+    }
+
+    override func getMaxAmountFeeModel() -> AssetExchangeFee? {
+        payAmountInput?.isMax == true ? fee : nil
     }
 
     override func getPayChainAsset() -> ChainAsset? {
@@ -203,6 +210,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
+
+        quotedMaxAmountFee = quoteArgsMaxAmountFee
 
         // we need to keep fee in sync with quote
         fee = nil

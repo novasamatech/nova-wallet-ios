@@ -1,6 +1,10 @@
 import Foundation
 
 struct SwapMaxModel {
+    private enum Constants {
+        static let feeMargin = BigRational.percent(of: 1)
+    }
+
     let payChainAsset: ChainAsset?
     let feeChainAsset: ChainAsset?
     let receiveChainAsset: ChainAsset?
@@ -74,7 +78,7 @@ struct SwapMaxModel {
         }
 
         if let feeModel = feeModel {
-            let fee = feeModel.totalFeeInAssetIn(payChainAsset)
+            let fee = Self.feeIncludingMargin(feeModel.totalFeeInAssetIn(payChainAsset))
             maxAmount = maxAmount.subtractOrZero(fee)
         }
 
@@ -101,7 +105,11 @@ struct SwapMaxModel {
             feeModel.postSubmissionFeeInAssetIn(payChainAsset)
         }
 
-        return maxAmount.subtractOrZero(fee)
+        return maxAmount.subtractOrZero(Self.feeIncludingMargin(fee))
+    }
+
+    static func feeIncludingMargin(_ fee: Balance) -> Balance {
+        fee + Constants.feeMargin.mul(value: fee)
     }
 
     func calculate() -> Decimal {
@@ -115,7 +123,7 @@ struct SwapMaxModel {
             calculateForCustomAsset(payChainAsset, balance: balance)
         }
 
-        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
+        let fee = Self.feeIncludingMargin(feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0)
         let maxAmount = payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
 
         return maxAmount.decimal(precision: payChainAsset.asset.precision)

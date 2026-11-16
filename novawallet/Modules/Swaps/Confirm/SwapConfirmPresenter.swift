@@ -58,6 +58,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
         quoteResult = .success(initState.quote)
         collateralLimits[initState.chainAssetIn.chainAssetId] = initState.payAssetCollateralLimit
+        maxAmountFeeModel = initState.maxAmountFeeModel
         self.localizationManager = localizationManager
     }
 
@@ -115,6 +116,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
             return
         }
 
+        maxAmountFeeModel = fee
+
         quoteArgs = AssetConversion.QuoteArgs(
             assetIn: initState.quoteArgs.assetIn,
             assetOut: initState.quoteArgs.assetOut,
@@ -139,6 +142,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         guard poolLimitCorrectionCounter.incrementCounterIfPossible() else {
             return
         }
+
+        maxAmountFeeModel = nil
 
         quoteArgs = AssetConversion.QuoteArgs(
             assetIn: initState.quoteArgs.assetIn,

@@ -78,6 +78,7 @@ class SwapBasePresenter {
     }
 
     var fee: AssetExchangeFee?
+    var maxAmountFeeModel: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeQuote, Error>?
 
     var quote: AssetExchangeQuote? {
@@ -160,7 +161,8 @@ class SwapBasePresenter {
             accountInfo: originAccountInfo,
             destAccountInfo: destAccountInfo,
             destUtilityAssetExistence: destUtilityAssetBalanceExistense,
-            payAssetCollateralLimit: payAssetCollateralLimit
+            payAssetCollateralLimit: payAssetCollateralLimit,
+            maxAmountFeeModel: getMaxAmountFeeModel()
         )
     }
 
@@ -203,6 +205,10 @@ class SwapBasePresenter {
 
     func getSpendingInputAmount() -> Decimal? {
         fatalError("Must be implemented by parent class")
+    }
+
+    func getMaxAmountFeeModel() -> AssetExchangeFee? {
+        maxAmountFeeModel
     }
 
     func getQuoteArgs() -> AssetConversion.QuoteArgs? {

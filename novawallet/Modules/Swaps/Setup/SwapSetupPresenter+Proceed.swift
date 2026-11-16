@@ -25,7 +25,8 @@ extension SwapSetupPresenter {
                     slippage: slippage,
                     quote: quote,
                     quoteArgs: quoteArgs,
-                    payAssetCollateralLimit: swapModel.payAssetCollateralLimit
+                    payAssetCollateralLimit: swapModel.payAssetCollateralLimit,
+                    maxAmountFeeModel: self?.quotedMaxAmountFee
                 )
 
                 self?.trackProceededToConfirmation(for: swapModel, quote: quote)
