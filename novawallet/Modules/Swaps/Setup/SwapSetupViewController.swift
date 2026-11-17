@@ -142,7 +142,7 @@ private extension SwapSetupViewController {
         detailsView.execTimeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsExecTime()
         detailsView.networkFeeCell.titleButton.imageWithTitleView?.title = strings.swapsDetailsTotalFee()
         detailsView.priceDifferenceCell.titleButton.imageWithTitleView?.title = strings.swapsSetupPriceDifference()
-        detailsView.slippageCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsMaxSlippage()
+        detailsView.slippageCell.titleButton.imageWithTitleView?.title = strings.swapsSetupSlippage()
         detailsView.minReceivedCell.titleButton.imageWithTitleView?.title = strings.swapsSetupDetailsMinReceived()
 
         [

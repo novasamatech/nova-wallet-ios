@@ -34,7 +34,7 @@ final class SwapExecutionViewModelFactory {
         self.dateFormatter = dateFormatter
     }
 
-    private func createOperationDetails(
+    func createOperationDetails(
         _ operation: AssetExchangeMetaOperationProtocol,
         locale: Locale
     ) -> String {

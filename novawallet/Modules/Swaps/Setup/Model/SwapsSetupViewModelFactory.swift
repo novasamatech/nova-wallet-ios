@@ -104,7 +104,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
         }
 
         if !params.hasEnteredAmount {
-            return strings.swapsSetupActionEnterAnAmount()
+            return strings.swapsSetupAssetActionEnterAmount()
         }
 
         if isGettingRate(params: params, issues: issues) {

@@ -1377,8 +1377,6 @@
 "swaps.network.fee.description" = "A network fees charged by the blockchain to process and validate any transactions. May vary depending on network conditions or transaction speed.";
 "swaps.setup.asset.action.select.pay" = "Select a token to pay";
 "swaps.setup.chart.placeholder" = "Select a token to receive\nto see its price chart";
-"swaps.setup.chart.failed.title" = "Couldn’t load the data";
-"swaps.setup.chart.failed.message" = "Check your connection and try again.";
 "swaps.not.enough.liquidity" = "Not enough liquidity";
 "swaps.not.enough.tokens" = "Not enough tokens to swap";
 "common.receive.at.least.ed.error" = "You can’t receive less than %@";
@@ -1791,9 +1789,6 @@
 "swaps.execution.transfer.details" = "Transferring %@ to %@";
 "swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
 "common.of" = "%@ of %@";
-"swaps.execution.completed.title" = "Swapped";
-"swaps.execution.step.transfer" = "Transfer %@ from %@ to %@";
-"swaps.execution.step.swap" = "Swap %@ → %@ on %@";
 "swaps.execution.view.transaction" = "View transaction";
 "swaps.label.swap" = "Swap";
 "swaps.label.transfer" = "Transfer";
@@ -2397,10 +2392,8 @@ Do you want to continue?";
 "tabbar.more.title" = "More";
 "tabbar.swaps.title" = "Swaps";
 "swaps.setup.asset.balance" = "Balance:";
-"swaps.setup.action.enter.an.amount" = "Enter an amount";
 "swaps.setup.action.getting.rate" = "Getting the best rate…";
 "swaps.setup.action.not.enough.token" = "Not enough %@";
 "swaps.setup.action.no.route" = "No route for this pair";
-"swaps.setup.details.max.slippage" = "Max slippage";
 "swaps.setup.details.min.received" = "Min received";
 

@@ -19,32 +19,8 @@ extension SwapExecutionViewModelFactory {
             }
 
             return SwapExecutionStepViewModel(
-                title: createStepTitle(for: operation, locale: locale),
+                title: createOperationDetails(operation, locale: locale),
                 status: status
-            )
-        }
-    }
-}
-
-private extension SwapExecutionViewModelFactory {
-    func createStepTitle(
-        for operation: AssetExchangeMetaOperationProtocol,
-        locale: Locale
-    ) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        return switch operation.label {
-        case .transfer:
-            strings.swapsExecutionStepTransfer(
-                operation.assetIn.asset.symbol,
-                operation.assetIn.chain.name,
-                operation.assetOut.chain.name
-            )
-        case .swap:
-            strings.swapsExecutionStepSwap(
-                operation.assetIn.asset.symbol,
-                operation.assetOut.asset.symbol,
-                operation.assetOut.chain.name
             )
         }
     }

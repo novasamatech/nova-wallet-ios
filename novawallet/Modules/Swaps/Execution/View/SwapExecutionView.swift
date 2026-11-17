@@ -74,7 +74,7 @@ final class SwapExecutionView: UIView {
         case let .completed(completed):
             applyFinishedLayout(isSuccess: true)
 
-            titleLabel.text = strings.swapsExecutionCompletedTitle()
+            titleLabel.text = strings.transactionStatusCompleted()
             amountLabel.text = completed.amount
             detailsLabel.text = completed.time
         case let .failed(failed):

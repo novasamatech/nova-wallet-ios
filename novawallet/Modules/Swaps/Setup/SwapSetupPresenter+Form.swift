@@ -196,12 +196,8 @@ extension SwapSetupPresenter {
             return false
         }
 
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-
         wireframe.presentRequestStatus(
             on: view,
-            title: strings.swapsSetupChartFailedTitle(),
-            message: strings.swapsSetupChartFailedMessage(),
             locale: selectedLocale,
             retryAction: retryAction,
             skipAction: {}
