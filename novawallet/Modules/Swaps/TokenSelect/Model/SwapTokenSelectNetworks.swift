@@ -48,9 +48,14 @@ enum SwapTokenSelectNetworksArranger {
         shown shownNetworks: Set<ChainModel.Id>,
         previouslySaved savedNetworks: [ChainModel.Id]
     ) -> [ChainModel.Id] {
-        let unshownNetworks = savedNetworks.filter { !shownNetworks.contains($0) }
+        let tickedSet = Set(tickedNetworks)
 
-        return (tickedNetworks + unshownNetworks).filter { !isQuick($0) }
+        let keptNetworks = savedNetworks.filter { !shownNetworks.contains($0) || tickedSet.contains($0) }
+        let keptSet = Set(keptNetworks)
+
+        let addedNetworks = tickedNetworks.filter { !keptSet.contains($0) }
+
+        return (keptNetworks + addedNetworks).filter { !isQuick($0) }
     }
 
     static func sheetOrder(of networks: [ChainModel]) -> [ChainModel] {
