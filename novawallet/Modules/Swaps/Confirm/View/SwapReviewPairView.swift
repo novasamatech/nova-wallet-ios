@@ -2,8 +2,8 @@ import UIKit
 import UIKit_iOS
 
 final class SwapReviewPairView: UIView {
-    let payCardView = SwapReviewTokenCardView()
-    let receiveCardView = SwapReviewTokenCardView()
+    let payCardView = SwapElementView(style: .review)
+    let receiveCardView = SwapElementView(style: .review)
 
     let arrowBackgroundView: RoundedView = .create {
         $0.apply(style: .swapReviewArrowUnderlay)
@@ -95,5 +95,22 @@ extension RoundedView.Style {
         fillColor: R.color.colorButtonBackgroundSecondary()!,
         highlightedFillColor: R.color.colorButtonBackgroundSecondary()!,
         rounding: .init(radius: SwapReviewPairView.Constants.arrowSize / 2, corners: .allCorners)
+    )
+}
+
+extension SwapElementView.Style {
+    static let review = SwapElementView.Style(
+        background: .swapReviewCard,
+        contentInsets: UIEdgeInsets(top: 15, left: 17, bottom: 15, right: 17),
+        iconSize: 42,
+        iconInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1),
+        valueOffset: 4,
+        priceOffset: 4,
+        hubOffset: 4,
+        hubSpacing: 6,
+        hubLabel: .caption1Secondary,
+        hubLabelLines: 1,
+        hubHeight: 16,
+        centersHub: false
     )
 }

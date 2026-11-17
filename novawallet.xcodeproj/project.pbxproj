@@ -3344,7 +3344,6 @@
 		7719019D2AE6996600D9C918 /* SwapPairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019C2AE6996600D9C918 /* SwapPairView.swift */; };
 		5595C8F3553FC7928C436BDE /* SwapReviewDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D30DA33E94DEC3BB8052E69 /* SwapReviewDetailsCell.swift */; };
 		7FF40C8D6A26231A3E4BE9AA /* SwapReviewPairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A45233EA7D891669687B9A /* SwapReviewPairView.swift */; };
-		7838CFC0E0B7DF3678700C81 /* SwapReviewTokenCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A4681FCE7858E1F78EB9D2 /* SwapReviewTokenCardView.swift */; };
 		7719019F2AE6C9DC00D9C918 /* SwapElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */; };
 		771901A22AE7E34D00D9C918 /* SwapBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */; };
 		771901A42AE7E48800D9C918 /* SwapBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */; };
@@ -10364,7 +10363,6 @@
 		7719019C2AE6996600D9C918 /* SwapPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPairView.swift; sourceTree = "<group>"; };
 		7D30DA33E94DEC3BB8052E69 /* SwapReviewDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapReviewDetailsCell.swift; sourceTree = "<group>"; };
 		08A45233EA7D891669687B9A /* SwapReviewPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapReviewPairView.swift; sourceTree = "<group>"; };
-		42A4681FCE7858E1F78EB9D2 /* SwapReviewTokenCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapReviewTokenCardView.swift; sourceTree = "<group>"; };
 		7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapElementView.swift; sourceTree = "<group>"; };
 		771901A12AE7E34D00D9C918 /* SwapBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapBaseInteractor.swift; sourceTree = "<group>"; };
 		771901A32AE7E48800D9C918 /* SwapBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapBaseProtocols.swift; sourceTree = "<group>"; };
@@ -22183,7 +22181,6 @@
 				7719019C2AE6996600D9C918 /* SwapPairView.swift */,
 				7D30DA33E94DEC3BB8052E69 /* SwapReviewDetailsCell.swift */,
 				08A45233EA7D891669687B9A /* SwapReviewPairView.swift */,
-				42A4681FCE7858E1F78EB9D2 /* SwapReviewTokenCardView.swift */,
 				7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */,
 			);
 			path = View;
@@ -35126,7 +35123,6 @@
 				7719019D2AE6996600D9C918 /* SwapPairView.swift in Sources */,
 				5595C8F3553FC7928C436BDE /* SwapReviewDetailsCell.swift in Sources */,
 				7FF40C8D6A26231A3E4BE9AA /* SwapReviewPairView.swift in Sources */,
-				7838CFC0E0B7DF3678700C81 /* SwapReviewTokenCardView.swift in Sources */,
 				842898CC265A8EC3002D5D65 /* RemoteImageViewModel.swift in Sources */,
 				84DA3B1424C6D7C700B5E27F /* RuntimeDispatchInfo.swift in Sources */,
 				840D92A7278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift in Sources */,
