@@ -124,19 +124,7 @@ private extension SubtensorSlippageViewController {
             return
         }
 
-        preferredContentSize = CGSize(width: 0, height: height)
-
-        guard
-            view.window != nil,
-            let presentationController,
-            let containerView = presentationController.containerView else {
-            return
-        }
-
-        UIView.animate(withDuration: 0.25) {
-            self.view.frame = presentationController.frameOfPresentedViewInContainerView
-            containerView.layoutIfNeeded()
-        }
+        applyPreferredContentHeight(height)
     }
 
     @objc func applyButtonAction() {

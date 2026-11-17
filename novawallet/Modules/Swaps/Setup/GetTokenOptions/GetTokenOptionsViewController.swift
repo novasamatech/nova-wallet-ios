@@ -44,19 +44,7 @@ extension GetTokenOptionsViewController {
             return
         }
 
-        preferredContentSize = CGSize(width: 0.0, height: height)
-
-        guard
-            viewIfLoaded?.window != nil,
-            let presentationController,
-            let containerView = presentationController.containerView else {
-            return
-        }
-
-        UIView.animate(withDuration: 0.25) {
-            self.view.frame = presentationController.frameOfPresentedViewInContainerView
-            containerView.layoutIfNeeded()
-        }
+        applyPreferredContentHeight(height)
     }
 }
 
