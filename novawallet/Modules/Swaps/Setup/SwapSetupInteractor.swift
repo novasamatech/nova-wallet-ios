@@ -2,11 +2,9 @@ import UIKit
 import Operation_iOS
 import BigInt
 import SubstrateSdk
-import Keystore_iOS
 
 final class SwapSetupInteractor: SwapBaseInteractor {
     let storageRepository: AnyDataProviderRepository<ChainStorageItem>
-    let settingsManager: SettingsManagerProtocol
     let chartSession: SwapPriceChartSession
     let assetListObservable: AssetListModelObservable
 
@@ -67,7 +65,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
-        settingsManager: SettingsManagerProtocol,
         chartSession: SwapPriceChartSession,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -75,7 +72,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         logger: LoggerProtocol
     ) {
         self.storageRepository = storageRepository
-        self.settingsManager = settingsManager
         self.chartSession = chartSession
         assetListObservable = state.assetListObservable
 
@@ -243,8 +239,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     override func setup() {
         super.setup()
 
-        presenter?.didReceiveChartExpansion(settingsManager.swapPriceChartExpanded)
-
         assetListObservable.addObserver(with: self, queue: .main) { [weak self] oldState, newState in
             self?.provideChangedPrices(from: oldState.value, to: newState.value)
         }
@@ -336,10 +330,6 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
 
     func cancelMaxFeeEstimate() {
         maxFeeEstimateCall.cancel()
-    }
-
-    func saveChartExpansion(_ isExpanded: Bool) {
-        settingsManager.swapPriceChartExpanded = isExpanded
     }
 
     func saveChartPeriod(_ period: PriceHistoryPeriod) {

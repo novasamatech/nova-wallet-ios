@@ -23,8 +23,7 @@ extension SwapSetupPresenter {
     }
 
     func selectChartExpansion(_ isExpanded: Bool) {
-        chartContext.manualExpansion = isExpanded
-        interactor.saveChartExpansion(isExpanded)
+        chartContext.isExpanded = isExpanded
 
         provideChartViewModel()
         presentPendingFailures()
@@ -36,12 +35,6 @@ extension SwapSetupPresenter {
 
     var isChartFailureAlertPending: Bool {
         chartContext.hasPendingFailure && view?.isChartShownExpanded == true
-    }
-
-    func didReceiveChartExpansion(_ isExpanded: Bool?) {
-        chartContext.manualExpansion = isExpanded
-
-        provideChartViewModel()
     }
 
     func didReceive(selectedCurrency: Currency) {
@@ -61,19 +54,7 @@ private extension SwapSetupPresenter {
     }
 
     var isChartExpanded: Bool {
-        guard isChartExpandable else {
-            return false
-        }
-
-        if let manualExpansion = chartContext.manualExpansion {
-            return manualExpansion
-        }
-
-        guard placement == .swapsTab, let followedChainAsset = chartContext.followedChainAsset else {
-            return false
-        }
-
-        return !SwapPriceChartFollowRule.isStablecoin(followedChainAsset)
+        isChartExpandable && chartContext.isExpanded
     }
 
     func provideChartViewModel() {

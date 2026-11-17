@@ -2,7 +2,6 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 import NovaAnalytics
-import Keystore_iOS
 
 struct SwapSetupViewFactory {
     static func createView(
@@ -151,7 +150,6 @@ struct SwapSetupViewFactory {
             assetStorageFactory: assetStorageFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
-            settingsManager: SettingsManager.shared,
             chartSession: SwapPriceChartSession.shared,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,

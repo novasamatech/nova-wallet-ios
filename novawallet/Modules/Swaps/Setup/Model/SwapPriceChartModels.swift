@@ -13,7 +13,7 @@ struct SwapPriceChartViewModel: Equatable {
 
 struct SwapPriceChartContext {
     var followedChainAsset: ChainAsset?
-    var manualExpansion: Bool?
+    var isExpanded = false
     var state: AssetPriceChartState?
     var hasPendingFailure = false
 
@@ -39,7 +39,7 @@ enum SwapPriceChartFollowRule {
         return pay
     }
 
-    static func isStablecoin(_ chainAsset: ChainAsset) -> Bool {
+    private static func isStablecoin(_ chainAsset: ChainAsset) -> Bool {
         AssetCategoryClassifier.isStablecoin(chainAsset.asset.symbol)
     }
 }
