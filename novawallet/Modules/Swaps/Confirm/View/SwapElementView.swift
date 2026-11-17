@@ -71,6 +71,11 @@ final class SwapElementView: UIView {
         hubIconNameView.spacing = style.hubSpacing
         hubIconNameView.detailsLabel.apply(style: style.hubLabel)
         hubIconNameView.detailsLabel.numberOfLines = style.hubLabelLines
+
+        if let valueMinimumScale = style.valueMinimumScale {
+            valueLabel.adjustsFontSizeToFitWidth = true
+            valueLabel.minimumScaleFactor = valueMinimumScale
+        }
     }
 
     private func setupLayout() {
@@ -154,6 +159,7 @@ extension SwapElementView {
         let hubLabelLines: Int
         let hubHeight: CGFloat?
         let centersHub: Bool
+        let valueMinimumScale: CGFloat?
     }
 
     func bind(loadableViewModel: LoadableViewModelState<SwapAssetAmountViewModel>) {
@@ -206,6 +212,7 @@ extension SwapElementView.Style {
         hubLabel: .footnoteSecondary,
         hubLabelLines: 0,
         hubHeight: nil,
-        centersHub: true
+        centersHub: true,
+        valueMinimumScale: nil
     )
 }

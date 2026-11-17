@@ -94,6 +94,7 @@ extension SwapElementView.Style {
         hubLabel: .footnoteSecondary,
         hubLabelLines: 1,
         hubHeight: nil,
-        centersHub: true
+        centersHub: true,
+        valueMinimumScale: 0.5
     )
 }
