@@ -36,6 +36,23 @@ enum SwapTokenSelectNetworksArranger {
         )
     }
 
+    static func sheetSelection(
+        savedNetworks: [ChainModel.Id],
+        selectedNetworks: Set<ChainModel.Id>
+    ) -> Set<ChainModel.Id> {
+        selectedNetworks.union(savedNetworks.filter { !isQuick($0) })
+    }
+
+    static func savedNetworks(
+        ticked tickedNetworks: [ChainModel.Id],
+        shown shownNetworks: Set<ChainModel.Id>,
+        previouslySaved savedNetworks: [ChainModel.Id]
+    ) -> [ChainModel.Id] {
+        let unshownNetworks = savedNetworks.filter { !shownNetworks.contains($0) }
+
+        return (tickedNetworks + unshownNetworks).filter { !isQuick($0) }
+    }
+
     static func sheetOrder(of networks: [ChainModel]) -> [ChainModel] {
         let quickIds = SwapTokenSelectQuickNetworks.chainIds
 
@@ -44,5 +61,11 @@ enum SwapTokenSelectNetworksArranger {
         }
 
         return quickNetworks + networks.filter { !quickIds.contains($0.chainId) }
+    }
+}
+
+private extension SwapTokenSelectNetworksArranger {
+    static func isQuick(_ chainId: ChainModel.Id) -> Bool {
+        SwapTokenSelectQuickNetworks.chainIds.contains(chainId)
     }
 }

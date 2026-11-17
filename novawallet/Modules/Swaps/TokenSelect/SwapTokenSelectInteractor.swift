@@ -137,9 +137,12 @@ extension SwapTokenSelectInteractor: SwapTokenSelectInteractorInputProtocol {
         }
     }
 
-    func save(networks: [ChainModel.Id]) {
-        let keptNetworks = networksStore.savedNetworks.filter { !networks.contains($0) }
-        let savedNetworks = networks + keptNetworks
+    func save(networks: [ChainModel.Id], replacing shownNetworks: Set<ChainModel.Id>) {
+        let savedNetworks = SwapTokenSelectNetworksArranger.savedNetworks(
+            ticked: networks,
+            shown: shownNetworks,
+            previouslySaved: networksStore.savedNetworks
+        )
 
         networksStore.save(networks: savedNetworks)
         presenter?.didReceive(savedNetworks: savedNetworks)
