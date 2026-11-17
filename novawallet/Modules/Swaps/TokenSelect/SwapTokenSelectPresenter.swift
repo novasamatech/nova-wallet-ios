@@ -224,7 +224,11 @@ extension SwapTokenSelectPresenter: SwapTokenSelectPresenterProtocol {
         case .all:
             selectedNetworks = []
         case let .network(chainId):
-            selectedNetworks = [chainId]
+            if selectedNetworks.contains(chainId) {
+                selectedNetworks.remove(chainId)
+            } else {
+                selectedNetworks.insert(chainId)
+            }
         case .more:
             showNetworkSelection()
             return
