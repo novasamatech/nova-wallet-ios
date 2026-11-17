@@ -19,7 +19,7 @@ protocol SwapTokenSelectPresenterProtocol: AnyObject {
 protocol SwapTokenSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refreshRoutes()
-    func save(networks: [ChainModel.Id], replacing shownNetworks: Set<ChainModel.Id>)
+    func save(networks: [ChainModel.Id])
 }
 
 protocol SwapTokenSelectInteractorOutputProtocol: AnyObject {

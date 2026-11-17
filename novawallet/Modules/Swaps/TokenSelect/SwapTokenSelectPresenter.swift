@@ -134,11 +134,9 @@ private extension SwapTokenSelectPresenter {
             selectedNetworks: selectedNetworks
         )
 
-        let shownNetworks = Set(networks.map(\.chainId))
-
         wireframe.showNetworkSelection(from: view, viewModels: viewModels) { [weak self] chainIds in
             self?.selectedNetworks = Set(chainIds)
-            self?.interactor.save(networks: chainIds, replacing: shownNetworks)
+            self?.interactor.save(networks: chainIds)
             self?.view?.didCompleteNetworkSelection()
         }
     }
