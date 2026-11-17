@@ -95,7 +95,7 @@ private extension SwapSetupViewController {
             rootView.setupTabHeader()
         case .flow:
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                image: R.image.iconSettings(),
+                image: R.image.iconSettingsFilled(),
                 style: .plain,
                 target: self,
                 action: #selector(settingsAction)

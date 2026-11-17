@@ -13,7 +13,7 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.roundedBackgroundView?.fillColor = R.color.colorChipsBackground()!
         $0.roundedBackgroundView?.highlightedFillColor = R.color.colorChipsBackground()!
         $0.roundedBackgroundView?.cornerRadius = Constants.tabButtonSize / 2
-        $0.imageWithTitleView?.iconImage = R.image.iconSettings()
+        $0.imageWithTitleView?.iconImage = R.image.iconSettingsFilled()
     }
 
     let chartContainerView: UIView = .create {
