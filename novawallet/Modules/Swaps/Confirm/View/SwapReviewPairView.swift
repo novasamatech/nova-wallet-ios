@@ -6,15 +6,11 @@ final class SwapReviewPairView: UIView {
     let receiveCardView = SwapElementView(style: .review)
 
     let arrowBackgroundView: RoundedView = .create {
-        $0.apply(style: .swapReviewArrowUnderlay)
-    }
-
-    let arrowFillView: RoundedView = .create {
         $0.apply(style: .swapReviewArrow)
     }
 
     let arrowImageView: UIImageView = .create {
-        $0.image = R.image.iconForwardPrimary()?.tinted(with: R.color.colorIconPrimary()!)
+        $0.image = R.image.iconForwardPrimary()?.tinted(with: R.color.colorTextSecondary()!)
         $0.contentMode = .scaleAspectFit
     }
 
@@ -49,10 +45,7 @@ private extension SwapReviewPairView {
             $0.size.equalTo(Constants.arrowSize)
         }
 
-        arrowBackgroundView.addSubview(arrowFillView)
-        arrowFillView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        arrowFillView.addSubview(arrowImageView)
+        arrowBackgroundView.addSubview(arrowImageView)
         arrowImageView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.size.equalTo(Constants.arrowIconSize)
@@ -79,21 +72,11 @@ extension RoundedView.Style {
         rounding: .init(radius: 16, corners: .allCorners)
     )
 
-    static let swapReviewArrowUnderlay = RoundedView.Style(
-        shadowOpacity: 0,
-        strokeWidth: 0,
-        fillColor: R.color.colorSecondaryScreenBackground()!,
-        highlightedFillColor: R.color.colorSecondaryScreenBackground()!,
-        rounding: .init(radius: SwapReviewPairView.Constants.arrowSize / 2, corners: .allCorners)
-    )
-
     static let swapReviewArrow = RoundedView.Style(
         shadowOpacity: 0,
-        strokeWidth: 1,
-        strokeColor: R.color.colorContainerBorder()!,
-        highlightedStrokeColor: R.color.colorContainerBorder()!,
-        fillColor: R.color.colorButtonBackgroundSecondary()!,
-        highlightedFillColor: R.color.colorButtonBackgroundSecondary()!,
+        strokeWidth: 0,
+        fillColor: R.color.colorGradientBlockBackgroundFirstPart()!,
+        highlightedFillColor: R.color.colorGradientBlockBackgroundFirstPart()!,
         rounding: .init(radius: SwapReviewPairView.Constants.arrowSize / 2, corners: .allCorners)
     )
 }
@@ -101,16 +84,16 @@ extension RoundedView.Style {
 extension SwapElementView.Style {
     static let review = SwapElementView.Style(
         background: .swapReviewCard,
-        contentInsets: UIEdgeInsets(top: 15, left: 17, bottom: 15, right: 17),
-        iconSize: 42,
+        contentInsets: UIEdgeInsets(top: 16, left: 12, bottom: 20, right: 12),
+        iconSize: 2 * SwapElementView.assetIconRadius,
         iconInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1),
-        valueOffset: 4,
+        valueOffset: 9,
         priceOffset: 4,
-        hubOffset: 4,
-        hubSpacing: 6,
-        hubLabel: .caption1Secondary,
+        hubOffset: 17,
+        hubSpacing: 8,
+        hubLabel: .footnoteSecondary,
         hubLabelLines: 1,
-        hubHeight: 16,
-        centersHub: false
+        hubHeight: nil,
+        centersHub: true
     )
 }
