@@ -194,12 +194,10 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
         if initState.chainAssetIn.asset.priceId == priceId {
             provideAssetInViewModel()
-            providePriceDifferenceViewModel()
         }
 
         if initState.chainAssetOut.asset.priceId == priceId {
             provideAssetOutViewModel()
-            providePriceDifferenceViewModel()
         }
 
         if initState.feeChainAsset.asset.priceId == priceId {
@@ -291,31 +289,6 @@ extension SwapConfirmPresenter {
         view?.didReceiveExecutionTime(viewModel: .loaded(value: viewModel))
     }
 
-    private func providePriceDifferenceViewModel() {
-        guard let quote else {
-            view?.didReceivePriceDifference(viewModel: .loading)
-            return
-        }
-
-        let params = RateParams(
-            assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
-            assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
-            amountIn: quote.route.amountIn,
-            amountOut: grossAmountOut
-        )
-
-        if let viewModel = viewModelFactory.priceDifferenceViewModel(
-            rateParams: params,
-            priceIn: payAssetPriceData,
-            priceOut: receiveAssetPriceData,
-            locale: selectedLocale
-        ) {
-            view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
-        } else {
-            view?.didReceivePriceDifference(viewModel: nil)
-        }
-    }
-
     private func provideSlippageViewModel() {
         let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage, locale: selectedLocale)
         view?.didReceiveSlippage(viewModel: viewModel)
@@ -359,7 +332,6 @@ extension SwapConfirmPresenter {
         provideRateViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
-        providePriceDifferenceViewModel()
         provideSlippageViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
@@ -411,20 +383,6 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
         wireframe.showRateInfo(
             from: view,
             commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
-        )
-    }
-
-    func showPriceDifferenceInfo() {
-        let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifference()
-        }
-        let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifferenceDescription()
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
         )
     }
 

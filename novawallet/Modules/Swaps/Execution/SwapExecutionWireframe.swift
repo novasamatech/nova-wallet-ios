@@ -68,23 +68,4 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
 
         view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
-
-    func showFeeDetails(
-        from view: ControllerBackedProtocol?,
-        operations: [AssetExchangeMetaOperationProtocol],
-        fee: AssetExchangeFee
-    ) {
-        guard
-            let routeDetailsView = SwapFeeDetailsViewFactory.createView(
-                for: operations,
-                fee: fee,
-                state: flowState
-            ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
-
-        view?.controller.presentWithCardLayout(navigationController, animated: true)
-    }
 }

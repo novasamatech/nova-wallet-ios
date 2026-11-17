@@ -93,8 +93,6 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.execTimeCell.bind(loadableViewModel: viewModel)
     }
 
-    func didReceivePriceDifference(viewModel _: LoadableViewModelState<DifferenceViewModel>?) {}
-
     func didReceiveSlippage(viewModel: String) {
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel))
     }

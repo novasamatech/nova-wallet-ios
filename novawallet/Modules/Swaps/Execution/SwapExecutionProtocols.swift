@@ -5,18 +5,12 @@ protocol SwapExecutionViewProtocol: ControllerBackedProtocol {
     func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>)
-    func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?)
-    func didReceiveSlippage(viewModel: String)
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveSteps(viewModel: [SwapExecutionStepViewModel])
 }
 
 protocol SwapExecutionPresenterProtocol: AnyObject {
     func setup()
-    func showRateInfo()
-    func showPriceDifferenceInfo()
-    func showSlippageInfo()
-    func showTotalFeeInfo()
     func showRouteDetails()
     func activateDone()
     func activateTryAgain()
@@ -34,8 +28,8 @@ protocol SwapExecutionInteractorOutputProtocol: AnyObject {
     func didFailExecution(with failure: AssetExchangeOperationFailure)
 }
 
-protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetPresentable, AlertPresentable,
-    ErrorPresentable, ExtrinsicSigningErrorHandling, OperationIdOptionsPresentable {
+protocol SwapExecutionWireframeProtocol: MessageSheetPresentable, AlertPresentable, ErrorPresentable,
+    ExtrinsicSigningErrorHandling, OperationIdOptionsPresentable {
     func complete(
         on view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
@@ -58,12 +52,6 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
     func showRouteDetails(
         from view: ControllerBackedProtocol?,
         quote: AssetExchangeQuote,
-        fee: AssetExchangeFee
-    )
-
-    func showFeeDetails(
-        from view: ControllerBackedProtocol?,
-        operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee
     )
 }

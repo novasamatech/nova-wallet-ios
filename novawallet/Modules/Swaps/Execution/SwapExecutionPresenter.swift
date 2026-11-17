@@ -32,16 +32,8 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
-    var chargesCommission: Bool {
-        quote.commission != nil
-    }
-
     var netAmountOut: Balance {
         quote.commissionNetFlow().netFinalAmountOut
-    }
-
-    var grossAmountOut: Balance {
-        quote.route.amountOut
     }
 
     var feeAssetPrice: PriceData? {
@@ -152,31 +144,6 @@ final class SwapExecutionPresenter {
         view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
     }
 
-    private func providePriceDifferenceViewModel() {
-        let params = RateParams(
-            assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
-            assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
-            amountIn: quote.route.amountIn,
-            amountOut: grossAmountOut
-        )
-
-        if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(
-            rateParams: params,
-            priceIn: payAssetPrice,
-            priceOut: receiveAssetPrice,
-            locale: selectedLocale
-        ) {
-            view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
-        } else {
-            view?.didReceivePriceDifference(viewModel: nil)
-        }
-    }
-
-    private func provideSlippageViewModel() {
-        let viewModel = detailsViewModelFactory.slippageViewModel(slippage: model.fee.slippage, locale: selectedLocale)
-        view?.didReceiveSlippage(viewModel: viewModel)
-    }
-
     private func provideFeeViewModel() {
         let feeInFiat = model.fee.calculateTotalFeeInFiat(
             matching: model.quote.metaOperations,
@@ -195,8 +162,6 @@ final class SwapExecutionPresenter {
 
     private func updateSwapDetails() {
         provideRateViewModel()
-        providePriceDifferenceViewModel()
-        provideSlippageViewModel()
         provideRouteViewModel()
         provideFeeViewModel()
     }
@@ -288,43 +253,10 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         interactor.submit(using: model.fee)
     }
 
-    func showRateInfo() {
-        wireframe.showRateInfo(
-            from: view,
-            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
-        )
-    }
-
     func showRouteDetails() {
         wireframe.showRouteDetails(
             from: view,
             quote: model.quote,
-            fee: model.fee
-        )
-    }
-
-    func showPriceDifferenceInfo() {
-        let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifference()
-        }
-        let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifferenceDescription()
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
-    }
-
-    func showSlippageInfo() {
-        wireframe.showSlippageInfo(from: view)
-    }
-
-    func showTotalFeeInfo() {
-        wireframe.showFeeDetails(
-            from: view,
-            operations: model.quote.metaOperations,
             fee: model.fee
         )
     }

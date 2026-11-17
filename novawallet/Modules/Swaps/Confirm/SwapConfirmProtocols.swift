@@ -7,7 +7,6 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>)
     func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>)
-    func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?)
     func didReceiveSlippage(viewModel: String)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveWallet(viewModel: WalletAccountViewModel?)
@@ -20,7 +19,6 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
 protocol SwapConfirmPresenterProtocol: AnyObject {
     func setup()
     func showRateInfo()
-    func showPriceDifferenceInfo()
     func showSlippageInfo()
     func showNetworkFeeInfo()
     func showRouteDetails()

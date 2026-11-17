@@ -112,10 +112,6 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
         rootView.routeCell.bind(loadableRouteViewModel: viewModel)
     }
 
-    func didReceivePriceDifference(viewModel _: LoadableViewModelState<DifferenceViewModel>?) {}
-
-    func didReceiveSlippage(viewModel _: String) {}
-
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.totalFeeCell.bind(loadableFeeViewModel: viewModel)
     }
