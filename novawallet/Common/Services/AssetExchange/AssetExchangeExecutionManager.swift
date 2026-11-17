@@ -46,6 +46,8 @@ final class AssetExchangeExecutionManager {
     }
 
     private func startFirstSegmentExecution() {
+        notifyStart(of: 0)
+
         do {
             let initialAmount = try fee.getInitialAmountIn()
 
@@ -70,10 +72,6 @@ final class AssetExchangeExecutionManager {
         )
 
         let wrapper = operations[index].executeWrapper(for: swapLimit)
-
-        notificationQueue.async { [weak self] in
-            self?.operationStartClosure(index)
-        }
 
         executeCancellable(
             wrapper: wrapper,
@@ -100,6 +98,8 @@ final class AssetExchangeExecutionManager {
 
         let nextSegment = currentSegment + 1
 
+        notifyStart(of: nextSegment)
+
         do {
             let leaveOnAccount = try fee.operationFees[nextSegment].totalAmountToPayFromSelectedAccount()
 
@@ -111,6 +111,12 @@ final class AssetExchangeExecutionManager {
         } catch {
             logger.error("Failed segment processing \(nextSegment): \(error)")
             complete(with: .failure(error))
+        }
+    }
+
+    private func notifyStart(of index: Int) {
+        notificationQueue.async { [weak self] in
+            self?.operationStartClosure(index)
         }
     }
 }
