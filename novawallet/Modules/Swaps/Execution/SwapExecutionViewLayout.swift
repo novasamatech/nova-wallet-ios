@@ -11,6 +11,11 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         $0.isHidden = true
     }
 
+    let titleLabel: UILabel = .create {
+        $0.apply(style: .semiboldBodyPrimary)
+        $0.textAlignment = .center
+    }
+
     let statusView = SwapExecutionView()
 
     let pairsView = SwapReviewPairView()
@@ -53,12 +58,14 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         )
     }
 
-    func setFinished() {
+    func setFinished(isSuccess: Bool) {
         closeButton.isHidden = false
-        stackView.layoutMargins.top = Constants.finishedTopInset
+        titleLabel.isHidden = true
+        stackView.layoutMargins.top = isSuccess ? Constants.completedTopInset : Constants.failedTopInset
     }
 
     func setup(locale: Locale) {
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapTitle()
         detailsView.setup(locale: locale)
     }
 
@@ -83,6 +90,13 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
             make.top.equalTo(safeAreaLayoutGuide).inset(Constants.closeTopInset)
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.size.equalTo(Constants.closeSize)
+        }
+
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalTo(closeButton)
+            make.leading.greaterThanOrEqualTo(closeButton.snp.trailing)
         }
 
         addSubview(actionsView)
@@ -115,8 +129,9 @@ private extension SwapExecutionViewLayout {
 
 extension SwapExecutionViewLayout {
     enum Constants {
-        static let contentInsets = UIEdgeInsets(top: 28, left: 16, bottom: 0, right: 16)
-        static let finishedTopInset: CGFloat = 60
+        static let contentInsets = UIEdgeInsets(top: 65, left: 16, bottom: 0, right: 16)
+        static let completedTopInset: CGFloat = 65
+        static let failedTopInset: CGFloat = 57
         static let statusSpacing: CGFloat = 16
         static let sectionSpacing: CGFloat = 12
         static let closeTopInset: CGFloat = 7

@@ -78,12 +78,12 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
 
         switch viewModel {
         case .completed:
-            rootView.setFinished()
+            rootView.setFinished(isSuccess: true)
 
             let doneButton = rootView.setupDoneButton(for: selectedLocale)
             doneButton.addTarget(self, action: #selector(doneAction), for: .touchUpInside)
         case .failed:
-            rootView.setFinished()
+            rootView.setFinished(isSuccess: false)
 
             let tryAgainButton = rootView.setupTryAgainButton(for: selectedLocale)
             tryAgainButton.addTarget(self, action: #selector(tryAgainAction), for: .touchUpInside)

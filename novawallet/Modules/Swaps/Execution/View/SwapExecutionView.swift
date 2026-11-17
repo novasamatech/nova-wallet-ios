@@ -31,7 +31,7 @@ final class SwapExecutionView: UIView {
     }
 
     let operationsLabel: UILabel = .create {
-        $0.apply(style: .footnoteSecondary)
+        $0.apply(style: .regularSubhedlineSecondary)
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }
@@ -101,8 +101,8 @@ private extension SwapExecutionView {
         amountLabel.isHidden = true
         operationsView.isHidden = false
 
-        titleLabel.apply(style: .boldTitle2Primary)
-        detailsLabel.apply(style: .semiboldSubheadlineAccent)
+        titleLabel.apply(style: .boldTitle1Primary)
+        detailsLabel.apply(style: .semiboldBodyButtonAccent)
 
         stackView.setCustomSpacing(Constants.inProgressIconSpacing, after: progressContainer)
         stackView.setCustomSpacing(Constants.inProgressTitleSpacing, after: titleLabel)
@@ -118,8 +118,8 @@ private extension SwapExecutionView {
         progressView.bind(viewModel: isSuccess ? .completed : .failed)
         resultTileView.bind(isSuccess: isSuccess)
 
-        titleLabel.apply(style: isSuccess ? .swapExecutionSuccessTitle : .swapExecutionFailureTitle)
-        detailsLabel.apply(style: .footnoteSecondary)
+        titleLabel.apply(style: isSuccess ? .boldTitle1Positive : .boldTitle1Negative)
+        detailsLabel.apply(style: .semiboldBodySecondary)
 
         stackView.setCustomSpacing(Constants.finishedIconSpacing, after: resultTileContainer)
         stackView.setCustomSpacing(
@@ -130,22 +130,10 @@ private extension SwapExecutionView {
     }
 }
 
-private extension UILabel.Style {
-    static let swapExecutionSuccessTitle = UILabel.Style(
-        textColor: R.color.colorTextPositive()!,
-        font: .boldTitle2
-    )
-
-    static let swapExecutionFailureTitle = UILabel.Style(
-        textColor: R.color.colorTextNegative()!,
-        font: .boldTitle2
-    )
-}
-
 extension SwapExecutionView {
     enum Constants {
         static let amountMinimumScale: CGFloat = 0.5
-        static let operationsInsets = UIEdgeInsets(top: 11, left: 16, bottom: 11, right: 16)
+        static let operationsInsets = UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16)
         static let operationsCornerRadius: CGFloat = 12
         static let operationsBorderWidth: CGFloat = 1
         static let inProgressIconSpacing: CGFloat = 10
