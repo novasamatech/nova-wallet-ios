@@ -1,9 +1,8 @@
 import Foundation
 import Foundation_iOS
-import UIKit_iOS
 
 struct SwapSlippageViewFactory {
-    static func createSettingsSheet(
+    static func createSettingsView(
         percent: BigRational?,
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
@@ -25,11 +24,6 @@ struct SwapSlippageViewFactory {
         )
 
         presenter.view = view
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-
-        view.modalTransitioningFactory = factory
-        view.modalPresentationStyle = .custom
 
         return view
     }

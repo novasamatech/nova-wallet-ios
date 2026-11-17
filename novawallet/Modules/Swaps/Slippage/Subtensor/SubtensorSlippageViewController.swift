@@ -7,6 +7,8 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     let presenter: SwapSlippagePresenterProtocol
     let configuration: SwapSlippageSheetConfiguration
 
+    var keyboardHandler: KeyboardHandler?
+
     private var hasInputError: Bool = false
     private var isApplyAvailable: Bool = false
     private var presets: [SlippagePercentViewModel] = []
@@ -29,7 +31,7 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = SubtensorSlippageViewLayout()
+        view = SubtensorSlippageViewLayout(presentation: configuration.presentation)
     }
 
     override func viewDidLoad() {
@@ -47,6 +49,20 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
         setupHandlers()
         setupAccessoryView()
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if configuration.presentation == .card {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 }
 
@@ -117,6 +133,10 @@ private extension SubtensorSlippageViewController {
     }
 
     func updatePreferredHeight() {
+        guard configuration.presentation == .sheet else {
+            return
+        }
+
         let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
         let height = rootView.preferredHeight(for: width)
 
@@ -196,6 +216,16 @@ extension SubtensorSlippageViewController: SwapSlippageViewProtocol {
     func didReceiveInput(warning: String?) {
         rootView.set(warning: warning)
         updatePreferredHeight()
+    }
+}
+
+extension SubtensorSlippageViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let keyboardFrame = rootView.convert(frame, from: nil)
+        let overlap = max(rootView.bounds.maxY - keyboardFrame.minY - rootView.safeAreaInsets.bottom, 0)
+
+        rootView.set(keyboardInset: overlap)
+        rootView.layoutIfNeeded()
     }
 }
 

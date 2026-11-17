@@ -52,7 +52,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
-        guard let settingsView = SwapSlippageViewFactory.createSettingsSheet(
+        guard let settingsView = SwapSlippageViewFactory.createSettingsView(
             percent: percent,
             chainAsset: chainAsset,
             completionHandler: completionHandler
@@ -60,7 +60,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        view?.controller.present(settingsView.controller, animated: true)
+        view?.controller.presentWithCardLayout(settingsView.controller, animated: true)
     }
 
     func showConfirmation(

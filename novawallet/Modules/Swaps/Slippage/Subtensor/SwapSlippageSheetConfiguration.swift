@@ -2,12 +2,18 @@ import Foundation
 import Foundation_iOS
 
 struct SwapSlippageSheetConfiguration {
+    enum Presentation {
+        case sheet
+        case card
+    }
+
     let title: LocalizableResource<String>
     let slippageTitle: LocalizableResource<String>
     let explanation: LocalizableResource<String>?
     let actionTitle: LocalizableResource<String>
     let allowsReset: Bool
     let showsSlippageInfo: Bool
+    let presentation: Presentation
 }
 
 extension SwapSlippageSheetConfiguration {
@@ -21,7 +27,8 @@ extension SwapSlippageSheetConfiguration {
         },
         actionTitle: LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonDone() },
         allowsReset: false,
-        showsSlippageInfo: false
+        showsSlippageInfo: false,
+        presentation: .sheet
     )
 
     static let swap = SwapSlippageSheetConfiguration(
@@ -34,6 +41,7 @@ extension SwapSlippageSheetConfiguration {
         explanation: nil,
         actionTitle: LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonApply() },
         allowsReset: true,
-        showsSlippageInfo: true
+        showsSlippageInfo: true,
+        presentation: .card
     )
 }
