@@ -2378,7 +2378,7 @@
 "swaps.execution.view.transaction" = "查看交易";
 "swaps.setup.action.getting.rate" = "正在获取最佳汇率…";
 "swaps.setup.action.no.route" = "没有适用于此交易对的路由";
-"swaps.setup.action.not.enough.token" = "%li 不足";
+"swaps.setup.action.not.enough.token" = "%@ 不足";
 "swaps.setup.asset.balance" = "余额：";
 "swaps.setup.chart.placeholder" = "选择要接收的代币\n以查看其价格图表";
 "swaps.setup.deposit.by.swap.subtitle" = "将其他代币兑换为 %@";
