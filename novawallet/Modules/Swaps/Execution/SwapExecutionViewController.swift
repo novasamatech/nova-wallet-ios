@@ -63,6 +63,10 @@ private extension SwapExecutionViewController {
         presenter.activateDone()
     }
 
+    @objc func viewReceivedAssetAction() {
+        presenter.activateViewReceivedAsset()
+    }
+
     @objc func tryAgainAction() {
         presenter.activateTryAgain()
     }
@@ -77,11 +81,16 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
         rootView.statusView.bind(viewModel: viewModel, locale: selectedLocale)
 
         switch viewModel {
-        case .completed:
+        case let .completed(completed):
             rootView.setFinished(isSuccess: true)
 
-            let doneButton = rootView.setupDoneButton(for: selectedLocale)
-            doneButton.addTarget(self, action: #selector(doneAction), for: .touchUpInside)
+            let buttons = rootView.setupCompletedButtons(
+                for: selectedLocale,
+                viewAssetTitle: completed.viewAssetTitle
+            )
+
+            buttons.done.addTarget(self, action: #selector(doneAction), for: .touchUpInside)
+            buttons.viewAsset?.addTarget(self, action: #selector(viewReceivedAssetAction), for: .touchUpInside)
         case .failed:
             rootView.setFinished(isSuccess: false)
 

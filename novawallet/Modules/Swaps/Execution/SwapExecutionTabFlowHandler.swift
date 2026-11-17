@@ -5,12 +5,18 @@ protocol SwapsTabFormResetting: AnyObject {
     func resetForm(prefilledWith initState: SwapSetupInitState?, source: SwapSource)
 }
 
+protocol SwapsTabAssetDetailsShowing: AnyObject {
+    func showAssetDetails(for chainAsset: ChainAsset)
+}
+
+typealias SwapsTabFlowHosting = SwapsTabFormResetting & SwapsTabAssetDetailsShowing
+
 final class SwapExecutionTabFlowHandler {
-    private(set) weak var formHost: SwapsTabFormResetting?
+    private(set) weak var formHost: SwapsTabFlowHosting?
     let lastPairStore: SwapLastPairStoring
 
     init(
-        formHost: SwapsTabFormResetting,
+        formHost: SwapsTabFlowHosting,
         lastPairStore: SwapLastPairStoring
     ) {
         self.formHost = formHost
@@ -23,9 +29,10 @@ private extension SwapExecutionTabFlowHandler {
         from view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset,
-        source: SwapSource = .swapsTab
+        source: SwapSource = .swapsTab,
+        completion: (() -> Void)? = nil
     ) {
-        flowHost(of: view)?.dismiss(animated: true)
+        flowHost(of: view)?.dismiss(animated: true, completion: completion)
 
         formHost?.resetForm(
             prefilledWith: SwapSetupInitState(
@@ -39,19 +46,41 @@ private extension SwapExecutionTabFlowHandler {
     func finishSwappedFlow(
         from view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
-        receiveChainAsset: ChainAsset
+        receiveChainAsset: ChainAsset,
+        completion: (() -> Void)? = nil
     ) {
         lastPairStore.save(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset)
 
         returnToForm(
             from: view,
             payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset
+            receiveChainAsset: receiveChainAsset,
+            completion: completion
         )
     }
 }
 
 extension SwapExecutionTabFlowHandler: SwapExecutionFlowHandling {
+    var offersReceivedAssetDetails: Bool {
+        true
+    }
+
+    func showReceivedAssetDetails(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    ) {
+        let formHost = formHost
+
+        finishSwappedFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        ) { [weak formHost] in
+            formHost?.showAssetDetails(for: receiveChainAsset)
+        }
+    }
+
     func completeFlow(
         from view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,

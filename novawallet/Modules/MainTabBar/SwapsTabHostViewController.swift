@@ -150,6 +150,26 @@ extension SwapsTabHostViewController: EventVisitorProtocol {
 
 extension SwapsTabHostViewController: SwapsTabFormResetting {}
 
+// MARK: SwapsTabAssetDetailsShowing
+
+extension SwapsTabHostViewController: SwapsTabAssetDetailsShowing {
+    func showAssetDetails(for chainAsset: ChainAsset) {
+        let operationState = AssetOperationState(
+            assetListObservable: assetListObservable,
+            swapCompletionClosure: nil
+        )
+
+        guard let detailsView = AssetDetailsContainerViewFactory.createView(
+            chainAsset: chainAsset,
+            operationState: operationState
+        ) else {
+            return
+        }
+
+        navigationController?.pushViewController(detailsView.controller, animated: true)
+    }
+}
+
 // MARK: SwapSetupModuleInputOwnerProtocol
 
 extension SwapsTabHostViewController: SwapSetupModuleInputOwnerProtocol {}

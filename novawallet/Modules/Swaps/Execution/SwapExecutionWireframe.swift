@@ -24,6 +24,22 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         )
     }
 
+    var offersReceivedAssetDetails: Bool {
+        flowHandler.offersReceivedAssetDetails
+    }
+
+    func showReceivedAssetDetails(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    ) {
+        flowHandler.showReceivedAssetDetails(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
+    }
+
     func close(
         on view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,

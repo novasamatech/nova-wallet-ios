@@ -1,7 +1,15 @@
 import UIKit
 
 protocol SwapExecutionFlowHandling {
+    var offersReceivedAssetDetails: Bool { get }
+
     func completeFlow(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    )
+
+    func showReceivedAssetDetails(
         from view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
@@ -56,6 +64,10 @@ private extension SwapExecutionPresentedFlowHandler {
 }
 
 extension SwapExecutionPresentedFlowHandler: SwapExecutionFlowHandling {
+    var offersReceivedAssetDetails: Bool {
+        false
+    }
+
     func completeFlow(
         from _: ControllerBackedProtocol?,
         payChainAsset _: ChainAsset,
@@ -64,6 +76,14 @@ extension SwapExecutionPresentedFlowHandler: SwapExecutionFlowHandling {
         flowPresenter?.dismiss(animated: true) {
             self.completionClosure?(receiveChainAsset)
         }
+    }
+
+    func showReceivedAssetDetails(
+        from view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    ) {
+        completeFlow(from: view, payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset)
     }
 
     func retryFlow(

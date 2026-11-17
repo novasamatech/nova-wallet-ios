@@ -10,6 +10,7 @@ enum SwapExecutionViewModel {
     struct Completed {
         let time: String
         let amount: String
+        let viewAssetTitle: String?
     }
 
     struct Failed {

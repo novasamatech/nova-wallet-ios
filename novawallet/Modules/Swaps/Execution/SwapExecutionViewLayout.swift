@@ -44,17 +44,30 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         []
     )
 
-    private var actionButton: TriangularedButton?
+    private var actionButtons: [TriangularedButton] = []
 
-    func setupDoneButton(for locale: Locale) -> TriangularedButton {
-        setupActionButton(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonDone()
+    func setupCompletedButtons(
+        for locale: Locale,
+        viewAssetTitle: String?
+    ) -> (done: TriangularedButton, viewAsset: TriangularedButton?) {
+        removeActionButtons()
+
+        let viewAssetButton = viewAssetTitle.map { addActionButton(title: $0, isPrimary: false) }
+
+        let doneButton = addActionButton(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonDone(),
+            isPrimary: true
         )
+
+        return (doneButton, viewAssetButton)
     }
 
     func setupTryAgainButton(for locale: Locale) -> TriangularedButton {
-        setupActionButton(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonTryAgain()
+        removeActionButtons()
+
+        return addActionButton(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonTryAgain(),
+            isPrimary: true
         )
     }
 
@@ -109,16 +122,25 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 }
 
 private extension SwapExecutionViewLayout {
-    func setupActionButton(title: String) -> TriangularedButton {
-        actionButton?.removeFromSuperview()
+    func removeActionButtons() {
+        actionButtons.forEach { $0.removeFromSuperview() }
+        actionButtons = []
+    }
 
+    func addActionButton(title: String, isPrimary: Bool) -> TriangularedButton {
         let button = TriangularedButton()
-        button.applyDefaultStyle()
+
+        if isPrimary {
+            button.applyDefaultStyle()
+        } else {
+            button.applySecondaryDefaultStyle()
+        }
+
         button.setTitle(title)
 
         actionsView.addArrangedSubview(button)
 
-        actionButton = button
+        actionButtons.append(button)
 
         containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
             UIConstants.actionHeight + Constants.sectionSpacing

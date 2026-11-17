@@ -13,6 +13,7 @@ protocol SwapExecutionPresenterProtocol: AnyObject {
     func setup()
     func showRouteDetails()
     func activateDone()
+    func activateViewReceivedAsset()
     func activateTryAgain()
     func activateClose()
     func showFailedTransaction()
@@ -30,7 +31,15 @@ protocol SwapExecutionInteractorOutputProtocol: AnyObject {
 
 protocol SwapExecutionWireframeProtocol: MessageSheetPresentable, AlertPresentable, ErrorPresentable,
     ExtrinsicSigningErrorHandling, OperationIdOptionsPresentable {
+    var offersReceivedAssetDetails: Bool { get }
+
     func complete(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    )
+
+    func showReceivedAssetDetails(
         on view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset

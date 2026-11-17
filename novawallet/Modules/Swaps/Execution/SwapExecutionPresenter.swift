@@ -85,6 +85,7 @@ final class SwapExecutionPresenter {
                     priceData: nil,
                     locale: selectedLocale
                 ).amount,
+                viewedAssetSymbol: wireframe.offersReceivedAssetDetails ? chainAssetOut.asset.symbol : nil,
                 locale: selectedLocale
             )
         case let .failed(failure):
@@ -263,6 +264,14 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
 
     func activateDone() {
         wireframe.complete(on: view, payChainAsset: chainAssetIn, receiveChainAsset: chainAssetOut)
+    }
+
+    func activateViewReceivedAsset() {
+        wireframe.showReceivedAssetDetails(
+            on: view,
+            payChainAsset: chainAssetIn,
+            receiveChainAsset: chainAssetOut
+        )
     }
 
     func activateClose() {

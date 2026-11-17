@@ -17,6 +17,7 @@ protocol SwapExecutionViewModelFactoryProtocol {
     func createCompletedViewModel(
         for date: Date,
         receivedAmount: String,
+        viewedAssetSymbol: String?,
         locale: Locale
     ) -> SwapExecutionViewModel
 
@@ -104,11 +105,22 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     func createCompletedViewModel(
         for date: Date,
         receivedAmount: String,
+        viewedAssetSymbol: String?,
         locale: Locale
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: date)
 
-        return .completed(.init(time: time, amount: Constants.plusSign + receivedAmount))
+        let viewAssetTitle = viewedAssetSymbol.map {
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsExecutionViewToken($0)
+        }
+
+        return .completed(
+            .init(
+                time: time,
+                amount: Constants.plusSign + receivedAmount,
+                viewAssetTitle: viewAssetTitle
+            )
+        )
     }
 }
 
