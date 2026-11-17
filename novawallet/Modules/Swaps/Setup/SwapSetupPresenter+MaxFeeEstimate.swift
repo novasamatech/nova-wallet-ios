@@ -102,14 +102,11 @@ private extension SwapSetupPresenter {
         }
 
         switchFeeChainAssetIfNecessary()
+        let amount = getMaxModel(feeModel: nil).calculateInPlank()
 
         guard
             let pair = getMaxFeeEstimationPair(),
-            let payChainAsset = getPayChainAsset(),
             let feeChainAsset = getFeeChainAsset(),
-            let amount = getMaxModel(feeModel: nil).calculate().toSubstrateAmount(
-                precision: payChainAsset.assetDisplayInfo.assetPrecision
-            ),
             amount > 0 else {
             return
         }

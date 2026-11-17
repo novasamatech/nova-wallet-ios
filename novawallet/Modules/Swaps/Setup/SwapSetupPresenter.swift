@@ -23,7 +23,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
-            quoteArgsMaxAmountFee = quoteArgs?.direction == .sell ? getMaxAmountFeeForCurrentPair() : nil
+            quoteArgsMaxAmountFee = quoteArgs?.direction == .sell ? getMaxAmountFeeModel() : nil
             provideDetailsViewModel()
             provideQuoteState()
         }
@@ -383,7 +383,7 @@ extension SwapSetupPresenter {
         let correctionDirection = quoteArgs?.direction ?? .sell
 
         if isMaxCorrectionConverged(for: correctionDirection) {
-            quotedMaxAmountFee = getMaxAmountFeeForCurrentPair()
+            quotedMaxAmountFee = getMaxAmountFeeModel()
             maxCorrectionCounter.resetCounter()
         } else if maxCorrectionCounter.incrementCounterIfPossible() {
             isFeePending = true
@@ -495,7 +495,7 @@ extension SwapSetupPresenter {
     private func refreshQuoteForSell(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
         awaitPayBalanceIfNeeded(for: payChainAsset)
 
-        if let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
+        if let payInPlank = getSpendingInputAmount()?.toSubstrateAmount(
             precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)), payInPlank > 0 {
             let quoteArgs = AssetConversion.QuoteArgs(
                 assetIn: payChainAsset.chainAssetId,
@@ -505,16 +505,10 @@ extension SwapSetupPresenter {
             )
             self.quoteArgs = quoteArgs
             interactor.calculateQuote(for: quoteArgs)
-        } else if maxBalanceRequote.isAwaitingPayBalance {
-            receiveAmountInput = nil
-            quoteArgs = nil
-            provideReceiveAmountInputViewModel()
-            provideReceiveInputPriceViewModel()
-            provideIssues()
         } else {
             quoteArgs = nil
 
-            if forceUpdate {
+            if forceUpdate || maxBalanceRequote.isAwaitingPayBalance {
                 receiveAmountInput = nil
                 provideReceiveAmountInputViewModel()
                 provideReceiveInputPriceViewModel()
@@ -681,8 +675,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             if let direction = self?.quoteArgs?.direction {
                 self?.refreshQuote(direction: direction, forceUpdate: false)
-            } else if self?.maxBalanceRequote.isAwaitingPayBalance == true {
-                self?.refreshQuote(direction: .sell, forceUpdate: false)
             } else if self?.receiveAmountInput != nil {
                 self?.refreshQuote(direction: .buy, forceUpdate: false)
             } else {
@@ -717,7 +709,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func flip(currentFocus: TextFieldFocus?) {
-        let payAmount = getPayAmount(for: payAmountInput)
+        let payAmount = getSpendingInputAmount()
         let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
 
         Swift.swap(&payChainAsset, &receiveChainAsset)

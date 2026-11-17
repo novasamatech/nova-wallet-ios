@@ -1,15 +1,6 @@
 import Foundation
 
 extension SwapSetupPresenter {
-    func getPayAmount(for input: AmountInputResult?) -> Decimal? {
-        guard let input = input else {
-            return nil
-        }
-
-        let maxAmount = getMaxModel().calculate()
-        return input.absoluteValue(from: maxAmount)
-    }
-
     func providePayTitle() {
         let payTitleViewModel = if let payChainAsset = getPayChainAsset(), payAssetBalance != nil {
             viewModelFactory.payTitleViewModel(
@@ -35,7 +26,7 @@ extension SwapSetupPresenter {
 
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: payChainAsset,
-            amount: getPayAmount(for: payAmountInput),
+            amount: getSpendingInputAmount(),
             locale: selectedLocale
         )
 
@@ -50,7 +41,7 @@ extension SwapSetupPresenter {
 
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
-            amount: getPayAmount(for: payAmountInput),
+            amount: getSpendingInputAmount(),
             priceData: payAssetPriceData,
             locale: selectedLocale
         )

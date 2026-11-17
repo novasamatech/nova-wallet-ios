@@ -5,7 +5,7 @@ extension SwapSetupPresenter {
         guard
             direction == .sell,
             let payChainAsset = getPayChainAsset(),
-            let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
+            let payInPlank = getSpendingInputAmount()?.toSubstrateAmount(
                 precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
             ) else {
             return false
@@ -127,15 +127,11 @@ private extension SwapSetupPresenter {
     }
 
     func isAffordableByMax(_ quoteArgs: AssetConversion.QuoteArgs) -> Bool {
-        guard
-            let payChainAsset = getPayChainAsset(),
-            let maxInPlank = getMaxModel().calculate().toSubstrateAmount(
-                precision: payChainAsset.assetDisplayInfo.assetPrecision
-            ) else {
+        guard getPayChainAsset() != nil else {
             return false
         }
 
-        return quoteArgs.amount <= maxInPlank
+        return quoteArgs.amount <= getMaxModel().calculateInPlank()
     }
 
     func requoteMaxForBalanceIfNeeded() {
@@ -179,21 +175,13 @@ private extension SwapSetupPresenter {
         let delay = maxBalanceRequote.delayUntilNextRequote()
 
         if delay > 0 {
-            scheduleMaxBalanceRequote(after: delay)
+            maxBalanceRequoteScheduler.notifyAfter(delay)
         } else {
             requoteMaxQuietly()
         }
     }
 
-    func scheduleMaxBalanceRequote(after delay: TimeInterval) {
-        maxBalanceRequoteScheduler.notifyAfter(delay)
-    }
-
     func fallBackOnPayBalanceTimeout() {
-        guard maxBalanceRequote.isAwaitingPayBalance else {
-            return
-        }
-
         refreshQuote(direction: .buy)
         armQuoteFailureAlert()
     }

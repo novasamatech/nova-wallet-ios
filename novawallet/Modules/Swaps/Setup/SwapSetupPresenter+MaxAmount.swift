@@ -28,10 +28,6 @@ extension SwapSetupPresenter {
         return isWithinMargin ? quoteArgsMaxAmountFee : currentPairFee
     }
 
-    func getMaxAmountFeeForCurrentPair() -> AssetExchangeFee? {
-        getMaxAmountFeeModel().flatMap { isQuotedForCurrentPair($0) ? $0 : nil }
-    }
-
     func discardFeeOfAnotherPair() -> Bool {
         guard let fee, !isQuotedForCurrentPair(fee) else {
             return false

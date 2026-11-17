@@ -119,6 +119,10 @@ struct SwapMaxModel {
     }
 
     func calculate() -> Decimal {
+        calculateInPlank().decimal(precision: payChainAsset?.asset.precision ?? 0)
+    }
+
+    func calculateInPlank() -> Balance {
         guard let payChainAsset = payChainAsset, let balance = balance else {
             return 0
         }
@@ -130,8 +134,7 @@ struct SwapMaxModel {
         }
 
         let fee = Self.feeIncludingMargin(feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0)
-        let maxAmount = payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
 
-        return maxAmount.decimal(precision: payChainAsset.asset.precision)
+        return payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
     }
 }

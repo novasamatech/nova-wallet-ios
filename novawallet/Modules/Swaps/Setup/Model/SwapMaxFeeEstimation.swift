@@ -9,15 +9,9 @@ struct SwapMaxFeeEstimation {
         let feeAssetId: ChainAssetId
     }
 
-    private struct Estimate {
-        let pair: Pair
-        let fee: AssetExchangeFee
-    }
-
     private(set) var isSpent = false
-    private var startedPair: Pair?
-    private var pendingQuoteArgs: AssetConversion.QuoteArgs?
-    private var estimate: Estimate?
+    private var pending: (pair: Pair, quoteArgs: AssetConversion.QuoteArgs)?
+    private var estimate: (pair: Pair, fee: AssetExchangeFee)?
 
     mutating func start(for pair: Pair, quoteArgs: AssetConversion.QuoteArgs) -> Bool {
         guard !isSpent else {
@@ -25,37 +19,31 @@ struct SwapMaxFeeEstimation {
         }
 
         isSpent = true
-        startedPair = pair
-        pendingQuoteArgs = quoteArgs
+        pending = (pair, quoteArgs)
         estimate = nil
 
         return true
     }
 
     mutating func complete(with fee: AssetExchangeFee, for quoteArgs: AssetConversion.QuoteArgs) -> Bool {
-        guard
-            let startedPair,
-            pendingQuoteArgs == quoteArgs,
-            fee.feeAssetId == startedPair.feeAssetId else {
+        guard let pending, pending.quoteArgs == quoteArgs else {
             return false
         }
 
-        pendingQuoteArgs = nil
-        estimate = Estimate(pair: startedPair, fee: fee)
+        self.pending = nil
+        estimate = (pending.pair, fee)
 
         return true
     }
 
     mutating func cancel() {
         isSpent = true
-        pendingQuoteArgs = nil
+        pending = nil
         estimate = nil
     }
 
     mutating func reset() {
-        cancel()
-        isSpent = false
-        startedPair = nil
+        self = .init()
     }
 
     func fee(for pair: Pair) -> AssetExchangeFee? {
