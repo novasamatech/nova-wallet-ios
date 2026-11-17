@@ -167,12 +167,16 @@ class SwapBasePresenter {
     }
 
     func getMaxModel() -> SwapMaxModel {
+        getMaxModel(feeModel: fee)
+    }
+
+    func getMaxModel(feeModel: AssetExchangeFee?) -> SwapMaxModel {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
             receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
-            feeModel: fee,
+            feeModel: feeModel,
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
@@ -261,6 +265,8 @@ class SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {}
+
+    func handleUnchangedFee(_: AssetExchangeFee, feeChainAssetId _: ChainAssetId?) {}
 
     func handleNewPrice(_: PriceData?, priceId _: AssetModel.PriceId) {}
 
@@ -452,6 +458,7 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
 
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
         guard self.fee != fee else {
+            handleUnchangedFee(fee, feeChainAssetId: feeChainAssetId)
             return
         }
 

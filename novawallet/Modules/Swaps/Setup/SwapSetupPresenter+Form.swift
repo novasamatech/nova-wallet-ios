@@ -24,8 +24,46 @@ extension SwapSetupPresenter {
         view?.didReceiveMinReceived(viewModel: .loaded(value: viewModel))
     }
 
+    func getIssueParams() -> SwapIssueCheckParams {
+        .init(
+            payChainAsset: getPayChainAsset(),
+            receiveChainAsset: getReceiveChainAsset(),
+            payAmount: isPayAmountHidden ? nil : getSpendingInputAmount(),
+            receiveAmount: isReceiveAmountHidden ? nil : receiveAmountInput,
+            payAssetBalance: payAssetBalance,
+            receiveAssetBalance: receiveAssetBalance,
+            payAssetExistense: payAssetBalanceExistense,
+            receiveAssetExistense: receiveAssetBalanceExistense,
+            quoteResult: quoteResult,
+            fee: fee,
+            isFeePending: isFeePending && quote != nil && !isQuietMaxRequote,
+            refreshOrigin: refreshOrigin,
+            isPayAmountHidden: isPayAmountHidden,
+            wasShowingInsufficientBalance: wasShowingInsufficientBalance,
+            isAwaitingPayBalance: maxBalanceRequote.isAwaitingPayBalance
+        )
+    }
+
+    func provideButtonState() {
+        let buttonState = viewModelFactory.buttonState(
+            for: getIssueParams(),
+            locale: selectedLocale
+        )
+
+        view?.didReceiveButtonState(
+            title: buttonState.title.value(for: selectedLocale),
+            enabled: buttonState.enabled && !isPayAssetCollateralLimitPending
+        )
+    }
+
+    func provideSettingsState() {
+        view?.didReceiveSettingsState(isAvailable: getPayChainAsset() != nil)
+    }
+
     func provideQuoteState() {
-        let state = SwapSetupQuoteState(quoteArgs: getQuoteArgs(), quoteResult: quoteResult)
+        let state: SwapSetupQuoteState = maxBalanceRequote.isAwaitingPayBalance
+            ? .awaitingPayBalance
+            : SwapSetupQuoteState(quoteArgs: getQuoteArgs(), quoteResult: quoteResult)
         view?.didReceive(quoteState: state)
         provideButtonState()
     }
@@ -41,6 +79,7 @@ extension SwapSetupPresenter {
     func updateRefreshOrigin(replacing oldQuoteResult: Result<AssetExchangeQuote, Error>?) {
         if quoteResult == nil {
             refreshOrigin = .user
+            maxBalanceRequote.quietQuoteArgs = nil
         } else if oldQuoteResult != nil {
             markBackgroundRefresh()
         }
@@ -114,20 +153,47 @@ extension SwapSetupPresenter {
             quoteFailureAlertState = .pending
         }
 
-        presentPendingQuoteFailure()
+        presentPendingFailures()
     }
 
-    func presentPendingQuoteFailure() {
+    var isQuoteFailureAlertPending: Bool {
+        guard quoteFailureAlertState == .pending, case let .failure(error) = quoteResult else {
+            return false
+        }
+
+        return SwapQuoteFailure(error: error) == .fetchFailed
+    }
+
+    func presentPendingFailures() {
+        let retriesQuote = isQuoteFailureAlertPending
+        let retriesChart = isChartFailureAlertPending
+
         guard
-            quoteFailureAlertState == .pending,
-            case let .failure(error) = quoteResult,
-            SwapQuoteFailure(error: error) == .fetchFailed else {
+            retriesQuote || retriesChart,
+            presentRetryAlertWhenFrontmost(retryAction: { [weak self] in
+                if retriesQuote {
+                    self?.retryQuote()
+                }
+
+                if retriesChart {
+                    self?.assetPriceChartModule?.reload()
+                }
+            }) else {
             return
         }
 
-        guard view?.isFrontmost == true else {
-            view?.notifyWhenFrontmost()
-            return
+        if retriesQuote {
+            quoteFailureAlertState = .ended
+        }
+
+        if retriesChart {
+            chartContext.hasPendingFailure = false
+        }
+    }
+
+    func presentRetryAlertWhenFrontmost(retryAction: @escaping () -> Void) -> Bool {
+        guard requireFrontmost() else {
+            return false
         }
 
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
@@ -137,22 +203,56 @@ extension SwapSetupPresenter {
             title: strings.swapsSetupChartFailedTitle(),
             message: strings.swapsSetupChartFailedMessage(),
             locale: selectedLocale,
-            retryAction: { [weak self] in
-                self?.retryQuote()
-            },
+            retryAction: retryAction,
             skipAction: {}
         )
 
         guard view?.isFrontmost == false else {
             view?.notifyWhenFrontmost()
+            return false
+        }
+
+        return true
+    }
+
+    func requireFrontmost() -> Bool {
+        guard view?.isFrontmost == true else {
+            view?.notifyWhenFrontmost()
+            return false
+        }
+
+        return true
+    }
+
+    func requoteOnPoolChange() {
+        maxBalanceRequote.quietQuoteArgs = nil
+        markBackgroundRefresh()
+        refreshQuote(direction: getQuoteArgs()?.direction ?? .sell, forceUpdate: false)
+        estimateFee()
+    }
+
+    func catchUpPoolRequote() {
+        guard hasPendingPoolRequote else {
             return
         }
 
-        quoteFailureAlertState = .ended
+        hasPendingPoolRequote = false
+
+        guard getQuoteArgs() != nil else {
+            return
+        }
+
+        if quoteFailureAlertState == .pending {
+            armQuoteFailureAlert()
+        }
+
+        requoteOnPoolChange()
     }
 
     func didBecomeFrontmost() {
-        presentPendingQuoteFailure()
+        catchUpMaxBalanceRequote()
+        catchUpPoolRequote()
+        presentPendingFailures()
     }
 }
 

@@ -91,6 +91,10 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             return strings.swapsSetupAssetActionSelectReceive()
         }
 
+        if params.isAwaitingPayBalance {
+            return strings.swapsSetupActionGettingRate()
+        }
+
         if issues.contains(.insufficientBalance), !(params.hasNoRoute && issues.contains(.zeroBalance)) {
             return strings.swapsSetupActionNotEnoughToken(payChainAsset.asset.symbol)
         }
@@ -147,34 +151,6 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
             title: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetReceiveTitle(),
             subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectSubtitle()
         )
-    }
-
-    private static func minReceived(for quote: AssetExchangeQuote, slippage: BigRational) -> Balance {
-        let firstSlippageBoundIndex = switch quote.route.direction {
-        case .sell:
-            0
-        case .buy:
-            1
-        }
-
-        var compoundedAmountOutMin: Balance?
-
-        for (index, operation) in quote.metaOperations.enumerated() {
-            let amountOut = compoundedAmountOutMin.map { amountIn in
-                operation.amountIn > 0 ? amountIn * operation.amountOut / operation.amountIn : 0
-            } ?? operation.amountOut
-
-            let isSlippageBound = index >= firstSlippageBoundIndex && operation.label == .swap
-
-            compoundedAmountOutMin = isSlippageBound
-                ? amountOut.subtractOrZero(slippage.mul(value: amountOut))
-                : amountOut
-        }
-
-        let amountOut = quote.route.amountOut
-        let slippageLoss = amountOut.subtractOrZero(compoundedAmountOutMin ?? amountOut)
-
-        return quote.commissionNetFlow().netFinalAmountOut.subtractOrZero(slippageLoss)
     }
 }
 
@@ -290,7 +266,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         locale: Locale
     ) -> String {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let minReceived = Self.minReceived(for: quote, slippage: slippage)
+        let minReceived = quote.minReceived(slippage: slippage)
 
         return balanceViewModelFactoryFacade.amountFromValue(
             targetAssetInfo: assetDisplayInfo,

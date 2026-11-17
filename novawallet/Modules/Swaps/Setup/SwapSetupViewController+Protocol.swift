@@ -50,6 +50,11 @@ extension SwapSetupViewController {
         let receiveMasked: Bool
 
         switch quoteState {
+        case .awaitingPayBalance:
+            payLoading = true
+            receiveLoading = true
+            payMasked = false
+            receiveMasked = false
         case let .loading(direction), let .failed(direction):
             payLoading = direction == .buy
             receiveLoading = direction == .sell

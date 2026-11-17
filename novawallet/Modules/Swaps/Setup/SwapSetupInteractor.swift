@@ -11,6 +11,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     let assetListObservable: AssetListModelObservable
 
     private var canPayFeeInAssetCall = CancellableCallStore()
+    private let maxFeeEstimateCall = CancellableCallStore()
 
     private var accountInfoRemoteSubscriptions: [ChainModel.Id: CallbackBatchRawStorageSubscription] = [:]
 
@@ -92,6 +93,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     deinit {
         canPayFeeInAssetCall.cancel()
+        maxFeeEstimateCall.cancel()
         clearDestRemoteSubscription()
         clearOriginRemoteSubscription()
         requoteChange.cancel()
@@ -292,6 +294,48 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         feeChainAsset.map {
             setFeeChainAssetSubscriptions($0)
         }
+    }
+
+    func estimateMaxFee(for quoteArgs: AssetConversion.QuoteArgs, slippage: BigRational, feeAsset: ChainAsset) {
+        maxFeeEstimateCall.cancel()
+
+        let quoteWrapper = assetsExchangeService.fetchQuoteWrapper(for: quoteArgs)
+
+        let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [assetsExchangeService] in
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+
+            let feeArgs = AssetExchangeFeeArgs(
+                route: quote.route,
+                slippage: slippage,
+                feeAssetId: feeAsset.chainAssetId
+            )
+
+            return assetsExchangeService.estimateFee(for: feeArgs)
+        }
+
+        feeWrapper.addDependency(wrapper: quoteWrapper)
+
+        executeCancellable(
+            wrapper: feeWrapper.insertingHead(operations: quoteWrapper.allOperations),
+            inOperationQueue: operationQueue,
+            backingCallIn: maxFeeEstimateCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.assetsExchangeService.throttleRequoteService()
+
+            switch result {
+            case let .success(fee):
+                self?.presenter?.didReceive(maxFeeEstimate: fee, for: quoteArgs)
+            case let .failure(error):
+                self?.logger.warning("Max fee estimate failed: \(error)")
+            }
+        }
+    }
+
+    func cancelMaxFeeEstimate() {
+        maxFeeEstimateCall.cancel()
     }
 
     func saveChartExpansion(_ isExpanded: Bool) {

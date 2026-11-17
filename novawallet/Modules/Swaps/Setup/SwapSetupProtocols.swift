@@ -3,7 +3,7 @@ import BigInt
 import Foundation_iOS
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
-    var isChartVisiblyExpanded: Bool { get }
+    var isChartShownExpanded: Bool { get }
     var isFrontmost: Bool { get }
 
     func didReceiveButtonState(title: String, enabled: Bool)
@@ -66,6 +66,8 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
+    func estimateMaxFee(for quoteArgs: AssetConversion.QuoteArgs, slippage: BigRational, feeAsset: ChainAsset)
+    func cancelMaxFeeEstimate()
     func saveChartExpansion(_ isExpanded: Bool)
     func saveChartPeriod(_ period: PriceHistoryPeriod)
 }
@@ -73,6 +75,7 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
+    func didReceive(maxFeeEstimate: AssetExchangeFee, for quoteArgs: AssetConversion.QuoteArgs)
     func didReceiveChartExpansion(_ isExpanded: Bool?)
     func didReceive(selectedCurrency: Currency)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)

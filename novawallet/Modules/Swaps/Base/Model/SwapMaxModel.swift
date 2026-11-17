@@ -112,6 +112,12 @@ struct SwapMaxModel {
         fee + Constants.feeMargin.mul(value: fee)
     }
 
+    static func isFee(_ fee: Balance, withinMarginOf maxAmountFee: Balance) -> Bool {
+        let margin = feeIncludingMargin(maxAmountFee) - maxAmountFee
+
+        return fee <= maxAmountFee + margin && maxAmountFee <= fee + margin
+    }
+
     func calculate() -> Decimal {
         guard let payChainAsset = payChainAsset, let balance = balance else {
             return 0

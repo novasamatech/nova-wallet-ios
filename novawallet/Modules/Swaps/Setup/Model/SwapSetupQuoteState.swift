@@ -3,6 +3,7 @@ import SubstrateSdk
 
 enum SwapSetupQuoteState: Equatable {
     case idle
+    case awaitingPayBalance
     case loading(AssetConversion.Direction)
     case loaded
     case noRoute(AssetConversion.Direction)

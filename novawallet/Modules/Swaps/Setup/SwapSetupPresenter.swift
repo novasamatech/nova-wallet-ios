@@ -23,7 +23,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
     private(set) var quoteArgs: AssetConversion.QuoteArgs? {
         didSet {
-            quoteArgsMaxAmountFee = quoteArgs?.direction == .sell && payAmountInput?.isMax == true ? fee : nil
+            quoteArgsMaxAmountFee = quoteArgs?.direction == .sell ? getMaxAmountFeeForCurrentPair() : nil
             provideDetailsViewModel()
             provideQuoteState()
         }
@@ -32,30 +32,46 @@ final class SwapSetupPresenter: SwapBasePresenter {
     override var quoteResult: Result<AssetExchangeQuote, Error>? {
         didSet {
             updateRefreshOrigin(replacing: oldValue)
+
+            if quote != nil {
+                isFeePending = true
+            } else if quoteResult.hasError() {
+                isFeePending = false
+            }
+
             provideQuoteState()
             provideMinReceivedViewModel()
         }
     }
 
-    private var payAmountInput: AmountInputResult?
-    private var quoteArgsMaxAmountFee: AssetExchangeFee?
-    private(set) var quotedMaxAmountFee: AssetExchangeFee?
-    private var receiveAmountInput: Decimal?
+    private(set) var payAmountInput: AmountInputResult? {
+        didSet {
+            if payAmountInput?.isMax != true {
+                stopAwaitingPayBalance()
+            }
+        }
+    }
 
-    private var canPayFeeInPayAsset: Bool = false
+    private(set) var quoteArgsMaxAmountFee: AssetExchangeFee?
+    private(set) var quotedMaxAmountFee: AssetExchangeFee?
+    var maxFeeEstimation = SwapMaxFeeEstimation()
+    let maxFeeEstimateDebouncer = Debouncer(delay: SwapMaxFeeEstimation.debounceDelay)
+    var maxBalanceRequote = SwapMaxBalanceRequote()
+    private(set) lazy var maxBalanceRequoteScheduler = Scheduler(with: self, callbackQueue: .main)
+    let payBalanceWaitDebouncer = Debouncer(delay: SwapMaxBalanceRequote.payBalanceTimeout)
+    var hasPendingPoolRequote = false
+    private(set) var receiveAmountInput: Decimal?
+
+    private(set) var payAssetFeeSupport: (chainAssetId: ChainAssetId, canPayFee: Bool)?
     private var payChainAsset: ChainAsset?
     private var receiveChainAsset: ChainAsset?
     private var feeChainAsset: ChainAsset?
 
     private(set) var isFeePending = false
-    private var wasShowingInsufficientBalance = false
+    private(set) var wasShowingInsufficientBalance = false
 
     private(set) var slippage: BigRational
     let slippageBounds: SlippageBounds
-
-    private var detailsAvailable: Bool {
-        !quoteResult.hasError() && quoteArgs != nil
-    }
 
     /*
      *  We might have cases when quote recalcution triggers fee recalculation and vice versa
@@ -117,7 +133,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func getMaxAmountFeeModel() -> AssetExchangeFee? {
-        payAmountInput?.isMax == true ? fee : nil
+        payAmountInput?.isMax == true ? getMaxAmountFee() : nil
+    }
+
+    override func getMaxModel() -> SwapMaxModel {
+        getMaxModel(feeModel: getMaxAmountFee())
     }
 
     override func getPayChainAsset() -> ChainAsset? {
@@ -149,7 +169,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
             return
         }
 
-        fee = nil
+        if !isQuietMaxRequote {
+            fee = nil
+        }
+
         isFeePending = true
         provideFeeViewModel()
         provideCommissionDisclosureViewModel()
@@ -163,6 +186,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         payAmountInput = .rate(1)
         providePayAssetViews()
         refreshQuote(direction: .sell)
+        cancelMaxFeeEstimate()
         armQuoteFailureAlert()
         provideButtonState()
         provideIssues()
@@ -214,7 +238,9 @@ final class SwapSetupPresenter: SwapBasePresenter {
         quotedMaxAmountFee = quoteArgsMaxAmountFee
 
         // we need to keep fee in sync with quote
-        fee = nil
+        if !isQuietMaxRequote {
+            fee = nil
+        }
 
         switch quoteArgs.direction {
         case .buy:
@@ -246,6 +272,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {
         isFeePending = false
+
+        guard !discardFeeOfAnotherPair() else {
+            return
+        }
+
         provideFeeViewModel()
         provideCommissionDisclosureViewModel()
         updateReceiveAmountFromQuote()
@@ -254,21 +285,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if case .rate = payAmountInput {
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
-
-            let correctionDirection = quoteArgs?.direction ?? .sell
-
-            /*
-             * As fee changes the max amount we might also refresh the quote but make sure
-             * no deadlock.
-             */
-            if
-                !isMaxCorrectionConverged(for: correctionDirection),
-                maxCorrectionCounter.incrementCounterIfPossible() {
-                refreshQuote(direction: correctionDirection, forceUpdate: false)
-                armQuoteFailureAlert()
-            } else {
-                maxCorrectionCounter.resetCounter()
-            }
+            requoteMaxOnNewFee()
         }
 
         provideButtonState()
@@ -278,6 +295,14 @@ final class SwapSetupPresenter: SwapBasePresenter {
         providePayTitle()
         switchFeeChainAssetIfNecessary()
         markBackgroundRefresh()
+    }
+
+    override func handleUnchangedFee(_ fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
+        guard isFeePending else {
+            return
+        }
+
+        handleNewFee(fee, feeChainAssetId: feeChainAssetId)
     }
 
     override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
@@ -305,12 +330,14 @@ final class SwapSetupPresenter: SwapBasePresenter {
             if case .rate = payAmountInput {
                 providePayInputPriceViewModel()
                 providePayAmountInputViewModel()
+                requoteMaxOnBalanceChange()
             }
         }
 
         provideIssues()
         provideButtonState()
         switchFeeChainAssetIfNecessary()
+        scheduleMaxFeeEstimateIfNeeded()
     }
 
     override func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {
@@ -322,6 +349,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         providePayTitle()
         provideIssues()
+        scheduleMaxFeeEstimateIfNeeded()
     }
 
     override func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {
@@ -347,180 +375,36 @@ final class SwapSetupPresenter: SwapBasePresenter {
 }
 
 extension SwapSetupPresenter {
-    private func getPayAmount(for input: AmountInputResult?) -> Decimal? {
-        guard let input = input else {
-            return nil
-        }
+    /*
+     * As fee or balance changes the max amount we might also refresh the quote but make sure
+     * no deadlock.
+     */
+    func requoteMaxIfNotConverged() {
+        let correctionDirection = quoteArgs?.direction ?? .sell
 
-        let maxAmount = getMaxModel().calculate()
-        return input.absoluteValue(from: maxAmount)
-    }
-
-    private func isMaxCorrectionConverged(for direction: AssetConversion.Direction) -> Bool {
-        guard
-            direction == .sell,
-            let payChainAsset,
-            let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
-                precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
-            ) else {
-            return false
-        }
-
-        return payInPlank == quoteArgs?.amount
-    }
-
-    func getIssueParams() -> SwapIssueCheckParams {
-        .init(
-            payChainAsset: payChainAsset,
-            receiveChainAsset: receiveChainAsset,
-            payAmount: isPayAmountHidden ? nil : getSpendingInputAmount(),
-            receiveAmount: isReceiveAmountHidden ? nil : receiveAmountInput,
-            payAssetBalance: payAssetBalance,
-            receiveAssetBalance: receiveAssetBalance,
-            payAssetExistense: payAssetBalanceExistense,
-            receiveAssetExistense: receiveAssetBalanceExistense,
-            quoteResult: quoteResult,
-            fee: fee,
-            isFeePending: isFeePending && quote != nil,
-            refreshOrigin: refreshOrigin,
-            isPayAmountHidden: isPayAmountHidden,
-            wasShowingInsufficientBalance: wasShowingInsufficientBalance
-        )
-    }
-
-    private func providePayTitle() {
-        let payTitleViewModel = if let payChainAsset, payAssetBalance != nil {
-            viewModelFactory.payTitleViewModel(
-                assetDisplayInfo: payChainAsset.assetDisplayInfo,
-                maxValue: getMaxModel().calculate(),
-                locale: selectedLocale
-            )
+        if isMaxCorrectionConverged(for: correctionDirection) {
+            quotedMaxAmountFee = getMaxAmountFeeForCurrentPair()
+            maxCorrectionCounter.resetCounter()
+        } else if maxCorrectionCounter.incrementCounterIfPossible() {
+            isFeePending = true
+            interactor.cancelFeeCalculation()
+            refreshQuote(direction: correctionDirection, forceUpdate: false)
+            armQuoteFailureAlert()
         } else {
-            viewModelFactory.payTitleViewModel(
-                assetDisplayInfo: nil,
-                maxValue: nil,
-                locale: selectedLocale
-            )
+            maxCorrectionCounter.resetCounter()
         }
-
-        view?.didReceiveTitle(payViewModel: payTitleViewModel)
     }
 
-    private func providePayAssetViewModel() {
-        let payAssetViewModel = viewModelFactory.payAssetViewModel(
-            chainAsset: payChainAsset,
-            locale: selectedLocale
-        )
+    func requoteMaxQuietly() {
+        maxBalanceRequote.lastRequoteDate = Date()
 
-        view?.didReceiveInputChainAsset(payViewModel: payAssetViewModel)
-    }
+        refreshQuote(direction: .sell, forceUpdate: false)
 
-    private func providePayAmountInputViewModel() {
-        guard let payChainAsset = payChainAsset else {
-            return
-        }
+        maxBalanceRequote.quietQuoteArgs = getQuoteArgs()
+        isFeePending = true
 
-        let amountInputViewModel = viewModelFactory.amountInputViewModel(
-            chainAsset: payChainAsset,
-            amount: getPayAmount(for: payAmountInput),
-            locale: selectedLocale
-        )
-
-        view?.didReceiveAmount(payInputViewModel: amountInputViewModel)
-    }
-
-    private func providePayInputPriceViewModel() {
-        guard let assetDisplayInfo = payChainAsset?.assetDisplayInfo else {
-            view?.didReceiveAmountInputPrice(payViewModel: nil)
-            return
-        }
-
-        let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
-            assetDisplayInfo: assetDisplayInfo,
-            amount: getPayAmount(for: payAmountInput),
-            priceData: payAssetPriceData,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveAmountInputPrice(payViewModel: inputPriceViewModel)
-    }
-
-    func provideReceiveTitle() {
-        let receiveTitleViewModel = viewModelFactory.receiveTitleViewModel(
-            assetDisplayInfo: receiveChainAsset?.assetDisplayInfo,
-            balance: receiveAssetBalance?.transferable,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveTitle(receiveViewModel: receiveTitleViewModel)
-    }
-
-    private func provideReceiveAssetViewModel() {
-        let receiveAssetViewModel = viewModelFactory.receiveAssetViewModel(
-            chainAsset: receiveChainAsset,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveInputChainAsset(receiveViewModel: receiveAssetViewModel)
-    }
-
-    private func provideReceiveAmountInputViewModel() {
-        guard let receiveChainAsset = receiveChainAsset else {
-            return
-        }
-
-        let amountInputViewModel = viewModelFactory.amountInputViewModel(
-            chainAsset: receiveChainAsset,
-            amount: receiveAmountInput,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
-    }
-
-    private func provideReceiveInputPriceViewModel() {
-        guard let assetDisplayInfo = receiveChainAsset?.assetDisplayInfo else {
-            view?.didReceiveAmountInputPrice(receiveViewModel: nil)
-            return
-        }
-
-        let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
-            assetDisplayInfo: assetDisplayInfo,
-            amount: receiveAmountInput,
-            priceData: receiveAssetPriceData,
-            locale: selectedLocale
-        )
-
-        let differenceViewModel: DifferenceViewModel?
-        if let quote, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
-            let params = RateParams(
-                assetDisplayInfoIn: payAssetDisplayInfo,
-                assetDisplayInfoOut: assetDisplayInfo,
-                amountIn: quote.route.amountIn,
-                amountOut: grossAmountOut
-            )
-
-            differenceViewModel = viewModelFactory.priceDifferenceViewModel(
-                rateParams: params,
-                priceIn: payAssetPriceData,
-                priceOut: receiveAssetPriceData,
-                locale: selectedLocale
-            )
-        } else {
-            differenceViewModel = nil
-        }
-
-        view?.didReceiveAmountInputPrice(receiveViewModel: .init(
-            price: inputPriceViewModel,
-            difference: differenceViewModel
-        ))
-    }
-
-    func providePayAssetViews() {
-        providePayTitle()
-        providePayAssetViewModel()
-        providePayInputPriceViewModel()
-        providePayAmountInputViewModel()
+        armQuoteFailureAlert()
+        provideButtonState()
     }
 
     private func updateReceiveAmountFromQuote() {
@@ -537,54 +421,6 @@ extension SwapSetupPresenter {
         provideReceiveInputPriceViewModel()
     }
 
-    func provideReceiveAssetViews() {
-        provideReceiveTitle()
-        provideReceiveAssetViewModel()
-        provideReceiveInputPriceViewModel()
-        provideReceiveAmountInputViewModel()
-    }
-
-    func provideButtonState() {
-        let buttonState = viewModelFactory.buttonState(
-            for: getIssueParams(),
-            locale: selectedLocale
-        )
-
-        view?.didReceiveButtonState(
-            title: buttonState.title.value(for: selectedLocale),
-            enabled: buttonState.enabled && !isPayAssetCollateralLimitPending
-        )
-    }
-
-    private func provideSettingsState() {
-        view?.didReceiveSettingsState(isAvailable: payChainAsset != nil)
-    }
-
-    private func provideDetailsViewModel() {
-        view?.didReceiveDetailsState(isAvailable: detailsAvailable)
-    }
-
-    private func provideRateViewModel() {
-        guard
-            let assetDisplayInfoIn = payChainAsset?.assetDisplayInfo,
-            let assetDisplayInfoOut = receiveChainAsset?.assetDisplayInfo,
-            let quote else {
-            view?.didReceiveRate(viewModel: .loading)
-            return
-        }
-        let rateViewModel = viewModelFactory.rateViewModel(
-            from: .init(
-                assetDisplayInfoIn: assetDisplayInfoIn,
-                assetDisplayInfoOut: assetDisplayInfoOut,
-                amountIn: quote.route.amountIn,
-                amountOut: netAmountOut
-            ),
-            locale: selectedLocale
-        )
-
-        view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
-    }
-
     func provideIssues() {
         let issues = viewModelFactory.detectIssues(in: getIssueParams(), locale: selectedLocale)
         wasShowingInsufficientBalance = issues.contains(.insufficientBalance)
@@ -592,6 +428,8 @@ extension SwapSetupPresenter {
     }
 
     func refreshQuote(direction: AssetConversion.Direction, forceUpdate: Bool = true) {
+        hasPendingPoolRequote = false
+
         guard
             let payChainAsset = payChainAsset,
             let receiveChainAsset = receiveChainAsset else {
@@ -625,6 +463,8 @@ extension SwapSetupPresenter {
     }
 
     private func refreshQuoteForBuy(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
+        stopAwaitingPayBalance()
+
         if
             let receiveInPlank = receiveAmountInput?.toSubstrateAmount(
                 precision: receiveChainAsset.assetDisplayInfo.assetPrecision
@@ -653,6 +493,8 @@ extension SwapSetupPresenter {
     }
 
     private func refreshQuoteForSell(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
+        awaitPayBalanceIfNeeded(for: payChainAsset)
+
         if let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
             precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)), payInPlank > 0 {
             let quoteArgs = AssetConversion.QuoteArgs(
@@ -663,6 +505,12 @@ extension SwapSetupPresenter {
             )
             self.quoteArgs = quoteArgs
             interactor.calculateQuote(for: quoteArgs)
+        } else if maxBalanceRequote.isAwaitingPayBalance {
+            receiveAmountInput = nil
+            quoteArgs = nil
+            provideReceiveAmountInputViewModel()
+            provideReceiveInputPriceViewModel()
+            provideIssues()
         } else {
             quoteArgs = nil
 
@@ -701,26 +549,29 @@ extension SwapSetupPresenter {
         provideFormViewModels()
     }
 
-    private func switchFeeChainAssetIfNecessary() {
-        guard let preferredFeeAssetModel = SwapPreferredFeeAssetModel(
+    func switchFeeChainAssetIfNecessary() {
+        guard let newFeeAsset = SwapPreferredFeeAssetModel(
             payChainAsset: payChainAsset,
             feeChainAsset: feeChainAsset,
             utilityAssetBalance: utilityAssetBalance,
             payAssetBalance: payAssetBalance,
             utilityExistenceBalance: utilityAssetBalanceExistense,
             feeModel: fee,
-            canPayFeeInPayAsset: canPayFeeInPayAsset
-        ) else {
+            canPayFeeInPayAsset: canPayFeeInPayAsset ?? false
+        )?.deriveNewFeeAsset() else {
             return
         }
-
-        let newFeeAsset = preferredFeeAssetModel.deriveNewFeeAsset()
 
         if newFeeAsset.chainAssetId != feeChainAsset?.chainAssetId {
             logger.debug("New fee token: \(newFeeAsset.asset.symbol)")
 
             updateFeeChainAsset(newFeeAsset)
         }
+    }
+
+    private func restartMaxForNewPair() {
+        maxCorrectionCounter.resetCounter()
+        restartMaxFeeEstimate()
     }
 
     private func clearCounterpartIfNeeded(for result: SwapTokenSelectionResult, pickedSide: SwapTokenSelectionSide) {
@@ -760,6 +611,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         interactor.update(receiveChainAsset: receiveChainAsset)
 
         provideChartAsset()
+        scheduleMaxFeeEstimate()
 
         if let amount = initState.amount, let direction = initState.direction {
             switch direction {
@@ -786,7 +638,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.feeChainAsset = feeChainAsset
             self?.fee = nil
             self?.quoteResult = nil
-            self?.canPayFeeInPayAsset = false
+            self?.restartMaxForNewPair()
 
             self?.providePayAssetViews()
             self?.provideButtonState()
@@ -817,7 +669,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.clearCounterpartIfNeeded(for: result, pickedSide: .receive)
             let chainAsset = result.chainAsset
             self?.receiveChainAsset = chainAsset
+            self?.fee = nil
             self?.quoteResult = nil
+            self?.restartMaxForNewPair()
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.provideIssues()
@@ -827,6 +681,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             if let direction = self?.quoteArgs?.direction {
                 self?.refreshQuote(direction: direction, forceUpdate: false)
+            } else if self?.maxBalanceRequote.isAwaitingPayBalance == true {
+                self?.refreshQuote(direction: .sell, forceUpdate: false)
             } else if self?.receiveAmountInput != nil {
                 self?.refreshQuote(direction: .buy, forceUpdate: false)
             } else {
@@ -840,6 +696,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func updatePayAmount(_ amount: Decimal?) {
         payAmountInput = amount.map { .absolute($0) }
+        cancelMaxFeeEstimate(onEntering: amount)
         refreshQuote(direction: .sell)
         armQuoteFailureAlert()
         providePayInputPriceViewModel()
@@ -850,6 +707,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func updateReceiveAmount(_ amount: Decimal?) {
         receiveAmountInput = amount
+        cancelMaxFeeEstimate(onEntering: amount)
         refreshQuote(direction: .buy)
         armQuoteFailureAlert()
         provideReceiveInputPriceViewModel()
@@ -864,8 +722,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
         Swift.swap(&payChainAsset, &receiveChainAsset)
         feeChainAsset = payChainAsset?.chain.utilityChainAsset()
-        canPayFeeInPayAsset = false
         fee = nil
+        restartMaxForNewPair()
 
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
@@ -936,38 +794,29 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             self?.estimateFee()
         }
     }
-
-    func depositInsufficientToken() {
-        guard let payChainAsset = payChainAsset else {
-            return
-        }
-
-        wireframe.showGetTokenOptions(
-            from: view,
-            purchaseHandler: self,
-            destinationChainAsset: payChainAsset,
-            locale: selectedLocale
-        )
-    }
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId) {
         logger.debug("Can pay fee in \(chainAssetId.assetId): \(value)")
 
-        if payChainAsset?.chainAssetId == chainAssetId {
-            canPayFeeInPayAsset = value
+        payAssetFeeSupport = (chainAssetId, value)
 
+        if payChainAsset?.chainAssetId == chainAssetId {
             switchFeeChainAssetIfNecessary()
             provideFeeViewModel()
+            scheduleMaxFeeEstimateIfNeeded()
         }
     }
 
     func didReceiveQuoteDataChanged() {
         logger.debug("Requote request received")
 
-        markBackgroundRefresh()
-        refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
-        estimateFee()
+        guard requireFrontmost() else {
+            hasPendingPoolRequote = true
+            return
+        }
+
+        requoteOnPoolChange()
     }
 }

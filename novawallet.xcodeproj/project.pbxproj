@@ -7266,6 +7266,12 @@
 		F7E917CF2BB3BDE0C051C0DA /* SwapTokenSelectSkeletonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85BF8DD1B9CC268454C8DC3 /* SwapTokenSelectSkeletonCell.swift */; };
 		25461D880E66CB3ACB93EB14 /* SwapTokenSelectTokenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F3396E1DB34115D16BA691 /* SwapTokenSelectTokenCell.swift */; };
 		0823ECCDEC5BBBFF7D8722AE /* SwapTokenSelectFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1912911498535F405DDD35 /* SwapTokenSelectFlow.swift */; };
+		12F165487176261E9E676F02 /* SwapSetupPresenter+MaxAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BE22DB494C65845F43DE2E /* SwapSetupPresenter+MaxAmount.swift */; };
+		44451DB0CDB872AE12FAC0B4 /* SwapSetupPresenter+MaxFeeEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581D3408965044274F04C151 /* SwapSetupPresenter+MaxFeeEstimate.swift */; };
+		813B4F6B0038CE5AB9DE1F3D /* SwapMaxFeeEstimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206F815174FB118A554E2C4C /* SwapMaxFeeEstimation.swift */; };
+		C10B3AD9FA8A1209A97A0751 /* SwapSetupPresenter+MaxRequote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB4B788994EAC92A496D62E /* SwapSetupPresenter+MaxRequote.swift */; };
+		6507D7B0F474363F54AFF93A /* SwapSetupPresenter+Inputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189C850A37BE1B2BBAEFB60E /* SwapSetupPresenter+Inputs.swift */; };
+		D9FD2674449AF5ADDD6F38BB /* SwapMaxBalanceRequote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC89A868226F240D58132517 /* SwapMaxBalanceRequote.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -14272,6 +14278,12 @@
 		B85BF8DD1B9CC268454C8DC3 /* SwapTokenSelectSkeletonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectSkeletonCell.swift; sourceTree = "<group>"; };
 		B2F3396E1DB34115D16BA691 /* SwapTokenSelectTokenCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectTokenCell.swift; sourceTree = "<group>"; };
 		2B1912911498535F405DDD35 /* SwapTokenSelectFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapTokenSelectFlow.swift; sourceTree = "<group>"; };
+		B0BE22DB494C65845F43DE2E /* SwapSetupPresenter+MaxAmount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+MaxAmount.swift"; sourceTree = "<group>"; };
+		581D3408965044274F04C151 /* SwapSetupPresenter+MaxFeeEstimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+MaxFeeEstimate.swift"; sourceTree = "<group>"; };
+		206F815174FB118A554E2C4C /* SwapMaxFeeEstimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMaxFeeEstimation.swift; sourceTree = "<group>"; };
+		2EB4B788994EAC92A496D62E /* SwapSetupPresenter+MaxRequote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+MaxRequote.swift"; sourceTree = "<group>"; };
+		189C850A37BE1B2BBAEFB60E /* SwapSetupPresenter+Inputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapSetupPresenter+Inputs.swift"; sourceTree = "<group>"; };
+		FC89A868226F240D58132517 /* SwapMaxBalanceRequote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapMaxBalanceRequote.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -18130,6 +18142,10 @@
 				C7F910E56C2CC7AA5224BD21 /* SwapSetupWireframe.swift */,
 				BB494F0B16C9588325CF0D84 /* SwapSetupPresenter.swift */,
 				8B46ADF4A53E2EBC68BF59A0 /* SwapSetupPresenter+PoolTradeLimit.swift */,
+				B0BE22DB494C65845F43DE2E /* SwapSetupPresenter+MaxAmount.swift */,
+				581D3408965044274F04C151 /* SwapSetupPresenter+MaxFeeEstimate.swift */,
+				2EB4B788994EAC92A496D62E /* SwapSetupPresenter+MaxRequote.swift */,
+				189C850A37BE1B2BBAEFB60E /* SwapSetupPresenter+Inputs.swift */,
 				C585109AC3A2580AB1253C31 /* SwapSetupInteractor.swift */,
 				B357C83859B3642BEF1DB29A /* SwapSetupPresenter+Ramp.swift */,
 				804F8916AA9326A19F51FC80 /* SwapSetupPresenter+Analytics.swift */,
@@ -22618,6 +22634,8 @@
 				0C13DFD42AFA4F1500E5F355 /* SwapIssueCheckParams.swift */,
 				0C13DFD62AFA50A200E5F355 /* SwapIssueViewModelFactory.swift */,
 				0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */,
+				206F815174FB118A554E2C4C /* SwapMaxFeeEstimation.swift */,
+				FC89A868226F240D58132517 /* SwapMaxBalanceRequote.swift */,
 				BA00248522167A4F0B381F29 /* SwapSetupQuoteState.swift */,
 			);
 			path = Model;
@@ -39496,6 +39514,12 @@
 				C3B96416C9E87634AEF23934 /* SwapTokenSelectionFlowProtocol.swift in Sources */,
 				0C846B902BE5F069000EBFC2 /* GlobalConfigProvider.swift in Sources */,
 				3EE29545824B68594751769C /* SwapSetupPresenter.swift in Sources */,
+				12F165487176261E9E676F02 /* SwapSetupPresenter+MaxAmount.swift in Sources */,
+				44451DB0CDB872AE12FAC0B4 /* SwapSetupPresenter+MaxFeeEstimate.swift in Sources */,
+				813B4F6B0038CE5AB9DE1F3D /* SwapMaxFeeEstimation.swift in Sources */,
+				C10B3AD9FA8A1209A97A0751 /* SwapSetupPresenter+MaxRequote.swift in Sources */,
+				6507D7B0F474363F54AFF93A /* SwapSetupPresenter+Inputs.swift in Sources */,
+				D9FD2674449AF5ADDD6F38BB /* SwapMaxBalanceRequote.swift in Sources */,
 				D857129E9EB65137973E6F97 /* SwapSetupPresenter+PoolTradeLimit.swift in Sources */,
 				0C0F6DF32D428C0000943A7C /* MythosStakableCollatorOperationFactory.swift in Sources */,
 				54813408A51B4AEBA3EED0A5 /* SwapSetupInteractor.swift in Sources */,

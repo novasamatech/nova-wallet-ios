@@ -345,6 +345,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         fee(route: route, slippage: slippage, feeAsset: feeAsset)
     }
 
+    func cancelFeeCalculation() {
+        feeCallStore.cancel()
+    }
+
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void

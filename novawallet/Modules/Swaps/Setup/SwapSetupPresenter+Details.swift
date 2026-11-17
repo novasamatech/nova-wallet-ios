@@ -32,6 +32,31 @@ extension SwapSetupPresenter {
         )
     }
 
+    func provideDetailsViewModel() {
+        view?.didReceiveDetailsState(isAvailable: !quoteResult.hasError() && getQuoteArgs() != nil)
+    }
+
+    func provideRateViewModel() {
+        guard
+            let assetDisplayInfoIn = getPayChainAsset()?.assetDisplayInfo,
+            let assetDisplayInfoOut = getReceiveChainAsset()?.assetDisplayInfo,
+            let quote else {
+            view?.didReceiveRate(viewModel: .loading)
+            return
+        }
+        let rateViewModel = viewModelFactory.rateViewModel(
+            from: .init(
+                assetDisplayInfoIn: assetDisplayInfoIn,
+                assetDisplayInfoOut: assetDisplayInfoOut,
+                amountIn: quote.route.amountIn,
+                amountOut: netAmountOut
+            ),
+            locale: selectedLocale
+        )
+
+        view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
+    }
+
     func provideRouteViewModel() {
         guard let quote else {
             view?.didReceiveRoute(viewModel: .loading)

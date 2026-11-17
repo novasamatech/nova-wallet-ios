@@ -27,11 +27,15 @@ extension SwapSetupPresenter {
         interactor.saveChartExpansion(isExpanded)
 
         provideChartViewModel()
-        presentChartFailureIfNeeded()
+        presentPendingFailures()
     }
 
     func didChangeChartVisibility() {
-        presentChartFailureIfNeeded()
+        presentPendingFailures()
+    }
+
+    var isChartFailureAlertPending: Bool {
+        chartContext.hasPendingFailure && view?.isChartShownExpanded == true
     }
 
     func didReceiveChartExpansion(_ isExpanded: Bool?) {
@@ -80,27 +84,6 @@ private extension SwapSetupPresenter {
 
         view?.didReceiveChart(viewModel: viewModel)
     }
-
-    func presentChartFailureIfNeeded() {
-        guard chartContext.hasPendingFailure, view?.isChartVisiblyExpanded == true else {
-            return
-        }
-
-        chartContext.hasPendingFailure = false
-
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-
-        wireframe.presentRequestStatus(
-            on: view,
-            title: strings.swapsSetupChartFailedTitle(),
-            message: strings.swapsSetupChartFailedMessage(),
-            locale: selectedLocale,
-            retryAction: { [weak self] in
-                self?.assetPriceChartModule?.reload()
-            },
-            skipAction: {}
-        )
-    }
 }
 
 // MARK: AssetPriceChartModuleOutputProtocol
@@ -118,7 +101,7 @@ extension SwapSetupPresenter: AssetPriceChartModuleOutputProtocol {
         }
 
         provideChartViewModel()
-        presentChartFailureIfNeeded()
+        presentPendingFailures()
     }
 
     func didSelectChartPeriod(_ period: PriceHistoryPeriod) {

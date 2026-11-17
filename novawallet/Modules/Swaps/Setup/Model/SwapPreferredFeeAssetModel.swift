@@ -7,7 +7,7 @@ struct SwapPreferredFeeAssetModel {
     let utilityAssetBalance: AssetBalance?
     let payAssetBalance: AssetBalance?
     let utilityExistenceBalance: AssetBalanceExistence
-    let feeModel: AssetExchangeFee
+    let feeModel: AssetExchangeFee?
     let canPayFeeInPayAsset: Bool
 
     init?(
@@ -23,8 +23,7 @@ struct SwapPreferredFeeAssetModel {
             let payChainAsset,
             let feeChainAsset,
             let utilityChainAsset = feeChainAsset.chain.utilityChainAsset(),
-            let utilityExistenceBalance,
-            let feeModel else {
+            let utilityExistenceBalance else {
             return nil
         }
 
@@ -48,9 +47,7 @@ struct SwapPreferredFeeAssetModel {
         return balance > 0
     }
 
-    private func canPayFeeInNativeAsset() -> Bool {
-        let fee = feeModel.originFeeInAsset(utilityChainAsset)
-
+    private func canPayFeeInNativeAsset() -> Bool? {
         let balanceCountingEd = utilityAssetBalance?.balanceCountingEd ?? 0
 
         let comparingBalance = min(
@@ -58,24 +55,28 @@ struct SwapPreferredFeeAssetModel {
             balanceCountingEd.subtractOrZero(utilityExistenceBalance.minBalance)
         )
 
-        return comparingBalance >= fee
+        guard let feeModel else {
+            return utilityAssetBalance != nil && comparingBalance == 0 ? false : nil
+        }
+
+        return comparingBalance >= feeModel.originFeeInAsset(utilityChainAsset)
     }
 }
 
 extension SwapPreferredFeeAssetModel {
-    func deriveNewFeeAsset() -> ChainAsset {
+    func deriveNewFeeAsset() -> ChainAsset? {
         guard payChainAsset.chainAssetId != utilityChainAsset.chainAssetId else {
             return utilityChainAsset
         }
 
         if isFeeInNativeAsset {
-            if canPayFeeInNativeAsset() {
-                return utilityChainAsset
-            } else if hasPayAssetBalance, canPayFeeInPayAsset {
-                return payChainAsset
-            } else {
-                return utilityChainAsset
+            guard let canPayFeeInNativeAsset = canPayFeeInNativeAsset() else {
+                return nil
             }
+
+            return !canPayFeeInNativeAsset && hasPayAssetBalance && canPayFeeInPayAsset
+                ? payChainAsset
+                : utilityChainAsset
         } else {
             return canPayFeeInPayAsset && hasPayAssetBalance ? payChainAsset : utilityChainAsset
         }

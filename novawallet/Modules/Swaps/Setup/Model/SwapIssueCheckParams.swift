@@ -15,6 +15,7 @@ struct SwapIssueCheckParams {
     let refreshOrigin: SwapRefreshOrigin
     let isPayAmountHidden: Bool
     let wasShowingInsufficientBalance: Bool
+    let isAwaitingPayBalance: Bool
 }
 
 extension SwapIssueCheckParams {

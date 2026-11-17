@@ -2,14 +2,6 @@ import UIKit
 import Foundation_iOS
 
 extension SwapSetupViewController {
-    var isChartVisiblyExpanded: Bool {
-        guard isOnScreen, presentedViewController == nil else {
-            return false
-        }
-
-        return isChartShownExpanded
-    }
-
     var isChartShownExpanded: Bool {
         let isExpanded = chartViewModel?.isExpanded ?? false
 
