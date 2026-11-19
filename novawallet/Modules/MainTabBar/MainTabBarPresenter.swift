@@ -19,14 +19,14 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 
     func viewDidAppear() {}
 
-    func didSelectTab(at index: Int) {
-        guard let tab = MainTabBarIndex.analyticsTab(for: index) else {
+    func didSelectTab(at index: Int, moreItem: MainTabBarMoreItem?) {
+        guard let tab = MainTabBarIndex.analyticsTab(for: index, moreItem: moreItem) else {
             return
         }
 
         trackTabSwitched(to: tab)
 
-        if let feature = MainTabBarIndex.analyticsFeature(for: index) {
+        if let feature = MainTabBarIndex.analyticsFeature(for: index, moreItem: moreItem) {
             trackFeatureOpened(feature)
         }
     }

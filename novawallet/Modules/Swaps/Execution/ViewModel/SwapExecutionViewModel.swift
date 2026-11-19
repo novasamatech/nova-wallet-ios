@@ -9,12 +9,12 @@ enum SwapExecutionViewModel {
 
     struct Completed {
         let time: String
-        let details: String
+        let amount: String
+        let viewAssetTitle: String?
     }
 
     struct Failed {
         let time: String
-        let details: String
     }
 
     case inProgress(InProgress)

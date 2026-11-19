@@ -6,4 +6,5 @@ struct SwapConfirmInitState {
     let quote: AssetExchangeQuote
     let quoteArgs: AssetConversion.QuoteArgs
     let payAssetCollateralLimit: HydraAave.CollateralLimit?
+    let maxAmountFeeModel: AssetExchangeFee?
 }

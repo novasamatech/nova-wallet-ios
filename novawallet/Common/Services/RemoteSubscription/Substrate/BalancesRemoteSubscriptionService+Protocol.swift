@@ -68,6 +68,11 @@ extension BalanceRemoteSubscriptionService: BalanceRemoteSubscriptionServiceProt
         detachFromSubscription(cacheKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
     }
 
+    func restartBalances(for accountId: AccountId, chainId: ChainModel.Id) {
+        let cacheKey = createCacheKey(from: accountId, chainId: chainId)
+        restartActiveSubscription(cacheKey)
+    }
+
     func attachToAssetBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,

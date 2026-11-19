@@ -2,53 +2,40 @@ import UIKit
 import UIKit_iOS
 
 final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
-    let pairsView = SwapPairView()
+    let pairsView = SwapReviewPairView()
 
-    let detailsTableView: StackTableView = .create {
-        $0.cellHeight = 44
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 4, right: 16)
+    let detailsTableView = StackTableView.createSwapReviewCard()
+
+    let rateCell = SwapReviewTextCell()
+
+    let slippageCell = SwapReviewTextCell()
+
+    let routeCell: SwapReviewRouteCell = .create {
+        $0.showsAccessory = true
     }
 
-    let rateCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-    }
-
-    let priceDifferenceCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-    }
-
-    let slippageCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-    }
-
-    let routeCell: SwapRouteViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-    }
-
-    let execTimeCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.rowContentView.selectable = false
+    let execTimeCell: SwapReviewTextCell = .create {
+        $0.showsInfo = false
         $0.isUserInteractionEnabled = false
     }
 
-    let networkFeeCell = SwapNetworkFeeViewCell()
-
-    let walletTableView: StackTableView = .create {
-        $0.cellHeight = 44
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
+    let networkFeeCell: SwapReviewTextCell = .create {
+        $0.showsAccessory = true
     }
 
-    let walletCell = StackTableCell()
+    let walletTableView = StackTableView.createSwapReviewCard()
 
-    let accountCell: StackInfoTableCell = .create {
-        $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    let walletCell: SwapReviewAccountCell = .create {
+        $0.isUserInteractionEnabled = false
+    }
+
+    let accountCell = SwapReviewAccountCell()
+
+    let commissionLabel: UILabel = .create {
+        $0.apply(style: .caption1Secondary)
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
+        $0.isHidden = true
     }
 
     private var warningView: InlineAlertView?
@@ -60,21 +47,26 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     }
 
     override func setupLayout() {
-        super.setupLayout()
-        stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
+        insertSwapBackground()
 
-        addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(detailsTableView, spacingAfter: 8)
+        super.setupLayout()
+
+        stackView.layoutMargins = Constants.contentInsets
+
+        addArrangedSubview(pairsView, spacingAfter: Constants.sectionSpacing)
+
+        addArrangedSubview(detailsTableView, spacingAfter: Constants.sectionSpacing)
         detailsTableView.addArrangedSubview(rateCell)
-        detailsTableView.addArrangedSubview(priceDifferenceCell)
         detailsTableView.addArrangedSubview(slippageCell)
         detailsTableView.addArrangedSubview(routeCell)
         detailsTableView.addArrangedSubview(execTimeCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
 
-        addArrangedSubview(walletTableView, spacingAfter: 8)
+        addArrangedSubview(walletTableView, spacingAfter: Constants.sectionSpacing)
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
+
+        addArrangedSubview(commissionLabel)
 
         addSubview(loadableActionView)
         loadableActionView.snp.makeConstraints { make in
@@ -84,35 +76,22 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         }
 
         containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
-            UIConstants.actionHeight + 8
+            UIConstants.actionHeight + Constants.sectionSpacing
     }
 
     func setup(locale: Locale) {
-        slippageCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippage()
-        )
-        priceDifferenceCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupPriceDifference()
-        )
-        rateCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
-        )
-        routeCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()
-        )
-        execTimeCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsExecTime()
-        )
-        networkFeeCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsTotalFee()
-        )
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
-        accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
+        rateCell.titleButton.setTitle(strings.swapsSetupDetailsRate())
+        slippageCell.titleButton.setTitle(strings.swapsSetupSlippage())
+        routeCell.titleButton.setTitle(strings.swapsDetailsRoute())
+        execTimeCell.titleButton.setTitle(strings.swapsDetailsExecTime())
+        networkFeeCell.titleButton.setTitle(strings.swapsDetailsTotalFee())
 
-        loadableActionView.actionButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.commonConfirm()
+        walletCell.titleButton.setTitle(strings.commonWallet())
+        accountCell.titleButton.setTitle(strings.commonAccount())
+
+        loadableActionView.actionButton.imageWithTitleView?.title = strings.commonConfirm()
     }
 
     func set(warning: String?) {
@@ -120,7 +99,19 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
             on: &warningView,
             after: walletTableView,
             text: warning,
-            spacing: 8
+            spacing: Constants.sectionSpacing
         )
+    }
+
+    func set(commissionDisclosure: String?) {
+        commissionLabel.text = commissionDisclosure
+        commissionLabel.isHidden = commissionDisclosure == nil
+    }
+}
+
+private extension SwapConfirmViewLayout {
+    enum Constants {
+        static let contentInsets = UIEdgeInsets(top: 4, left: 16, bottom: 0, right: 16)
+        static let sectionSpacing: CGFloat = 12
     }
 }

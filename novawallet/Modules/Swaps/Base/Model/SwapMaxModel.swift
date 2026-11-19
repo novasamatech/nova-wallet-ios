@@ -1,6 +1,10 @@
 import Foundation
 
 struct SwapMaxModel {
+    private enum Constants {
+        static let feeMargin = BigRational.percent(of: 1)
+    }
+
     let payChainAsset: ChainAsset?
     let feeChainAsset: ChainAsset?
     let receiveChainAsset: ChainAsset?
@@ -74,7 +78,7 @@ struct SwapMaxModel {
         }
 
         if let feeModel = feeModel {
-            let fee = feeModel.totalFeeInAssetIn(payChainAsset)
+            let fee = Self.feeIncludingMargin(feeModel.totalFeeInAssetIn(payChainAsset))
             maxAmount = maxAmount.subtractOrZero(fee)
         }
 
@@ -101,10 +105,24 @@ struct SwapMaxModel {
             feeModel.postSubmissionFeeInAssetIn(payChainAsset)
         }
 
-        return maxAmount.subtractOrZero(fee)
+        return maxAmount.subtractOrZero(Self.feeIncludingMargin(fee))
+    }
+
+    static func feeIncludingMargin(_ fee: Balance) -> Balance {
+        fee + Constants.feeMargin.mul(value: fee)
+    }
+
+    static func isFee(_ fee: Balance, withinMarginOf maxAmountFee: Balance) -> Bool {
+        let margin = feeIncludingMargin(maxAmountFee) - maxAmountFee
+
+        return fee <= maxAmountFee + margin && maxAmountFee <= fee + margin
     }
 
     func calculate() -> Decimal {
+        calculateInPlank().decimal(precision: payChainAsset?.asset.precision ?? 0)
+    }
+
+    func calculateInPlank() -> Balance {
         guard let payChainAsset = payChainAsset, let balance = balance else {
             return 0
         }
@@ -115,9 +133,8 @@ struct SwapMaxModel {
             calculateForCustomAsset(payChainAsset, balance: balance)
         }
 
-        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
-        let maxAmount = payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
+        let fee = Self.feeIncludingMargin(feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0)
 
-        return maxAmount.decimal(precision: payChainAsset.asset.precision)
+        return payAssetCollateralLimit?.ceiling(afterFee: fee).map { min($0, balanceBound) } ?? balanceBound
     }
 }

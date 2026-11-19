@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "A tranzakció a magas csúszás miatt lehet, hogy hamarabb for lefutni.";
 "swaps.setup.slippage" = "Csúszás";
 "swaps.setup.settings.title" = "Csere beállítások";
-"swaps.pay.token.selection.title" = "Token a fizetéshez";
-"swaps.receive.token.selection.title" = "Fogadandó token";
 "swaps.setup.asset.select.subtitle" = "Token kiválasztása";
 "swaps.setup.asset.pay.title" = "Fizetés";
 "swaps.setup.asset.receive.title" = "Fogadás";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "Válassz hálózatot az elküldéshez %@";
 "buy.operation.network.list.title" = "Válasszon hálózatot a vásárláshoz %@";
 "receive.operation.network.list.title" = "Válassza ki a hálózatot a %@ fogadásához";
-"swap.operation.network.list.title" = "Válassza ki a hálózatot a csereéről %@";
 "settings.appearance" = "Megjelenés";
 "settings.appearance.token.icons.title" = "token ikonjai";
 "settings.appearance.token.icons.option.white" = "Fehér";
@@ -1764,8 +1761,6 @@
 "swaps.execution.transfer.details" = "Átvitel: %@ a(z) %@-ra";
 "swaps.execution.swap.details" = "Csere: %@-ról %@-ra a(z) %@-on";
 "common.of" = "%@ a(z) %@ közül";
-"swaps.execution.swap.failure" = "Sikertelen művelet: #%@ (%@)";
-"swaps.label.crosschain" = "Láncok közötti átutalás";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "A csere végrehajtása során a köztes kapott összeg %@, ami kevesebb, mint a minimális egyenleg %@. Próbáljon meg nagyobb csereösszeget megadni.";
 "common.fee.amount.prefixed" = "Díj: %@";
 "common.not.enough.to.pay.fee.message" = "Nincs elegendő egyenlege a hálózati díj kifizetéséhez, amely %@. Az aktuális egyenleg: %@";
@@ -2379,3 +2374,21 @@
 "swap.failure.collateral.in.use.message" = "Jelenleg csak a(z) %@ cserélhető le. A többi a Hydration-kölcsönödet fedezi.";
 "swap.failure.collateral.in.use.none.message" = "Ez a(z) %@ a Hydration-kölcsönödet fedezi, ezért nem cserélhető le, amíg vissza nem fizeted a kölcsön egy részét.";
 "swap.failure.collateral.in.use.title" = "Használatban lévő fedezet";
+"swaps.execution.view.token" = "%@ megtekintése";
+"swaps.execution.view.transaction" = "Tranzakció megtekintése";
+"swaps.setup.action.getting.rate" = "Legjobb árfolyam lekérése…";
+"swaps.setup.action.no.route" = "Nincs útvonal ehhez a párhoz";
+"swaps.setup.action.not.enough.token" = "Nincs elég %@";
+"swaps.setup.asset.balance" = "Egyenleg:";
+"swaps.setup.chart.placeholder" = "Válassz egy tokent, amelyet fogadni szeretnél,\nhogy lásd az árfolyamgrafikonját";
+"swaps.setup.deposit.by.swap.subtitle" = "Cserélj el egy másik tokent erre: %@";
+"swaps.setup.details.min.received" = "Minimálisan kapott összeg";
+"swaps.token.select.empty" = "Nincsenek cseréhez elérhető tokenek";
+"swaps.token.select.filter.empty" = "A kiválasztott hálózatokon nincsenek tokenek";
+"swaps.token.select.more.networks" = "%@+";
+"swaps.token.select.not.swappable" = "Nem cserélhető erre: %@";
+"swaps.token.select.other.tokens" = "Egyéb tokenek";
+"swaps.token.select.search.empty" = "Nem találhatók hálózatok vagy tokenek a megadott\nnévvel";
+"swaps.token.select.your.tokens" = "Saját tokenek";
+"tabbar.more.title" = "Továbbiak";
+"tabbar.swaps.title" = "Cserék";

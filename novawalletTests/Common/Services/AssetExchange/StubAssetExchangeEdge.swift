@@ -1,6 +1,7 @@
 import Foundation
 @testable import novawallet
 import Operation_iOS
+import BigInt
 
 enum StubAssetExchangeEdgeError: Error {
     case notSupported
@@ -152,6 +153,12 @@ extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
             assetOut: try chain.chainAssetOrError(for: destination.assetId),
             edgeType: type
         )
+    }
+}
+
+extension StubAssetExchangeEdge: AssetsHydraExchangeEdgeProtocol {
+    var routeComponent: HydraDx.RemoteSwapRoute.Component {
+        .init(assetIn: BigUInt(origin.assetId), assetOut: BigUInt(destination.assetId), type: .omnipool)
     }
 }
 

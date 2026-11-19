@@ -39,6 +39,8 @@ enum SettingsKey: String {
     case legalConsentPendingSync
     case subtensorEarnSlippageTolerance
     case subtensorEarnFavouriteSubnets
+    case swapLastPair
+    case swapTokenSelectNetworks
 }
 
 extension SettingsManagerProtocol {

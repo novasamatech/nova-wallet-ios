@@ -15,6 +15,22 @@ extension UIViewController {
         contentViewController(for: self)
     }
 
+    func applyPreferredContentHeight(_ height: CGFloat) {
+        preferredContentSize = CGSize(width: 0, height: height)
+
+        guard
+            viewIfLoaded?.window != nil,
+            let presentationController,
+            let containerView = presentationController.containerView else {
+            return
+        }
+
+        UIView.animate(withDuration: PreferredContentConstants.resizeAnimationDuration) {
+            self.view.frame = presentationController.frameOfPresentedViewInContainerView
+            containerView.layoutIfNeeded()
+        }
+    }
+
     private func contentViewController<T>(for viewController: UIViewController?) -> T? {
         guard let viewController = viewController else {
             return nil
@@ -29,4 +45,8 @@ extension UIViewController {
 
         return viewController as? T
     }
+}
+
+private enum PreferredContentConstants {
+    static let resizeAnimationDuration: TimeInterval = 0.25
 }

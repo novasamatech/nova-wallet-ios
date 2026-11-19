@@ -12,12 +12,16 @@ final class GetTokenOptionsInteractor {
     let rampProvider: RampProviderProtocol
     let rampType: RampActionType = .onRamp
     let globalConfigProvider: GlobalConfigProviding
+    let swapState: SwapTokensFlowStateProtocol?
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var xcmTransfers: XcmTransfers?
     private var changeNowUrl: URL?
+    private var hasSwapRoute = false
+    private var assetExchangeService: AssetsExchangeServiceProtocol?
     private let globalConfigCallStore = CancellableCallStore()
+    private let swapRouteCallStore = CancellableCallStore()
 
     init(
         selectedWallet: MetaAccountModel,
@@ -27,6 +31,7 @@ final class GetTokenOptionsInteractor {
         featureChecker: FeatureSupportCheckerProtocol,
         rampProvider: RampProviderProtocol,
         globalConfigProvider: GlobalConfigProviding,
+        swapState: SwapTokensFlowStateProtocol?,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -37,12 +42,14 @@ final class GetTokenOptionsInteractor {
         self.featureChecker = featureChecker
         self.rampProvider = rampProvider
         self.globalConfigProvider = globalConfigProvider
+        self.swapState = swapState
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     var allOperations: [GetTokenOperation] {
-        let operations: [GetTokenOperation] = [.crosschain, .receive, .buy]
+        let swapOperations: [GetTokenOperation] = swapState != nil ? [.swap] : []
+        let operations: [GetTokenOperation] = swapOperations + [.crosschain, .receive, .buy]
 
         return isNativeTao ? operations + [.changeNow] : operations
     }
@@ -50,6 +57,7 @@ final class GetTokenOptionsInteractor {
     deinit {
         xcmTransfersSyncService.throttle()
         globalConfigCallStore.cancel()
+        swapRouteCallStore.cancel()
     }
 
     private var isNativeTao: Bool {
@@ -92,7 +100,8 @@ final class GetTokenOptionsInteractor {
                 xcmTransfers: xcmTransfers,
                 receiveAccount: receiveAvailable ? selectedAccount : nil,
                 buyOptions: buyAvailable ? onRampActions : [],
-                changeNowUrl: changeNowUrl
+                changeNowUrl: changeNowUrl,
+                swapState: hasSwapRoute ? swapState : nil
             )
 
             presenter?.didReceive(model: model)
@@ -148,6 +157,44 @@ final class GetTokenOptionsInteractor {
         xcmTransfersSyncService.setup()
     }
 
+    private func setupSwapRoute() {
+        guard let swapState else {
+            return
+        }
+
+        let service = swapState.setupAssetExchangeService()
+        assetExchangeService = service
+
+        service.subscribeUpdates(for: self, notifyingIn: .main) { [weak self] in
+            self?.fetchSwapRoute()
+        }
+    }
+
+    private func fetchSwapRoute() {
+        guard let assetExchangeService else {
+            return
+        }
+
+        executeCancellable(
+            wrapper: assetExchangeService.fetchAssetsOutWrapper(given: nil),
+            inOperationQueue: operationQueue,
+            backingCallIn: swapRouteCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            switch result {
+            case let .success(receivableAssets):
+                hasSwapRoute = receivableAssets.contains(destinationChainAsset.chainAssetId)
+                provideModel()
+            case let .failure(error):
+                logger.error("Swap routes fetch failed: \(error)")
+            }
+        }
+    }
+
     private func setupChangeNowUrl() {
         guard isNativeTao else {
             return
@@ -175,6 +222,7 @@ extension GetTokenOptionsInteractor: GetTokenOptionsInteractorInputProtocol {
         setupBalances()
         setupXcms()
         setupChangeNowUrl()
+        setupSwapRoute()
 
         provideModel()
     }

@@ -5,60 +5,45 @@ import UIKit_iOS
 
 final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     let state: SwapTokensFlowStateProtocol
-    let swapCompletionClosure: SwapCompletionClosure?
+    let tokenSelectionFlow: SwapTokenSelectionFlowProtocol
+    let flowHandler: SwapExecutionFlowHandling
 
     var assetListObservable: AssetListModelObservable { state.assetListObservable }
 
     init(
         state: SwapTokensFlowStateProtocol,
-        swapCompletionClosure: SwapCompletionClosure?
+        tokenSelectionFlow: SwapTokenSelectionFlowProtocol,
+        flowHandler: SwapExecutionFlowHandling
     ) {
         self.state = state
-        self.swapCompletionClosure = swapCompletionClosure
+        self.tokenSelectionFlow = tokenSelectionFlow
+        self.flowHandler = flowHandler
     }
 
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     ) {
-        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectPayTokenViewWithState(
-            state,
-            selectionModel: .payForAsset(chainAsset),
-            selectClosure: { chainAsset, _ in
-                completionHandler(chainAsset)
-            }
-        ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(
-            rootViewController: selectTokenView.controller
+        tokenSelectionFlow.showTokenSelection(
+            from: view,
+            side: .pay,
+            context: context,
+            completion: completionHandler
         )
-
-        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     ) {
-        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectReceiveTokenViewWithState(
-            state,
-            selectionModel: .receivePayingWith(chainAsset),
-            selectClosure: { chainAsset, _ in
-                completionHandler(chainAsset)
-            }
-        ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(
-            rootViewController: selectTokenView.controller
+        tokenSelectionFlow.showTokenSelection(
+            from: view,
+            side: .receive,
+            context: context,
+            completion: completionHandler
         )
-
-        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showSettings(
@@ -67,7 +52,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     ) {
-        guard let settingsView = SwapSlippageViewFactory.createView(
+        guard let settingsView = SwapSlippageViewFactory.createSettingsView(
             percent: percent,
             chainAsset: chainAsset,
             completionHandler: completionHandler
@@ -75,10 +60,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            settingsView.controller,
-            animated: true
-        )
+        view?.controller.presentWithCardLayout(settingsView.controller, animated: true)
     }
 
     func showConfirmation(
@@ -88,15 +70,14 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         guard let confimView = SwapConfirmViewFactory.createView(
             initState: initState,
             flowState: state,
-            completionClosure: swapCompletionClosure
+            flowHandler: flowHandler
         ) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            confimView.controller,
-            animated: true
-        )
+        let navigationController = NovaNavigationController(rootViewController: confimView.controller)
+
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showRouteDetails(

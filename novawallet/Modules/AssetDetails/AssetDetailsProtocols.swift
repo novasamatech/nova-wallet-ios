@@ -31,6 +31,7 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(holdsChanges: [DataProviderChange<AssetHold>])
     func didReceive(externalBalanceChanges: [DataProviderChange<ExternalAssetBalance>])
     func didReceive(price: PriceData?)
+    func didReceive(selectedCurrency: Currency)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
     func didReceive(rampActions: [RampAction])

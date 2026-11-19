@@ -289,6 +289,8 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
         _ state: DAppBrowserWidgetState,
         transitionBuilder: DAppBrowserWidgetTransitionBuilder?
     ) {
+        tabBar?.hideMoreMenu(animated: false)
+
         makeTransition(
             for: state,
             using: transitionBuilder

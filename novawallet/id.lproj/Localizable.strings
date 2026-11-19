@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "Transaksi mungkin diambil oleh pihak lain karena slippage yang tinggi.";
 "swaps.setup.slippage" = "Slippage";
 "swaps.setup.settings.title" = "Pengaturan swap";
-"swaps.pay.token.selection.title" = "Token untuk membayar";
-"swaps.receive.token.selection.title" = "Token untuk menerima";
 "swaps.setup.asset.select.subtitle" = "Pilih sebuah token";
 "swaps.setup.asset.pay.title" = "Bayar";
 "swaps.setup.asset.receive.title" = "Terima";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "Pilih jaringan untuk mengirim %@";
 "buy.operation.network.list.title" = "Pilih jaringan untuk membeli %@";
 "receive.operation.network.list.title" = "Pilih jaringan untuk menerima %@";
-"swap.operation.network.list.title" = "Pilih jaringan untuk menukar %@";
 "settings.appearance" = "Penampilan";
 "settings.appearance.token.icons.title" = "ikon token";
 "settings.appearance.token.icons.option.white" = "Putih";
@@ -1764,8 +1761,6 @@
 "swaps.execution.transfer.details" = "Mentransfer %@ ke %@";
 "swaps.execution.swap.details" = "Menukar %@ ke %@ di %@";
 "common.of" = "%@ dari %@";
-"swaps.execution.swap.failure" = "Gagal pada operasi #%@ (%@)";
-"swaps.label.crosschain" = "Transfer lintas rantai";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Selama eksekusi swap, jumlah terima sementara adalah %@ yang kurang dari saldo minimum %@. Coba tentukan jumlah swap yang lebih besar.";
 "common.fee.amount.prefixed" = "Biaya: %@";
 "common.not.enough.to.pay.fee.message" = "Kamu tidak memiliki saldo yang cukup untuk membayar biaya jaringan sebesar %@. Saldo saat ini adalah %@";
@@ -2379,3 +2374,21 @@
 "swap.failure.collateral.in.use.message" = "Saat ini hanya %@ yang dapat ditukar. Sisanya menjamin pinjaman Hydration Anda.";
 "swap.failure.collateral.in.use.none.message" = "%@ ini menjamin pinjaman Hydration Anda, sehingga tidak dapat ditukar sampai Anda melunasi sebagian pinjaman.";
 "swap.failure.collateral.in.use.title" = "Jaminan sedang digunakan";
+"swaps.execution.view.token" = "Lihat %@";
+"swaps.execution.view.transaction" = "Lihat transaksi";
+"swaps.setup.action.getting.rate" = "Mendapatkan nilai tukar terbaik…";
+"swaps.setup.action.no.route" = "Tidak ada rute untuk pasangan ini";
+"swaps.setup.action.not.enough.token" = "Saldo %@ tidak cukup";
+"swaps.setup.asset.balance" = "Saldo:";
+"swaps.setup.chart.placeholder" = "Pilih token yang akan diterima\nuntuk melihat grafik harganya";
+"swaps.setup.deposit.by.swap.subtitle" = "Tukar token lain dengan %@";
+"swaps.setup.details.min.received" = "Minimum diterima";
+"swaps.token.select.empty" = "Tidak ada token yang tersedia untuk ditukar";
+"swaps.token.select.filter.empty" = "Tidak ada token di jaringan yang dipilih";
+"swaps.token.select.more.networks" = "%@+";
+"swaps.token.select.not.swappable" = "Tidak dapat ditukar dengan %@";
+"swaps.token.select.other.tokens" = "Token lainnya";
+"swaps.token.select.search.empty" = "Tidak ditemukan jaringan atau token dengan nama\ntersebut";
+"swaps.token.select.your.tokens" = "Token Anda";
+"tabbar.more.title" = "Lainnya";
+"tabbar.swaps.title" = "Swap";

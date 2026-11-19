@@ -94,6 +94,7 @@ struct SwapModel {
     let destAccountInfo: AccountInfo?
     let destUtilityAssetExistence: AssetBalanceExistence?
     let payAssetCollateralLimit: HydraAave.CollateralLimit?
+    let maxAmountFeeModel: AssetExchangeFee?
 
     var utilityChainAsset: ChainAsset? {
         feeChainAsset.chain.utilityChainAsset()
@@ -140,8 +141,17 @@ struct SwapModel {
     }
 
     var payAssetTotalBalanceAfterSwap: BigUInt {
+        payAssetBalanceAfterSwap(payingFee: feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0)
+    }
+
+    var payAssetBalanceAfterMaxSwap: BigUInt? {
+        maxAmountFeeModel.map {
+            payAssetBalanceAfterSwap(payingFee: SwapMaxModel.feeIncludingMargin($0.totalFeeInAssetIn(payChainAsset)))
+        }
+    }
+
+    func payAssetBalanceAfterSwap(payingFee fee: Balance) -> BigUInt {
         let balance = payAssetBalance?.balanceCountingEd ?? 0
-        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
         let spendingAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = spendingAmount + fee
@@ -408,19 +418,17 @@ struct SwapModel {
     }
 
     func checkDustAfterSwap() -> DustReason? {
-        let balance = payAssetTotalBalanceAfterSwap
+        let balance = payAssetBalanceAfterMaxSwap ?? payAssetTotalBalanceAfterSwap
         let minBalance = payAssetExistense?.minBalance ?? 0
 
         guard !payChainAsset.mayBackHydraAaveLoan, balance > 0, balance < minBalance else {
             return nil
         }
 
-        let remaning = minBalance - balance
-
         let assetDisplayInfo = payChainAsset.assetDisplayInfo
 
         let model = DustAfterSwap(
-            dust: remaning.decimal(assetInfo: assetDisplayInfo),
+            dust: balance.decimal(assetInfo: assetDisplayInfo),
             minBalance: minBalance.decimal(assetInfo: assetDisplayInfo)
         )
 

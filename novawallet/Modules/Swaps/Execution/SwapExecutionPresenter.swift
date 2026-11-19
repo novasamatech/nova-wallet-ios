@@ -32,23 +32,15 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
-    var chargesCommission: Bool {
-        quote.commission != nil
-    }
-
     var netAmountOut: Balance {
         quote.commissionNetFlow().netFinalAmountOut
-    }
-
-    var grossAmountOut: Balance {
-        quote.route.amountOut
     }
 
     var feeAssetPrice: PriceData? {
         priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
     }
 
-    private var state: SwapExecutionState?
+    private(set) var state: SwapExecutionState?
     private var execTimer: CountdownTimer?
 
     var executionStartedAt: Date?
@@ -84,15 +76,20 @@ final class SwapExecutionPresenter {
                 remainedTime: execTimer?.remainedInterval ?? 0,
                 locale: selectedLocale
             )
-        case let .completed(date):
+        case let .completed(date, receivedAmount):
             executionViewModelFactory.createCompletedViewModel(
-                quote: quote,
                 for: date,
+                receivedAmount: detailsViewModelFactory.assetViewModel(
+                    chainAsset: chainAssetOut,
+                    amount: receivedAmount,
+                    priceData: nil,
+                    locale: selectedLocale
+                ).amount,
+                viewedAssetSymbol: wireframe.offersReceivedAssetDetails ? chainAssetOut.asset.symbol : nil,
                 locale: selectedLocale
             )
         case let .failed(failure):
             executionViewModelFactory.createFailedViewModel(
-                quote: quote,
                 failure: failure,
                 locale: selectedLocale
             )
@@ -148,31 +145,6 @@ final class SwapExecutionPresenter {
         view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
     }
 
-    private func providePriceDifferenceViewModel() {
-        let params = RateParams(
-            assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
-            assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
-            amountIn: quote.route.amountIn,
-            amountOut: grossAmountOut
-        )
-
-        if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(
-            rateParams: params,
-            priceIn: payAssetPrice,
-            priceOut: receiveAssetPrice,
-            locale: selectedLocale
-        ) {
-            view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
-        } else {
-            view?.didReceivePriceDifference(viewModel: nil)
-        }
-    }
-
-    private func provideSlippageViewModel() {
-        let viewModel = detailsViewModelFactory.slippageViewModel(slippage: model.fee.slippage, locale: selectedLocale)
-        view?.didReceiveSlippage(viewModel: viewModel)
-    }
-
     private func provideFeeViewModel() {
         let feeInFiat = model.fee.calculateTotalFeeInFiat(
             matching: model.quote.metaOperations,
@@ -191,8 +163,6 @@ final class SwapExecutionPresenter {
 
     private func updateSwapDetails() {
         provideRateViewModel()
-        providePriceDifferenceViewModel()
-        provideSlippageViewModel()
         provideRouteViewModel()
         provideFeeViewModel()
     }
@@ -232,15 +202,15 @@ final class SwapExecutionPresenter {
         provideExecutionViewModel()
     }
 
-    private func updateCompletedStateIfNeeded() {
+    private func updateCompletedStateIfNeeded(receivedAmount: Balance) {
         clearTimer()
 
-        state = .completed(Date())
+        state = .completed(date: Date(), receivedAmount: receivedAmount)
 
         provideExecutionViewModel()
     }
 
-    private func updateFailedStateIfNeeded(with error: Error) {
+    private func updateFailedStateIfNeeded(with failure: AssetExchangeOperationFailure) {
         guard case let .inProgress(operationIndex) = state else { return }
 
         clearTimer()
@@ -248,12 +218,14 @@ final class SwapExecutionPresenter {
         let model = SwapExecutionState.Failure(
             operationIndex: operationIndex,
             date: Date(),
-            error: error
+            error: failure.error,
+            txHash: failure.submittedTxHash
         )
 
         state = .failed(model)
 
         provideExecutionViewModel()
+        provideStepsViewModel()
     }
 }
 
@@ -282,13 +254,6 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         interactor.submit(using: model.fee)
     }
 
-    func showRateInfo() {
-        wireframe.showRateInfo(
-            from: view,
-            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
-        )
-    }
-
     func showRouteDetails() {
         wireframe.showRouteDetails(
             from: view,
@@ -297,34 +262,27 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         )
     }
 
-    func showPriceDifferenceInfo() {
-        let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifference()
-        }
-        let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifferenceDescription()
-        }
-        wireframe.showInfo(
-            from: view,
-            title: title,
-            details: details
-        )
-    }
-
-    func showSlippageInfo() {
-        wireframe.showSlippageInfo(from: view)
-    }
-
-    func showTotalFeeInfo() {
-        wireframe.showFeeDetails(
-            from: view,
-            operations: model.quote.metaOperations,
-            fee: model.fee
-        )
-    }
-
     func activateDone() {
-        wireframe.complete(on: view, receiveChainAsset: chainAssetOut)
+        wireframe.complete(on: view, payChainAsset: chainAssetIn, receiveChainAsset: chainAssetOut)
+    }
+
+    func activateViewReceivedAsset() {
+        wireframe.showReceivedAssetDetails(
+            on: view,
+            payChainAsset: chainAssetIn,
+            receiveChainAsset: chainAssetOut
+        )
+    }
+
+    func activateClose() {
+        let isSwapCompleted = if case .completed = state { true } else { false }
+
+        wireframe.close(
+            on: view,
+            payChainAsset: chainAssetIn,
+            receiveChainAsset: chainAssetOut,
+            isSwapCompleted: isSwapCompleted
+        )
     }
 
     func activateTryAgain() {
@@ -348,19 +306,19 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
         updateInProgressStateIfNeeded(for: operationIndex)
     }
 
-    func didCompleteFullExecution(received _: Balance) {
-        updateCompletedStateIfNeeded()
+    func didCompleteFullExecution(received amount: Balance) {
+        updateCompletedStateIfNeeded(receivedAmount: amount)
 
         trackSwapCompleted()
     }
 
-    func didFailExecution(with error: Error) {
-        trackAnalytics(.swapFailed(reason: error.analyticsSwapFailureReason))
+    func didFailExecution(with failure: AssetExchangeOperationFailure) {
+        trackAnalytics(.swapFailed(reason: failure.error.analyticsSwapFailureReason))
 
-        updateFailedStateIfNeeded(with: error)
+        updateFailedStateIfNeeded(with: failure)
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(
-            error,
+            failure.error,
             view: view,
             closeAction: .dismissAllModals,
             completionClosure: nil
@@ -372,6 +330,7 @@ extension SwapExecutionPresenter: Localizable {
     func applyLocalization() {
         if let view, view.isSetup {
             provideExecutionViewModel()
+            provideStepsViewModel()
             updateSwapAssets()
             updateSwapDetails()
         }

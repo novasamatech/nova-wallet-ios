@@ -1,27 +1,57 @@
 import Foundation
-import NovaAnalytics
 
 final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
     let flowState: SwapTokensFlowStateProtocol
-    let completionClosure: SwapCompletionClosure?
+    let flowHandler: SwapExecutionFlowHandling
 
     init(
         flowState: SwapTokensFlowStateProtocol,
-        completionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) {
         self.flowState = flowState
-        self.completionClosure = completionClosure
+        self.flowHandler = flowHandler
     }
 
     func complete(
         on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     ) {
-        let presenter = view?.controller.presentingViewController
+        flowHandler.completeFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
+    }
 
-        presenter?.dismiss(animated: true) {
-            self.completionClosure?(receiveChainAsset)
-        }
+    var offersReceivedAssetDetails: Bool {
+        flowHandler.offersReceivedAssetDetails
+    }
+
+    func showReceivedAssetDetails(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    ) {
+        flowHandler.showReceivedAssetDetails(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
+    }
+
+    func close(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset,
+        isSwapCompleted: Bool
+    ) {
+        flowHandler.closeFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset,
+            isSwapCompleted: isSwapCompleted
+        )
     }
 
     func showSwapSetup(
@@ -29,25 +59,11 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
     ) {
-        guard let swapView = SwapSetupViewFactory.createView(
-            state: flowState,
-            initState: .init(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset),
-            source: .retry,
-            swapCompletionClosure: completionClosure
-        ) else {
-            return
-        }
-
-        let presenter = view?.controller.presentingViewController
-
-        let navigationController = NovaNavigationController(rootViewController: swapView.controller)
-
-        presenter?.dismiss(animated: true) {
-            presenter?.presentWithCardLayout(
-                navigationController,
-                animated: true
-            )
-        }
+        flowHandler.retryFlow(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
     }
 
     func showRouteDetails(
@@ -58,25 +74,6 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         guard
             let routeDetailsView = SwapRouteDetailsViewFactory.createView(
                 for: quote,
-                fee: fee,
-                state: flowState
-            ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
-
-        view?.controller.presentWithCardLayout(navigationController, animated: true)
-    }
-
-    func showFeeDetails(
-        from view: ControllerBackedProtocol?,
-        operations: [AssetExchangeMetaOperationProtocol],
-        fee: AssetExchangeFee
-    ) {
-        guard
-            let routeDetailsView = SwapFeeDetailsViewFactory.createView(
-                for: operations,
                 fee: fee,
                 state: flowState
             ) else {

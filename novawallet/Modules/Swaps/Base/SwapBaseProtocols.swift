@@ -4,6 +4,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
     func setup()
     func calculateQuote(for args: AssetConversion.QuoteArgs)
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset)
+    func cancelFeeCalculation()
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
 
     func requestValidatingQuote(

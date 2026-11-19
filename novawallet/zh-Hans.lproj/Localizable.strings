@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "因高滑点而可能遭受前置交易。";
 "swaps.setup.slippage" = "滑点";
 "swaps.setup.settings.title" = "交换设置";
-"swaps.pay.token.selection.title" = "要支付的代币";
-"swaps.receive.token.selection.title" = "要接收的代币";
 "swaps.setup.asset.select.subtitle" = "选择一个代币";
 "swaps.setup.asset.pay.title" = "支付";
 "swaps.setup.asset.receive.title" = "接收";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "选择发送%@的网络";
 "buy.operation.network.list.title" = "选择购买%@的网络";
 "receive.operation.network.list.title" = "选择接收%@的网络";
-"swap.operation.network.list.title" = "选择交换%@的网络";
 "settings.appearance" = "外观";
 "settings.appearance.token.icons.title" = "代币图标";
 "settings.appearance.token.icons.option.white" = "白色图标";
@@ -1764,8 +1761,6 @@
 "swaps.execution.transfer.details" = "将 %@ 转移到 %@";
 "swaps.execution.swap.details" = "在 %@ 上将 %@ 兑换为 %@";
 "common.of" = "%@ 的 %@";
-"swaps.execution.swap.failure" = "在第 %@ 次操作（%@）中失败";
-"swaps.label.crosschain" = "跨链转账";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "在交换执行过程中，中间接收金额为 %@，低于最小余额 %@。请尝试指定更大的交换金额。";
 "common.fee.amount.prefixed" = "费用：%@";
 "common.not.enough.to.pay.fee.message" = "您的余额不足以支付 %@ 的网络费用。当前余额为 %@";
@@ -2379,3 +2374,21 @@
 "swap.failure.collateral.in.use.message" = "目前只能兑换 %@。其余资产是您在 Hydration 上贷款的抵押品。";
 "swap.failure.collateral.in.use.none.message" = "该 %@ 是您在 Hydration 上贷款的抵押品，因此在偿还部分贷款之前无法兑换。";
 "swap.failure.collateral.in.use.title" = "抵押品使用中";
+"swaps.execution.view.token" = "查看 %@";
+"swaps.execution.view.transaction" = "查看交易";
+"swaps.setup.action.getting.rate" = "正在获取最佳汇率…";
+"swaps.setup.action.no.route" = "没有适用于此交易对的路由";
+"swaps.setup.action.not.enough.token" = "%@ 不足";
+"swaps.setup.asset.balance" = "余额：";
+"swaps.setup.chart.placeholder" = "选择要接收的代币\n以查看其价格图表";
+"swaps.setup.deposit.by.swap.subtitle" = "将其他代币兑换为 %@";
+"swaps.setup.details.min.received" = "最低接收量";
+"swaps.token.select.empty" = "没有可供兑换的代币";
+"swaps.token.select.filter.empty" = "所选网络上没有代币";
+"swaps.token.select.more.networks" = "%@+";
+"swaps.token.select.not.swappable" = "无法与 %@ 兑换";
+"swaps.token.select.other.tokens" = "其他代币";
+"swaps.token.select.search.empty" = "未找到包含输入名称的网络或代币";
+"swaps.token.select.your.tokens" = "你的代币";
+"tabbar.more.title" = "更多";
+"tabbar.swaps.title" = "兑换";

@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "La transaction pourrait être anticipée en raison d'un slippage élevé.";
 "swaps.setup.slippage" = "Slippage";
 "swaps.setup.settings.title" = "Paramètres d'échange";
-"swaps.pay.token.selection.title" = "Token à payer";
-"swaps.receive.token.selection.title" = "Token à recevoir";
 "swaps.setup.asset.select.subtitle" = "Sélectionnez un token";
 "swaps.setup.asset.pay.title" = "Payer";
 "swaps.setup.asset.receive.title" = "Recevoir";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "Sélectionner le réseau pour envoyer %@";
 "buy.operation.network.list.title" = "Sélectionner le réseau pour acheter %@";
 "receive.operation.network.list.title" = "Sélectionner le réseau pour recevoir %@";
-"swap.operation.network.list.title" = "Sélectionner le réseau pour échanger %@";
 "settings.appearance" = "Apparence";
 "settings.appearance.token.icons.title" = "icônes des tokens";
 "settings.appearance.token.icons.option.white" = "Blanc";
@@ -1764,8 +1761,6 @@
 "swaps.execution.transfer.details" = "Transfert de %@ vers %@";
 "swaps.execution.swap.details" = "Échanger %@ contre %@ sur %@";
 "common.of" = "%@ de %@";
-"swaps.execution.swap.failure" = "Échec de l'opération n°%@ (%@)";
-"swaps.label.crosschain" = "Transfert inter-chaînes";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Lors de l'exécution de l'échange, le montant intermédiaire reçu est %@, ce qui est inférieur au solde minimum de %@. Essayez de spécifier un montant d'échange plus important.";
 "common.fee.amount.prefixed" = "Frais : %@";
 "common.not.enough.to.pay.fee.message" = "Vous n'avez pas assez de solde pour payer les frais de réseau de %@. Le solde actuel est %@";
@@ -2379,3 +2374,21 @@
 "swap.failure.collateral.in.use.message" = "Seul %@ peut être échangé pour le moment. Le reste garantit votre prêt Hydration.";
 "swap.failure.collateral.in.use.none.message" = "Ce %@ garantit votre prêt Hydration, il ne peut donc pas être échangé tant que vous n’avez pas remboursé une partie du prêt.";
 "swap.failure.collateral.in.use.title" = "Garantie utilisée";
+"swaps.execution.view.token" = "Voir %@";
+"swaps.execution.view.transaction" = "Voir la transaction";
+"swaps.setup.action.getting.rate" = "Recherche du meilleur taux…";
+"swaps.setup.action.no.route" = "Aucun itinéraire pour cette paire";
+"swaps.setup.action.not.enough.token" = "Pas assez de %@";
+"swaps.setup.asset.balance" = "Solde :";
+"swaps.setup.chart.placeholder" = "Sélectionnez un token à recevoir\npour voir son graphique de prix";
+"swaps.setup.deposit.by.swap.subtitle" = "Échangez un autre token contre %@";
+"swaps.setup.details.min.received" = "Minimum reçu";
+"swaps.token.select.empty" = "Aucun token disponible pour l’échange";
+"swaps.token.select.filter.empty" = "Aucun token sur les réseaux sélectionnés";
+"swaps.token.select.more.networks" = "%@+";
+"swaps.token.select.not.swappable" = "Non échangeable contre %@";
+"swaps.token.select.other.tokens" = "Autres tokens";
+"swaps.token.select.search.empty" = "Aucun réseau ni token correspondant au nom saisi\nn’a été trouvé";
+"swaps.token.select.your.tokens" = "Vos tokens";
+"tabbar.more.title" = "Plus";
+"tabbar.swaps.title" = "Échanges";

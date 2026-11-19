@@ -1,6 +1,6 @@
 import Foundation
 
-enum AssetCategoryClassifier {
+public enum AssetCategoryClassifier {
     private static let native: Set<String> = [
         "DOT", "KSM", "ETH", "BTC", "BNB", "AVAX", "MATIC",
         "SOL", "FTM", "GLMR", "MOVR", "ASTR", "ACA", "CFG",
@@ -39,5 +39,9 @@ enum AssetCategoryClassifier {
         }
 
         return .other
+    }
+
+    public static func isStablecoin(_ symbol: String) -> Bool {
+        classify(symbol) == .stablecoin
     }
 }

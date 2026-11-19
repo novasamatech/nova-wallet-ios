@@ -223,6 +223,11 @@ extension UILabel.Style {
         font: .regularBody
     )
 
+    static let regularBodyAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .regularBody
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline

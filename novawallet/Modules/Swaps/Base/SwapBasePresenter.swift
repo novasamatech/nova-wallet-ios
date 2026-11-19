@@ -78,6 +78,7 @@ class SwapBasePresenter {
     }
 
     var fee: AssetExchangeFee?
+    var maxAmountFeeModel: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeQuote, Error>?
 
     var quote: AssetExchangeQuote? {
@@ -160,17 +161,22 @@ class SwapBasePresenter {
             accountInfo: originAccountInfo,
             destAccountInfo: destAccountInfo,
             destUtilityAssetExistence: destUtilityAssetBalanceExistense,
-            payAssetCollateralLimit: payAssetCollateralLimit
+            payAssetCollateralLimit: payAssetCollateralLimit,
+            maxAmountFeeModel: getMaxAmountFeeModel()
         )
     }
 
     func getMaxModel() -> SwapMaxModel {
+        getMaxModel(feeModel: fee)
+    }
+
+    func getMaxModel(feeModel: AssetExchangeFee?) -> SwapMaxModel {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
             receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
-            feeModel: fee,
+            feeModel: feeModel,
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
@@ -203,6 +209,10 @@ class SwapBasePresenter {
 
     func getSpendingInputAmount() -> Decimal? {
         fatalError("Must be implemented by parent class")
+    }
+
+    func getMaxAmountFeeModel() -> AssetExchangeFee? {
+        maxAmountFeeModel
     }
 
     func getQuoteArgs() -> AssetConversion.QuoteArgs? {
@@ -255,6 +265,8 @@ class SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {}
+
+    func handleUnchangedFee(_: AssetExchangeFee, feeChainAssetId _: ChainAssetId?) {}
 
     func handleNewPrice(_: PriceData?, priceId _: AssetModel.PriceId) {}
 
@@ -446,6 +458,7 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
 
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
         guard self.fee != fee else {
+            handleUnchangedFee(fee, feeChainAssetId: feeChainAssetId)
             return
         }
 

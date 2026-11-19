@@ -149,6 +149,13 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/MevShield/MevShieldSealer.swift",
     "novawallet/Modules/Staking/Subtensor/Services/MevShield/SubtensorShieldFundsOperationFactory.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/ExtrinsicStatusService/ExtrinsicSubmissionMonitor.swift",
+    "novawallet/Common/Services/AssetExchange/HydraExchange/HydraExchangeHost.swift",
+    "novawallet/Common/Services/AssetExchange/HydraExchange/HydraExchangeExtrinsicParamsFactory.swift",
+    "novawallet/Common/Services/AssetExchange/AssetHubExchange/AssetHubExchangeHost.swift",
+    "novawallet/Common/Services/AssetExchange/AssetHubExchange/AssetHubExchangeExtrinsicParamsFactory.swift",
+    "novawallet/Common/Services/ExtrinsicService/Substrate/Xcm/XcmTransferService+Protocol.swift",
+    "novawallet/Common/Services/ExtrinsicService/Substrate/Xcm/XcmTransferResolutionService.swift",
+    "novawallet/Common/Services/AssetExchange/CrosschainExchange/CrosschainExchangeHost.swift",
     "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
 ]
 

@@ -1389,8 +1389,6 @@
 "swaps.setup.slippage.warning.high.amount" = "Yüksek kayma nedeniyle işlem ön alıma maruz kalabilir.";
 "swaps.setup.slippage" = "Kayma";
 "swaps.setup.settings.title" = "Takas ayarları";
-"swaps.pay.token.selection.title" = "Ödeme yapılacak Token";
-"swaps.receive.token.selection.title" = "Alınacak Token";
 "swaps.setup.asset.select.subtitle" = "Bir token seçin";
 "swaps.setup.asset.pay.title" = "Öde";
 "swaps.setup.asset.receive.title" = "Al";
@@ -1744,7 +1742,6 @@
 "send.operation.network.list.title" = "Gönderme için ağ seçin %@";
 "buy.operation.network.list.title" = "Satın alma için ağ seçin %@";
 "receive.operation.network.list.title" = "Alma için ağ seçin %@";
-"swap.operation.network.list.title" = "Takas için ağ seçin %@";
 "settings.appearance" = "Görünüm";
 "settings.appearance.token.icons.title" = "token simgeleri";
 "settings.appearance.token.icons.option.white" = "Beyaz";
@@ -1764,8 +1761,6 @@
 "swaps.execution.transfer.details" = "%@'yı %@'ye aktarıyor";
 "swaps.execution.swap.details" = "%@'yı %@'ye %@ üzerinde takas ediyor";
 "common.of" = "%@ / %@";
-"swaps.execution.swap.failure" = "#%@ (%@) işleminde başarısız oldu";
-"swaps.label.crosschain" = "Çapraz zincir transferi";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Takas işlemi sırasında alınan ara miktar %@ olup, minimum bakiye olan %@'dan daha azdır. Daha büyük bir takas miktarı belirtmeyi deneyin.";
 "common.fee.amount.prefixed" = "Ücret: %@";
 "common.not.enough.to.pay.fee.message" = "Ağ ücreti olan %@'yi ödemek için yeterli bakiyeniz yok. Mevcut bakiye %@";
@@ -2379,3 +2374,21 @@
 "swap.failure.collateral.in.use.message" = "Şu anda yalnızca %@ takas edilebilir. Kalanı Hydration krediniz için teminat olarak kullanılıyor.";
 "swap.failure.collateral.in.use.none.message" = "Bu %@, Hydration krediniz için teminat olarak kullanılıyor; bu nedenle kredinin bir kısmını geri ödeyene kadar takas edilemez.";
 "swap.failure.collateral.in.use.title" = "Kullanımda olan teminat";
+"swaps.execution.view.token" = "%@ görüntüle";
+"swaps.execution.view.transaction" = "İşlemi görüntüle";
+"swaps.setup.action.getting.rate" = "En iyi kur alınıyor…";
+"swaps.setup.action.no.route" = "Bu çift için rota yok";
+"swaps.setup.action.not.enough.token" = "Yeterli %@ yok";
+"swaps.setup.asset.balance" = "Bakiye:";
+"swaps.setup.chart.placeholder" = "Fiyat grafiğini görmek için\nalınacak bir token seçin";
+"swaps.setup.deposit.by.swap.subtitle" = "Başka bir tokenı %@ ile takas et";
+"swaps.setup.details.min.received" = "Alınacak minimum miktar";
+"swaps.token.select.empty" = "Takas için kullanılabilir token yok";
+"swaps.token.select.filter.empty" = "Seçili ağlarda token yok";
+"swaps.token.select.more.networks" = "%@+";
+"swaps.token.select.not.swappable" = "%@ ile takas edilemez";
+"swaps.token.select.other.tokens" = "Diğer tokenlar";
+"swaps.token.select.search.empty" = "Girilen ada sahip ağ veya token bulunamadı";
+"swaps.token.select.your.tokens" = "Tokenlarınız";
+"tabbar.more.title" = "Daha fazla";
+"tabbar.swaps.title" = "Takaslar";

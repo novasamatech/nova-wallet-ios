@@ -70,10 +70,46 @@ final class GlobalConfigProviderTests: XCTestCase {
         XCTAssertEqual(configWithoutUrl.infraUrl.absoluteString, "https://second.example")
     }
 
-    private func makePayload(infraUrl: String, changeNowTaoUrl: String? = nil) -> Data {
-        let changeNowField = changeNowTaoUrl.map { #","changeNowTaoUrl":"\#($0)""# } ?? ""
+    func testDecodesThePublishedDefaultSwapPair() throws {
+        let assetHubId = "68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f"
 
-        return Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"\#(infraUrl)"\#(changeNowField)}"#.utf8)
+        GlobalConfigStubURLProtocol.payload = makePayload(
+            infraUrl: "https://first.example",
+            defaultSwapPair: #"{"assetIn":{"chainId":"\#(assetHubId)","assetId":0},"assetOut":{"chainId":"\#(assetHubId)","assetId":2}}"#
+        )
+
+        let config = try fetch(GlobalConfigProvider(configUrl: configUrl).createConfigWrapper())
+
+        XCTAssertEqual(
+            config.defaultSwapPair,
+            SwapAssetPairId(
+                pay: ChainAssetId(chainId: assetHubId, assetId: 0),
+                receive: ChainAssetId(chainId: assetHubId, assetId: 2)
+            )
+        )
+    }
+
+    func testDropsAMalformedDefaultSwapPairButKeepsTheEndpoints() throws {
+        GlobalConfigStubURLProtocol.payload = makePayload(
+            infraUrl: "https://first.example",
+            defaultSwapPair: #"{"assetIn":{"chainId":"0x"}}"#
+        )
+
+        let config = try fetch(GlobalConfigProvider(configUrl: configUrl).createConfigWrapper())
+
+        XCTAssertNil(config.defaultSwapPair)
+        XCTAssertEqual(config.infraUrl.absoluteString, "https://first.example")
+    }
+
+    private func makePayload(
+        infraUrl: String,
+        changeNowTaoUrl: String? = nil,
+        defaultSwapPair: String? = nil
+    ) -> Data {
+        let changeNowField = changeNowTaoUrl.map { #","changeNowTaoUrl":"\#($0)""# } ?? ""
+        let swapPairField = defaultSwapPair.map { #","defaultSwapPair":\#($0)"# } ?? ""
+
+        return Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"\#(infraUrl)"\#(changeNowField)\#(swapPairField)}"#.utf8)
     }
 
     private func fetch(_ wrapper: CompoundOperationWrapper<GlobalConfig>) throws -> GlobalConfig {

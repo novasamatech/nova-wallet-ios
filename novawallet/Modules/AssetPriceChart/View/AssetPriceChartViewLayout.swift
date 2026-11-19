@@ -1,6 +1,7 @@
 import UIKit
 import DGCharts
 import UIKit_iOS
+import SnapKit
 
 final class AssetPriceChartViewLayout: UIView {
     var loadingState: LoadingState = .none {
@@ -14,6 +15,8 @@ final class AssetPriceChartViewLayout: UIView {
     }
 
     var skeletonView: SkrullableView?
+
+    let style: AssetPriceChartStyle
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlineSecondary)
@@ -37,11 +40,52 @@ final class AssetPriceChartViewLayout: UIView {
 
     var periodControl: PriceChartPeriodControl?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    lazy var expandControl = UIControl()
 
-        setupLayout()
+    lazy var chevronView: UIImageView = .create { view in
+        view.image = R.image.iconLinkChevron()?.withRenderingMode(.alwaysTemplate)
+        view.contentMode = .scaleAspectFit
+    }
+
+    lazy var sparklineView = PriceSparklineView()
+
+    lazy var placeholderLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+        view.textAlignment = .center
+    }
+
+    lazy var compactHeaderView = UIStackView.hStack(
+        alignment: .center,
+        spacing: CompactConstants.headerSpacing,
+        [titleLabel, priceLabel, priceChangeView, currentEntryDateLabel]
+    )
+
+    var compactHeaderTopConstraint: Constraint?
+    var isCompactExpanded = false
+    var compactPlaceholder: String?
+
+    init(style: AssetPriceChartStyle) {
+        self.style = style
+
+        super.init(frame: .zero)
+
+        switch style {
+        case .regular:
+            setupLayout()
+        case .compact:
+            setupCompactLayout()
+        }
+
         setupChartView()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard style == .compact, loadingState != .none else { return }
+
+        updateLoadingState()
+        skeletonView?.isUserInteractionEnabled = false
     }
 
     @available(*, unavailable)
@@ -111,7 +155,10 @@ private extension AssetPriceChartViewLayout {
         yAxis.enabled = true
         yAxis.labelFont = .monospaceNumbers
         yAxis.labelTextColor = R.color.colorTextSecondary()!
-        yAxis.setLabelCount(Constants.chartYAxisLabelsCount, force: true)
+        yAxis.setLabelCount(
+            style == .compact ? CompactConstants.chartYAxisLabelsCount : Constants.chartYAxisLabelsCount,
+            force: true
+        )
         yAxis.drawTopYLabelEntryEnabled = true
         yAxis.drawAxisLineEnabled = false
         yAxis.gridLineWidth = Constants.gridLineWidth
@@ -139,8 +186,15 @@ extension AssetPriceChartViewLayout {
 
         addSubview(periodControl)
         periodControl.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            switch style {
+            case .regular:
+                make.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview()
+            case .compact:
+                make.top.equalTo(chartView.snp.bottom).offset(CompactConstants.periodControlTopOffset)
+                make.leading.trailing.equalToSuperview().inset(CompactConstants.horizontalInset)
+            }
+
             make.height.equalTo(Constants.periodControlHeight)
         }
     }

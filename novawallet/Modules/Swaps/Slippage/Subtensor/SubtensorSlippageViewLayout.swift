@@ -1,5 +1,6 @@
 import UIKit
 import UIKit_iOS
+import SnapKit
 
 final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
     let titleLabel = UILabel(style: .boldTitle3Primary, textAlignment: .left, numberOfLines: 1)
@@ -18,8 +19,36 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
         $0.applyDefaultStyle()
     }
 
+    private(set) var resetButton: TriangularedButton?
+    private(set) var slippageInfoButton: RoundedButton?
+    private lazy var slippageTitleView: UIView = slippageTitleLabel
+
     let errorLabel = UILabel(style: .caption1Negative, textAlignment: .left, numberOfLines: 0)
     private var warningView: InlineAlertView?
+
+    private let presentation: SwapSlippageSheetConfiguration.Presentation
+    private let keyboardInsetGuide = UILayoutGuide()
+    private var keyboardInsetConstraint: Constraint?
+
+    private var actionsBottomItem: ConstraintItem {
+        switch presentation {
+        case .sheet:
+            safeAreaLayoutGuide.snp.bottom
+        case .card:
+            keyboardInsetGuide.snp.top
+        }
+    }
+
+    init(presentation: SwapSlippageSheetConfiguration.Presentation) {
+        self.presentation = presentation
+
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func setupStyle() {
         backgroundColor = R.color.colorBottomSheetBackground()
@@ -28,11 +57,18 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
 
-        stackView.layoutMargins.top = Constants.topInset
+        switch presentation {
+        case .sheet:
+            stackView.layoutMargins.top = Constants.topInset
+        case .card:
+            stackView.layoutMargins.top = Constants.cardHeaderHeight + Constants.topInset
+            setupGrabber()
+            setupKeyboardInsetGuide()
+        }
 
         addArrangedSubview(titleLabel, spacingAfter: 16)
 
-        addArrangedSubview(slippageTitleLabel, spacingAfter: 4)
+        addArrangedSubview(slippageTitleLabel, spacingAfter: Constants.slippageTitleSpacing)
         slippageTitleLabel.snp.makeConstraints { make in
             make.height.equalTo(Constants.slippageTitleHeight)
         }
@@ -51,14 +87,100 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.bottom.equalTo(actionsBottomItem).offset(-UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
 
-    func bind(title: String, explanation: String) {
+    func bind(title: String, explanation: String?) {
         titleLabel.apply(text: title, lineHeight: Constants.titleLineHeight)
-        explanationLabel.apply(text: explanation, lineHeight: Constants.explanationLineHeight)
+
+        if let explanation {
+            explanationLabel.apply(text: explanation, lineHeight: Constants.explanationLineHeight)
+            explanationLabel.isHidden = false
+            stackView.setCustomSpacing(Constants.slippageTitleSpacing, after: slippageTitleView)
+        } else {
+            explanationLabel.isHidden = true
+            stackView.setCustomSpacing(Constants.slippageTitleSpacingNoExplanation, after: slippageTitleView)
+        }
+    }
+
+    func bind(slippageTitle: String) {
+        slippageTitleLabel.text = slippageTitle
+        slippageInfoButton?.imageWithTitleView?.title = slippageTitle
+        slippageInfoButton?.invalidateLayout()
+    }
+
+    func setupSlippageInfoButton() {
+        guard
+            slippageInfoButton == nil,
+            let index = stackView.arrangedSubviews.firstIndex(of: slippageTitleLabel) else {
+            return
+        }
+
+        let button: RoundedButton = .create {
+            $0.applyIconStyle()
+            $0.imageWithTitleView?.titleFont = slippageTitleLabel.font
+            $0.imageWithTitleView?.titleColor = slippageTitleLabel.textColor
+            $0.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
+            $0.imageWithTitleView?.layoutType = .horizontalLabelFirst
+            $0.imageWithTitleView?.spacingBetweenLabelAndIcon = Constants.slippageInfoIconSpacing
+            $0.contentInsets = .zero
+        }
+
+        let titleRow = UIView.hStack([button, FlexibleSpaceView()])
+        let spacingAfter = stackView.customSpacing(after: slippageTitleLabel)
+
+        slippageTitleLabel.removeFromSuperview()
+        stackView.insertArrangedSubview(titleRow, at: index)
+        stackView.setCustomSpacing(spacingAfter, after: titleRow)
+
+        titleRow.snp.makeConstraints { make in
+            make.height.equalTo(Constants.slippageTitleHeight)
+        }
+
+        slippageTitleView = titleRow
+        slippageInfoButton = button
+    }
+
+    func setResetEnabled(_ isEnabled: Bool) {
+        guard let resetButton else {
+            return
+        }
+
+        resetButton.isEnabled = isEnabled
+
+        if isEnabled {
+            resetButton.applySecondaryEnabledStyle()
+        } else {
+            resetButton.applyDisabledStyle()
+        }
+    }
+
+    func setupResetButton() {
+        guard resetButton == nil else {
+            return
+        }
+
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(actionsBottomItem).offset(-UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        actionButton.snp.remakeConstraints { make in
+            make.leading.equalTo(button.snp.trailing).offset(Constants.actionsSpacing)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(actionsBottomItem).offset(-UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+            make.width.equalTo(button)
+        }
+
+        resetButton = button
     }
 
     func preferredHeight(for width: CGFloat) -> CGFloat {
@@ -85,16 +207,54 @@ final class SubtensorSlippageViewLayout: ScrollableContainerLayoutView {
             spacing: 16
         )
     }
+
+    func set(keyboardInset: CGFloat) {
+        keyboardInsetConstraint?.update(offset: keyboardInset)
+    }
+}
+
+private extension SubtensorSlippageViewLayout {
+    func setupGrabber() {
+        let grabberView: RoundedView = .create { view in
+            view.shadowOpacity = 0
+            view.fillColor = R.color.colorPullIndicator()!
+            view.highlightedFillColor = R.color.colorPullIndicator()!
+            view.cornerRadius = Constants.grabberSize.height / 2
+        }
+
+        addSubview(grabberView)
+        grabberView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(Constants.grabberTopInset)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(Constants.grabberSize)
+        }
+    }
+
+    func setupKeyboardInsetGuide() {
+        addLayoutGuide(keyboardInsetGuide)
+        keyboardInsetGuide.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide)
+            keyboardInsetConstraint = make.height.equalTo(0).constraint
+        }
+    }
 }
 
 private extension SubtensorSlippageViewLayout {
     enum Constants {
         static let topInset: CGFloat = 8
+        static let cardHeaderHeight: CGFloat = 20
+        static let grabberTopInset: CGFloat = 6
+        static let grabberSize = CGSize(width: 28, height: 4)
         static let actionSpacing: CGFloat = 20
         static let titleLineHeight: CGFloat = 28
         static let slippageTitleHeight: CGFloat = 20
         static let explanationLineHeight: CGFloat = 18
         static let inputHeight: CGFloat = 52
+        static let slippageTitleSpacing: CGFloat = 4
+        static let slippageTitleSpacingNoExplanation: CGFloat = 12
+        static let actionsSpacing: CGFloat = 12
+        static let slippageInfoIconSpacing: CGFloat = 4
     }
 }
 
