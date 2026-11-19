@@ -10,10 +10,13 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let collateralLimitFactory: HydraAaveCollateralLimitFactoryProtocol
+
+    let collateralLimitCallStore = CancellableCallStore()
+    var collateralLimitRetryChainAsset: ChainAsset?
 
     private var quoteCallStore = CancellableCallStore()
     private var feeCallStore = CancellableCallStore()
@@ -38,15 +41,57 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         self.assetStorageFactory = assetStorageFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
-        self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
         self.logger = logger
+
+        collateralLimitFactory = HydraAaveCollateralLimitFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
+        self.currencyManager = currencyManager
     }
 
     deinit {
         quoteCallStore.cancel()
         feeCallStore.cancel()
+        collateralLimitCallStore.cancel()
+    }
+
+    private func createAssetBalanceExistenceWrapper(
+        for chainAssetIds: Set<ChainAssetId>
+    ) throws -> CompoundOperationWrapper<[ChainAssetId: AssetBalanceExistence]> {
+        let chainAssetIdList = Array(chainAssetIds)
+
+        let wrappers = try chainAssetIdList.map { chainAssetId in
+            let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
+
+            return assetStorageFactory.createAssetBalanceExistenceOperation(
+                chainId: chainAsset.chain.chainId,
+                asset: chainAsset.asset,
+                runtimeProvider: runtimeService,
+                operationQueue: operationQueue
+            )
+        }
+
+        let mappingOperation = ClosureOperation<[ChainAssetId: AssetBalanceExistence]> {
+            let balanceExistences = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+
+            return zip(chainAssetIds, balanceExistences).reduce(
+                into: [ChainAssetId: AssetBalanceExistence]()
+            ) {
+                $0[$1.0] = $1.1
+            }
+        }
+
+        wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 
     private func fetchAssetBalanceExistence(
@@ -54,36 +99,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         completion: @escaping (Result<[ChainAssetId: AssetBalanceExistence], Error>) -> Void
     ) {
         do {
-            let chainAssetIdList = Array(chainAssetIds)
-
-            let wrappers = try chainAssetIdList.map { chainAssetId in
-                let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
-                let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
-                let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
-
-                return assetStorageFactory.createAssetBalanceExistenceOperation(
-                    chainId: chainAsset.chain.chainId,
-                    asset: chainAsset.asset,
-                    runtimeProvider: runtimeService,
-                    operationQueue: operationQueue
-                )
-            }
-
-            let mappingOperation = ClosureOperation<[ChainAssetId: AssetBalanceExistence]> {
-                let balanceExistences = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
-
-                return zip(chainAssetIds, balanceExistences).reduce(
-                    into: [ChainAssetId: AssetBalanceExistence]()
-                ) {
-                    $0[$1.0] = $1.1
-                }
-            }
-
-            wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-
-            let dependencies = wrappers.flatMap(\.allOperations)
-
-            let totalWrapper = CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+            let totalWrapper = try createAssetBalanceExistenceWrapper(for: chainAssetIds)
 
             execute(
                 wrapper: totalWrapper,
@@ -236,6 +252,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         logger.debug("Asset Exchange graph did change")
     }
 
+    func applyCurrency() {}
+
     func fee(route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
         feeCallStore.cancel()
 
@@ -288,6 +306,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         updateOriginAccountInfoProvider(for: chainAsset.chain)
 
         provideAssetBalanceExistenses(for: chainAsset)
+        provideCollateralLimit(for: chainAsset)
 
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
@@ -326,6 +345,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         fee(route: route, slippage: slippage, feeAsset: feeAsset)
     }
 
+    func cancelFeeCalculation() {
+        feeCallStore.cancel()
+    }
+
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
@@ -342,10 +365,16 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingPoolTradeLimits(
         for route: AssetExchangeRoute,
+        slippage: BigRational,
         completion: @escaping (SwapPoolTradeLimitCheck) -> Void
     ) {
+        let wrapper = route.poolTradeLimitCheckWrapper(
+            slippage: slippage,
+            balanceExistenceWrapperFactory: createAssetBalanceExistenceWrapper
+        )
+
         execute(
-            wrapper: route.poolTradeLimitCheckWrapper(),
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in
@@ -433,6 +462,8 @@ extension SwapBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
 
             basePresenter?.didReceive(balance: balance, for: chainAssetId)
 
+            retryCollateralLimitIfNeeded(for: chainAssetId)
+
         case let .failure(error):
             logger.error("Unexpected balance error: \(error)")
         }
@@ -455,3 +486,5 @@ extension SwapBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorage
         }
     }
 }
+
+extension SwapBaseInteractor: SelectedCurrencyDepending {}

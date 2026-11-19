@@ -1,27 +1,36 @@
 import Foundation
+import Foundation_iOS
 
 final class AssetPriceChartPresenter {
     weak var view: AssetPriceChartViewProtocol?
     weak var moduleOutput: AssetPriceChartModuleOutputProtocol?
 
     let interactor: AssetPriceChartInteractorInputProtocol
-    let assetModel: AssetModel
     let availablePeriods: [PriceHistoryPeriod]
+    let placeholder: LocalizableResource<String>?
     let logger: Logger
 
     private let viewModelFactory: AssetPriceChartViewModelFactoryProtocol
 
+    private var assetModel: AssetModel?
     private var locale: Locale
     private var selectedPeriod: PriceHistoryPeriod?
+    private var chartState: AssetPriceChartState?
     private var priceData: PriceData?
     private var prices: [PriceHistoryPeriod: PriceHistory]?
     private var pricesByTime: [UInt64: Decimal]?
 
+    private var hasHistory: Bool {
+        prices?.values.contains { !$0.items.isEmpty } ?? false
+    }
+
     init(
         interactor: AssetPriceChartInteractorInputProtocol,
-        assetModel: AssetModel,
+        assetModel: AssetModel?,
         viewModelFactory: AssetPriceChartViewModelFactoryProtocol,
         periods: [PriceHistoryPeriod],
+        selectedPeriod: PriceHistoryPeriod?,
+        placeholder: LocalizableResource<String>?,
         logger: Logger,
         locale: Locale
     ) {
@@ -29,7 +38,8 @@ final class AssetPriceChartPresenter {
         self.assetModel = assetModel
         availablePeriods = periods
         self.viewModelFactory = viewModelFactory
-        selectedPeriod = periods.first
+        self.selectedPeriod = selectedPeriod.flatMap { periods.contains($0) ? $0 : nil } ?? periods.first
+        self.placeholder = placeholder
         self.logger = logger
         self.locale = locale
     }
@@ -51,6 +61,7 @@ private extension AssetPriceChartPresenter {
             selectedPeriod: selectedPeriod,
             priceData: priceData,
             availablePoints: Int(availablePoints),
+            placeholder: assetModel == nil ? placeholder?.value(for: locale) : nil,
             locale: locale
         )
         let viewModel = viewModelFactory.createViewModel(params: params)
@@ -58,13 +69,24 @@ private extension AssetPriceChartPresenter {
         view?.update(with: viewModel)
     }
 
-    func notifyIfChartAvailable() {
-        guard
-            let prices,
-            !prices.isEmpty
-        else { return }
+    func provideChartState(_ state: AssetPriceChartState) {
+        chartState = state
 
-        moduleOutput?.didReceiveChartState(.available)
+        view?.didReceive(chartState: state)
+        moduleOutput?.didReceiveChartState(state)
+    }
+
+    func notifyIfChartAvailable() {
+        guard hasHistory else { return }
+
+        provideChartState(.available)
+    }
+
+    func resetChartData() {
+        chartState = nil
+        priceData = nil
+        prices = nil
+        pricesByTime = nil
     }
 }
 
@@ -72,7 +94,10 @@ private extension AssetPriceChartPresenter {
 
 extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
     func setup() {
-        moduleOutput?.didReceiveChartState(.loading)
+        if assetModel != nil {
+            provideChartState(.loading)
+        }
+
         interactor.setup()
         provideViewModel()
     }
@@ -80,7 +105,13 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
     func selectPeriod(_ period: PriceHistoryPeriod) {
         selectedPeriod = period
 
-        provideViewModel()
+        moduleOutput?.didSelectChartPeriod(period)
+
+        if case .unavailable(.failed) = chartState {
+            reload()
+        } else {
+            provideViewModel()
+        }
     }
 
     func selectEntry(_ entry: AssetPriceChart.Entry?) {
@@ -117,17 +148,17 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
     func didReceive(prices: [PriceHistoryPeriod: PriceHistory]) {
-        guard !prices.isEmpty else {
-            moduleOutput?.didReceiveChartState(.unavailable)
-            return
-        }
-
         self.prices = prices
         pricesByTime = prices.values.reduce(into: [:]) { acc, values in
             values.items.forEach { acc[$0.startedAt] = $0.value }
         }
 
-        notifyIfChartAvailable()
+        if hasHistory {
+            notifyIfChartAvailable()
+        } else {
+            provideChartState(.unavailable(.noHistory))
+        }
+
         provideViewModel()
     }
 
@@ -140,10 +171,11 @@ extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
 
     func didReceive(_ error: AssetPriceChartInteractorError) {
         switch error {
+        case .missingPriceId:
+            provideChartState(.unavailable(.noHistory))
         case .chartDataNotAvailable,
-             .priceDataNotAvailable,
-             .missingPriceId:
-            moduleOutput?.didReceiveChartState(.unavailable)
+             .priceDataNotAvailable:
+            provideChartState(.unavailable(.failed))
         }
 
         logger.error("Failed presenting chart price data with error: \(error)")
@@ -160,6 +192,33 @@ extension AssetPriceChartPresenter: AssetPriceChartModuleInputProtocol {
     }
 
     func updateSelectedCurrency(_ currency: Currency) {
+        resetChartData()
+
+        if assetModel != nil {
+            provideChartState(.loading)
+        }
+
         interactor.updateSelectedCurrency(currency)
+        provideViewModel()
+    }
+
+    func updateAsset(_ asset: AssetModel?) {
+        assetModel = asset
+        resetChartData()
+
+        if asset != nil {
+            provideChartState(.loading)
+        }
+
+        interactor.updateAsset(asset)
+        provideViewModel()
+    }
+
+    func reload() {
+        guard assetModel != nil else { return }
+
+        provideChartState(.loading)
+        interactor.reload()
+        provideViewModel()
     }
 }

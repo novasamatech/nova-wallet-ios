@@ -9,7 +9,7 @@ extension SwapSlippageViewFactory {
         completionHandler: @escaping (BigRational) -> Void
     ) -> SwapSlippageViewProtocol? {
         let presenter = SwapSlippagePresenter(
-            wireframe: SubtensorSlippageSheetWireframe(),
+            wireframe: SwapSlippageSheetWireframe(),
             percentFormatterLocalizable: NumberFormatter.subtensorPercentSingle,
             localizationManager: LocalizationManager.shared,
             initSlippage: percent,
@@ -34,11 +34,5 @@ extension SwapSlippageViewFactory {
         view.modalPresentationStyle = .custom
 
         return view
-    }
-}
-
-private final class SubtensorSlippageSheetWireframe: SwapSlippageWireframeProtocol {
-    func close(from view: ControllerBackedProtocol?) {
-        view?.controller.presentingViewController?.dismiss(animated: true)
     }
 }

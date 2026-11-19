@@ -15,23 +15,13 @@ final class MainTabBarWireframe {
 // MARK: - Private
 
 private extension MainTabBarWireframe {
-    func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
-        guard let tabBarController = view?.controller as? UITabBarController else {
-            return nil
-        }
-
-        let settingsViewController = tabBarController.viewControllers?[MainTabBarIndex.settings]
-
-        return settingsViewController as? UINavigationController
-    }
-
     func openGovernanceScreen(
-        in controller: UITabBarController,
+        in view: MainTabBarViewProtocol?,
         rederendumIndex: Referenda.ReferendumIndex
     ) {
-        controller.selectedIndex = MainTabBarIndex.vote
-        let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
-        (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
+        view?.selectMoreItem(.governance)
+        let govViewController = view?.moreItemNavigationController(for: .governance)
+        govViewController?.popToRootViewController(animated: true)
         if let govController: VoteViewProtocol = govViewController?.contentViewController() {
             govController.showReferendumsDetails(rederendumIndex)
         }
@@ -187,12 +177,11 @@ private extension MainTabBarWireframe {
     }
 
     func openNotificationsWalletSelect(
-        in controller: UITabBarController,
+        in view: MainTabBarViewProtocol?,
         selectedWallets: [Web3Alert.LocalWallet]?
     ) {
-        controller.selectedIndex = MainTabBarIndex.settings
-        let viewController = controller.viewControllers?[MainTabBarIndex.settings]
-        let navigationController = viewController as? UINavigationController
+        view?.selectMoreItem(.settings)
+        let navigationController = view?.moreItemNavigationController(for: .settings)
 
         guard
             let settingsController = navigationController?.viewControllers.first,
@@ -430,7 +419,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             case let .staking(navigation):
                 openStakingScreen(in: controller, navigation: navigation)
             case let .gov(rederendumIndex):
-                openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+                openGovernanceScreen(in: view, rederendumIndex: rederendumIndex)
             case let .card(cardNavigation):
                 openCardScreen(in: view, cardNavigation: cardNavigation)
             case let .assetHubMigration(ahmNavigation):
@@ -457,7 +446,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         switch screen {
         case let .gov(rederendumIndex):
             openGovernanceScreen(
-                in: controller,
+                in: view,
                 rederendumIndex: rederendumIndex
             )
         case let .historyDetails(chainAsset):
@@ -529,13 +518,13 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
     }
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?) {
-        guard let tabBarController = view?.controller as? UITabBarController else {
+        guard let view else {
             return
         }
 
-        tabBarController.selectedIndex = MainTabBarIndex.settings
+        view.selectMoreItem(.settings)
 
-        let settingsNavigationController = getSettingsNavigationController(from: view)
+        let settingsNavigationController = view.moreItemNavigationController(for: .settings)
 
         let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
 
@@ -572,13 +561,13 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         from view: MainTabBarViewProtocol?,
         with params: MultisigNotificationsPromoParams
     ) {
-        guard let tabBarController = view?.controller as? UITabBarController else {
+        guard let view else {
             return
         }
 
         let bottomSheet = MultisigNotificationsSheetFactory.createMultisigNotificationsPromo { [weak self] in
             self?.openNotificationsWalletSelect(
-                in: tabBarController,
+                in: view,
                 selectedWallets: params.selectedWallets
             )
         }
@@ -587,7 +576,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
-        view?.controller.present(controllerToPresent, animated: true) {
+        view.controller.present(controllerToPresent, animated: true) {
             params.completion()
         }
     }

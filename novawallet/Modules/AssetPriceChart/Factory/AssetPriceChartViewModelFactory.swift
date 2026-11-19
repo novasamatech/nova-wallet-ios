@@ -3,12 +3,13 @@ import Foundation_iOS
 import DGCharts
 
 struct PriceChartWidgetFactoryParams {
-    let asset: AssetModel
+    let asset: AssetModel?
     let entries: [PriceHistoryItem]?
     let availablePeriods: [PriceHistoryPeriod]
     let selectedPeriod: PriceHistoryPeriod
     let priceData: PriceData?
     let availablePoints: Int
+    let placeholder: String?
     let locale: Locale
 }
 
@@ -84,6 +85,13 @@ private extension AssetPriceChartViewModelFactory {
             .decrease
         }
 
+        let signedPercent = createSignedPercent(
+            percent: percent,
+            percentText: percentText,
+            changeType: changeType,
+            locale: locale
+        )
+
         let changeDateText = createChangeDateText(
             for: lastEntry,
             allEntries: allEntries,
@@ -94,8 +102,30 @@ private extension AssetPriceChartViewModelFactory {
         return PricePeriodChangeViewModel(
             changeType: changeType,
             changeText: finalText,
+            percentText: signedPercent.text,
+            percentChangeType: signedPercent.changeType,
             changeDateText: changeDateText
         )
+    }
+
+    func createSignedPercent(
+        percent: Decimal,
+        percentText: String,
+        changeType: PriceChangeType,
+        locale: Locale
+    ) -> (text: String, changeType: PriceChangeType) {
+        let displayedPercent = (percent as NSDecimalNumber).rounding(
+            accordingToBehavior: Decimal.Rounding.down(scale: Constants.percentScale)
+        )
+
+        guard displayedPercent.decimalValue > 0 else {
+            return (percentText, .increase)
+        }
+
+        let formatter = priceChangePercentFormatter.value(for: locale)
+        let sign: String? = changeType == .increase ? formatter.plusSign : formatter.minusSign
+
+        return ((sign ?? "") + percentText, changeType)
     }
 
     func createChangeDateText(
@@ -159,7 +189,10 @@ private extension AssetPriceChartViewModelFactory {
         return periodControlViewModel
     }
 
-    func createChartViewModel(using prices: [PriceHistoryItem]) -> PriceChartViewModel {
+    func createChartViewModel(
+        using prices: [PriceHistoryItem],
+        periodChange: PricePeriodChangeViewModel
+    ) -> PriceChartViewModel {
         let firstPrice = prices.first?.value ?? 0.0
         let lastPrice = prices.last?.value ?? 0.0
 
@@ -174,7 +207,8 @@ private extension AssetPriceChartViewModelFactory {
 
         return PriceChartViewModel(
             dataSet: dataSet,
-            changeType: changeType
+            changeType: changeType,
+            percentChangeType: periodChange.percentChangeType
         )
     }
 
@@ -184,14 +218,34 @@ private extension AssetPriceChartViewModelFactory {
     ) -> [PriceHistoryItem] {
         entries?.optimizedForChart(availablePoints: availablePoints) ?? []
     }
+
+    func createCurrentPrice(
+        priceData: PriceData?,
+        locale: Locale
+    ) -> LoadableViewModelState<String?> {
+        guard
+            let priceData,
+            let priceDecimal = Decimal(string: priceData.price)
+        else {
+            return .loading
+        }
+
+        let priceText = priceFormatter(priceId: priceData.currencyId)
+            .value(for: locale)
+            .stringFromDecimal(priceDecimal)
+
+        return .loaded(value: priceText)
+    }
 }
 
 // MARK: AssetPriceChartViewModelFactoryProtocol
 
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel {
+        let symbol = params.asset?.symbol ?? ""
+
         let title = [
-            params.asset.symbol,
+            symbol,
             R.string(preferredLanguages: params.locale.rLanguages).localizable.commonPrice()
         ].joined(with: .space)
 
@@ -206,21 +260,27 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             availablePoints: params.availablePoints
         )
 
+        let currentPrice = createCurrentPrice(
+            priceData: params.priceData,
+            locale: params.locale
+        )
+
         guard
             let lastEntry = entries.last,
             let priceData = params.priceData,
-            let priceDecimal = Decimal(string: priceData.price)
+            !currentPrice.isLoading
         else {
             return AssetPriceChartWidgetViewModel(
                 title: title,
-                currentPrice: .loading,
+                symbol: symbol,
+                currentPrice: currentPrice,
                 periodChange: .loading,
                 chartModel: .loading,
-                periodControlModel: periodControlViewModel
+                periodControlModel: periodControlViewModel,
+                placeholder: params.placeholder
             )
         }
 
-        let chartViewModel = createChartViewModel(using: entries)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
             allEntries: entries,
@@ -228,17 +288,16 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             selectedPeriod: params.selectedPeriod,
             locale: params.locale
         )
-
-        let currentPrice = priceFormatter(priceId: priceData.currencyId)
-            .value(for: params.locale)
-            .stringFromDecimal(priceDecimal)
+        let chartViewModel = createChartViewModel(using: entries, periodChange: changeViewModel)
 
         return AssetPriceChartWidgetViewModel(
             title: title,
-            currentPrice: .loaded(value: currentPrice),
+            symbol: symbol,
+            currentPrice: currentPrice,
             periodChange: .loaded(value: changeViewModel),
             chartModel: .loaded(value: chartViewModel),
-            periodControlModel: periodControlViewModel
+            periodControlModel: periodControlViewModel,
+            placeholder: params.placeholder
         )
     }
 
@@ -266,5 +325,11 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             currentPrice: priceText,
             changeViewModel: changeViewModel
         )
+    }
+}
+
+private extension AssetPriceChartViewModelFactory {
+    enum Constants {
+        static let percentScale: Int32 = 4
     }
 }

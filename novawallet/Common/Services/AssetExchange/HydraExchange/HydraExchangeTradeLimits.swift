@@ -196,13 +196,7 @@ extension HydraExchangeTradeLimits {
         minTradingLimitOperation.addDependency(coderFactoryOperation)
 
         let mergeOperation = ClosureOperation<PoolLimits?> {
-            let minTradingLimit: Balance?
-
-            do {
-                minTradingLimit = try minTradingLimitOperation.extractNoCancellableResultData()
-            } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
-                minTradingLimit = nil
-            }
+            let minTradingLimit = try optionalMinTradingLimit(from: minTradingLimitOperation)
 
             do {
                 let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
@@ -226,5 +220,13 @@ extension HydraExchangeTradeLimits {
             targetOperation: mergeOperation,
             dependencies: [maxInRatioOperation, maxOutRatioOperation, minTradingLimitOperation]
         )
+    }
+
+    static func optionalMinTradingLimit(from operation: BaseOperation<Balance>) throws -> Balance? {
+        do {
+            return try operation.extractNoCancellableResultData()
+        } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
+            return nil
+        }
     }
 }

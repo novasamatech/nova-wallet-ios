@@ -223,10 +223,13 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         ) {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
+            let submissionWrapper = self.createSubmissionWrapper(for: params)
+
             return self.createMeasuringWrapper(
                 for: params,
-                submissionWrapper: self.createSubmissionWrapper(for: params)
+                submissionWrapper: submissionWrapper
             )
+            .failingWithSubmissionStage { submissionWrapper.targetOperation.submittedTxHash }
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)

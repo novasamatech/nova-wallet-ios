@@ -3,28 +3,55 @@ import UIKit
 final class SwapExecutionView: UIView {
     let progressView = OperationExecutionProgressView()
 
-    let statusTitleView: MultiValueView = .create { view in
-        view.valueTop.textAlignment = .center
-        view.valueBottom.textAlignment = .center
+    let resultTileView = SwapExecutionResultTileView()
 
-        view.spacing = 4
+    let titleLabel: UILabel = .create {
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
     }
 
-    let statusDetailsView: GenericBorderedView<ShimmerLabel> = .create { view in
-        view.contentInsets = UIEdgeInsets(verticalInset: 0, horizontalInset: 16)
-        view.contentView.textAlignment = .center
-        view.backgroundView.cornerRadius = 12
-        view.contentView.numberOfLines = 0
+    let amountLabel: UILabel = .create {
+        $0.apply(style: .boldLargePrimary)
+        $0.textAlignment = .center
+        $0.numberOfLines = 1
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = Constants.amountMinimumScale
     }
 
-    convenience init() {
-        self.init(frame: .zero)
+    let detailsLabel: UILabel = .create {
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
     }
+
+    let operationsView: UIView = .create {
+        $0.backgroundColor = R.color.colorBlockBackground()
+        $0.layer.cornerRadius = Constants.operationsCornerRadius
+        $0.layer.borderWidth = Constants.operationsBorderWidth
+        $0.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+    }
+
+    let operationsLabel: UILabel = .create {
+        $0.apply(style: .regularSubhedlineSecondary)
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
+    }
+
+    private lazy var progressContainer = UIView.vStack(alignment: .center, [progressView])
+    private lazy var resultTileContainer = UIView.vStack(alignment: .center, [resultTileView])
+
+    private lazy var stackView = UIView.vStack(
+        alignment: .fill,
+        [progressContainer, resultTileContainer, titleLabel, amountLabel, detailsLabel, operationsView]
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        setupLayout()
+        addSubview(stackView)
+        stackView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        operationsView.addSubview(operationsLabel)
+        operationsLabel.snp.makeConstraints { $0.edges.equalToSuperview().inset(Constants.operationsInsets) }
     }
 
     @available(*, unavailable)
@@ -33,52 +60,28 @@ final class SwapExecutionView: UIView {
     }
 
     func bind(viewModel: SwapExecutionViewModel, locale: Locale) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
         switch viewModel {
         case let .inProgress(inProgress):
             progressView.bind(viewModel: .inProgress(inProgress.remainedTimeViewModel))
 
-            statusTitleView.bind(
-                viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.swapsExecutionDontCloseApp(),
-                    bottomValue: inProgress.currentOperation
-                )
-            )
+            applyInProgressLayout()
 
-            statusDetailsView.contentView.text = inProgress.details
-
-            applyInProgressStyle()
-
-            statusDetailsView.contentView.startShimmering()
-
+            titleLabel.text = strings.swapsExecutionDontCloseApp()
+            detailsLabel.text = inProgress.currentOperation
+            operationsLabel.text = inProgress.details
         case let .completed(completed):
-            progressView.bind(viewModel: .completed)
+            applyFinishedLayout(isSuccess: true)
 
-            statusTitleView.bind(
-                viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.transactionStatusCompleted(),
-                    bottomValue: completed.time
-                )
-            )
-
-            statusDetailsView.contentView.stopShimmering()
-            statusDetailsView.contentView.text = completed.details
-
-            applyCompletedStyle()
-
+            titleLabel.text = strings.transactionStatusCompleted()
+            amountLabel.text = completed.amount
+            detailsLabel.text = completed.time
         case let .failed(failed):
-            progressView.bind(viewModel: .failed)
+            applyFinishedLayout(isSuccess: false)
 
-            statusTitleView.bind(
-                viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.transactionStatusFailed(),
-                    bottomValue: failed.time
-                )
-            )
-
-            statusDetailsView.contentView.stopShimmering()
-            statusDetailsView.contentView.text = failed.details
-
-            applyFailedStyle()
+            titleLabel.text = strings.transactionStatusFailed()
+            detailsLabel.text = failed.time
         }
     }
 
@@ -89,68 +92,56 @@ final class SwapExecutionView: UIView {
     func updateAnimationOnAppear() {
         progressView.updateAnimationOnAppear()
     }
+}
 
-    private func applyInProgressStyle() {
-        statusTitleView.apply(
-            style: .init(
-                topLabel: .boldTitle1Primary,
-                bottomLabel: .semiboldBodyButtonAccent
-            )
-        )
+private extension SwapExecutionView {
+    func applyInProgressLayout() {
+        progressContainer.isHidden = false
+        resultTileContainer.isHidden = true
+        amountLabel.isHidden = true
+        operationsView.isHidden = false
 
-        statusDetailsView.backgroundView.applyCellBackgroundStyle()
-        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlineSecondary)
-        statusDetailsView.contentView.apply(style: .regularSubhedlineSecondary)
+        titleLabel.apply(style: .boldTitle1Primary)
+        detailsLabel.apply(style: .semiboldBodyButtonAccent)
+
+        stackView.setCustomSpacing(Constants.inProgressIconSpacing, after: progressContainer)
+        stackView.setCustomSpacing(Constants.inProgressTitleSpacing, after: titleLabel)
+        stackView.setCustomSpacing(Constants.inProgressDetailsSpacing, after: detailsLabel)
     }
 
-    private func applyFailedStyle() {
-        statusTitleView.apply(
-            style: .init(
-                topLabel: .boldTitle1Negative,
-                bottomLabel: .semiboldBodySecondary
-            )
-        )
+    func applyFinishedLayout(isSuccess: Bool) {
+        progressContainer.isHidden = true
+        resultTileContainer.isHidden = false
+        amountLabel.isHidden = !isSuccess
+        operationsView.isHidden = true
 
-        statusDetailsView.backgroundView.applyErrorBlockBackgroundStyle()
-        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlinePrimary)
-        statusDetailsView.contentView.apply(style: .regularSubhedlinePrimary)
+        progressView.bind(viewModel: isSuccess ? .completed : .failed)
+        resultTileView.bind(isSuccess: isSuccess)
+
+        titleLabel.apply(style: isSuccess ? .boldTitle1Positive : .boldTitle1Negative)
+        detailsLabel.apply(style: .semiboldBodySecondary)
+
+        stackView.setCustomSpacing(Constants.finishedIconSpacing, after: resultTileContainer)
+        stackView.setCustomSpacing(
+            isSuccess ? Constants.completedTitleSpacing : Constants.failedTitleSpacing,
+            after: titleLabel
+        )
+        stackView.setCustomSpacing(Constants.completedAmountSpacing, after: amountLabel)
     }
+}
 
-    private func applyCompletedStyle() {
-        statusTitleView.apply(
-            style: .init(
-                topLabel: .boldTitle1Positive,
-                bottomLabel: .semiboldBodySecondary
-            )
-        )
-
-        statusDetailsView.backgroundView.applyCellBackgroundStyle()
-        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlineSecondary)
-        statusDetailsView.contentView.apply(style: .regularSubhedlineSecondary)
-    }
-
-    private func setupLayout() {
-        let progressViewContainer = UIView.vStack(alignment: .center, [progressView])
-
-        let contentView = UIView.vStack(
-            alignment: .fill,
-            [
-                progressViewContainer,
-                statusTitleView,
-                statusDetailsView
-            ]
-        )
-
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        contentView.setCustomSpacing(16, after: progressViewContainer)
-        contentView.setCustomSpacing(24, after: statusTitleView)
-
-        statusDetailsView.snp.makeConstraints { make in
-            make.height.equalTo(48)
-        }
+extension SwapExecutionView {
+    enum Constants {
+        static let amountMinimumScale: CGFloat = 0.5
+        static let operationsInsets = UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16)
+        static let operationsCornerRadius: CGFloat = 12
+        static let operationsBorderWidth: CGFloat = 1
+        static let inProgressIconSpacing: CGFloat = 10
+        static let inProgressTitleSpacing: CGFloat = 10
+        static let inProgressDetailsSpacing: CGFloat = 10
+        static let finishedIconSpacing: CGFloat = 6
+        static let completedTitleSpacing: CGFloat = 3
+        static let failedTitleSpacing: CGFloat = 6
+        static let completedAmountSpacing: CGFloat = 2
     }
 }

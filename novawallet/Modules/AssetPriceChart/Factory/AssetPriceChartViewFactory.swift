@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 struct AssetPriceChartViewFactory {
     static func createView(
@@ -6,6 +7,35 @@ struct AssetPriceChartViewFactory {
         inputOwner: AssetPriceChartInputOwnerProtocol,
         params: Params
     ) -> AssetPriceChartModule? {
+        createController(
+            output: output,
+            inputOwner: inputOwner,
+            params: params,
+            style: .regular
+        )
+    }
+
+    static func createCompactView(
+        output: AssetPriceChartModuleOutputProtocol,
+        inputOwner: AssetPriceChartInputOwnerProtocol,
+        params: Params
+    ) -> AssetPriceChartCompactProviderProtocol? {
+        createController(
+            output: output,
+            inputOwner: inputOwner,
+            params: params,
+            style: .compact
+        )
+    }
+}
+
+private extension AssetPriceChartViewFactory {
+    static func createController(
+        output: AssetPriceChartModuleOutputProtocol,
+        inputOwner: AssetPriceChartInputOwnerProtocol,
+        params: Params,
+        style: AssetPriceChartStyle
+    ) -> AssetPriceChartViewController? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -40,23 +70,13 @@ struct AssetPriceChartViewFactory {
             assetModel: params.asset,
             viewModelFactory: viewModelFactory,
             periods: params.periods,
+            selectedPeriod: params.selectedPeriod,
+            placeholder: params.placeholder,
             logger: logger,
             locale: params.locale
         )
 
-        let seekHapticPlayer = HapticPlayerFactory.createProgressivePlayer(
-            patternConfiguration: .chartSeek
-        )
-        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(
-            patternConfiguration: .singleTap
-        )
-
-        let view = AssetPriceChartViewController(
-            presenter: presenter,
-            seekHapticPlayer: seekHapticPlayer,
-            chartLongPressHapticPlayer: singleTapHapticPlayer,
-            periodControlHapticPlayer: singleTapHapticPlayer
-        )
+        let view = createViewController(presenter: presenter, style: style)
 
         presenter.view = view
         presenter.moduleOutput = output
@@ -66,12 +86,34 @@ struct AssetPriceChartViewFactory {
 
         return view
     }
+
+    static func createViewController(
+        presenter: AssetPriceChartPresenterProtocol,
+        style: AssetPriceChartStyle
+    ) -> AssetPriceChartViewController {
+        let seekHapticPlayer = HapticPlayerFactory.createProgressivePlayer(
+            patternConfiguration: .chartSeek
+        )
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(
+            patternConfiguration: .singleTap
+        )
+
+        return AssetPriceChartViewController(
+            presenter: presenter,
+            style: style,
+            seekHapticPlayer: seekHapticPlayer,
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer
+        )
+    }
 }
 
 extension AssetPriceChartViewFactory {
     struct Params {
-        let asset: AssetModel
+        let asset: AssetModel?
         let periods: [PriceHistoryPeriod]
+        var selectedPeriod: PriceHistoryPeriod?
+        var placeholder: LocalizableResource<String>?
         let locale: Locale
         let currency: Currency
     }

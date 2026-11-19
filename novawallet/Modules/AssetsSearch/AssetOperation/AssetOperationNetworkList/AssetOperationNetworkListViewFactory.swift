@@ -213,78 +213,6 @@ extension AssetOperationNetworkListViewFactory {
     }
 }
 
-// MARK: - SWAPS
-
-extension AssetOperationNetworkListViewFactory {
-    static func createSwapsView(
-        with multichainToken: MultichainToken,
-        state: SwapTokensFlowStateProtocol,
-        includesHiddenAssets: Bool,
-        selectClosure: @escaping SwapAssetSelectionClosure,
-        selectClosureStrategy: SubmoduleNavigationStrategy
-    ) -> AssetOperationNetworkListViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
-
-        let logger = Logger.shared
-
-        let interactor = SpendAssetOperationNetworkListInteractor(
-            multichainToken: multichainToken,
-            stateObservable: state.assetListObservable,
-            includesHiddenAssets: includesHiddenAssets,
-            logger: logger
-        )
-
-        let presenter = createSwapPresenter(
-            dependencies: SwapPresenterDependencies(
-                interactor: interactor,
-                multichainToken: multichainToken,
-                state: state,
-                currencyManager: currencyManager,
-                includesHiddenAssets: includesHiddenAssets,
-                selectClosure: selectClosure,
-                selectClosureStrategy: selectClosureStrategy
-            )
-        )
-
-        let view = AssetOperationNetworkListViewController(presenter: presenter)
-
-        presenter.view = view
-
-        return view
-    }
-
-    private static func createSwapPresenter(
-        dependencies: SwapPresenterDependencies
-    ) -> SwapOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
-
-        let wireframe = SwapAssetsOperationWireframe(
-            state: dependencies.state,
-            selectClosure: dependencies.selectClosure,
-            selectClosureStrategy: dependencies.selectClosureStrategy,
-            includesHiddenAssets: dependencies.includesHiddenAssets
-        )
-
-        let presenter = SwapOperationNetworkListPresenter(
-            interactor: dependencies.interactor,
-            wireframe: wireframe,
-            multichainToken: dependencies.multichainToken,
-            viewModelFactory: viewModelFactory,
-            selectClosure: { chainAsset in
-                dependencies.selectClosure(chainAsset, dependencies.state)
-            },
-            selectClosureStrategy: dependencies.selectClosureStrategy,
-            localizationManager: LocalizationManager.shared
-        )
-
-        dependencies.interactor.presenter = presenter
-
-        return presenter
-    }
-}
-
 // MARK: - GIFTS
 
 extension AssetOperationNetworkListViewFactory {
@@ -374,16 +302,6 @@ private extension AssetOperationNetworkListViewFactory {
         let stateObservable: AssetListModelObservable
         let selectedAccount: MetaAccountModel
         let currencyManager: CurrencyManager
-    }
-
-    struct SwapPresenterDependencies {
-        let interactor: AssetOperationNetworkListInteractor
-        let multichainToken: MultichainToken
-        let state: SwapTokensFlowStateProtocol
-        let currencyManager: CurrencyManager
-        let includesHiddenAssets: Bool
-        let selectClosure: SwapAssetSelectionClosure
-        let selectClosureStrategy: SubmoduleNavigationStrategy
     }
 
     struct GiftPresenterDependencies {

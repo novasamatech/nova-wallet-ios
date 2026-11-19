@@ -5,8 +5,11 @@ import SubstrateSdk
 
 final class SwapSetupInteractor: SwapBaseInteractor {
     let storageRepository: AnyDataProviderRepository<ChainStorageItem>
+    let chartSession: SwapPriceChartSession
+    let assetListObservable: AssetListModelObservable
 
     private var canPayFeeInAssetCall = CancellableCallStore()
+    private let maxFeeEstimateCall = CancellableCallStore()
 
     private var accountInfoRemoteSubscriptions: [ChainModel.Id: CallbackBatchRawStorageSubscription] = [:]
 
@@ -62,12 +65,15 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
+        chartSession: SwapPriceChartSession,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.storageRepository = storageRepository
+        self.chartSession = chartSession
+        assetListObservable = state.assetListObservable
 
         super.init(
             state: state,
@@ -83,6 +89,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     deinit {
         canPayFeeInAssetCall.cancel()
+        maxFeeEstimateCall.cancel()
         clearDestRemoteSubscription()
         clearOriginRemoteSubscription()
         requoteChange.cancel()
@@ -202,6 +209,40 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             provideCanPayFee(for: payChainAsset)
         }
     }
+
+    private func provideChangedPrices(from oldModel: AssetListModel, to newModel: AssetListModel) {
+        let oldPrices = (try? oldModel.priceResult?.get()) ?? [:]
+        let newPrices = (try? newModel.priceResult?.get()) ?? [:]
+
+        let changedPriceIds = [payChainAsset, receiveChainAsset, feeChainAsset].reduce(
+            into: [AssetModel.PriceId: ChainAssetId]()
+        ) { accum, chainAsset in
+            guard
+                let chainAsset,
+                let priceId = chainAsset.asset.priceId,
+                oldPrices[chainAsset.chainAssetId] != newPrices[chainAsset.chainAssetId] else {
+                return
+            }
+
+            accum[priceId] = chainAsset.chainAssetId
+        }
+
+        changedPriceIds.forEach { priceId, chainAssetId in
+            presenter?.didReceive(price: newPrices[chainAssetId], priceId: priceId)
+        }
+    }
+
+    override func applyCurrency() {
+        presenter?.didReceive(selectedCurrency: selectedCurrency)
+    }
+
+    override func setup() {
+        super.setup()
+
+        assetListObservable.addObserver(with: self, queue: .main) { [weak self] oldState, newState in
+            self?.provideChangedPrices(from: oldState.value, to: newState.value)
+        }
+    }
 }
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
@@ -247,5 +288,51 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         feeChainAsset.map {
             setFeeChainAssetSubscriptions($0)
         }
+    }
+
+    func estimateMaxFee(for quoteArgs: AssetConversion.QuoteArgs, slippage: BigRational, feeAsset: ChainAsset) {
+        maxFeeEstimateCall.cancel()
+
+        let quoteWrapper = assetsExchangeService.fetchQuoteWrapper(for: quoteArgs)
+
+        let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [assetsExchangeService] in
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+
+            let feeArgs = AssetExchangeFeeArgs(
+                route: quote.route,
+                slippage: slippage,
+                feeAssetId: feeAsset.chainAssetId
+            )
+
+            return assetsExchangeService.estimateFee(for: feeArgs)
+        }
+
+        feeWrapper.addDependency(wrapper: quoteWrapper)
+
+        executeCancellable(
+            wrapper: feeWrapper.insertingHead(operations: quoteWrapper.allOperations),
+            inOperationQueue: operationQueue,
+            backingCallIn: maxFeeEstimateCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.assetsExchangeService.throttleRequoteService()
+
+            switch result {
+            case let .success(fee):
+                self?.presenter?.didReceive(maxFeeEstimate: fee, for: quoteArgs)
+            case let .failure(error):
+                self?.logger.warning("Max fee estimate failed: \(error)")
+            }
+        }
+    }
+
+    func cancelMaxFeeEstimate() {
+        maxFeeEstimateCall.cancel()
+    }
+
+    func saveChartPeriod(_ period: PriceHistoryPeriod) {
+        chartSession.selectedPeriod = period
     }
 }

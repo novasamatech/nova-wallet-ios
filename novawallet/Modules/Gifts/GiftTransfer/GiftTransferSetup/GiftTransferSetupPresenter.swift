@@ -310,7 +310,8 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
             from: view,
             purchaseHandler: self,
             destinationChainAsset: chainAsset,
-            locale: selectedLocale
+            locale: selectedLocale,
+            offersSwap: true
         )
     }
 

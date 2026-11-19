@@ -4,7 +4,7 @@ import NovaCrypto
 import Keystore_iOS
 
 final class StakingRewardDestConfirmInteractor: AccountFetching {
-    weak var presenter: StakingRewardDestConfirmInteractorOutputProtocol!
+    weak var presenter: StakingRewardDestConfirmInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -85,13 +85,13 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
         if let address = try? selectedAccount.accountId.toAddress(using: chainAsset.chain.chainFormat) {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(CommonError.undefined))
+            presenter?.didReceiveStashItem(result: .failure(CommonError.undefined))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         feeProxy.delegate = self
@@ -99,7 +99,7 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
 
     func estimateFee(for rewardDestination: RewardDestination<AccountAddress>, stashItem: StashItem) {
         guard let extrinsicService = extrinsicService else {
-            presenter.didReceiveFee(result: .failure(CommonError.undefined))
+            presenter?.didReceiveFee(result: .failure(CommonError.undefined))
             return
         }
 
@@ -113,13 +113,13 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
                 try builder.adding(call: setPayeeCall)
             }
         } catch {
-            presenter.didReceiveFee(result: .failure(error))
+            presenter?.didReceiveFee(result: .failure(error))
         }
     }
 
     func submit(rewardDestination: RewardDestination<AccountAddress>, for stashItem: StashItem) {
         guard let extrinsicMonitorFactory, let signingWrapper else {
-            presenter.didSubmitRewardDest(result: .failure(CommonError.undefined))
+            presenter?.didSubmitRewardDest(result: .failure(CommonError.undefined))
             return
         }
 
@@ -140,11 +140,11 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
                 inOperationQueue: operationQueue,
                 runningCallbackIn: .main
             ) { [weak self] result in
-                self?.presenter.didSubmitRewardDest(result: result.mapToExtrinsicSubmittedResult())
+                self?.presenter?.didSubmitRewardDest(result: result.mapToExtrinsicSubmittedResult())
             }
 
         } catch {
-            presenter.didSubmitRewardDest(result: .failure(error))
+            presenter?.didSubmitRewardDest(result: .failure(error))
         }
     }
 }
@@ -177,23 +177,23 @@ extension StakingRewardDestConfirmInteractor: StakingLocalStorageSubscriber,
                             self?.setupExtrinsicService(accountResponse)
                         }
 
-                        self?.presenter.didReceiveStashItem(result: .success(stashItem))
-                        self?.presenter.didReceiveController(result: .success(accountResponse))
+                        self?.presenter?.didReceiveStashItem(result: .success(stashItem))
+                        self?.presenter?.didReceiveController(result: .success(accountResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveStashItem(result: .failure(error))
-                        self?.presenter.didReceiveController(result: .failure(error))
+                        self?.presenter?.didReceiveStashItem(result: .failure(error))
+                        self?.presenter?.didReceiveController(result: .failure(error))
                     }
                 }
             } else {
-                presenter.didReceiveStashItem(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
-                presenter.didReceiveController(result: .success(nil))
+                presenter?.didReceiveStashItem(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveController(result: .success(nil))
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveController(result: .success(nil))
-            presenter.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveController(result: .success(nil))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
         }
     }
 }
@@ -206,20 +206,20 @@ extension StakingRewardDestConfirmInteractor: WalletLocalStorageSubscriber,
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingRewardDestConfirmInteractor: PriceLocalStorageSubscriber,
     PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
 extension StakingRewardDestConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

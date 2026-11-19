@@ -34,19 +34,7 @@ private extension SubtensorResultSheetViewController {
     func updatePreferredHeight() {
         let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
 
-        preferredContentSize = CGSize(width: 0, height: rootView.preferredHeight(for: width))
-
-        guard
-            view.window != nil,
-            let presentationController,
-            let containerView = presentationController.containerView else {
-            return
-        }
-
-        UIView.animate(withDuration: 0.25) {
-            self.view.frame = presentationController.frameOfPresentedViewInContainerView
-            containerView.layoutIfNeeded()
-        }
+        applyPreferredContentHeight(rootView.preferredHeight(for: width))
     }
 
     @objc func actionButton(_ sender: UIButton) {

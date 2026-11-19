@@ -1,53 +1,45 @@
 import UIKit
+import UIKit_iOS
 
-final class SwapExecutionDetailsView: CollapsableContainerView {
-    let rateCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
-        $0.borderView.borderType = .bottom
-        $0.roundedBackgroundView.cornerRadius = 12
-        $0.roundedBackgroundView.roundingCorners = [.topLeft, .topRight]
+final class SwapExecutionDetailsView: UIView {
+    let tableView = StackTableView.createSwapReviewCard()
+
+    let rateCell: SwapReviewTextCell = .create {
+        $0.showsInfo = false
+        $0.isUserInteractionEnabled = false
     }
 
-    let priceDifferenceCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
-        $0.borderView.borderType = .bottom
-        $0.roundedBackgroundView.cornerRadius = 0
+    let routeCell: SwapReviewRouteCell = .create {
+        $0.showsInfo = false
+        $0.showsAccessory = true
     }
 
-    let slippageCell: SwapInfoViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
-        $0.borderView.borderType = .bottom
-        $0.roundedBackgroundView.cornerRadius = 0
-    }
-
-    let routeCell: SwapRouteViewCell = .create {
-        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
-        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
-        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
-        $0.borderView.borderType = .bottom
-        $0.roundedBackgroundView.cornerRadius = 0
-    }
-
-    let totalFeeCell: SwapNetworkFeeViewCell = .create {
-        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
-        $0.borderView.borderType = .none
-        $0.roundedBackgroundView.cornerRadius = 12
-        $0.roundedBackgroundView.roundingCorners = [.bottomLeft, .bottomRight]
+    let totalFeeCell: SwapReviewTextCell = .create {
+        $0.showsInfo = false
+        $0.isUserInteractionEnabled = false
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundView.sideLength = 12
+        addSubview(tableView)
+        tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        tableView.addArrangedSubview(rateCell)
+        tableView.addArrangedSubview(routeCell)
+        tableView.addArrangedSubview(totalFeeCell)
     }
 
-    override var rows: [UIView] {
-        [rateCell, priceDifferenceCell, slippageCell, routeCell, totalFeeCell]
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func setup(locale: Locale) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        rateCell.titleButton.setTitle(strings.swapsSetupDetailsRate())
+        routeCell.titleButton.setTitle(strings.swapsDetailsRoute())
+        totalFeeCell.titleButton.setTitle(strings.swapsDetailsTotalFee())
     }
 }

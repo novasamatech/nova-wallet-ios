@@ -151,4 +151,21 @@ extension SubstrateAssetsUpdatingService: EventVisitorProtocol {
 
         updateSubscription(for: chain)
     }
+
+    func processSwapExecutionFinished(event: SwapExecutionFinished) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        // A live subscription can silently stop receiving updates, so swapped balances are resubscribed
+        for chainId in event.chainIds {
+            guard let subscription = getSubscriptions(for: chainId)?.first?.value else {
+                continue
+            }
+
+            remoteSubscriptionService.restartBalances(for: subscription.accountId, chainId: chainId)
+        }
+    }
 }

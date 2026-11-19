@@ -6,7 +6,7 @@ struct SwapConfirmViewFactory {
     static func createView(
         initState: SwapConfirmInitState,
         flowState: SwapTokensFlowStateProtocol,
-        completionClosure: SwapCompletionClosure?
+        flowHandler: SwapExecutionFlowHandling
     ) -> SwapConfirmViewProtocol? {
         guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -20,7 +20,7 @@ struct SwapConfirmViewFactory {
             return nil
         }
 
-        let wireframe = SwapConfirmWireframe(flowState: flowState, completionClosure: completionClosure)
+        let wireframe = SwapConfirmWireframe(flowState: flowState, flowHandler: flowHandler)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(

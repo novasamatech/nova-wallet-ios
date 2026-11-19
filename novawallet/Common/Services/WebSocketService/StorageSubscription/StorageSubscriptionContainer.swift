@@ -25,6 +25,12 @@ final class StorageSubscriptionContainer: WebSocketSubscribing {
         unsubscribe()
     }
 
+    func resubscribe() {
+        unsubscribe()
+        subscriptionId = nil
+        subscribe()
+    }
+
     private func subscribe() {
         do {
             let storageKeys = children.map { $0.remoteStorageKey.toHex(includePrefix: true) }

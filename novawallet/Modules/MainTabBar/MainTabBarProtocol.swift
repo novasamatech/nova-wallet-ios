@@ -6,17 +6,20 @@ protocol MainTabBarProtocol {
 
     func presentedController() -> UIViewController?
     func topViewController() -> UIViewController?
+    func hideMoreMenu(animated: Bool)
 }
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)
     func setSyncStatus(_ syncStatus: SharedSyncStatus)
+    func selectMoreItem(_ item: MainTabBarMoreItem)
+    func moreItemNavigationController(for item: MainTabBarMoreItem) -> UINavigationController?
 }
 
 protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
-    func didSelectTab(at index: Int)
+    func didSelectTab(at index: Int, moreItem: MainTabBarMoreItem?)
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
     func presentDelayedOperationCreated()

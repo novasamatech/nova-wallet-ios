@@ -4,7 +4,7 @@ inputs:
   xcode-version:
     description: "The Xcode version to install"
     required: true
-    default: "26.2"
+    default: "26.5"
   minimal_mode:
     description: "Skip Mint, SPM and Google service plist setup (for signing-only workflows)"
     required: false

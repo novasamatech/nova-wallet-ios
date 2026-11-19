@@ -4,23 +4,34 @@ import DGCharts
 final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
+    weak var expansionDelegate: AssetPriceChartExpansionDelegate?
+
+    let style: AssetPriceChartStyle
+    let dataSource: AssetPriceChartViewDataSourceProtocol
+
+    var isExpanded = false
+    var isExpandable = true
+    var isSelectingEntry = false
+    var chartState: AssetPriceChartState?
+
     private let presenter: AssetPriceChartPresenterProtocol
     private let seekHapticPlayer: ProgressiveHapticPlayer
     private let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
-    private let dataSource: AssetPriceChartViewDataSourceProtocol
 
     init(
         presenter: AssetPriceChartPresenterProtocol,
+        style: AssetPriceChartStyle,
         seekHapticPlayer: ProgressiveHapticPlayer,
         chartLongPressHapticPlayer: HapticPlayer,
         periodControlHapticPlayer: HapticPlayer
     ) {
         self.presenter = presenter
+        self.style = style
         self.seekHapticPlayer = seekHapticPlayer
         self.chartLongPressHapticPlayer = chartLongPressHapticPlayer
         self.periodControlHapticPlayer = periodControlHapticPlayer
-        dataSource = AssetPriceChartViewDataSource()
+        dataSource = AssetPriceChartViewDataSource(style: style)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -30,7 +41,7 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetPriceChartViewLayout()
+        view = AssetPriceChartViewLayout(style: style)
     }
 
     override func viewDidLoad() {
@@ -47,6 +58,14 @@ private extension AssetPriceChartViewController {
     func setupChart() {
         rootView.chartView.delegate = self
         addLongTapGestureRecognizer()
+
+        if style == .compact {
+            rootView.expandControl.addTarget(
+                self,
+                action: #selector(actionToggleExpansion),
+                for: .touchUpInside
+            )
+        }
     }
 
     func updateView() {
@@ -57,6 +76,16 @@ private extension AssetPriceChartViewController {
         updatePeriodControlIfNeeded()
     }
 
+    @objc func actionToggleExpansion() {
+        guard isExpandable else { return }
+
+        expansionDelegate?.priceChartDidRequestExpansion(!isExpanded)
+    }
+}
+
+// MARK: Rendering
+
+extension AssetPriceChartViewController {
     func updatePeriodControlIfNeeded() {
         guard
             let periodControlModel = dataSource.getPeriodControlModel(),
@@ -148,7 +177,11 @@ private extension AssetPriceChartViewController {
             rootView.loadingState.formUnion(.chart)
         }
     }
+}
 
+// MARK: Private
+
+private extension AssetPriceChartViewController {
     func updateEntrySelection(selectedEntry: ChartDataEntry?) {
         guard
             let priceChartRenderer = rootView.chartView.renderer as? AssetPriceChartRenderer,
@@ -169,6 +202,8 @@ private extension AssetPriceChartViewController {
     }
 
     func selectEntry(entry: ChartDataEntry?) {
+        isSelectingEntry = entry != nil
+
         updateEntrySelection(selectedEntry: entry)
 
         guard let entry else {
@@ -236,13 +271,33 @@ private extension AssetPriceChartViewController {
 extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
     func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
         dataSource.set(widgetViewModel: widgetViewModel)
-        updateView()
+
+        switch style {
+        case .regular:
+            updateView()
+        case .compact:
+            updateCompactView()
+        }
     }
 
     func update(with priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel) {
         dataSource.set(priceUpdateViewModel: priceUpdateViewModel)
-        updatePriceChange()
-        updatePrice()
+
+        switch style {
+        case .regular:
+            updatePriceChange()
+            updatePrice()
+        case .compact:
+            updateCompactHeader()
+        }
+    }
+
+    func didReceive(chartState: AssetPriceChartState) {
+        self.chartState = chartState
+
+        if style == .compact {
+            updateCompactLoadingState()
+        }
     }
 
     func chartViewWidth() -> CGFloat {
@@ -282,6 +337,13 @@ extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
 
 extension AssetPriceChartViewController: AssetPriceChartViewProviderProtocol {
     func getProposedHeight() -> CGFloat {
-        AssetPriceChartViewLayout.Constants.widgetHeight
+        switch style {
+        case .regular:
+            AssetPriceChartViewLayout.Constants.widgetHeight
+        case .compact:
+            isExpanded
+                ? AssetPriceChartViewLayout.CompactConstants.expandedHeight
+                : AssetPriceChartViewLayout.CompactConstants.collapsedHeight
+        }
     }
 }

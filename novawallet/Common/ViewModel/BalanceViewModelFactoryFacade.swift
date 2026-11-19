@@ -18,6 +18,12 @@ protocol BalanceViewModelFactoryFacadeProtocol {
         value: Decimal
     ) -> LocalizableResource<String>
 
+    func amountFromValue(
+        targetAssetInfo: AssetBalanceDisplayInfo,
+        value: Decimal,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<String>
+
     func balanceFromPrice(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal,
@@ -100,6 +106,17 @@ extension BalanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol {
         value: Decimal
     ) -> LocalizableResource<String> {
         getOrCreateBalanceViewModelFactory(targetAssetInfo: targetAssetInfo).amountFromValue(value)
+    }
+
+    func amountFromValue(
+        targetAssetInfo: AssetBalanceDisplayInfo,
+        value: Decimal,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<String> {
+        getOrCreateBalanceViewModelFactory(targetAssetInfo: targetAssetInfo).amountFromValue(
+            value,
+            roundingMode: roundingMode
+        )
     }
 
     func balanceFromPrice(

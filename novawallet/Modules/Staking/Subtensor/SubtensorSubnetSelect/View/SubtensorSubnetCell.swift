@@ -25,7 +25,7 @@ final class SubtensorSubnetCell: SubtensorSubnetCardCell {
         view.textAlignment = .right
     }
 
-    let sparklineView = SubtensorSparklineView()
+    let sparklineView = PriceSparklineView()
 
     let changeLoadingView = SubtensorSkeletonView(cornerRadius: Constants.changePlaceholderSize.height / 2)
 

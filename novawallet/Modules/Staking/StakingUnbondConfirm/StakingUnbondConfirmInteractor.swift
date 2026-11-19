@@ -5,7 +5,7 @@ import BigInt
 import SubstrateSdk
 
 final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetching, StakingDurationFetching {
-    weak var presenter: StakingUnbondConfirmInteractorOutputProtocol!
+    weak var presenter: StakingUnbondConfirmInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -78,7 +78,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didReceiveUnstakingVariant(result: result)
+            self?.presenter?.didReceiveUnstakingVariant(result: result)
         }
     }
 
@@ -133,13 +133,13 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         minBondedProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
@@ -148,7 +148,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             operationFactory: stakingDurationOperationFactory,
             operationQueue: operationQueue
         ) { [weak self] result in
-            self?.presenter.didReceiveStakingDuration(result: result)
+            self?.presenter?.didReceiveStakingDuration(result: result)
         }
 
         if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
@@ -157,12 +157,12 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
                 runtimeCodingService: runtimeService,
                 operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
-                self?.presenter.didReceiveExistentialDeposit(result: result)
+                self?.presenter?.didReceiveExistentialDeposit(result: result)
             }
         } else {
             let error = ChainRegistryError.runtimeMetadaUnavailable
-            presenter.didReceiveExistentialDeposit(result: .failure(error))
-            presenter.didReceiveStakingDuration(result: .failure(error))
+            presenter?.didReceiveExistentialDeposit(result: .failure(error))
+            presenter?.didReceiveStakingDuration(result: .failure(error))
         }
 
         feeProxy.delegate = self
@@ -170,7 +170,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
 
     func estimateFee(for amount: Decimal, resettingRewardDestination: Bool, chilling: Bool) {
         guard let extrinsicService = extrinsicService else {
-            presenter.didReceiveFee(result: .failure(CommonError.undefined))
+            presenter?.didReceiveFee(result: .failure(CommonError.undefined))
             return
         }
 
@@ -197,7 +197,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
         guard
             let extrinsicMonitorFactory,
             let signingWrapper = signingWrapper else {
-            presenter.didSubmitUnbonding(result: .failure(CommonError.undefined))
+            presenter?.didSubmitUnbonding(result: .failure(CommonError.undefined))
             return
         }
 
@@ -224,7 +224,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didSubmitUnbonding(result: result.mapToExtrinsicSubmittedResult())
+            self?.presenter?.didSubmitUnbonding(result: result.mapToExtrinsicSubmittedResult())
         }
     }
 }
@@ -242,7 +242,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
             let maybeStashId = try maybeStashItem.map { try $0.stash.toAccountId() }
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             if let stashItem = maybeStashItem {
                 provideUnstakingVariant(for: stashItem.stash)
@@ -274,25 +274,25 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                         }
 
                         if let account = response {
-                            self?.presenter.didReceiveController(result: .success(account))
+                            self?.presenter?.didReceiveController(result: .success(account))
                         }
                     case let .failure(error):
-                        self?.presenter.didReceiveController(result: .failure(error))
+                        self?.presenter?.didReceiveController(result: .failure(error))
                     }
                 }
             } else {
-                presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
-                presenter.didReceivePayee(result: .success(nil))
-                presenter.didReceiveNomination(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceivePayee(result: .success(nil))
+                presenter?.didReceiveNomination(result: .success(nil))
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
-            presenter.didReceivePayee(result: .failure(error))
-            presenter.didReceiveNomination(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceivePayee(result: .failure(error))
+            presenter?.didReceiveNomination(result: .failure(error))
         }
     }
 
@@ -301,7 +301,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 
     func handlePayee(
@@ -309,11 +309,11 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceivePayee(result: result)
+        presenter?.didReceivePayee(result: result)
     }
 
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveMinBonded(result: result)
+        presenter?.didReceiveMinBonded(result: result)
     }
 
     func handleNomination(
@@ -321,7 +321,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveNomination(result: result)
+        presenter?.didReceiveNomination(result: result)
     }
 }
 
@@ -332,19 +332,19 @@ extension StakingUnbondConfirmInteractor: WalletLocalStorageSubscriber, WalletLo
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingUnbondConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
 extension StakingUnbondConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

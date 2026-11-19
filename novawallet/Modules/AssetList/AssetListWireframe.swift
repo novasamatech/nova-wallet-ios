@@ -3,7 +3,7 @@ import UIKit
 import UIKit_iOS
 import NovaAnalytics
 
-final class AssetListWireframe: AssetListWireframeProtocol {
+final class AssetListWireframe: AssetListWireframeProtocol, SwapFlowPresentable {
     let applicationConfig: ApplicationConfigProtocol
     let assetListModelObservable: AssetListModelObservable
     let dAppMediator: DAppInteractionMediating
@@ -153,34 +153,23 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
-        let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
-            self?.showAssetDetails(from: view, chainAsset: chainAsset)
-        }
-        let selectClosure: SwapAssetSelectionClosure = { [weak self] chainAsset, state in
-            self?.showSwapTokens(
-                from: view,
-                state: state,
-                payAsset: chainAsset,
-                swapCompletionClosure: completionClosure
+        let swapsTab = view?.controller.tabBarController?.viewControllers?[safe: MainTabBarIndex.swaps]
+        let pairProvider = (swapsTab as? UINavigationController)?.viewControllers.first as? SwapsTabPairProviding
+
+        pairProvider?.provideTabPair { [weak self, weak view] initState in
+            guard let self else {
+                return
+            }
+
+            let state = SwapTokensFlowState(
+                assetListObservable: assetListModelObservable,
+                assetExchangeParams: AssetExchangeGraphProvidingParams(
+                    wallet: SelectedWalletSettings.shared.value
+                )
             )
-        }
-        guard let swapDirectionsView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
-            for: assetListModelObservable,
-            selectionModel: .payForAsset(nil),
-            selectClosureStrategy: .callbackAfterDismissal,
-            selectClosure: selectClosure
-        ) else {
-            return
-        }
 
-        let navigationController = NovaNavigationController(
-            rootViewController: swapDirectionsView.controller
-        )
-
-        view?.controller.presentWithCardLayout(
-            navigationController,
-            animated: true
-        )
+            presentSwapFlow(from: view, state: state, initState: initState, source: .mainScreen)
+        }
     }
 
     func showGift(
@@ -271,29 +260,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         tabBarController.selectedIndex = MainTabBarIndex.staking
-    }
-
-    private func showSwapTokens(
-        from view: AssetListViewProtocol?,
-        state: SwapTokensFlowStateProtocol,
-        payAsset: ChainAsset,
-        swapCompletionClosure: SwapCompletionClosure?
-    ) {
-        guard let swapTokensView = SwapSetupViewFactory.createView(
-            state: state,
-            payChainAsset: payAsset,
-            source: .mainScreen,
-            swapCompletionClosure: swapCompletionClosure
-        ) else {
-            return
-        }
-
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: swapTokensView.controller)
-
-        view?.controller.presentWithCardLayout(
-            navigationController,
-            animated: true
-        )
     }
 
     func showCard(

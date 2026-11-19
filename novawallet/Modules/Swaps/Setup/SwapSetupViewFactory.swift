@@ -6,23 +6,35 @@ import NovaAnalytics
 struct SwapSetupViewFactory {
     static func createView(
         state: SwapTokensFlowStateProtocol,
-        payChainAsset: ChainAsset,
+        initState: SwapSetupInitState,
         source: SwapSource,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
-        createView(
-            state: state,
-            initState: .init(payChainAsset: payChainAsset),
-            source: source,
-            swapCompletionClosure: swapCompletionClosure
+        let flowHandler = SwapExecutionPresentedFlowHandler(
+            flowState: state,
+            completionClosure: swapCompletionClosure
         )
+
+        let view = createView(
+            state: state,
+            initState: initState,
+            source: source,
+            placement: .flow,
+            flowHandler: flowHandler
+        )
+
+        flowHandler.formView = view
+
+        return view
     }
 
     static func createView(
         state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
         source: SwapSource,
-        swapCompletionClosure: SwapCompletionClosure?
+        placement: SwapSetupPlacement,
+        flowHandler: SwapExecutionFlowHandling,
+        inputOwner: SwapSetupModuleInputOwnerProtocol? = nil
     ) -> SwapSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -35,25 +47,15 @@ struct SwapSetupViewFactory {
 
         guard let interactor = createInteractor(for: state) else { return nil }
 
-        let wireframe = SwapSetupWireframe(
-            state: state,
-            swapCompletionClosure: swapCompletionClosure
-        )
-
-        let issuesViewModelFactory = SwapIssueViewModelFactory(
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
-        )
+        let wireframe = createWireframe(state: state, flowHandler: flowHandler)
 
         let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
         let percentFormatter = NumberFormatter.percentSingle.localizableResource()
 
-        let viewModelFactory = SwapsSetupViewModelFactory(
+        let viewModelFactory = createViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
-            priceAssetInfoFactory: priceInfoFactory,
-            issuesViewModelFactory: issuesViewModelFactory,
-            networkViewModelFactory: NetworkViewModelFactory(),
-            assetIconViewModelFactory: AssetIconViewModelFactory(),
-            priceDifferenceModelFactory: priceDiffModelFactory,
+            priceInfoFactory: priceInfoFactory,
+            priceDiffModelFactory: priceDiffModelFactory,
             percentFormatter: percentFormatter
         )
 
@@ -75,19 +77,57 @@ struct SwapSetupViewFactory {
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
             source: source,
+            placement: placement,
             logger: Logger.shared
         )
 
+        guard let chartView = createChartView(for: presenter) else { return nil }
+
         let view = SwapSetupViewController(
             presenter: presenter,
+            chartViewProvider: chartView,
+            placement: placement,
             localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
         interactor.basePresenter = presenter
         dataValidatingFactory.view = view
+        inputOwner?.swapSetupModule = presenter
 
         return view
+    }
+
+    private static func createWireframe(
+        state: SwapTokensFlowStateProtocol,
+        flowHandler: SwapExecutionFlowHandling
+    ) -> SwapSetupWireframe {
+        SwapSetupWireframe(
+            state: state,
+            tokenSelectionFlow: SwapTokenSelectFlow(state: state),
+            flowHandler: flowHandler
+        )
+    }
+
+    private static func createViewModelFactory(
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceInfoFactory: PriceAssetInfoFactoryProtocol,
+        priceDiffModelFactory: SwapPriceDifferenceModelFactoryProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
+    ) -> SwapsSetupViewModelFactory {
+        let issuesViewModelFactory = SwapIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
+        return SwapsSetupViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceInfoFactory,
+            issuesViewModelFactory: issuesViewModelFactory,
+            networkViewModelFactory: NetworkViewModelFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
+            priceDifferenceModelFactory: priceDiffModelFactory,
+            percentFormatter: percentFormatter
+        )
     }
 
     private static func createInteractor(for flowState: SwapTokensFlowStateProtocol) -> SwapSetupInteractor? {
@@ -110,6 +150,7 @@ struct SwapSetupViewFactory {
             assetStorageFactory: assetStorageFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
+            chartSession: SwapPriceChartSession.shared,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
             operationQueue: operationQueue,
@@ -117,5 +158,26 @@ struct SwapSetupViewFactory {
         )
 
         return interactor
+    }
+
+    private static func createChartView(for presenter: SwapSetupPresenter) -> AssetPriceChartCompactProviderProtocol? {
+        guard let currencyManager = CurrencyManager.shared else { return nil }
+
+        let params = AssetPriceChartViewFactory.Params(
+            asset: nil,
+            periods: [.day, .week, .month, .year, .allTime],
+            selectedPeriod: SwapPriceChartSession.shared.selectedPeriod,
+            placeholder: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupChartPlaceholder()
+            },
+            locale: LocalizationManager.shared.selectedLocale,
+            currency: currencyManager.selectedCurrency
+        )
+
+        return AssetPriceChartViewFactory.createCompactView(
+            output: presenter,
+            inputOwner: presenter,
+            params: params
+        )
     }
 }

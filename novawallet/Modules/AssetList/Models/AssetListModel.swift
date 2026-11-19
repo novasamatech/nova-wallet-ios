@@ -6,6 +6,7 @@ struct AssetListModel {
     let priceResult: Result<[ChainAssetId: PriceData], Error>?
     let allChains: [ChainModel.Id: ChainModel]
     let balances: [ChainAssetId: Result<AssetBalance, Error>]
+    let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
     let externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
     let chainsIncludingHidden: [ChainModel.Id: ChainModel]
     let visibility: AssetVisibility?
@@ -13,6 +14,7 @@ struct AssetListModel {
     init(
         priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
         balances: [ChainAssetId: Result<AssetBalance, Error>] = [:],
+        balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
         allChains: [ChainModel.Id: ChainModel] = [:],
         externalBalances: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil,
         chainsIncludingHidden: [ChainModel.Id: ChainModel] = [:],
@@ -20,6 +22,7 @@ struct AssetListModel {
     ) {
         self.priceResult = priceResult
         self.balances = balances
+        self.balanceResults = balanceResults
         self.allChains = allChains
         self.externalBalances = externalBalances
         self.chainsIncludingHidden = chainsIncludingHidden
@@ -34,6 +37,7 @@ struct AssetListModel {
         priceResult = model.priceResult
         allChains = model.allChains
         balances = model.balances
+        balanceResults = model.balanceResults
         externalBalances = model.externalBalanceResult
         self.chainsIncludingHidden = chainsIncludingHidden
         self.visibility = visibility

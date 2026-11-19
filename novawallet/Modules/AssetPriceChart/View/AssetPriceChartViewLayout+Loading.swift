@@ -25,14 +25,23 @@ extension AssetPriceChartViewLayout: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [
-            priceLabel,
-            priceChangeView,
-            currentEntryDateLabel
-        ]
+        switch style {
+        case .regular:
+            [
+                priceLabel,
+                priceChangeView,
+                currentEntryDateLabel
+            ]
+        case .compact:
+            []
+        }
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {
+        if style == .compact {
+            return createCompactSkeletons(for: spaceSize)
+        }
+
         let priceRows = createSkeletons(
             for: spaceSize,
             lineWidths: Constants.priceSkeletonLineWidths,

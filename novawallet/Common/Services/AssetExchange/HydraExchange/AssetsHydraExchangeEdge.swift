@@ -75,6 +75,10 @@ class AssetsHydraExchangeEdge {
         false
     }
 
+    func usesRouterAccount(inMultiHopRun _: Bool) -> Bool {
+        true
+    }
+
     func beginMetaOperation(
         for amountIn: Balance,
         amountOut: Balance

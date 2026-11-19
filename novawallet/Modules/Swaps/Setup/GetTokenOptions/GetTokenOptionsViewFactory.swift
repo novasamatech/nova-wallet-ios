@@ -6,11 +6,13 @@ enum GetTokenOptionsViewFactory {
     static func createView(
         from destinationChainAsset: ChainAsset,
         assetModelObservable: AssetListModelObservable,
+        offersSwap: Bool,
         completion: @escaping GetTokenOptionsCompletion
     ) -> GetTokenOptionsViewProtocol? {
         guard let interactor = createInteractor(
             from: destinationChainAsset,
-            assetModelObservable: assetModelObservable
+            assetModelObservable: assetModelObservable,
+            offersSwap: offersSwap
         ) else {
             return nil
         }
@@ -20,7 +22,8 @@ enum GetTokenOptionsViewFactory {
         let presenter = GetTokenOptionsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            destinationChainAsset: destinationChainAsset
+            destinationChainAsset: destinationChainAsset,
+            allOperations: interactor.allOperations
         )
 
         let view = GetTokenOptionsViewController(operationPresenter: presenter)
@@ -41,8 +44,7 @@ enum GetTokenOptionsViewFactory {
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.novaManual)
         view.modalTransitioningFactory = factory
 
-        let height = view.headerHeight + CGFloat(presenter.allOperations.count) * view.cellHeight + view.footerHeight
-        view.preferredContentSize = CGSize(width: 0.0, height: height)
+        view.updatePreferredHeight(rowsCount: presenter.operations.count)
 
         view.localizationManager = LocalizationManager.shared
 
@@ -54,7 +56,8 @@ enum GetTokenOptionsViewFactory {
 
     private static func createInteractor(
         from destinationChainAsset: ChainAsset,
-        assetModelObservable: AssetListModelObservable
+        assetModelObservable: AssetListModelObservable,
+        offersSwap: Bool
     ) -> GetTokenOptionsInteractor? {
         guard let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -71,6 +74,11 @@ enum GetTokenOptionsViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let swapState: SwapTokensFlowStateProtocol? = offersSwap ? SwapTokensFlowState(
+            assetListObservable: assetModelObservable,
+            assetExchangeParams: AssetExchangeGraphProvidingParams(wallet: selectedWallet)
+        ) : nil
+
         return GetTokenOptionsInteractor(
             selectedWallet: selectedWallet,
             destinationChainAsset: destinationChainAsset,
@@ -78,6 +86,9 @@ enum GetTokenOptionsViewFactory {
             xcmTransfersSyncService: xcmTransfersSyncService,
             featureChecker: featureChecker,
             rampProvider: RampAggregator.defaultAggregator(),
+            globalConfigProvider: GlobalConfigProvider.shared,
+            swapState: swapState,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
     }

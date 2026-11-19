@@ -53,6 +53,12 @@ private extension SwapRouteDetailsView {
         }
 
         let lineView = LinePatternView()
+        lineView.backgroundColor = .clear
+        lineView.style = LinePatternView.Style(
+            color: R.color.colorIconSecondary()!,
+            lineWidth: Constants.lineWidth,
+            pattern: nil
+        )
         addSubview(lineView)
 
         lineView.snp.makeConstraints { make in
@@ -93,9 +99,10 @@ private extension SwapRouteDetailsView {
 extension SwapRouteDetailsView {
     enum Constants {
         static let stepsContainerWidth: CGFloat = 24
-        static let stepWidth: CGFloat = 20
-        static let stepsTopOffset: CGFloat = 11
-        static let itemsHorOffset: CGFloat = 18
+        static let stepWidth: CGFloat = 24
+        static let stepsTopOffset: CGFloat = 14
+        static let itemsHorOffset: CGFloat = 12
+        static let lineWidth: CGFloat = 1
     }
 }
 

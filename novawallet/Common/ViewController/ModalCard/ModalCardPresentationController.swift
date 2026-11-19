@@ -16,6 +16,8 @@ public final class ModalCardPresentationController: UIPresentationController {
     var interactiveDismissal: ModalCardInteractiveDismissal?
     var dragState = ModalCardDragState()
 
+    private var isDismissedWithPresenter = false
+
     init(
         presentedViewController: UIViewController,
         contextRootViewController: UIViewController,
@@ -47,6 +49,7 @@ public final class ModalCardPresentationController: UIPresentationController {
     override public func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
+        isDismissedWithPresenter = presentingViewController.isBeingDismissed
         containerView?.autoresizesSubviews = false
         animateBackground(appearing: false)
     }
@@ -57,6 +60,10 @@ public final class ModalCardPresentationController: UIPresentationController {
         containerView?.autoresizesSubviews = true
 
         if completed {
+            guard !isDismissedWithPresenter else {
+                return
+            }
+
             let parentPresentationController = presentingViewController.presentationController
                 as? ModalCardPresentationController
 

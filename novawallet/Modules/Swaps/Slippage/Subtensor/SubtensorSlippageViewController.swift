@@ -5,6 +5,9 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorSlippageViewLayout
 
     let presenter: SwapSlippagePresenterProtocol
+    let configuration: SwapSlippageSheetConfiguration
+
+    var keyboardHandler: KeyboardHandler?
 
     private var hasInputError: Bool = false
     private var isApplyAvailable: Bool = false
@@ -13,9 +16,11 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
 
     init(
         presenter: SwapSlippagePresenterProtocol,
+        configuration: SwapSlippageSheetConfiguration = .subtensor,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.configuration = configuration
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -26,16 +31,38 @@ final class SubtensorSlippageViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = SubtensorSlippageViewLayout()
+        view = SubtensorSlippageViewLayout(presentation: configuration.presentation)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if configuration.allowsReset {
+            rootView.setupResetButton()
+        }
+
+        if configuration.showsSlippageInfo {
+            rootView.setupSlippageInfoButton()
+        }
+
         setupLocalization()
         setupHandlers()
         setupAccessoryView()
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if configuration.presentation == .card {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 }
 
@@ -44,11 +71,12 @@ private extension SubtensorSlippageViewController {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
         rootView.bind(
-            title: strings.commonButtonSettings(),
-            explanation: strings.stakingSubtensorUiSlippageExplanation()
+            title: configuration.title.value(for: selectedLocale),
+            explanation: configuration.explanation?.value(for: selectedLocale)
         )
-        rootView.slippageTitleLabel.text = strings.stakingSubtensorInfoSlippageTitle()
-        rootView.actionButton.imageWithTitleView?.title = strings.commonDone()
+        rootView.bind(slippageTitle: configuration.slippageTitle.value(for: selectedLocale))
+        rootView.actionButton.imageWithTitleView?.title = configuration.actionTitle.value(for: selectedLocale)
+        rootView.resetButton?.imageWithTitleView?.title = strings.commonReset()
         rootView.amountInput.textField.attributedPlaceholder = NSAttributedString(
             string: strings.stakingSubtensorUiSlippageCustom(),
             attributes: [
@@ -62,6 +90,8 @@ private extension SubtensorSlippageViewController {
 
     func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
+        rootView.resetButton?.addTarget(self, action: #selector(resetButtonAction), for: .touchUpInside)
+        rootView.slippageInfoButton?.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
         rootView.amountInput.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
         rootView.presetsControl.addTarget(self, action: #selector(presetAction), for: .valueChanged)
     }
@@ -103,6 +133,10 @@ private extension SubtensorSlippageViewController {
     }
 
     func updatePreferredHeight() {
+        guard configuration.presentation == .sheet else {
+            return
+        }
+
         let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
         let height = rootView.preferredHeight(for: width)
 
@@ -110,23 +144,21 @@ private extension SubtensorSlippageViewController {
             return
         }
 
-        preferredContentSize = CGSize(width: 0, height: height)
-
-        guard
-            view.window != nil,
-            let presentationController,
-            let containerView = presentationController.containerView else {
-            return
-        }
-
-        UIView.animate(withDuration: 0.25) {
-            self.view.frame = presentationController.frameOfPresentedViewInContainerView
-            containerView.layoutIfNeeded()
-        }
+        applyPreferredContentHeight(height)
     }
 
     @objc func applyButtonAction() {
         presenter.apply()
+    }
+
+    @objc func resetButtonAction() {
+        rootView.amountInput.endEditing(true)
+        presenter.reset()
+    }
+
+    @objc func slippageInfoAction() {
+        rootView.amountInput.endEditing(true)
+        presenter.showSlippageInfo()
     }
 
     @objc func doneButtonAction() {
@@ -165,7 +197,9 @@ extension SubtensorSlippageViewController: SwapSlippageViewProtocol {
         applyInput()
     }
 
-    func didReceiveResetState(available _: Bool) {}
+    func didReceiveResetState(available: Bool) {
+        rootView.setResetEnabled(available)
+    }
 
     func didReceiveButtonState(available: Bool) {
         isApplyAvailable = available
@@ -182,6 +216,16 @@ extension SubtensorSlippageViewController: SwapSlippageViewProtocol {
     func didReceiveInput(warning: String?) {
         rootView.set(warning: warning)
         updatePreferredHeight()
+    }
+}
+
+extension SubtensorSlippageViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let keyboardFrame = rootView.convert(frame, from: nil)
+        let overlap = max(rootView.bounds.maxY - keyboardFrame.minY - rootView.safeAreaInsets.bottom, 0)
+
+        rootView.set(keyboardInset: overlap)
+        rootView.layoutIfNeeded()
     }
 }
 

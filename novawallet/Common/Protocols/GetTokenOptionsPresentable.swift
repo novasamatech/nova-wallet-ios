@@ -1,6 +1,7 @@
 import Foundation
+import NovaAnalytics
 
-protocol GetTokenOptionsPresentable: RampPresentable, AlertPresentable {
+protocol GetTokenOptionsPresentable: RampPresentable, AlertPresentable, BrowserOpening, SwapFlowPresentable {
     var assetListObservable: AssetListModelObservable { get }
 }
 
@@ -9,7 +10,8 @@ extension GetTokenOptionsPresentable {
         from view: ControllerBackedProtocol?,
         purchaseHandler: RampFlowManaging & RampDelegate,
         destinationChainAsset: ChainAsset,
-        locale: Locale
+        locale: Locale,
+        offersSwap: Bool = false
     ) {
         let completion: GetTokenOptionsCompletion = { [weak self, weak purchaseHandler] result in
             guard let self else {
@@ -39,12 +41,23 @@ extension GetTokenOptionsPresentable {
                     chainAsset: destinationChainAsset,
                     locale: locale
                 )
+            case let .changeNow(url):
+                view?.controller.view.endEditing(true)
+                openBrowser(with: .query(string: url.absoluteString))
+            case let .swap(state):
+                presentSwapFlow(
+                    from: view,
+                    state: state,
+                    initState: SwapSetupInitState(payChainAsset: nil, receiveChainAsset: destinationChainAsset),
+                    source: .getToken
+                )
             }
         }
 
         guard let bottomSheet = GetTokenOptionsViewFactory.createView(
             from: destinationChainAsset,
             assetModelObservable: assetListObservable,
+            offersSwap: offersSwap,
             completion: completion
         ) else {
             return

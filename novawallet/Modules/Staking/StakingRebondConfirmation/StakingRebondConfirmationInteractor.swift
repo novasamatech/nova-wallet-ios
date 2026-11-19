@@ -6,7 +6,7 @@ import SubstrateSdk
 import NovaCrypto
 
 final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, AccountFetching {
-    weak var presenter: StakingRebondConfirmationInteractorOutputProtocol!
+    weak var presenter: StakingRebondConfirmationInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -82,13 +82,13 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         feeProxy.delegate = self
@@ -100,7 +100,7 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
               let amountValue = amount.toSubstrateAmount(
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
-            presenter.didSubmitRebonding(result: .failure(CommonError.undefined))
+            presenter?.didSubmitRebonding(result: .failure(CommonError.undefined))
             return
         }
 
@@ -120,7 +120,7 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didSubmitRebonding(result: result.mapToExtrinsicSubmittedResult())
+            self?.presenter?.didSubmitRebonding(result: result.mapToExtrinsicSubmittedResult())
         }
     }
 
@@ -129,7 +129,7 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
               let amountValue = amount.toSubstrateAmount(
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
-            presenter.didReceiveFee(result: .failure(CommonError.undefined))
+            presenter?.didReceiveFee(result: .failure(CommonError.undefined))
             return
         }
 
@@ -151,7 +151,7 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
             let maybeStashItem = try result.get()
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             if let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
@@ -174,21 +174,21 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        self?.presenter.didReceiveController(result: .success(maybeResponse))
+                        self?.presenter?.didReceiveController(result: .success(maybeResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveController(result: .failure(error))
+                        self?.presenter?.didReceiveController(result: .failure(error))
                     }
                 }
 
             } else {
-                presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -197,7 +197,7 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
@@ -208,19 +208,19 @@ extension StakingRebondConfirmationInteractor: WalletLocalStorageSubscriber, Wal
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingRebondConfirmationInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
 extension StakingRebondConfirmationInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

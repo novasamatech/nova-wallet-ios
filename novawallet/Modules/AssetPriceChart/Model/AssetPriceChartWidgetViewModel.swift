@@ -2,10 +2,12 @@ import Foundation
 
 struct AssetPriceChartWidgetViewModel {
     let title: String
+    let symbol: String
     let currentPrice: LoadableViewModelState<String?>
     let periodChange: LoadableViewModelState<PricePeriodChangeViewModel>
     let chartModel: LoadableViewModelState<PriceChartViewModel>
     let periodControlModel: PriceChartPeriodControlViewModel
+    let placeholder: String?
 }
 
 extension AssetPriceChartWidgetViewModel {
@@ -26,10 +28,12 @@ extension AssetPriceChartWidgetViewModel {
 
         return AssetPriceChartWidgetViewModel(
             title: title,
+            symbol: symbol,
             currentPrice: newCurrentPrice,
             periodChange: newPeriodChange,
             chartModel: chartModel,
-            periodControlModel: periodControlModel
+            periodControlModel: periodControlModel,
+            placeholder: placeholder
         )
     }
 }

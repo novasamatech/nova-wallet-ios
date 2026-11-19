@@ -47,3 +47,33 @@ struct AssetExchangeQuote {
         }
     }
 }
+
+extension AssetExchangeQuote {
+    func minReceived(slippage: BigRational) -> Balance {
+        let firstSlippageBoundIndex = switch route.direction {
+        case .sell:
+            0
+        case .buy:
+            1
+        }
+
+        var compoundedAmountOutMin: Balance?
+
+        for (index, operation) in metaOperations.enumerated() {
+            let amountOut = compoundedAmountOutMin.map { amountIn in
+                operation.amountIn > 0 ? amountIn * operation.amountOut / operation.amountIn : 0
+            } ?? operation.amountOut
+
+            let isSlippageBound = index >= firstSlippageBoundIndex && operation.label == .swap
+
+            compoundedAmountOutMin = isSlippageBound
+                ? amountOut.subtractOrZero(slippage.mul(value: amountOut))
+                : amountOut
+        }
+
+        let amountOut = route.amountOut
+        let slippageLoss = amountOut.subtractOrZero(compoundedAmountOutMin ?? amountOut)
+
+        return commissionNetFlow().netFinalAmountOut.subtractOrZero(slippageLoss)
+    }
+}
