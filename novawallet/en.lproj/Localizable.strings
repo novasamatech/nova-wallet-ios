@@ -2397,4 +2397,6 @@ Do you want to continue?";
 "swaps.setup.action.not.enough.token" = "Not enough %@";
 "swaps.setup.action.no.route" = "No route for this pair";
 "swaps.setup.details.min.received" = "Min received";
+"dapp.confirmation.unverified.transaction" = "The DApp sent a transaction that Nova Wallet could not verify, so it can't be signed";
+"dapp.confirmation.unsupported.signer" = "This wallet can't sign the type of transaction the DApp requested";
 

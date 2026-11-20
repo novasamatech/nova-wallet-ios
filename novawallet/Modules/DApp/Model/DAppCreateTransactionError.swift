@@ -37,6 +37,10 @@ enum DAppCreateTransactionError: Error, Equatable {
         }
     }
 
+    /**
+     *  What the dApp receives and what goes to the logs. It may quote values the dApp sent
+     *  and is not localized, so the user is shown `toErrorContent(for:)` instead.
+     */
     var responseMessage: String {
         "\(name): \(details)"
     }
@@ -44,11 +48,15 @@ enum DAppCreateTransactionError: Error, Equatable {
 
 extension DAppCreateTransactionError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
-        ErrorContent(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle(),
-            message: R.string(preferredLanguages: locale.rLanguages).localizable.dappConfirmationBadField(
-                responseMessage
-            )
-        )
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let message = switch self {
+        case .signerUnavailable:
+            strings.dappConfirmationUnsupportedSigner()
+        case .unsupportedTxExtensionVersion, .missingMandatoryExtension, .decodeError, .invalidHex:
+            strings.dappConfirmationUnverifiedTransaction()
+        }
+
+        return ErrorContent(title: strings.commonErrorGeneralTitle(), message: message)
     }
 }
