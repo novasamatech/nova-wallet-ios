@@ -4587,6 +4587,8 @@
 		8467FD2A24EA6C62005D486C /* SigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD2924EA6C62005D486C /* SigningWrapper.swift */; };
 		8467FD3924EACE08005D486C /* AccountCreationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD3824EACE08005D486C /* AccountCreationHelper.swift */; };
 		8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */; };
+		C48149DE633577795A00B92E /* KeychainCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFD86767759A5A24B010B07 /* KeychainCharacterizationTests.swift */; };
+		D9B418CC8A28F7131060136C /* KeyDerivationCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83DE74B13B529678B984ED1 /* KeyDerivationCharacterizationTests.swift */; };
 		8467FD3E24EAD66F005D486C /* validEd25519Keystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */; };
 		8467FD3F24EAD66F005D486C /* validEcdsaKeystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */; };
 		8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4024ED3C72005D486C /* AlignableContentControl.swift */; };
@@ -11573,6 +11575,8 @@
 		8467FD2924EA6C62005D486C /* SigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapper.swift; sourceTree = "<group>"; };
 		8467FD3824EACE08005D486C /* AccountCreationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationHelper.swift; sourceTree = "<group>"; };
 		8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapperTests.swift; sourceTree = "<group>"; };
+		3AFD86767759A5A24B010B07 /* KeychainCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainCharacterizationTests.swift; sourceTree = "<group>"; };
+		C83DE74B13B529678B984ED1 /* KeyDerivationCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDerivationCharacterizationTests.swift; sourceTree = "<group>"; };
 		8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEd25519Keystore.json; sourceTree = "<group>"; };
 		8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEcdsaKeystore.json; sourceTree = "<group>"; };
 		8467FD4024ED3C72005D486C /* AlignableContentControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignableContentControl.swift; sourceTree = "<group>"; };
@@ -25179,6 +25183,8 @@
 			isa = PBXGroup;
 			children = (
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
+				3AFD86767759A5A24B010B07 /* KeychainCharacterizationTests.swift */,
+				C83DE74B13B529678B984ED1 /* KeyDerivationCharacterizationTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
 				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
 			);
@@ -40573,6 +40579,8 @@
 				84B66A1626FDF7D70038B963 /* JsonSubscriptionFactoryStub.swift in Sources */,
 				8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */,
 				8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */,
+				C48149DE633577795A00B92E /* KeychainCharacterizationTests.swift in Sources */,
+				D9B418CC8A28F7131060136C /* KeyDerivationCharacterizationTests.swift in Sources */,
 				84B7C71D289BFA79001A3566 /* MnemonicTextNormalizerTest.swift in Sources */,
 				84893BFC24D9B0F1008F6A3F /* PredicateTests.swift in Sources */,
 				84B7C73A289BFA79001A3566 /* StakingRewardDestConfirmTests.swift in Sources */,
