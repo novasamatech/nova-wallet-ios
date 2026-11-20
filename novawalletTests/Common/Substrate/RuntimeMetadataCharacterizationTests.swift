@@ -130,10 +130,11 @@ final class RuntimeMetadataCharacterizationTests: XCTestCase {
 // MARK: Behaviour that substrate-sdk-ios 5 changed on purpose
 
 extension RuntimeMetadataCharacterizationTests {
-    /// SCALE encodes `Option<bool>` in one byte: None = 0, Some(true) = 1, Some(false) = 2.
-    /// substrate-sdk-ios 4.5.2 had the two `Some` cases swapped; 5.x follows the specification
-    /// (SDK commit "fix scale bool option"). Added after the bump, so it pins the corrected coding only.
-    func testOptionalBoolFollowsScaleSpecification() throws {
+    /// substrate-sdk-ios 5 codes `Option<bool>` in one byte: None = 0, Some(true) = 1, Some(false) = 2
+    /// (4.5.2 had the two `Some` cases swapped, SDK commit "fix scale bool option"). This pins what the SDK
+    /// does and is not a statement about SCALE: in parity-scale-codec the one-byte form belongs to the
+    /// `OptionBool` type, while a plain `Option<bool>` is coded as any other option, in two bytes.
+    func testOptionalBoolKeepsSingleByteCodingOfSdk5() throws {
         let factory = try ExtrinsicGoldenRuntime.westend().codingFactory
 
         XCTAssertEqual(try encodeOptionalBool(.boolValue(true), factory: factory), "0x01")
