@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SDKLogger
 import Foundation_iOS
 
 protocol ConnectionFactoryProtocol {

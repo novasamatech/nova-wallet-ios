@@ -6549,7 +6549,6 @@
 		AEAC68F526E9F93B00346599 /* CoingeckoDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68F426E9F93B00346599 /* CoingeckoDefinitions.swift */; };
 		AEAC68F726E9FB8400346599 /* CoingeckoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */; };
 		AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */; };
-		AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC690326EB891900346599 /* Logger+Substrate.swift */; };
 		AEACD5F9265E94AB00A09892 /* StatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */; };
 		AEBE16E6262EA7C100DF257C /* StakingErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBE16E5262EA7C100DF257C /* StakingErrors.swift */; };
 		AEBE173B262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBE173A262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift */; };
@@ -13600,7 +13599,6 @@
 		AEAC68F426E9F93B00346599 /* CoingeckoDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoDefinitions.swift; sourceTree = "<group>"; };
 		AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoOperationFactory.swift; sourceTree = "<group>"; };
 		AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceData.swift; sourceTree = "<group>"; };
-		AEAC690326EB891900346599 /* Logger+Substrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Substrate.swift"; sourceTree = "<group>"; };
 		AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusViewModel.swift; sourceTree = "<group>"; };
 		AEBE16E5262EA7C100DF257C /* StakingErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingErrors.swift; sourceTree = "<group>"; };
 		AEBE173A262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmViewModelFactory.swift; sourceTree = "<group>"; };
@@ -24255,7 +24253,6 @@
 				849E0CCF25CFDDB700B33506 /* StorageUpdateData+Decoding.swift */,
 				845BB8BF25E4508800E5FCDC /* SS58FactoryExtensions.swift */,
 				84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */,
-				AEAC690326EB891900346599 /* Logger+Substrate.swift */,
 				8493D0E026FF4F5000A28008 /* ScaleCoder+Extension.swift */,
 				84D2F19C2771E5610040C680 /* ExtrinsicBuilder+Signing.swift */,
 				8499FEC727BF73F400712589 /* StorageKeyFactory+Size.swift */,
@@ -34700,7 +34697,6 @@
 				AE2C84CA25EF986E00986716 /* ValidatorInfoProtocols.swift in Sources */,
 				844518D127CAB6FC00D0C52B /* NftImageViewModel.swift in Sources */,
 				0CB261F72A9E2D8400287305 /* StackSwitchCell.swift in Sources */,
-				AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */,
 				0CAA10052E7A0005007E41C4 /* Logger+SDKLogger.swift in Sources */,
 				84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */,
 				0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */,

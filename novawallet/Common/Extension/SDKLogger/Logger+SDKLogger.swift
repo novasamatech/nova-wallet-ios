@@ -1,28 +1,37 @@
 import SDKLogger
 
-/// `Logger` already conforms to `SubstrateSdk.SDKLoggerProtocol` in
-/// `Common/Extension/SubstrateSdk/Logger+Substrate.swift`. Until the substrate-sdk v5
-/// migration lands, that module ships its own identically-named protocol, so `Logger`
-/// must satisfy both. Both extensions are empty because `LoggerProtocol` already declares
-/// the same five methods.
-///
-/// On v5, `substrate-sdk-ios` stops declaring the protocol and consumes `logger-ios`
-/// instead. Delete `Logger+Substrate.swift` then and keep this file.
-extension Logger: SDKLogger.SDKLoggerProtocol {}
+/// `substrate-sdk-ios` 5 and Operation-iOS 3 log through logger-ios, whose requirements take the message
+/// lazily. `Logger` formats eagerly, so the closures are evaluated on the spot and handed to the app's
+/// own `LoggerProtocol` methods. SwiftyBeaver serialises its destinations itself, hence `@unchecked Sendable`.
+extension Logger: SDKLogger.SDKLoggerProtocol, @unchecked Sendable {
+    func verbose(message: () -> String, file: String, function: String, line: Int) {
+        verbose(message: message(), file: file, function: function, line: line)
+    }
 
-/// `SDKLoggerProtocol`'s one-argument convenience methods are `public` in logger-ios, unlike
-/// SubstrateSdk's `internal` copy. The moment `Logger` conforms to it (above), those five
-/// methods become visible module-wide and collide with the identically-shaped convenience
-/// extension the app already declares on its own `LoggerProtocol`
+    func debug(message: () -> String, file: String, function: String, line: Int) {
+        debug(message: message(), file: file, function: function, line: line)
+    }
+
+    func info(message: () -> String, file: String, function: String, line: Int) {
+        info(message: message(), file: file, function: function, line: line)
+    }
+
+    func warning(message: () -> String, file: String, function: String, line: Int) {
+        warning(message: message(), file: file, function: function, line: line)
+    }
+
+    func error(message: () -> String, file: String, function: String, line: Int) {
+        error(message: message(), file: file, function: function, line: line)
+    }
+}
+
+/// `SDKLoggerProtocol`'s one-argument convenience methods are `public` in logger-ios. The moment
+/// `Logger` conforms to it (above), those five methods become visible module-wide and collide with
+/// the identically-shaped convenience extension the app already declares on its own `LoggerProtocol`
 /// (`Common/Logger/Logger.swift`): every `Logger.shared.error("…")`-style call site in the
 /// app then has two equally good candidates and fails to compile. Declaring the same five
 /// methods directly on the concrete `Logger` type outranks both protocol-extension defaults,
-/// so every call site resolves here instead, regardless of how many `SDKLoggerProtocol`-shaped
-/// protocols `Logger` conforms to.
-///
-/// This must survive the v5 migration, not just bridge to it: v5 makes `substrate-sdk-ios`
-/// itself consume logger-ios, so the three-way collision (app + SubstrateSdk + logger-ios)
-/// becomes a permanent two-way one (app + logger-ios) rather than one migration removes.
+/// so every call site resolves here instead.
 extension Logger {
     func verbose(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         verbose(message: message, file: file, function: function, line: line)
