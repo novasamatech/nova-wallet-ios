@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Saját tokenek";
 "tabbar.more.title" = "Továbbiak";
 "tabbar.swaps.title" = "Cserék";
+"swaps.execution.funds.location" = "A(z) %@ itt található: %@";
