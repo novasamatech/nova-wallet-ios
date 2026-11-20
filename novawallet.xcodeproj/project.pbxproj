@@ -458,6 +458,8 @@
 		0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */; };
 		0C27F3842DA6CF2C00191FFF /* BlockWeight+Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */; };
 		0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */; };
+		6D0E5530C4E0CC46C2A8C376 /* StorageCodingCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BF040AD458EA23D88C53B4 /* StorageCodingCharacterizationTests.swift */; };
+		521CC44B2ECBE0659C77F4BF /* RuntimeMetadataCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A2200CB9D323901BC87508 /* RuntimeMetadataCharacterizationTests.swift */; };
 		205CE914DAE3CFD211D8CF30 /* ExtrinsicDecodingCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6325B0F0D6A34D604F00053D /* ExtrinsicDecodingCharacterizationTests.swift */; };
 		097A7B2626CBFB99F492BD79 /* TransactionExtensionCoderCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */; };
 		CC603D786BB6BBBE3FDB7E6C /* TransactionExtensionCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */; };
@@ -7769,6 +7771,8 @@
 		0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystePallet+ConstantPath.swift"; sourceTree = "<group>"; };
 		0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockWeight+Operation.swift"; sourceTree = "<group>"; };
 		0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateWeightTest.swift; sourceTree = "<group>"; };
+		03BF040AD458EA23D88C53B4 /* StorageCodingCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageCodingCharacterizationTests.swift; sourceTree = "<group>"; };
+		10A2200CB9D323901BC87508 /* RuntimeMetadataCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataCharacterizationTests.swift; sourceTree = "<group>"; };
 		6325B0F0D6A34D604F00053D /* ExtrinsicDecodingCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicDecodingCharacterizationTests.swift; sourceTree = "<group>"; };
 		459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExtensionCoderCharacterizationTests.swift; sourceTree = "<group>"; };
 		A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExtensionCharacterizationTests.swift; sourceTree = "<group>"; };
@@ -15618,6 +15622,8 @@
 			isa = PBXGroup;
 			children = (
 				0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */,
+				03BF040AD458EA23D88C53B4 /* StorageCodingCharacterizationTests.swift */,
+				10A2200CB9D323901BC87508 /* RuntimeMetadataCharacterizationTests.swift */,
 				6325B0F0D6A34D604F00053D /* ExtrinsicDecodingCharacterizationTests.swift */,
 				459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */,
 				A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */,
@@ -40500,6 +40506,8 @@
 				576F2FDA14FD68347EE180C9 /* ExtrinsicOperationFactoryCharacterizationTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
+				6D0E5530C4E0CC46C2A8C376 /* StorageCodingCharacterizationTests.swift in Sources */,
+				521CC44B2ECBE0659C77F4BF /* RuntimeMetadataCharacterizationTests.swift in Sources */,
 				205CE914DAE3CFD211D8CF30 /* ExtrinsicDecodingCharacterizationTests.swift in Sources */,
 				097A7B2626CBFB99F492BD79 /* TransactionExtensionCoderCharacterizationTests.swift in Sources */,
 				CC603D786BB6BBBE3FDB7E6C /* TransactionExtensionCharacterizationTests.swift in Sources */,
