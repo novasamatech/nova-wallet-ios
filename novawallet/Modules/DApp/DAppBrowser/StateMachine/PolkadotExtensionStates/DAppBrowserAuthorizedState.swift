@@ -156,6 +156,8 @@ extension DAppBrowserAuthorizedState: DAppBrowserStateProtocol {
                 handleExtrinsicSigning(from: message, dataSource: dataSource)
             case .signBytes:
                 handleRawPayloadSigning(from: message, dataSource: dataSource)
+            case .createTransaction:
+                handleCreateTransaction(from: message, dataSource: dataSource)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)
@@ -182,5 +184,88 @@ extension DAppBrowserAuthorizedState: DAppBrowserStateProtocol {
             error: error,
             nextState: self
         )
+    }
+}
+
+// MARK: Create transaction
+
+private extension DAppBrowserAuthorizedState {
+    struct CreateTransactionRequest {
+        let operation: DAppOperationRequest
+        let chain: ChainModel
+    }
+
+    func handleCreateTransaction(
+        from message: PolkadotExtensionMessage,
+        dataSource: DAppBrowserStateDataSource
+    ) {
+        switch createTransactionRequest(from: message, dataSource: dataSource) {
+        case let .success(request):
+            let type: DAppSigningType = .createTransaction(chain: request.chain)
+            let nextState = DAppBrowserSigningState(
+                stateMachine: stateMachine,
+                signingType: type,
+                requestId: message.identifier
+            )
+            stateMachine?.emit(signingRequest: request.operation, type: type, nextState: nextState)
+        case let .failure(error):
+            // The dApp awaits the result of createTransaction, so the failure must settle its request
+            provideError(for: message.identifier, errorMessage: error.responseMessage, nextState: self)
+        }
+    }
+
+    func createTransactionRequest(
+        from message: PolkadotExtensionMessage,
+        dataSource: DAppBrowserStateDataSource
+    ) -> Result<CreateTransactionRequest, DAppCreateTransactionError> {
+        guard
+            let jsonRequest = message.request,
+            let payload = try? jsonRequest.map(to: PolkadotExtensionTxPayload.self) else {
+            return .failure(.decodeError(details: "malformed payload"))
+        }
+
+        guard payload.version == PolkadotExtensionTxPayload.supportedVersion else {
+            return .failure(.decodeError(details: "unsupported payload version \(payload.version)"))
+        }
+
+        let genesisHash = payload.context.genesisHash
+
+        guard
+            let chainId = try? Data(hexString: genesisHash).toHex(),
+            let chain = dataSource.chainStore[chainId] else {
+            return .failure(.signerUnavailable(details: "unsupported chain \(genesisHash)"))
+        }
+
+        guard let accountId = dataSource.wallet.fetch(for: chain.accountRequest())?.accountId else {
+            return .failure(.signerUnavailable(details: "no account for chain \(genesisHash)"))
+        }
+
+        if let signer = payload.signer, accountId != signer.toCreateTransactionSignerId() {
+            let details = "\(signer) is not the wallet account for chain \(genesisHash)"
+            return .failure(.signerUnavailable(details: details))
+        }
+
+        let operation = DAppOperationRequest(
+            transportName: DAppTransports.polkadotExtension,
+            identifier: message.identifier,
+            wallet: dataSource.wallet,
+            accountId: accountId,
+            dApp: message.url ?? "",
+            dAppIcon: dataSource.tab?.icon,
+            operationData: jsonRequest
+        )
+
+        return .success(CreateTransactionRequest(operation: operation, chain: chain))
+    }
+}
+
+private extension String {
+    // The dApp names the signer either with an SS58 address of any prefix or with a hex account id
+    func toCreateTransactionSignerId() -> AccountId? {
+        if hasPrefix("0x") {
+            return try? Data(hexString: self)
+        } else {
+            return try? toSubstrateAccountId()
+        }
     }
 }

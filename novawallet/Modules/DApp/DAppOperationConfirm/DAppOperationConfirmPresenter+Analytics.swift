@@ -34,7 +34,13 @@ extension DAppOperationConfirmPresenter: AnalyticsTracking {
     ) -> AnalyticsEvent {
         switch responseResult {
         case let .success(response):
-            return response.signature != nil
+            if case .failure = response.createTransactionResult {
+                return signingFailedEvent(for: context)
+            }
+
+            let isApproved = response.signature != nil || response.createTransactionResult != nil
+
+            return isApproved
                 ? .signApproved(
                     source: context.source,
                     method: context.method,
@@ -46,12 +52,20 @@ extension DAppOperationConfirmPresenter: AnalyticsTracking {
                     chain: context.chain
                 )
         case .failure:
-            return .signFailed(
-                source: context.source,
-                method: context.method,
-                chain: context.chain,
-                reason: .signingFailed
-            )
+            return signingFailedEvent(for: context)
         }
+    }
+}
+
+// MARK: Private
+
+private extension DAppOperationConfirmPresenter {
+    func signingFailedEvent(for context: DAppSignAnalyticsContext) -> AnalyticsEvent {
+        .signFailed(
+            source: context.source,
+            method: context.method,
+            chain: context.chain,
+            reason: .signingFailed
+        )
     }
 }

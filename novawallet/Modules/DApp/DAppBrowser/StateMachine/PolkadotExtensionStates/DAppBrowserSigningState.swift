@@ -36,6 +36,25 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
     ) {
         provideError(for: requestId, errorMessage: error.rawValue, nextState: nextState)
     }
+
+    private func provideCreateTransactionResponse(
+        for result: Result<Data, DAppCreateTransactionError>?,
+        nextState: DAppBrowserStateProtocol
+    ) {
+        switch result {
+        case let .success(extrinsic):
+            do {
+                let extrinsicHex = extrinsic.toHex(includePrefix: true)
+                try provideResponse(for: requestId, result: extrinsicHex, nextState: nextState)
+            } catch {
+                stateMachine?.emit(error: error, nextState: nextState)
+            }
+        case let .failure(error):
+            provideError(for: requestId, errorMessage: error.responseMessage, nextState: nextState)
+        case nil:
+            providerOperationError(.rejected, nextState: nextState)
+        }
+    }
 }
 
 extension DAppBrowserSigningState: DAppBrowserStateProtocol {
@@ -54,6 +73,11 @@ extension DAppBrowserSigningState: DAppBrowserStateProtocol {
 
     func handleOperation(response: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
         let nextState = DAppBrowserAuthorizedState(stateMachine: stateMachine)
+
+        if case .createTransaction = signingType {
+            provideCreateTransactionResponse(for: response.createTransactionResult, nextState: nextState)
+            return
+        }
 
         if let signature = response.signature {
             do {
