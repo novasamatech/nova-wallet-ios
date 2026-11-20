@@ -28,6 +28,8 @@ private extension DAppSigningType {
             return "polkadot_signPayload"
         case .bytes:
             return "polkadot_signRaw"
+        case .createTransaction:
+            return "polkadot_createTransaction"
         case .ethereumSendTransaction:
             return "eth_sendTransaction"
         case .ethereumSignTransaction:
@@ -39,7 +41,7 @@ private extension DAppSigningType {
 
     var analyticsChain: AnalyticsContentValue? {
         switch self {
-        case let .extrinsic(chain), let .bytes(chain):
+        case let .extrinsic(chain), let .bytes(chain), let .createTransaction(chain):
             return chain.analyticsNetworkName
         case let .ethereumSendTransaction(chain),
              let .ethereumSignTransaction(chain),

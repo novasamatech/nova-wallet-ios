@@ -29,6 +29,13 @@ struct DAppOperationConfirmViewFactory {
                 signAnalyticsContext: signAnalyticsContext,
                 showsNetwork: false
             )
+        case let .createTransaction(chain):
+            return createCreateTransactionView(
+                for: request,
+                chain: chain,
+                delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext
+            )
         case let .ethereumSendTransaction(chain):
             return createEvmTransactionView(
                 for: chain,
@@ -166,6 +173,21 @@ private extension DAppOperationConfirmViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    static func createCreateTransactionView(
+        for request: DAppOperationRequest,
+        chain: ChainModel,
+        delegate: DAppOperationConfirmDelegate,
+        signAnalyticsContext: DAppSignAnalyticsContext?
+    ) -> DAppOperationConfirmViewProtocol? {
+        createGenericView(
+            for: DAppCreateTransactionConfirmInteractor(request: request, chain: chain),
+            chain: .left(chain),
+            delegate: delegate,
+            signAnalyticsContext: signAnalyticsContext,
+            showsNetwork: true
+        )
     }
 
     static func createExtrinsicInteractor(

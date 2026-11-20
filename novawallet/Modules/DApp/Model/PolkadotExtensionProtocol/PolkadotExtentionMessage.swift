@@ -17,6 +17,7 @@ struct PolkadotExtensionMessage: Decodable {
         case metadataProvide = "pub(metadata.provide)"
         case signBytes = "pub(bytes.sign)"
         case signExtrinsic = "pub(extrinsic.sign)"
+        case createTransaction = "pub(extrinsic.createTransaction)"
     }
 
     let identifier: String

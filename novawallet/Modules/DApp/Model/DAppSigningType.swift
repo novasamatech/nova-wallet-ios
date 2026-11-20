@@ -3,6 +3,7 @@ import Foundation
 enum DAppSigningType {
     case extrinsic(chain: ChainModel)
     case bytes(chain: ChainModel)
+    case createTransaction(chain: ChainModel)
     case ethereumSendTransaction(chain: DAppEitherChain)
     case ethereumSignTransaction(chain: DAppEitherChain)
     case ethereumBytes(chain: DAppEitherChain)
@@ -13,6 +14,8 @@ enum DAppSigningType {
             return .signExtrinsic
         case .bytes:
             return .signBytes
+        case .createTransaction:
+            return .createTransaction
         case .ethereumSignTransaction, .ethereumSendTransaction, .ethereumBytes:
             return nil
         }

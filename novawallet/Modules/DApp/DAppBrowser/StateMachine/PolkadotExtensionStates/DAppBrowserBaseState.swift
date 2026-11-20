@@ -44,10 +44,19 @@ class DAppBrowserBaseState {
         errorMessage: String,
         nextState: DAppBrowserStateProtocol
     ) {
+        // The message may carry values supplied by the dApp: a JSON string is a valid JS literal whatever it contains
+        guard
+            let data = try? JSONEncoder().encode(errorMessage),
+            let messageLiteral = String(data: data, encoding: .utf8) else {
+            let error = DAppBrowserStateError.unexpected(reason: "invalid error message")
+            stateMachine?.emit(error: error, nextState: nextState)
+            return
+        }
+
         let content = String(
-            format: "window.walletExtension.onAppResponse(\"%@\", null, new Error(\"%@\"))",
+            format: "window.walletExtension.onAppResponse(\"%@\", null, new Error(%@))",
             requestId,
-            errorMessage
+            messageLiteral
         )
 
         let response = DAppScriptResponse(content: content)
