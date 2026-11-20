@@ -95,7 +95,7 @@ extension RuntimeTypeRegistryFactory {
             return try createForPostV14MetadataAndDefaultTyping(metadata, chain: chain)
         case let .v15(metadata):
             return try createForPostV14MetadataAndDefaultTyping(metadata, chain: chain)
-        case .v13:
+        case .v13, .v16:
             throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
         }
     }
@@ -138,6 +138,9 @@ extension RuntimeTypeRegistryFactory {
             )
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+        case .v16:
+            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
+            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
         }
     }
 
@@ -178,6 +181,9 @@ extension RuntimeTypeRegistryFactory {
             )
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+        case .v16:
+            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
+            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
         }
     }
 
@@ -220,6 +226,9 @@ extension RuntimeTypeRegistryFactory {
             )
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+        case .v16:
+            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
+            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
         }
     }
 }

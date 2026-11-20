@@ -90,3 +90,11 @@ extension KeystoreProtocol {
         return try checkKey(for: tag)
     }
 }
+
+extension Keychain {
+    /// Keystore-iOS 1.1.0 turned the protection class into a constructor argument. The app keeps the class
+    /// earlier versions hardcoded (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`) for every keychain it creates.
+    convenience init() {
+        self.init(accessLevel: .whenUnlocked)
+    }
+}

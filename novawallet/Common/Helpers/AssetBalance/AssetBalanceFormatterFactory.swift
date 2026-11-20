@@ -173,6 +173,7 @@ class AssetBalanceFormatterFactory {
         return BigNumberFormatter(
             abbreviations: abbreviations,
             precision: 2,
+            minimumFractionDigits: 0,
             rounding: roundingMode,
             usesIntGrouping: true
         )

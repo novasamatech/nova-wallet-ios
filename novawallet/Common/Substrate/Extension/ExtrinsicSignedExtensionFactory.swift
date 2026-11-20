@@ -19,7 +19,8 @@ final class ExtrinsicSignedExtensionFactory {}
 extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtocol {
     func createExtensions() -> [TransactionExtending] {
         [
-            TransactionExtension.ChargeAssetTxPayment(),
+            // the asset is never set here, so the generic argument only has to keep the old numeric id shape
+            TransactionExtension.ChargeAssetTxPayment<StringScaleMapper<UInt32>>(),
             AvailSignedExtension.CheckAppId(appId: 0)
         ]
     }
