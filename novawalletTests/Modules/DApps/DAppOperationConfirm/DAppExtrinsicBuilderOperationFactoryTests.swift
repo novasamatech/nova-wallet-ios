@@ -235,7 +235,7 @@ private extension DAppExtrinsicBuilderOperationFactoryTests {
     }
 }
 
-private final class DAppNonceEngineStub: TestJSONRPCEngine {
+final class DAppNonceEngineStub: TestJSONRPCEngine {
     let nonce: UInt32
     private(set) var requestedMethods: [String] = []
 
@@ -268,7 +268,7 @@ private final class DAppNonceEngineStub: TestJSONRPCEngine {
     }
 }
 
-private final class DAppMetadataHashFactoryStub: MetadataHashOperationFactoryProtocol {
+final class DAppMetadataHashFactoryStub: MetadataHashOperationFactoryProtocol {
     let metadataHash: Data?
 
     init(metadataHash: Data?) {
@@ -285,7 +285,7 @@ private final class DAppMetadataHashFactoryStub: MetadataHashOperationFactoryPro
 }
 
 /// The dApp path asks the registry only when the user picked a fee asset, which these tests never do.
-private final class DAppUnusedFeeRegistry: ExtrinsicFeeEstimationRegistring {
+final class DAppUnusedFeeRegistry: ExtrinsicFeeEstimationRegistring {
     func createFeeEstimatingWrapper(
         payingIn _: ChainAssetId?,
         extrinsicCreatingResultClosure _: @escaping () throws -> ExtrinsicsCreationResult

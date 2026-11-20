@@ -5281,6 +5281,8 @@
 		84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */; };
 		84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */; };
 		0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */; };
+		8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */; };
+		0B01D806556C187786FAC801 /* DAppTxPayloadExtrinsicOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */; };
 		7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */; };
 		84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */; };
 		84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */; };
@@ -5676,6 +5678,9 @@
 		84E8BA0729FE888C00FD9F40 /* DAppUnknownChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */; };
 		84E8BA0929FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */; };
 		84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */; };
+		CC9B04B7EB267350A04BAEE1 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */; };
+		9AEA1CA3CBB1796CB9F14457 /* DAppTxPayloadExtrinsicOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */; };
+		BD4CEE12EFBC16E90A2FDB93 /* DAppTxPayloadSignerPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */; };
 		8D1CE33426A3837E3BC25455 /* DAppTxPayloadExtensionResolver+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */; };
 		6B4CE838C5592B9C3DED26DB /* DAppTxPayloadExtensionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */; };
 		22BF4FEB0B292BE643FCE4E7 /* DAppTxPayloadResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */; };
@@ -12283,6 +12288,8 @@
 		84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmTests.swift; sourceTree = "<group>"; };
 		84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmTests.swift; sourceTree = "<group>"; };
 		1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactoryTests.swift; sourceTree = "<group>"; };
+		D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadSignerPolicyTests.swift; sourceTree = "<group>"; };
+		DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtrinsicOperationFactoryTests.swift; sourceTree = "<group>"; };
 		6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtensionResolverTests.swift; sourceTree = "<group>"; };
 		84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppSearchTests.swift; sourceTree = "<group>"; };
 		84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListGenerator.swift; sourceTree = "<group>"; };
@@ -12683,6 +12690,9 @@
 		84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppUnknownChain.swift; sourceTree = "<group>"; };
 		84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
 		84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
+		EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppTxPayloadExtrinsicOperationFactory+Building.swift"; sourceTree = "<group>"; };
+		5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtrinsicOperationFactory.swift; sourceTree = "<group>"; };
+		D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadSignerPolicy.swift; sourceTree = "<group>"; };
 		8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppTxPayloadExtensionResolver+Coding.swift"; sourceTree = "<group>"; };
 		C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtensionResolver.swift; sourceTree = "<group>"; };
 		4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadResolution.swift; sourceTree = "<group>"; };
@@ -23283,6 +23293,9 @@
 				843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */,
 				843612C62790032400DC739E /* DAppOperationProcessedResult.swift */,
 				84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */,
+				EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */,
+				5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */,
+				D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */,
 				8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */,
 				C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */,
 				4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */,
@@ -28004,6 +28017,8 @@
 			children = (
 				84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */,
 				1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */,
+				D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */,
+				DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */,
 				6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */,
 			);
 			path = DAppOperationConfirm;
@@ -38588,6 +38603,9 @@
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
 				0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */,
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
+				CC9B04B7EB267350A04BAEE1 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift in Sources */,
+				9AEA1CA3CBB1796CB9F14457 /* DAppTxPayloadExtrinsicOperationFactory.swift in Sources */,
+				BD4CEE12EFBC16E90A2FDB93 /* DAppTxPayloadSignerPolicy.swift in Sources */,
 				8D1CE33426A3837E3BC25455 /* DAppTxPayloadExtensionResolver+Coding.swift in Sources */,
 				6B4CE838C5592B9C3DED26DB /* DAppTxPayloadExtensionResolver.swift in Sources */,
 				22BF4FEB0B292BE643FCE4E7 /* DAppTxPayloadResolution.swift in Sources */,
@@ -40701,6 +40719,8 @@
 				0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */,
+				8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */,
+				0B01D806556C187786FAC801 /* DAppTxPayloadExtrinsicOperationFactoryTests.swift in Sources */,
 				7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
