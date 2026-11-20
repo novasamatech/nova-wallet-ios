@@ -35,6 +35,33 @@ message types as states/transitions, not as `if` chains in the interactor.
 Injected scripts and their message names live with each transport. `DAppBrowserSigningChainResolver`
 maps a dApp's requested chain to a wallet account.
 
+Everything a state puts into a response script comes from the page, the request id included. A value
+goes into the script only as a JSON string literal (`DAppBrowserBaseState`), never between quotes
+written by hand: the message handlers are registered for every frame of the page, while the
+response is evaluated in the main frame.
+
+### The polkadot-js bridge bundle
+
+`novawallet/Resources/nova_min.js` is a build artefact, not source. It is injected by
+`DAppPolkadotExtensionTransport` and comes from the repository `nova-wallet/nova-wallet-dapp-js`
+(shared with the Android app, which takes it as a submodule):
+
+| | |
+|---|---|
+| Source of the current bundle | branch `feature/create-transaction`, commit `bac9bba` ("add createTransaction to the injected signer") |
+| Build | `yarn install && yarn build` — runs `parcel build src/index.ts --no-source-maps -o nova_min.js -d dist` (parcel-bundler 1.x), the result is `dist/nova_min.js` |
+| Update | copy `dist/nova_min.js` over `novawallet/Resources/nova_min.js` and name the bridge commit in the commit message and in the PR |
+
+`bac9bba` exists only in a local clone so far. **It has to be pushed and merged in the bridge
+repository before the app change that ships this bundle is merged**, otherwise the bundle can't be
+rebuilt or reviewed from its source; after the merge replace the branch and the commit above with
+the merged revision.
+
+parcel writes the absolute `node_modules` path of the build directory into the bundle, so a rebuild
+on another machine differs in that path. The committed bundle keeps the path the previous bundle
+had, which leaves the signer change as the only difference between the two; compare a rebuild with
+that path normalised.
+
 ## Authorisation & Signing
 
 | Module                    | Purpose                                                     |
@@ -89,6 +116,24 @@ keeps the bytes. Unlike the `signPayload` path (`DAppExtrinsicBuilderOperationFa
 wallet's default `ChargeAssetTxPayment` on top of the dApp's one) a supplied payment extension is
 never replaced.
 
+**Because the payment extension is the dApp's, the fee row has to show what it makes the user
+pay.** `DAppTxPayloadPaymentResolver` runs with the verification, so it also guards the signing:
+
+| Payload | Behaviour |
+|---------|-----------|
+| `ChargeAssetTxPayment` with an `assetId` | The asset must map to a local asset of a chain with Asset Hub fees (`AssetHubTokensConverter`); the fee is then estimated and shown in it. Anything else → `DecodeError` naming the extension, never a fee in the native token |
+| Tip in `ChargeTransactionPayment` or `ChargeAssetTxPayment` | Shown as part of the fee: node fee + tip. The tip is in the native token and is added before the conversion to the fee asset, as the runtime charges it |
+| Payment extension whose tip or asset can't be read | `DecodeError` |
+| Any other supplied extension with a non-zero `tip` field at any depth | `DecodeError`: the wallet can't tell what it is paid in, so it is not hidden |
+
+The node quotes a fee without the tip. `ExtrinsicNativeFeeEstimator` adds the tip only for
+`ChargeTransactionPayment` of a legacy extrinsic, which is all a native flow ever sends.
+`DAppTxPayloadFeeEstimator` wraps it for this path only and adds what is left out — the
+`ChargeAssetTxPayment` tip and every tip of a general transaction — reading it from the extrinsic
+built for the estimate. `ExtrinsicFeeEstimatingWrapperFactory` and
+`AssetConversionFeeEstimatingFactory` take the native estimator as an optional argument for that;
+every other caller leaves it out and gets the behaviour it had.
+
 Signer policy is applied to the account that actually signs, after sender resolution:
 
 | Signer | Behaviour |
@@ -101,9 +146,20 @@ Signer policy is applied to the account that actually signs, after sender resolu
 
 Failures defined by the RFC (`DAppCreateTransactionError`) are part of a *successful*
 `DAppOperationResponse` (`createTransactionResult: .failure`): the dApp gets `<Name>: <details>` and
-the bridge turns the name into `error.name`. A payload that fails verification is shown as an alert
-on the confirmation, and both Confirm and Reject then answer the dApp with that failure. Signer
-errors and user cancellation behave as in `signPayload`.
+the bridge turns the name into `error.name`. `responseMessage` is for the dApp and the logs only; the
+user sees one of two localized texts (`toErrorContent`): the wallet could not verify the transaction,
+or this wallet can't sign this type of transaction (`SignerUnavailable`).
+
+| Where it fails | What happens |
+|----------------|--------------|
+| Before the confirmation (`DAppBrowserAuthorizedState`): malformed payload or unsupported payload version → `DecodeError`; `genesisHash` that isn't hex → `InvalidHex`; unknown chain, no account, another signer → `SignerUnavailable` | The dApp is answered at once, no screen. The transport logs the reason (`emit(failureResponse:reason:nextState:)`) |
+| The confirmation can't be built (the chain has no connection or runtime provider at the moment) | `DAppBrowserPresenter` answers `SignerUnavailable` through the transport, which returns to the authorized state. `signPayload` and `signRaw` keep their behaviour |
+| Verification, at setup or while the extrinsic is built for the fee | Alert on the confirmation, the fee row is cleared; both Confirm and Reject then answer the dApp with that failure |
+| Setup fails for a reason that isn't the payload (node, metadata hash, runtime) | Alert "try again later" with Reject; the fee row is cleared. Confirm shows the alert again, also while the setup is still running — it never does nothing. Reject answers `Rejected` |
+| Fee estimation fails for a reason that isn't the payload | The usual fee alert with Retry |
+
+Signer errors and user cancellation behave as in `signPayload`. Of `TxPayloadV1.context` only
+`genesisHash` is required: the wallet reads nothing else from it.
 
 The app requests metadata v15 at most, and `RuntimeTypeRegistryFactory` rejects v16, so in production
 every request resolves to v4 today. The v5 path is covered by unit tests on the Westend metadata v16
