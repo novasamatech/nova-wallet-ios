@@ -20,6 +20,8 @@ class TestJSONRPCEngine: JSONRPCEngine {
         _: String,
         params _: P?,
         unsubscribeMethod _: String,
+        options _: JSONRPCOptions,
+        onSubscribed _: ((JSONRPCSubscriptionId) -> Void)?,
         updateClosure _: @escaping (T) -> Void,
         failureClosure _: @escaping (Error, Bool) -> Void
     )
@@ -27,7 +29,7 @@ class TestJSONRPCEngine: JSONRPCEngine {
         0
     }
 
-    func cancelForIdentifiers(_: [UInt16]) {}
+    func cancelForIdentifiers(_: [UInt16], sendUnsubscribe _: Bool) {}
 
     func addBatchCallMethod<P: Encodable>(
         _: String,

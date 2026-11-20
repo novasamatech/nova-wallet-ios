@@ -8,7 +8,7 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
         do {
             let proof = try performTransferProofGeneration(for: KnowChainId.kusama)
 
-            Logger.shared.info("Kusama info proof: \(proof.toHexWithPrefix())")
+            Logger.shared.info("Kusama info proof: \(proof.toHex(includePrefix: true))")
         } catch {
             XCTFail("Unexpected Kusama error: \(error)")
         }

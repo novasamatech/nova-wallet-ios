@@ -17,6 +17,8 @@ extension RuntimeMetadataContainer {
             return metadata
         case let .v15(metadata):
             return metadata
+        case let .v16(metadata):
+            return metadata
         }
     }
 }
@@ -113,6 +115,8 @@ final class RuntimeHelper {
         case let .v14(metadata):
             return try createPostV14TypeRegistryCatalog(from: networkData, metadata: metadata)
         case let .v15(metadata):
+            return try createPostV14TypeRegistryCatalog(from: networkData, metadata: metadata)
+        case let .v16(metadata):
             return try createPostV14TypeRegistryCatalog(from: networkData, metadata: metadata)
         }
     }

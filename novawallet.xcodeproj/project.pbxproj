@@ -4641,6 +4641,7 @@
 		846CA7802709A41E0011124C /* StakingAnalyticsLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CA77F2709A41E0011124C /* StakingAnalyticsLocalSubscriptionHandler.swift */; };
 		846CA7822709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CA7812709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift */; };
 		846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CA7832709C2BE0011124C /* ChainRegistry+Setup.swift */; };
+		DD9A1E876604BD308869BC51 /* PackageNameDisambiguation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */; };
 		846CD24D2656FEB800A2E4B6 /* StorageKeysQueryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CD24C2656FEB800A2E4B6 /* StorageKeysQueryService.swift */; };
 		846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CD25A265709A800A2E4B6 /* StorageKeySuffixMapper.swift */; };
 		846CDECD258D212D009F3E75 /* AlertImageWithTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CDECC258D212D009F3E75 /* AlertImageWithTitleView.swift */; };
@@ -5803,6 +5804,7 @@
 		84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0622542C8D600319F74 /* ContactItem.swift */; };
 		84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */; };
 		84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1625F559F200F32ED4 /* WestendStub.swift */; };
+		6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */; };
 		E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */; };
 		84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */; };
 		84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 84FACB2C25F562CB00F32ED4 /* westend-metadata */; };
@@ -12800,6 +12802,7 @@
 		84FAB0622542C8D600319F74 /* ContactItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactItem.swift; sourceTree = "<group>"; };
 		84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDContactItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		84FACB1625F559F200F32ED4 /* WestendStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WestendStub.swift; sourceTree = "<group>"; };
+		0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageNameDisambiguation.swift; sourceTree = "<group>"; };
 		1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicGoldenFixtures.swift; sourceTree = "<group>"; };
 		84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceStub.swift; sourceTree = "<group>"; };
 		84FACB2C25F562CB00F32ED4 /* westend-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-metadata"; sourceTree = "<group>"; };
@@ -25179,6 +25182,7 @@
 				8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */,
 				84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */,
 				84FACB1625F559F200F32ED4 /* WestendStub.swift */,
+				0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */,
 				1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */,
 				2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */,
 				845C7F05263C45EC0024E797 /* AnyProviderAutoCleaner.swift */,
@@ -33958,6 +33962,7 @@
 				0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */,
 				84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */,
 				846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */,
+				DD9A1E876604BD308869BC51 /* PackageNameDisambiguation.swift in Sources */,
 				84264EE1285B6C6700BF6D4A /* XcmTransfersSyncTests.swift in Sources */,
 				84BFE8A228C2420A00140F1F /* AutocompounDelegateStakeTests.swift in Sources */,
 				F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */,
@@ -40615,6 +40620,7 @@
 				8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */,
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
+				6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */,
 				E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */,
 				2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,

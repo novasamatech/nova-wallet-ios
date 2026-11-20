@@ -36,7 +36,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
                     .adding(call: transferCall)
             }
 
-            Logger.shared.info("Westend payload: \(message.toHexWithPrefix())")
+            Logger.shared.info("Westend payload: \(message.toHex(includePrefix: true))")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -84,7 +84,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
                     .adding(call: nominateCall)
             }
 
-            Logger.shared.info("Westend payload: \(message.toHexWithPrefix())")
+            Logger.shared.info("Westend payload: \(message.toHex(includePrefix: true))")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }

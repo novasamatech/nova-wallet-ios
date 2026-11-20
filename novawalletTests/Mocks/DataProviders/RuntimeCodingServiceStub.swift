@@ -90,7 +90,7 @@ extension RuntimeCodingServiceStub {
             metadata = v14
         case let .v15(v15):
             metadata = v15
-        case .v13:
+        case .v13, .v16:
             throw RuntimeHelperError.invalidCatalogMetadataName
         }
 

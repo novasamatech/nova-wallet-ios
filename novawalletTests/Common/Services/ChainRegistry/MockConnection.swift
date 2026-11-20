@@ -26,6 +26,8 @@ extension MockConnection: ChainConnection {
     func subscribe<P, T>(
         _ method: String, params: P?,
         unsubscribeMethod: String,
+        options: JSONRPCOptions,
+        onSubscribed: ((JSONRPCSubscriptionId) -> Void)?,
         updateClosure: @escaping (T) -> Void,
         failureClosure: @escaping (Error, Bool) -> Void
     ) throws -> UInt16 where P: Encodable, T: Decodable {
@@ -33,6 +35,8 @@ extension MockConnection: ChainConnection {
             method,
             params: params,
             unsubscribeMethod: unsubscribeMethod,
+            options: options,
+            onSubscribed: onSubscribed,
             updateClosure: updateClosure,
             failureClosure: failureClosure
         )
@@ -47,8 +51,8 @@ extension MockConnection: ChainConnection {
         )
     }
 
-    func cancelForIdentifiers(_ identifiers: [UInt16]) {
-        internalConnection.cancelForIdentifiers(identifiers)
+    func cancelForIdentifiers(_ identifiers: [UInt16], sendUnsubscribe: Bool) {
+        internalConnection.cancelForIdentifiers(identifiers, sendUnsubscribe: sendUnsubscribe)
     }
 
     func submitBatch(

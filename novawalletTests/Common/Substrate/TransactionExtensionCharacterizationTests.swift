@@ -107,7 +107,7 @@ final class TransactionExtensionCharacterizationTests: XCTestCase {
         let runtime = try ExtrinsicGoldenRuntime.polkadotAssetHub()
         let builderTip = try makeProductionBuilder(for: runtime).with(tip: BigUInt(9))
         let extensionTip = try makeProductionBuilder(for: runtime)
-            .adding(transactionExtension: TransactionExtension.ChargeAssetTxPayment(tip: BigUInt(9)))
+            .adding(transactionExtension: SdkChargeAssetTxPayment(tip: BigUInt(9)))
 
         // `with(tip:)` configures ChargeTransactionPayment, which Asset Hub does not have
         XCTAssertEqual(
@@ -182,6 +182,10 @@ final class TransactionExtensionCharacterizationTests: XCTestCase {
 }
 
 private extension TransactionExtensionCharacterizationTests {
+    /// The SDK extension is generic over the asset id since substrate-sdk-ios 5; this is the instantiation
+    /// `ExtrinsicSignedExtensionFactory` installs by default.
+    typealias SdkChargeAssetTxPayment = TransactionExtension.ChargeAssetTxPayment<StringScaleMapper<UInt32>>
+
     static let usdtAssetId = AssetConversionPallet.AssetId(
         parents: 0,
         interior: .init(items: [.palletInstance(50), .generalIndex(1984)])

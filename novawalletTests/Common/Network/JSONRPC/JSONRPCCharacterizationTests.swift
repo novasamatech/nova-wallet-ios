@@ -53,7 +53,8 @@ final class JSONRPCCharacterizationTests: XCTestCase {
 
         XCTAssertEqual(update.jsonrpc, "2.0")
         XCTAssertEqual(update.method, "state_storage")
-        XCTAssertEqual(update.params.subscription, "ZmE3Yw")
+        XCTAssertEqual(update.params.subscription, .string("ZmE3Yw"))
+        XCTAssertEqual(update.params.subscription.stringValue, "ZmE3Yw")
         XCTAssertEqual(update.params.result, "0x01")
     }
 
@@ -63,7 +64,9 @@ final class JSONRPCCharacterizationTests: XCTestCase {
             #"{"jsonrpc":"2.0","method":"chain_newHead","params":{"subscription":4821,"result":["a","b"]}}"#
         )
 
-        XCTAssertEqual(update.params.subscription, "4821")
+        // a numeric id stays numeric since substrate-sdk-ios 5; the app only ever needs its textual form
+        XCTAssertEqual(update.params.subscription, .number(4821))
+        XCTAssertEqual(update.params.subscription.stringValue, "4821")
         XCTAssertEqual(update.params.result, ["a", "b"])
     }
 
@@ -262,7 +265,7 @@ private final class RecordingEngine: TestJSONRPCEngine {
         return Self.requestId
     }
 
-    override func cancelForIdentifiers(_ identifiers: [UInt16]) {
+    override func cancelForIdentifiers(_ identifiers: [UInt16], sendUnsubscribe _: Bool) {
         lock.lock()
         storedCancelled.append(contentsOf: identifiers)
         lock.unlock()

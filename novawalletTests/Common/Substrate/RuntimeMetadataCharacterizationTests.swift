@@ -153,7 +153,11 @@ private extension RuntimeMetadataCharacterizationTests {
     func describeEvent(in runtime: ExtrinsicGoldenRuntime, module: String, eventIndex: UInt32) throws -> String {
         let moduleIndex = try XCTUnwrap(runtime.metadata.getModuleIndex(module))
         let event = try XCTUnwrap(runtime.metadata.getEventForModuleIndex(moduleIndex, eventIndex: eventIndex))
-        let path = try XCTUnwrap(runtime.metadata.createEventCodingPath(from: moduleIndex, eventIndex: eventIndex))
+        let optionalPath: EventCodingPath? = runtime.metadata.createEventCodingPath(
+            from: moduleIndex,
+            eventIndex: eventIndex
+        )
+        let path = try XCTUnwrap(optionalPath)
 
         return "\(path.moduleName).\(path.eventName)(\(event.arguments.joined(separator: ",")))"
     }

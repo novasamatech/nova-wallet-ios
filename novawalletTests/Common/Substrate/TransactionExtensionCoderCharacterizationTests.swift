@@ -33,12 +33,20 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
         let coder = DefaultTransactionExtensionCoder(txExtensionId: extensionId, extensionExplicitType: explicitType)
 
         let encoder = runtime.codingFactory.createEncoder()
-        try coder.encodeIncludedInExtrinsic(from: [extensionId: .stringValue("7")], encoder: encoder)
+        try coder.encodeIncludedInExtrinsic(
+            from: [extensionId: .stringValue("7")],
+            extensionVersion: Self.legacyExtensionVersion,
+            encoder: encoder
+        )
         let encoded = try encoder.encode()
 
         var decoded = ExtrinsicExtra()
         let decoder = try runtime.codingFactory.createDecoder(from: encoded)
-        try coder.decodeIncludedInExtrinsic(to: &decoded, decoder: decoder)
+        try coder.decodeIncludedInExtrinsic(
+            to: &decoded,
+            extensionVersion: Self.legacyExtensionVersion,
+            decoder: decoder
+        )
 
         XCTAssertEqual(encoded.toHex(includePrefix: true), "0x1c")
         XCTAssertEqual(decoded, [extensionId: .stringValue("7")])
@@ -51,7 +59,7 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
         let coder = DefaultTransactionExtensionCoder(txExtensionId: extensionId, extensionExplicitType: explicitType)
 
         let encoder = runtime.codingFactory.createEncoder()
-        try coder.encodeIncludedInExtrinsic(from: [:], encoder: encoder)
+        try coder.encodeIncludedInExtrinsic(from: [:], extensionVersion: Self.legacyExtensionVersion, encoder: encoder)
 
         XCTAssertTrue(try encoder.encode().isEmpty)
     }
@@ -67,9 +75,9 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
         let assetConversion = try AssetConversionTxPayment(tip: BigUInt(5), assetId: usdt).toScaleCompatibleJSON()
         let assetConversionNoAsset = try AssetConversionTxPayment<JSON>().toScaleCompatibleJSON()
         let checkAppId = try AvailSignedExtension.CheckAppId(appId: 70000).toScaleCompatibleJSON()
-        let chargeAsset = try TransactionExtension.ChargeAssetTxPayment(tip: BigUInt(3), assetId: 7)
+        let chargeAsset = try SdkChargeAssetTxPayment(tip: BigUInt(3), assetId: StringScaleMapper(value: 7))
             .toScaleCompatibleJSON()
-        let chargeAssetDefault = try TransactionExtension.ChargeAssetTxPayment().toScaleCompatibleJSON()
+        let chargeAssetDefault = try SdkChargeAssetTxPayment().toScaleCompatibleJSON()
 
         XCTAssertEqual(try ExtrinsicGolden.json(assetConversion), #"{"assetId":{"interior":["X2",[["PalletInstance","50"],["GeneralIndex","1984"]]],"parents":"0"},"tip":"5"}"#)
         XCTAssertEqual(try ExtrinsicGolden.json(assetConversionNoAsset), #"{"tip":"0"}"#)
@@ -81,15 +89,15 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
     func testAppExtensionModelsDecodeFromScaleJson() throws {
         let checkAppId = try JSON.stringValue("70000").map(to: AvailSignedExtension.CheckAppId.self)
         let chargeAsset = try ExtrinsicGolden.parseJSON(#"{"tip":"3","assetId":"7"}"#)
-            .map(to: TransactionExtension.ChargeAssetTxPayment.self)
+            .map(to: SdkChargeAssetTxPayment.self)
         let chargeAssetNoAsset = try ExtrinsicGolden.parseJSON(#"{"tip":"3","assetId":null}"#)
-            .map(to: TransactionExtension.ChargeAssetTxPayment.self)
+            .map(to: SdkChargeAssetTxPayment.self)
         let assetConversion = try ExtrinsicGolden.parseJSON(#"{"tip":"9","assetId":"1984"}"#)
             .map(to: AssetConversionTxPayment<JSON>.self)
 
         XCTAssertEqual(checkAppId.appId, 70000)
         XCTAssertEqual(chargeAsset.tip, 3)
-        XCTAssertEqual(chargeAsset.assetId, 7)
+        XCTAssertEqual(chargeAsset.assetId?.value, 7)
         XCTAssertNil(chargeAssetNoAsset.assetId)
         XCTAssertEqual(assetConversion.tip, 9)
         XCTAssertEqual(assetConversion.assetId, .stringValue("1984"))
@@ -98,7 +106,7 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
     func testExtensionIdentifiers() {
         XCTAssertEqual(AssetConversionTxPayment<JSON>().txExtensionId, "ChargeAssetTxPayment")
         XCTAssertEqual(AvailSignedExtension.CheckAppId(appId: 0).txExtensionId, "CheckAppId")
-        XCTAssertEqual(TransactionExtension.ChargeAssetTxPayment().txExtensionId, "ChargeAssetTxPayment")
+        XCTAssertEqual(SdkChargeAssetTxPayment().txExtensionId, "ChargeAssetTxPayment")
         XCTAssertEqual(extensionFactory.createExtensions().map(\.txExtensionId), ["ChargeAssetTxPayment", "CheckAppId"])
     }
 
@@ -125,6 +133,13 @@ final class TransactionExtensionCoderCharacterizationTests: XCTestCase {
 }
 
 private extension TransactionExtensionCoderCharacterizationTests {
+    /// The SDK extension is generic over the asset id since substrate-sdk-ios 5; this is the instantiation
+    /// `ExtrinsicSignedExtensionFactory` installs by default.
+    typealias SdkChargeAssetTxPayment = TransactionExtension.ChargeAssetTxPayment<StringScaleMapper<UInt32>>
+
+    /// V4 extrinsics have no extension version byte; coders are asked for version 0 since substrate-sdk-ios 5.
+    static let legacyExtensionVersion: UInt8 = 0
+
     func describeCoders(for runtime: ExtrinsicGoldenRuntime) throws -> String {
         extensionFactory.createCoders(for: runtime.metadata).map { coder in
             let explicitType = (coder as? DefaultTransactionExtensionCoder)?.extensionExplicitType ?? "custom"
