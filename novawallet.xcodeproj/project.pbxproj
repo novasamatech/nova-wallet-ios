@@ -2110,6 +2110,7 @@
 		2D7A55092E5D000100000002 /* SubtensorFixtureDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */; };
 		2D7A550D2E5D000100000002 /* SubtensorSwapApiDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */; };
 		2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 2D7A550F2E5D000100000001 /* bittensor-v15-metadata */; };
+		7E16A0B1C2D3000100000002 /* westend-v16-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 7E16A0B1C2D3000100000001 /* westend-v16-metadata */; };
 		A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */ = {isa = PBXBuildFile; fileRef = 5650467CEEFBA316E12AE712 /* runtime-avail.json */; };
 		1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 7723092C67AB5FEA616EABEF /* avail-metadata */; };
 		F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */ = {isa = PBXBuildFile; fileRef = A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */; };
@@ -5280,6 +5281,7 @@
 		84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */; };
 		84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */; };
 		0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */; };
+		7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */; };
 		84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */; };
 		84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */; };
 		C7A20008301F000100A1B2C3 /* PolkadotExtensionTxPayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A20007301F000100A1B2C3 /* PolkadotExtensionTxPayloadTests.swift */; };
@@ -5674,6 +5676,9 @@
 		84E8BA0729FE888C00FD9F40 /* DAppUnknownChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */; };
 		84E8BA0929FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */; };
 		84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */; };
+		8D1CE33426A3837E3BC25455 /* DAppTxPayloadExtensionResolver+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */; };
+		6B4CE838C5592B9C3DED26DB /* DAppTxPayloadExtensionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */; };
+		22BF4FEB0B292BE643FCE4E7 /* DAppTxPayloadResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */; };
 		84E8BA0D29FF898600FD9F40 /* BaseExtrinsicOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0C29FF898600FD9F40 /* BaseExtrinsicOperationFactory.swift */; };
 		84E8BA1A29FFB38600FD9F40 /* EthereumBlockObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA1129FFB38600FD9F40 /* EthereumBlockObject.swift */; };
 		84E8BA1C29FFB38600FD9F40 /* EthereumTransactionReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA1329FFB38600FD9F40 /* EthereumTransactionReceipt.swift */; };
@@ -5811,6 +5816,7 @@
 		84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1625F559F200F32ED4 /* WestendStub.swift */; };
 		6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */; };
 		E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */; };
+		04FC6CA8F07427AF370E57B7 /* DAppTxPayloadFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */; };
 		84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */; };
 		84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 84FACB2C25F562CB00F32ED4 /* westend-metadata */; };
 		84FACB3825F5630000F32ED4 /* RuntimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB3725F5630000F32ED4 /* RuntimeHelper.swift */; };
@@ -9431,6 +9437,7 @@
 		2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFixtureDecoding.swift; sourceTree = "<group>"; };
 		2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSwapApiDecodeTests.swift; sourceTree = "<group>"; };
 		2D7A550F2E5D000100000001 /* bittensor-v15-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bittensor-v15-metadata"; sourceTree = "<group>"; };
+		7E16A0B1C2D3000100000001 /* westend-v16-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-v16-metadata"; sourceTree = "<group>"; };
 		5650467CEEFBA316E12AE712 /* runtime-avail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "runtime-avail.json"; sourceTree = "<group>"; };
 		7723092C67AB5FEA616EABEF /* avail-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "avail-metadata"; sourceTree = "<group>"; };
 		A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "polkadot-asset-hub-metadata"; sourceTree = "<group>"; };
@@ -12276,6 +12283,7 @@
 		84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmTests.swift; sourceTree = "<group>"; };
 		84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmTests.swift; sourceTree = "<group>"; };
 		1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactoryTests.swift; sourceTree = "<group>"; };
+		6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtensionResolverTests.swift; sourceTree = "<group>"; };
 		84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppSearchTests.swift; sourceTree = "<group>"; };
 		84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListGenerator.swift; sourceTree = "<group>"; };
 		C7A20007301F000100A1B2C3 /* PolkadotExtensionTxPayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionTxPayloadTests.swift; sourceTree = "<group>"; };
@@ -12675,6 +12683,9 @@
 		84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppUnknownChain.swift; sourceTree = "<group>"; };
 		84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
 		84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
+		8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppTxPayloadExtensionResolver+Coding.swift"; sourceTree = "<group>"; };
+		C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtensionResolver.swift; sourceTree = "<group>"; };
+		4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadResolution.swift; sourceTree = "<group>"; };
 		84E8BA0C29FF898600FD9F40 /* BaseExtrinsicOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExtrinsicOperationFactory.swift; sourceTree = "<group>"; };
 		84E8BA1129FFB38600FD9F40 /* EthereumBlockObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumBlockObject.swift; sourceTree = "<group>"; };
 		84E8BA1329FFB38600FD9F40 /* EthereumTransactionReceipt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionReceipt.swift; sourceTree = "<group>"; };
@@ -12814,6 +12825,7 @@
 		84FACB1625F559F200F32ED4 /* WestendStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WestendStub.swift; sourceTree = "<group>"; };
 		0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageNameDisambiguation.swift; sourceTree = "<group>"; };
 		1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicGoldenFixtures.swift; sourceTree = "<group>"; };
+		F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadFixtures.swift; sourceTree = "<group>"; };
 		84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceStub.swift; sourceTree = "<group>"; };
 		84FACB2C25F562CB00F32ED4 /* westend-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-metadata"; sourceTree = "<group>"; };
 		84FACB3725F5630000F32ED4 /* RuntimeHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeHelper.swift; sourceTree = "<group>"; };
@@ -23271,6 +23283,9 @@
 				843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */,
 				843612C62790032400DC739E /* DAppOperationProcessedResult.swift */,
 				84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */,
+				8B66CF1C5733E97EED6AED6A /* DAppTxPayloadExtensionResolver+Coding.swift */,
+				C82891B7FFF3186BDA2D76B9 /* DAppTxPayloadExtensionResolver.swift */,
+				4709BFFAE5F1298458BA6A51 /* DAppTxPayloadResolution.swift */,
 				0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */,
 				0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */,
 			);
@@ -25195,6 +25210,7 @@
 				84FACB1625F559F200F32ED4 /* WestendStub.swift */,
 				0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */,
 				1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */,
+				F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */,
 				2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */,
 				845C7F05263C45EC0024E797 /* AnyProviderAutoCleaner.swift */,
 				845B822426EFE03E00D25C72 /* AccountGenerator.swift */,
@@ -27988,6 +28004,7 @@
 			children = (
 				84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */,
 				1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */,
+				6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */,
 			);
 			path = DAppOperationConfirm;
 			sourceTree = "<group>";
@@ -29727,6 +29744,7 @@
 				84F438B125DA548700AEDA56 /* runtimeTestMetadata */,
 				84FACB2C25F562CB00F32ED4 /* westend-metadata */,
 				2D7A550F2E5D000100000001 /* bittensor-v15-metadata */,
+				7E16A0B1C2D3000100000001 /* westend-v16-metadata */,
 				5650467CEEFBA316E12AE712 /* runtime-avail.json */,
 				7723092C67AB5FEA616EABEF /* avail-metadata */,
 				A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */,
@@ -33430,6 +33448,7 @@
 				0C1A105D2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */,
 				2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */,
+				7E16A0B1C2D3000100000002 /* westend-v16-metadata in Resources */,
 				A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */,
 				1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */,
 				F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */,
@@ -38569,6 +38588,9 @@
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
 				0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */,
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
+				8D1CE33426A3837E3BC25455 /* DAppTxPayloadExtensionResolver+Coding.swift in Sources */,
+				6B4CE838C5592B9C3DED26DB /* DAppTxPayloadExtensionResolver.swift in Sources */,
+				22BF4FEB0B292BE643FCE4E7 /* DAppTxPayloadResolution.swift in Sources */,
 				8434B602298D363C00FACF4C /* GovernanceAddDelegationTracksViewController.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
 				0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */,
@@ -40641,6 +40663,7 @@
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */,
 				E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */,
+				04FC6CA8F07427AF370E57B7 /* DAppTxPayloadFixtures.swift in Sources */,
 				2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,
 				C7A20008301F000100A1B2C3 /* PolkadotExtensionTxPayloadTests.swift in Sources */,
@@ -40678,6 +40701,7 @@
 				0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */,
+				7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
 				8836AF4A28AA4B9300A94EDD /* CurrencyRepositoryTests.swift in Sources */,
