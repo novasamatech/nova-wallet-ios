@@ -5278,6 +5278,7 @@
 		84B7C715289BFA79001A3566 /* AccountExportPasswordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C69B289BFA79001A3566 /* AccountExportPasswordTests.swift */; };
 		84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */; };
 		C7A2000A301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */; };
+		0609093912F0A0B6CB79A3AF /* DAppBrowserRequestIdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */; };
 		84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */; };
 		84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */; };
 		0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */; };
@@ -12289,6 +12290,7 @@
 		84B7C69B289BFA79001A3566 /* AccountExportPasswordTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordTests.swift; sourceTree = "<group>"; };
 		84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppBrowserTests.swift; sourceTree = "<group>"; };
 		C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserCreateTransactionTests.swift; sourceTree = "<group>"; };
+		CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserRequestIdTests.swift; sourceTree = "<group>"; };
 		84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmTests.swift; sourceTree = "<group>"; };
 		84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmTests.swift; sourceTree = "<group>"; };
 		1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactoryTests.swift; sourceTree = "<group>"; };
@@ -28008,6 +28010,7 @@
 				2292A6672E25C7BC001C0DBB /* DAppBrowserSigningChainResolverTests.swift */,
 				84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */,
 				C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */,
+				CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */,
 			);
 			path = DAppBrowser;
 			sourceTree = "<group>";
@@ -40689,6 +40692,7 @@
 				8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */,
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				C7A2000A301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift in Sources */,
+				0609093912F0A0B6CB79A3AF /* DAppBrowserRequestIdTests.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */,
 				E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */,

@@ -680,7 +680,7 @@ private extension JSValue {
     }
 }
 
-private final class DAppBrowserStateMachineRecorder: DAppBrowserStateMachineProtocol {
+final class DAppBrowserStateMachineRecorder: DAppBrowserStateMachineProtocol {
     struct SigningRequest {
         let request: DAppOperationRequest
         let type: DAppSigningType
