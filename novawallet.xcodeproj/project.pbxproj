@@ -5547,6 +5547,7 @@
 		84D1F31E260F585E0077DDFE /* AddAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1F31D260F585E0077DDFE /* AddAccount.swift */; };
 		84D2F19B2771AA140040C680 /* nova_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 84D2F19A2771AA140040C680 /* nova_min.js */; };
 		84D2F19D2771E5610040C680 /* ExtrinsicBuilder+Signing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F19C2771E5610040C680 /* ExtrinsicBuilder+Signing.swift */; };
+		3D5E7B4D35360040AE11F406 /* Extrinsic+Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE11F406C192BA71987A2F02 /* Extrinsic+Version.swift */; };
 		84D2F1A027730E6D0040C680 /* DAppOperationConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F19F27730E6D0040C680 /* DAppOperationConfirmViewModel.swift */; };
 		84D2F1A227730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A127730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift */; };
 		84D2F1A5277437D30040C680 /* DAppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A4277437D30040C680 /* DAppIconView.swift */; };
@@ -12566,6 +12567,7 @@
 		84D1F31D260F585E0077DDFE /* AddAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAccount.swift; sourceTree = "<group>"; };
 		84D2F19A2771AA140040C680 /* nova_min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = nova_min.js; sourceTree = "<group>"; };
 		84D2F19C2771E5610040C680 /* ExtrinsicBuilder+Signing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicBuilder+Signing.swift"; sourceTree = "<group>"; };
+		AE11F406C192BA71987A2F02 /* Extrinsic+Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extrinsic+Version.swift"; sourceTree = "<group>"; };
 		84D2F19F27730E6D0040C680 /* DAppOperationConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmViewModel.swift; sourceTree = "<group>"; };
 		84D2F1A127730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		84D2F1A4277437D30040C680 /* DAppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconView.swift; sourceTree = "<group>"; };
@@ -24296,6 +24298,7 @@
 				845BB8BF25E4508800E5FCDC /* SS58FactoryExtensions.swift */,
 				84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */,
 				84D2F19C2771E5610040C680 /* ExtrinsicBuilder+Signing.swift */,
+				AE11F406C192BA71987A2F02 /* Extrinsic+Version.swift */,
 				8499FEC727BF73F400712589 /* StorageKeyFactory+Size.swift */,
 				840302DD292CE3EA0013F356 /* StorageEntryMetadata+TypeCheck.swift */,
 				840302DF292CE4030013F356 /* CodingFactory+TypeCheck.swift */,
@@ -35798,6 +35801,7 @@
 				84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */,
 				8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */,
 				84D2F19D2771E5610040C680 /* ExtrinsicBuilder+Signing.swift in Sources */,
+				3D5E7B4D35360040AE11F406 /* Extrinsic+Version.swift in Sources */,
 				0CCCDF822B64C19D00473D42 /* HydraDx+Storages.swift in Sources */,
 				8430AAFB260230C5005B1066 /* ValidatorState.swift in Sources */,
 				77EFFC8D2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift in Sources */,

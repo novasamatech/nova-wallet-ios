@@ -11,7 +11,8 @@ struct DAppTxPayloadProcessedResult {
     let feeAsset: ChainAsset?
 }
 
-protocol DAppTxPayloadExtrinsicFactoryProtocol: ExtrinsicBuilderOperationFactoryProtocol {
+// swiftlint:disable:next type_name
+protocol DAppTxPayloadExtrinsicOperationFactoryProtocol: ExtrinsicBuilderOperationFactoryProtocol {
     func createProcessingWrapper() -> CompoundOperationWrapper<DAppTxPayloadProcessedResult>
 }
 
@@ -87,9 +88,9 @@ final class DAppTxPayloadExtrinsicOperationFactory {
     }
 }
 
-// MARK: DAppTxPayloadExtrinsicFactoryProtocol
+// MARK: DAppTxPayloadExtrinsicOperationFactoryProtocol
 
-extension DAppTxPayloadExtrinsicOperationFactory: DAppTxPayloadExtrinsicFactoryProtocol {
+extension DAppTxPayloadExtrinsicOperationFactory: DAppTxPayloadExtrinsicOperationFactoryProtocol {
     func createProcessingWrapper() -> CompoundOperationWrapper<DAppTxPayloadProcessedResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let verificationWrapper = createVerificationWrapper(dependingOn: codingFactoryOperation)

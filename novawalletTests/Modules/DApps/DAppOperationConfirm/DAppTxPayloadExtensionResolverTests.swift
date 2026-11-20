@@ -227,6 +227,53 @@ final class DAppTxPayloadExtensionResolverTests: XCTestCase {
         assertFailure(unknownMode, runtime: runtime, metadataHash: walletHash, name: "DecodeError")
     }
 
+    /// `createSdkCoders()` repeats a list substrate-sdk-ios keeps internal. Whatever the wallet decodes from
+    /// the dApp's bytes must be what `ExtrinsicExtraNode` reads from the same bytes in an extrinsic, so a list
+    /// that no longer follows the SDK shows up here and not as refused payloads.
+    func testSuppliedExtensionsAreDecodedTheWayExtraNodeDecodesThem() throws {
+        var westendValues = DAppTxPayloadFixture.Values()
+        westendValues.tip = 5
+
+        var assetHubValues = westendValues
+        assetHubValues.metadataHash = ExtrinsicGolden.metadataHash
+
+        let cases: [(runtime: ExtrinsicGoldenRuntime, values: DAppTxPayloadFixture.Values)] = [
+            (try ExtrinsicGoldenRuntime.westend(), westendValues),
+            (try ExtrinsicGoldenRuntime.polkadotAssetHub(), assetHubValues)
+        ]
+
+        for (runtime, values) in cases {
+            // given
+
+            let fixture = try DAppTxPayloadFixture.transfer(runtime: runtime, values: values)
+            let resolution = try resolve(fixture, runtime: runtime, metadataHash: values.metadataHash)
+
+            let supplied = try resolution.extensions.map { try XCTUnwrap(resolution.supplied(for: $0.identifier)) }
+            let extraBytes = supplied.reduce(Data()) { $0 + $1.rawExplicit }
+
+            let extraNode = try XCTUnwrap(
+                runtime.codingFactory.getTypeNode(for: GenericType.extrinsicExtra.name) as? ExtrinsicExtraNode
+            )
+
+            // when
+
+            let decoder = try runtime.codingFactory.createDecoder(from: extraBytes)
+            let nodeExtra = try extraNode.decode(extensionVersion: 0, decoder: decoder)
+
+            // then
+
+            XCTAssertEqual(decoder.remained, 0)
+
+            for (resolved, suppliedExtension) in zip(resolution.extensions, supplied) {
+                XCTAssertEqual(suppliedExtension.explicit, nodeExtra[resolved.identifier], resolved.identifier)
+            }
+
+            let hasTransactionPayment = runtime.metadata.getSignedExtensions().contains(ExtensionId.txPayment)
+
+            XCTAssertEqual(nodeExtra.getTip(), hasTransactionPayment ? BigUInt(5) : nil)
+        }
+    }
+
     func testInvalidHexIsReported() throws {
         let runtime = try ExtrinsicGoldenRuntime.westend()
         let fixture = try DAppTxPayloadFixture.transfer(runtime: runtime)

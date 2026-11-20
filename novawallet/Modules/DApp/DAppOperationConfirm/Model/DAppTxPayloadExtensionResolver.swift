@@ -26,6 +26,23 @@ extension DAppTxPayloadExtensionResolver {
         static let encodedNone = Data([0])
     }
 
+    /**
+     *  How the parts of a payload are named in the failure details the dApp receives.
+     */
+    enum Field {
+        static let genesisHash = "genesisHash"
+        static let callData = "callData"
+        static let extensions = "extensions"
+
+        static func explicit(of identifier: String) -> String {
+            "\(identifier).extra"
+        }
+
+        static func implicit(of identifier: String) -> String {
+            "\(identifier).additionalSigned"
+        }
+    }
+
     static let walletProvidedIds: Set<String> = [
         Extrinsic.TransactionExtensionId.nonce,
         Extrinsic.TransactionExtensionId.mortality,
@@ -64,7 +81,7 @@ extension DAppTxPayloadExtensionResolver: DAppTxPayloadExtensionResolving {
             )
         }
 
-        guard try decodeHex(payload.context.genesisHash, field: "genesisHash") == chainFacts.genesisHash else {
+        guard try decodeHex(payload.context.genesisHash, field: Field.genesisHash) == chainFacts.genesisHash else {
             throw DAppCreateTransactionError.decodeError(details: "genesisHash doesn't match the chain")
         }
 
@@ -120,9 +137,7 @@ private extension DAppTxPayloadExtensionResolver {
             let supportedFormats, supportedFormats.contains(Extrinsic.Version.generalFormatNumber),
             let pipelineIds = try? metadata.getSignedExtensions(forExtensionVersion: extensionVersion),
             pipelineIds.contains(Extrinsic.TransactionExtensionId.verifySignature) else {
-            throw DAppCreateTransactionError.unsupportedTxExtensionVersion(
-                details: "version \(requestedVersion) is not supported by the wallet's runtime"
-            )
+            throw createUnsupportedVersionError(for: requestedVersion)
         }
 
         return .V5(extensionVersion: extensionVersion)
@@ -134,19 +149,23 @@ private extension DAppTxPayloadExtensionResolver {
                 forExtensionVersion: runtime.extensionVersion
             )
         } catch {
-            throw DAppCreateTransactionError.unsupportedTxExtensionVersion(
-                details: "version \(runtime.extensionVersion) is not supported by the wallet's runtime"
-            )
+            throw createUnsupportedVersionError(for: UInt(runtime.extensionVersion))
         }
+    }
+
+    func createUnsupportedVersionError(for extensionVersion: UInt) -> DAppCreateTransactionError {
+        .unsupportedTxExtensionVersion(
+            details: "version \(extensionVersion) is not supported by the wallet's runtime"
+        )
     }
 
     func decodeCall(
         from hex: String,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> RuntimeCall<JSON> {
-        let callData = try decodeHex(hex, field: "callData")
+        let callData = try decodeHex(hex, field: Field.callData)
 
-        return try decoding("callData") {
+        return try decoding(Field.callData) {
             let context = codingFactory.createRuntimeJsonContext().toRawContext()
 
             let decoder = try codingFactory.createDecoder(from: callData)
@@ -156,7 +175,7 @@ private extension DAppTxPayloadExtensionResolver {
             try encoder.append(call, ofType: KnownType.call.name, with: context)
 
             try ensureCanonical(
-                "callData",
+                Field.callData,
                 remained: decoder.remained,
                 original: callData,
                 encoded: try encoder.encode()
@@ -210,11 +229,11 @@ private extension DAppTxPayloadExtensionResolver {
         runtime: Runtime
     ) throws -> DAppTxPayloadResolution.SuppliedExtension {
         let identifier = descriptor.identifier
-        let rawExplicit = try decodeHex(supplied.extra, field: "\(identifier).extra")
-        let rawImplicit = try decodeHex(supplied.additionalSigned, field: "\(identifier).additionalSigned")
+        let rawExplicit = try decodeHex(supplied.extra, field: Field.explicit(of: identifier))
+        let rawImplicit = try decodeHex(supplied.additionalSigned, field: Field.implicit(of: identifier))
         let coder = explicitCoder(for: identifier, runtime: runtime)
 
-        let explicit: JSON? = try decoding("\(identifier).extra") {
+        let explicit: JSON? = try decoding(Field.explicit(of: identifier)) {
             let decoder = try runtime.codingFactory.createDecoder(from: rawExplicit)
             var store = ExtrinsicExtra()
 
@@ -233,7 +252,7 @@ private extension DAppTxPayloadExtensionResolver {
             )
 
             try ensureCanonical(
-                "\(identifier).extra",
+                Field.explicit(of: identifier),
                 remained: decoder.remained,
                 original: rawExplicit,
                 encoded: try encoder.encode()
@@ -242,7 +261,7 @@ private extension DAppTxPayloadExtensionResolver {
             return store[identifier]
         }
 
-        let implicit: JSON = try decoding("\(identifier).additionalSigned") {
+        let implicit: JSON = try decoding(Field.implicit(of: identifier)) {
             let type = String(descriptor.additionalSigned)
             let decoder = try runtime.codingFactory.createDecoder(from: rawImplicit)
             let value = try decoder.read(type: type)
@@ -251,7 +270,7 @@ private extension DAppTxPayloadExtensionResolver {
             try encoder.append(json: value, type: type)
 
             try ensureCanonical(
-                "\(identifier).additionalSigned",
+                Field.implicit(of: identifier),
                 remained: decoder.remained,
                 original: rawImplicit,
                 encoded: try encoder.encode()

@@ -2,6 +2,12 @@ import Foundation
 import SubstrateSdk
 
 extension DAppTxPayloadExtensionResolver {
+    /**
+     *  The coders `ExtrinsicExtraNode` applies before the ones of the registry. The node keeps the list
+     *  internal (`ExtrinsicExtraNode.defaultExtensions` in Runtime/Nodes/Items/ExtrinsicExtraNode.swift
+     *  of substrate-sdk-ios), so it is repeated here and must follow the SDK when the dependency is bumped:
+     *  a difference makes `ensureExtrinsicKeepsSuppliedBytes` refuse valid payloads.
+     */
     func createSdkCoders() -> [TransactionExtensionCoding] {
         [
             TransactionExtension.CheckMortality.getTransactionExtensionCoder(),
@@ -47,7 +53,7 @@ extension DAppTxPayloadExtensionResolver {
             }
         }
 
-        let encoded = try decoding("extensions") {
+        let encoded = try decoding(Field.extensions) {
             let encoder = runtime.codingFactory.createEncoder()
             try runtime.extraNode.encode(extra, extensionVersion: runtime.extensionVersion, encoder: encoder)
 

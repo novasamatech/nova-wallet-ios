@@ -7,7 +7,7 @@ final class DAppCreateTransactionConfirmInteractor: DAppOperationBaseInteractor 
     let chain: ChainModel
     let account: ChainAccountResponse
 
-    let extrinsicFactory: DAppTxPayloadExtrinsicFactoryProtocol
+    let extrinsicFactory: DAppTxPayloadExtrinsicOperationFactoryProtocol
     let feeOperationFactory: ExtrinsicOperationFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -27,7 +27,7 @@ final class DAppCreateTransactionConfirmInteractor: DAppOperationBaseInteractor 
         request: DAppOperationRequest,
         chain: ChainModel,
         account: ChainAccountResponse,
-        extrinsicFactory: DAppTxPayloadExtrinsicFactoryProtocol,
+        extrinsicFactory: DAppTxPayloadExtrinsicOperationFactoryProtocol,
         feeOperationFactory: ExtrinsicOperationFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
