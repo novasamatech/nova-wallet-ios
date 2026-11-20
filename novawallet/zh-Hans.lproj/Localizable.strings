@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "你的代币";
 "tabbar.more.title" = "更多";
 "tabbar.swaps.title" = "兑换";
+"swaps.execution.funds.location" = "您的 %@ 位于 %@";

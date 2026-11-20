@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Token Anda";
 "tabbar.more.title" = "Lainnya";
 "tabbar.swaps.title" = "Swap";
+"swaps.execution.funds.location" = "Aset %@ Anda berada di %@";
