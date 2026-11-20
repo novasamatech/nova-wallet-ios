@@ -73,6 +73,11 @@ final class SwapExecutionStepRowView: UIView {
         $0.numberOfLines = 0
     }
 
+    let fundsLocationLabel: UILabel = .create {
+        $0.apply(style: .footnoteSecondary)
+        $0.numberOfLines = 0
+    }
+
     let viewTransactionButton: RoundedButton = .create {
         $0.applyIconStyle()
         $0.imageWithTitleView?.layoutType = .horizontalLabelFirst
@@ -108,12 +113,15 @@ final class SwapExecutionStepRowView: UIView {
             applyMark(isSuccess: true)
             titleLabel.apply(style: .regularSubhedlinePrimary)
             detailsLabel.isHidden = true
+            fundsLocationLabel.isHidden = true
             linkContainer.isHidden = true
-        case let .failed(details, canViewTransaction):
+        case let .failed(details, fundsLocation, canViewTransaction):
             applyMark(isSuccess: false)
             titleLabel.apply(style: .regularSubhedlinePrimary)
             detailsLabel.text = details
             detailsLabel.isHidden = details == nil
+            fundsLocationLabel.text = fundsLocation
+            fundsLocationLabel.isHidden = fundsLocation == nil
             linkContainer.isHidden = !canViewTransaction
             viewTransactionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: locale.rLanguages
@@ -124,6 +132,7 @@ final class SwapExecutionStepRowView: UIView {
             numberView.titleLabel.text = number
             titleLabel.apply(style: .regularSubhedlineSecondary)
             detailsLabel.isHidden = true
+            fundsLocationLabel.isHidden = true
             linkContainer.isHidden = true
         }
     }
@@ -139,7 +148,7 @@ private extension SwapExecutionStepRowView {
     func setupLayout() {
         let textStack = UIView.vStack(
             spacing: Constants.textSpacing,
-            [titleLabel, detailsLabel, linkContainer]
+            [titleLabel, detailsLabel, fundsLocationLabel, linkContainer]
         )
 
         viewTransactionButton.snp.makeConstraints { $0.height.equalTo(Constants.linkHeight) }

@@ -2,16 +2,42 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+enum ExtrinsicMonitorCompletion {
+    case inBlock
+    case finalized
+}
+
+struct ExtrinsicSubmitMonitorWrapper {
+    let submissionOperation: BaseOperation<ExtrinsicSubmittedModel>
+    let monitorWrapper: CompoundOperationWrapper<ExtrinsicMonitorSubmission>
+}
+
 protocol ExtrinsicSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
         payingIn feeAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
-        matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission>
+        matchingEvents: ExtrinsicEventsMatching?,
+        completingOn completion: ExtrinsicMonitorCompletion
+    ) -> ExtrinsicSubmitMonitorWrapper
 }
 
 extension ExtrinsicSubmitMonitorFactoryProtocol {
+    func submitAndMonitorWrapper(
+        extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
+        payingIn feeAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
+        submitAndMonitorWrapper(
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
+            payingIn: feeAssetId,
+            signer: signer,
+            matchingEvents: matchingEvents,
+            completingOn: .inBlock
+        ).monitorWrapper
+    }
+
     func submitAndMonitorWrapper(
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
         payingIn feeAssetId: ChainAssetId? = nil,
@@ -79,19 +105,40 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
         payingIn feeAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
-        matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
-        let submissionOperation = createSubmissionOperation(
+        matchingEvents: ExtrinsicEventsMatching?,
+        completingOn completion: ExtrinsicMonitorCompletion
+    ) -> ExtrinsicSubmitMonitorWrapper {
+        let inclusionStore = ExtrinsicInclusionStore()
+
+        let watchOperation = createSubmissionOperation(
             extrinsicBuilderClosure: extrinsicBuilderClosure,
             payingIn: feeAssetId,
-            signer: signer
+            signer: signer,
+            completingOn: completion,
+            inclusionStore: inclusionStore
         )
+
+        let submittedOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+            do {
+                let submission = try watchOperation.extractNoCancellableResultData()
+
+                return ExtrinsicSubmittedModel(txHash: submission.extrinsicHash, sender: submission.sender)
+            } catch {
+                guard let includedModel = inclusionStore.fetchModel() else {
+                    throw error
+                }
+
+                return includedModel
+            }
+        }
+
+        submittedOperation.addDependency(watchOperation)
 
         let statusWrapper: CompoundOperationWrapper<SubstrateExtrinsicStatus> = OperationCombiningService
             .compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
-                let response = try submissionOperation.extractNoCancellableResultData()
+                let response = try watchOperation.extractNoCancellableResultData()
 
                 return self.statusService.fetchExtrinsicStatusForHash(
                     response.extrinsicHash,
@@ -100,26 +147,23 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
                 )
             }
 
-        statusWrapper.addDependency(operations: [submissionOperation])
+        statusWrapper.addDependency(operations: [watchOperation])
 
         let mappingOperation = ClosureOperation<ExtrinsicMonitorSubmission> {
             let status = try statusWrapper.targetOperation.extractNoCancellableResultData()
-            let submission = try submissionOperation.extractNoCancellableResultData()
+            let submittedModel = try submittedOperation.extractNoCancellableResultData()
 
-            return ExtrinsicMonitorSubmission(
-                extrinsicSubmittedModel: ExtrinsicSubmittedModel(
-                    txHash: submission.extrinsicHash,
-                    sender: submission.sender
-                ),
-                status: status
-            )
+            return ExtrinsicMonitorSubmission(extrinsicSubmittedModel: submittedModel, status: status)
         }
 
         mappingOperation.addDependency(statusWrapper.targetOperation)
+        mappingOperation.addDependency(submittedOperation)
 
-        return statusWrapper
-            .insertingHead(operations: [submissionOperation])
+        let monitorWrapper = statusWrapper
+            .insertingHead(operations: [watchOperation, submittedOperation])
             .insertingTail(operation: mappingOperation)
+
+        return ExtrinsicSubmitMonitorWrapper(submissionOperation: submittedOperation, monitorWrapper: monitorWrapper)
     }
 }
 
@@ -127,7 +171,9 @@ private extension ExtrinsicSubmissionMonitorFactory {
     func createSubmissionOperation(
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
         payingIn feeAssetId: ChainAssetId?,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        completingOn completion: ExtrinsicMonitorCompletion,
+        inclusionStore: ExtrinsicInclusionStore
     ) -> AsyncClosureOperation<SubmissionResult> {
         var subscriptionId: UInt16?
 
@@ -143,7 +189,12 @@ private extension ExtrinsicSubmissionMonitorFactory {
                     return true
                 },
                 notificationClosure: { result in
-                    guard let submissionResult = self.submissionResult(from: result) else {
+                    guard
+                        let submissionResult = self.submissionResult(from: result, completingOn: completion) else {
+                        if case let .success(model) = result, case .inBlock = model.statusUpdate.extrinsicStatus {
+                            inclusionStore.store(model: model.extrinsicSubmittedModel)
+                        }
+
                         return
                     }
 
@@ -165,12 +216,25 @@ private extension ExtrinsicSubmissionMonitorFactory {
         })
     }
 
+    func completionBlockHash(
+        from statusUpdate: ExtrinsicStatusUpdate,
+        completingOn completion: ExtrinsicMonitorCompletion
+    ) -> BlockHash? {
+        switch completion {
+        case .inBlock:
+            statusUpdate.getInBlockOrFinalizedHash()
+        case .finalized:
+            statusUpdate.getFinalizedHash()
+        }
+    }
+
     func submissionResult(
-        from result: Result<ExtrinsicSubscribedStatusModel, Error>
+        from result: Result<ExtrinsicSubscribedStatusModel, Error>,
+        completingOn completion: ExtrinsicMonitorCompletion
     ) -> Result<SubmissionResult, Error>? {
         switch result {
         case let .success(model):
-            if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
+            if let blockHash = completionBlockHash(from: model.statusUpdate, completingOn: completion) {
                 let response = SubmissionResult(
                     blockHash: blockHash,
                     extrinsicHash: model.statusUpdate.extrinsicHash,
@@ -186,5 +250,30 @@ private extension ExtrinsicSubmissionMonitorFactory {
         case let .failure(error):
             return .failure(error)
         }
+    }
+}
+
+private final class ExtrinsicInclusionStore {
+    private let mutex = NSLock()
+    private var model: ExtrinsicSubmittedModel?
+
+    func store(model: ExtrinsicSubmittedModel) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        self.model = model
+    }
+
+    func fetchModel() -> ExtrinsicSubmittedModel? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return model
     }
 }

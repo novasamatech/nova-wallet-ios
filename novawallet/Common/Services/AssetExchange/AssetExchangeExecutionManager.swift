@@ -71,7 +71,11 @@ final class AssetExchangeExecutionManager {
             shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
         )
 
-        let wrapper = operations[index].executeWrapper(for: swapLimit)
+        // the next segment spends this one's measured output, so it must come from a block that can't be reverted
+        let wrapper = operations[index].executeWrapper(
+            for: swapLimit,
+            hasNextOperation: index < operations.count - 1
+        )
 
         executeCancellable(
             wrapper: wrapper,

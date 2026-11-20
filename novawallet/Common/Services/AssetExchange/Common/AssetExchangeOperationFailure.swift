@@ -54,13 +54,13 @@ extension CompoundOperationWrapper {
     }
 }
 
-extension BaseOperation where ResultType == ExtrinsicMonitorSubmission {
+extension BaseOperation where ResultType == ExtrinsicSubmittedModel {
     var submittedTxHash: ExtrinsicHash? {
-        guard case let .success(submission) = result else {
+        guard case let .success(submittedModel) = result else {
             return nil
         }
 
-        return submission.extrinsicSubmittedModel.txHash
+        return submittedModel.txHash
     }
 }
 
