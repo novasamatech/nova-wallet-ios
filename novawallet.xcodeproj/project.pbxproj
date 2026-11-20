@@ -2103,6 +2103,9 @@
 		2D7A55092E5D000100000002 /* SubtensorFixtureDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */; };
 		2D7A550D2E5D000100000002 /* SubtensorSwapApiDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */; };
 		2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 2D7A550F2E5D000100000001 /* bittensor-v15-metadata */; };
+		A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */ = {isa = PBXBuildFile; fileRef = 5650467CEEFBA316E12AE712 /* runtime-avail.json */; };
+		1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 7723092C67AB5FEA616EABEF /* avail-metadata */; };
+		F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */ = {isa = PBXBuildFile; fileRef = A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */; };
 		2D7A56012E5D000200000002 /* Multistaking+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56012E5D000200000001 /* Multistaking+Subtensor.swift */; };
 		2D7A56022E5D000200000002 /* SubtensorMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56022E5D000200000001 /* SubtensorMultistakingUpdateService.swift */; };
 		2D7A56032E5D000200000002 /* SubtensorStakeStateFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56032E5D000200000001 /* SubtensorStakeStateFetchOperationFactory.swift */; };
@@ -5792,6 +5795,7 @@
 		84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0622542C8D600319F74 /* ContactItem.swift */; };
 		84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */; };
 		84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1625F559F200F32ED4 /* WestendStub.swift */; };
+		E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */; };
 		84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */; };
 		84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 84FACB2C25F562CB00F32ED4 /* westend-metadata */; };
 		84FACB3825F5630000F32ED4 /* RuntimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB3725F5630000F32ED4 /* RuntimeHelper.swift */; };
@@ -9406,6 +9410,9 @@
 		2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFixtureDecoding.swift; sourceTree = "<group>"; };
 		2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSwapApiDecodeTests.swift; sourceTree = "<group>"; };
 		2D7A550F2E5D000100000001 /* bittensor-v15-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bittensor-v15-metadata"; sourceTree = "<group>"; };
+		5650467CEEFBA316E12AE712 /* runtime-avail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "runtime-avail.json"; sourceTree = "<group>"; };
+		7723092C67AB5FEA616EABEF /* avail-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "avail-metadata"; sourceTree = "<group>"; };
+		A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "polkadot-asset-hub-metadata"; sourceTree = "<group>"; };
 		2D7A56012E5D000200000001 /* Multistaking+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+Subtensor.swift"; sourceTree = "<group>"; };
 		2D7A56022E5D000200000001 /* SubtensorMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		2D7A56032E5D000200000001 /* SubtensorStakeStateFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateFetchOperationFactory.swift; sourceTree = "<group>"; };
@@ -12775,6 +12782,7 @@
 		84FAB0622542C8D600319F74 /* ContactItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactItem.swift; sourceTree = "<group>"; };
 		84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDContactItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		84FACB1625F559F200F32ED4 /* WestendStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WestendStub.swift; sourceTree = "<group>"; };
+		1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicGoldenFixtures.swift; sourceTree = "<group>"; };
 		84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceStub.swift; sourceTree = "<group>"; };
 		84FACB2C25F562CB00F32ED4 /* westend-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-metadata"; sourceTree = "<group>"; };
 		84FACB3725F5630000F32ED4 /* RuntimeHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeHelper.swift; sourceTree = "<group>"; };
@@ -25142,6 +25150,7 @@
 				8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */,
 				84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */,
 				84FACB1625F559F200F32ED4 /* WestendStub.swift */,
+				1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */,
 				2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */,
 				845C7F05263C45EC0024E797 /* AnyProviderAutoCleaner.swift */,
 				845B822426EFE03E00D25C72 /* AccountGenerator.swift */,
@@ -29672,6 +29681,9 @@
 				84F438B125DA548700AEDA56 /* runtimeTestMetadata */,
 				84FACB2C25F562CB00F32ED4 /* westend-metadata */,
 				2D7A550F2E5D000100000001 /* bittensor-v15-metadata */,
+				5650467CEEFBA316E12AE712 /* runtime-avail.json */,
+				7723092C67AB5FEA616EABEF /* avail-metadata */,
+				A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */,
 				848DB992260638440055DDE7 /* rewardResponse.json */,
 				846B32A426DD07AF00250E89 /* rewardErrorResponse.json */,
 				C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */,
@@ -33373,6 +33385,9 @@
 				0C1A105D2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */,
 				2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */,
+				A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */,
+				1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */,
+				F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */,
 				77AAC3E52B70DB0300B8B89E /* firestore-settings.json in Resources */,
 				77EA2A242A333C1500B0670B /* arrays_output.json in Resources */,
 				846B32A526DD07AF00250E89 /* rewardErrorResponse.json in Resources */,
@@ -40569,6 +40584,7 @@
 				8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */,
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
+				E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */,
 				2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,
 				0C803D0B2C9B805800AEB35B /* StringTrimmingTests.swift in Sources */,
