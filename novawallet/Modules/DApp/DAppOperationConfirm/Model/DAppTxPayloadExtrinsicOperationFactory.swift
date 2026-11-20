@@ -4,11 +4,7 @@ import Operation_iOS
 
 struct DAppTxPayloadProcessedResult {
     let resolution: DAppTxPayloadResolution
-
-    /**
-     *   The asset the dApp pays the fee in when it isn't the native one and the wallet knows it
-     */
-    let feeAsset: ChainAsset?
+    let payment: DAppTxPayloadPayment
 }
 
 // swiftlint:disable:next type_name
@@ -21,12 +17,9 @@ protocol DAppTxPayloadExtrinsicOperationFactoryProtocol: ExtrinsicBuilderOperati
  *  the extrinsic as the bytes it sent once the resolver has verified them, the rest comes from the wallet.
  */
 final class DAppTxPayloadExtrinsicOperationFactory {
-    enum Constants {
-        static let feeAssetIdField = "assetId"
-    }
-
     struct Verification {
         let resolution: DAppTxPayloadResolution
+        let payment: DAppTxPayloadPayment
         let metadataHash: Data?
     }
 
@@ -98,13 +91,9 @@ extension DAppTxPayloadExtrinsicOperationFactory: DAppTxPayloadExtrinsicOperatio
         verificationWrapper.addDependency(operations: [codingFactoryOperation])
 
         let mappingOperation = ClosureOperation<DAppTxPayloadProcessedResult> {
-            let resolution = try verificationWrapper.targetOperation.extractNoCancellableResultData().resolution
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let verification = try verificationWrapper.targetOperation.extractNoCancellableResultData()
 
-            return DAppTxPayloadProcessedResult(
-                resolution: resolution,
-                feeAsset: self.findFeeAsset(in: resolution, codingFactory: codingFactory)
-            )
+            return DAppTxPayloadProcessedResult(resolution: verification.resolution, payment: verification.payment)
         }
 
         mappingOperation.addDependency(verificationWrapper.targetOperation)
@@ -202,7 +191,14 @@ private extension DAppTxPayloadExtrinsicOperationFactory {
                 )
             )
 
-            return Verification(resolution: resolution, metadataHash: metadataHash)
+            // a payment the confirmation can't show stops the request here, before the fee and before signing
+            let payment = try DAppTxPayloadPaymentResolver.resolve(
+                resolution,
+                chain: self.chain,
+                codingFactory: codingFactory
+            )
+
+            return Verification(resolution: resolution, payment: payment, metadataHash: metadataHash)
         }
 
         verificationOperation.addDependency(metadataHashWrapper.targetOperation)

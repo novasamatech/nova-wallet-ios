@@ -5,15 +5,22 @@ import SubstrateSdk
 final class AssetConversionFeeEstimatingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
     let feeBufferInPercentage: BigRational
+    let nativeFeeEstimator: ExtrinsicFeeEstimating?
 
     private let hydraFeeOracleState: HydraFeeOracleState
 
+    /**
+     *  - Parameter nativeFeeEstimator: handed to the estimators this factory creates, see
+     *    `ExtrinsicAssetConversionFeeEstimator`.
+     */
     init(
         host: ExtrinsicFeeEstimatorHostProtocol,
-        feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
+        feeBufferInPercentage: BigRational = BigRational.percent(of: 0), // no overestimation by default
+        nativeFeeEstimator: ExtrinsicFeeEstimating? = nil
     ) {
         self.host = host
         self.feeBufferInPercentage = feeBufferInPercentage
+        self.nativeFeeEstimator = nativeFeeEstimator
 
         hydraFeeOracleState = AssetConversionFeeSharedStateStore.getOrCreateHydraFeeOracleState(
             for: host.chain.chainId
@@ -41,7 +48,8 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
                 quoteFactory: quoteFactory,
-                feeBufferInPercentage: feeBufferInPercentage
+                feeBufferInPercentage: feeBufferInPercentage,
+                nativeFeeEstimator: nativeFeeEstimator
             )
         case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(
@@ -55,7 +63,8 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
                 quoteFactory: assetHubQuoteFactory,
-                feeBufferInPercentage: feeBufferInPercentage
+                feeBufferInPercentage: feeBufferInPercentage,
+                nativeFeeEstimator: nativeFeeEstimator
             )
         case .none, .equilibrium, .evmNative, .evmAsset, .orml, .ormlHydrationEvm, .statemine:
             return nil

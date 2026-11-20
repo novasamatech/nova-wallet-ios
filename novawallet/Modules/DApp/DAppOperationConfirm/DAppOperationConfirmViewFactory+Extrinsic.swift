@@ -30,16 +30,18 @@ extension DAppOperationConfirmViewFactory {
             runtimeProvider: runtimeProvider
         )
 
+        let feeEstimatorHost = createFeeEstimatorHost(
+            for: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+
         let feeOperationFactory = ExtrinsicProxyOperationFactory(
             proxy: extrinsicFactory,
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            feeEstimationRegistry: createFeeEstimationRegistry(
-                for: account,
-                chain: chain,
-                connection: connection,
-                runtimeProvider: runtimeProvider
-            ),
+            feeEstimationRegistry: createTxPayloadFeeEstimationRegistry(host: feeEstimatorHost),
             operationManager: OperationManager(operationQueue: operationQueue),
             usesStateCallForFee: chain.feeViaRuntimeCall
         )
@@ -90,7 +92,39 @@ extension DAppOperationConfirmViewFactory {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> ExtrinsicFeeEstimationRegistring {
-        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
+        let host = createFeeEstimatorHost(
+            for: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+
+        return createFeeEstimationRegistry(host: host, nativeFeeEstimator: nil)
+    }
+
+    /**
+     *  A createTransaction request brings the payment extension of the dApp, so its fee
+     *  is the estimate of the node together with the tip that extension carries.
+     */
+    static func createTxPayloadFeeEstimationRegistry(
+        host: ExtrinsicFeeEstimatorHostProtocol
+    ) -> ExtrinsicFeeEstimationRegistring {
+        createFeeEstimationRegistry(host: host, nativeFeeEstimator: createTxPayloadNativeFeeEstimator(host: host))
+    }
+
+    static func createTxPayloadNativeFeeEstimator(host: ExtrinsicFeeEstimatorHostProtocol) -> ExtrinsicFeeEstimating {
+        DAppTxPayloadFeeEstimator(
+            nativeFeeEstimator: ExtrinsicNativeFeeEstimator(chain: host.chain, operationQueue: host.operationQueue)
+        )
+    }
+
+    static func createFeeEstimatorHost(
+        for account: ChainAccountResponse,
+        chain: ChainModel,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> ExtrinsicFeeEstimatorHostProtocol {
+        ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
             connection: connection,
@@ -99,14 +133,23 @@ extension DAppOperationConfirmViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+    }
 
-        return ExtrinsicFeeEstimationRegistry(
-            chain: chain,
+    static func createFeeEstimationRegistry(
+        host: ExtrinsicFeeEstimatorHostProtocol,
+        nativeFeeEstimator: ExtrinsicFeeEstimating?
+    ) -> ExtrinsicFeeEstimationRegistring {
+        ExtrinsicFeeEstimationRegistry(
+            chain: host.chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
-                host: extrinsicFeeHost,
-                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+                host: host,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(
+                    host: host,
+                    nativeFeeEstimator: nativeFeeEstimator
+                ),
+                nativeFeeEstimator: nativeFeeEstimator
             ),
-            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: host)
         )
     }
 

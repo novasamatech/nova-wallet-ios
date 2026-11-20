@@ -94,18 +94,4 @@ extension DAppTxPayloadExtrinsicOperationFactory {
 
         return builder
     }
-
-    func findFeeAsset(
-        in resolution: DAppTxPayloadResolution,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) -> ChainAsset? {
-        guard
-            chain.hasAssetHubFees,
-            let payment = resolution.supplied(for: Extrinsic.TransactionExtensionId.assetTxPayment),
-            let assetId = payment.explicit?.dictValue?[Constants.feeAssetIdField] else {
-            return nil
-        }
-
-        return AssetHubTokensConverter.convertToLocalAsset(for: assetId, on: chain, using: codingFactory)
-    }
 }

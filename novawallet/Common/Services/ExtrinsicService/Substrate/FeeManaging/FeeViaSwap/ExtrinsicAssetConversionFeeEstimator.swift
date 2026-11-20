@@ -7,17 +7,24 @@ final class ExtrinsicAssetConversionFeeEstimator {
     let operationQueue: OperationQueue
     let quoteFactory: AssetQuoteFactoryProtocol
     let feeBufferInPercentage: BigRational
+    let nativeFeeEstimator: ExtrinsicFeeEstimating?
 
+    /**
+     *  - Parameter nativeFeeEstimator: gives the fee in the native token that is then converted to the asset;
+     *    nil stands for `ExtrinsicNativeFeeEstimator`, which suits every caller that builds its own extrinsics.
+     */
     init(
         chainAsset: ChainAsset,
         operationQueue: OperationQueue,
         quoteFactory: AssetQuoteFactoryProtocol,
-        feeBufferInPercentage: BigRational
+        feeBufferInPercentage: BigRational,
+        nativeFeeEstimator: ExtrinsicFeeEstimating? = nil
     ) {
         self.chainAsset = chainAsset
         self.operationQueue = operationQueue
         self.quoteFactory = quoteFactory
         self.feeBufferInPercentage = feeBufferInPercentage
+        self.nativeFeeEstimator = nativeFeeEstimator
     }
 }
 
@@ -34,10 +41,12 @@ extension ExtrinsicAssetConversionFeeEstimator: ExtrinsicFeeEstimating {
 
         let assetOutId = chainAsset.chainAssetId
 
-        let nativeEstimator = ExtrinsicNativeFeeEstimator(
+        let nativeFeeEstimator = nativeFeeEstimator ?? ExtrinsicNativeFeeEstimator(
             chain: chainAsset.chain,
             operationQueue: operationQueue
-        ).createFeeEstimatingWrapper(
+        )
+
+        let nativeEstimator = nativeFeeEstimator.createFeeEstimatingWrapper(
             connection: connection,
             runtimeService: runtimeService,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure

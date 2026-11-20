@@ -47,7 +47,10 @@ final class DAppTxPayloadExtrinsicOperationFactoryTests: XCTestCase {
         let fixture = try DAppTxPayloadFixture.transfer(runtime: runtime)
             .replacing(ExtensionId.assetTxPayment, extra: payment)
 
-        let built = try build(with: makeFactory(runtime: runtime, fixture: fixture))
+        // only a chain that takes fees in assets and lists the asset lets such a payment through
+        let assetHub = try DAppTxPayloadPaymentFixture.makeAssetHubChain()
+
+        let built = try build(with: makeFactory(runtime: runtime, fixture: fixture, chain: assetHub))
         let native = try build(
             with: makeFactory(runtime: runtime, fixture: DAppTxPayloadFixture.transfer(runtime: runtime))
         )
@@ -81,7 +84,7 @@ final class DAppTxPayloadExtrinsicOperationFactoryTests: XCTestCase {
         )
 
         let explicit = try XCTUnwrap(resolution.supplied(for: ExtensionId.assetTxPayment)?.explicit?.dictValue)
-        let feeAssetField = DAppTxPayloadExtrinsicOperationFactory.Constants.feeAssetIdField
+        let feeAssetField = DAppTxPayloadPaymentResolver.Constants.feeAssetIdField
 
         let assetId = try XCTUnwrap(explicit[feeAssetField]).map(
             to: AssetConversionPallet.AssetId.self,
@@ -96,12 +99,53 @@ final class DAppTxPayloadExtrinsicOperationFactoryTests: XCTestCase {
             )
         )
 
-        // a generated chain has no Asset Hub fees, so the fee stays in the native token
-        let wrapper = try makeFactory(runtime: runtime, fixture: fixture).createProcessingWrapper()
+        let assetHub = try DAppTxPayloadPaymentFixture.makeAssetHubChain()
+        let wrapper = try makeFactory(runtime: runtime, fixture: fixture, chain: assetHub).createProcessingWrapper()
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        XCTAssertNil(try wrapper.targetOperation.extractNoCancellableResultData().feeAsset)
+        XCTAssertEqual(
+            try wrapper.targetOperation.extractNoCancellableResultData().payment.feeAsset?.asset.symbol,
+            DAppTxPayloadPaymentFixture.usdtSymbol
+        )
+    }
+
+    func testPaymentInAssetTheChainCantTakeStopsProcessingAndSigning() throws {
+        let runtime = try ExtrinsicGoldenRuntime.polkadotAssetHub()
+        let payment = join(Data([0x0C, 0x01]), try Data(hexString: Self.usdtLocationHex))
+
+        let fixture = try DAppTxPayloadFixture.transfer(runtime: runtime)
+            .replacing(ExtensionId.assetTxPayment, extra: payment)
+
+        // a generated chain has no Asset Hub fees: the wallet could show such a fee only in the native token
+        let factory = try makeFactory(runtime: runtime, fixture: fixture)
+        let processingWrapper = factory.createProcessingWrapper()
+
+        operationQueue.addOperations(processingWrapper.allOperations, waitUntilFinished: true)
+
+        XCTAssertThrowsError(try processingWrapper.targetOperation.extractNoCancellableResultData()) { error in
+            XCTAssertEqual((error as? DAppCreateTransactionError)?.name, "DecodeError")
+        }
+
+        var isSignerCalled = false
+
+        let signingWrapper = factory.createWrapper(
+            customClosure: { builder, _ in builder },
+            indexes: [0],
+            payingFeeIn: nil,
+            signingClosure: { _, _ in
+                isSignerCalled = true
+                return ExtrinsicGolden.sr25519Signature
+            }
+        )
+
+        operationQueue.addOperations(signingWrapper.allOperations, waitUntilFinished: true)
+
+        XCTAssertThrowsError(try signingWrapper.targetOperation.extractNoCancellableResultData()) { error in
+            XCTAssertEqual((error as? DAppCreateTransactionError)?.name, "DecodeError")
+        }
+
+        XCTAssertFalse(isSignerCalled)
     }
 
     func testOmittedExtensionsAreFilledByWallet() throws {
@@ -403,7 +447,7 @@ final class DAppTxPayloadExtrinsicOperationFactoryTests: XCTestCase {
 
         XCTAssertEqual(result.resolution.extrinsicVersion, .V4)
         XCTAssertEqual(result.resolution.call.callName, "transfer_keep_alive")
-        XCTAssertNil(result.feeAsset)
+        XCTAssertNil(result.payment.feeAsset)
     }
 }
 

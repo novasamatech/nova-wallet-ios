@@ -280,15 +280,7 @@ final class DAppCreateTransactionConfirmTests: XCTestCase {
 }
 
 private extension DAppCreateTransactionConfirmTests {
-    struct Setup {
-        let view: MockDAppOperationConfirmViewProtocol
-        let wireframe: MockDAppOperationConfirmWireframeProtocol
-        let delegate: MockDAppOperationConfirmDelegate
-        let presenter: DAppOperationConfirmPresenter
-        let interactor: DAppCreateTransactionConfirmInteractor
-        let request: DAppOperationRequest
-        let chain: ChainModel
-    }
+    typealias Setup = DAppCreateTransactionTestSetup
 
     func makeSetup(
         runtime: ExtrinsicGoldenRuntime,
@@ -296,147 +288,10 @@ private extension DAppCreateTransactionConfirmTests {
         walletType: MetaAccountModelType = .secrets,
         signingWrapperFactory: SigningWrapperFactoryProtocol = DummySigningWrapperFactory()
     ) throws -> Setup {
-        let chain = try ExtrinsicGoldenRuntime.makeChain()
-
-        let wallet = MetaAccountModel(
-            metaId: UUID().uuidString,
-            name: "Test",
-            substrateAccountId: ExtrinsicGolden.senderId,
-            substrateCryptoType: 0,
-            substratePublicKey: ExtrinsicGolden.senderId,
-            ethereumAddress: nil,
-            ethereumPublicKey: nil,
-            chainAccounts: [],
-            type: walletType,
-            multisig: nil
-        )
-
-        let account = try XCTUnwrap(wallet.fetch(for: chain.accountRequest()))
-
-        let request = DAppOperationRequest(
-            transportName: DAppTransports.polkadotExtension,
-            identifier: UUID().uuidString,
-            wallet: wallet,
-            accountId: account.accountId,
-            dApp: "Test",
-            dAppIcon: nil,
-            operationData: try fixture.makeRequestJSON()
-        )
-
-        let runtimeProvider = MockRuntimeProviderProtocol()
-
-        stub(runtimeProvider) { stub in
-            stub.fetchCoderFactoryOperation().then {
-                BaseOperation.createWithResult(runtime.codingFactory)
-            }
-
-            stub.chainId.get.thenReturn(chain.chainId)
-        }
-
-        let connection = MockConnection()
-
-        stub(connection.internalConnection) { stub in
-            when(
-                stub.callMethod(any(), params: any(), options: any(), completion: any())
-            ).then { (_, _: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
-                let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
-
-                DispatchQueue.global().async {
-                    completion?(.success(fee))
-                }
-
-                return 0
-            }
-        }
-
-        let operationQueue = OperationQueue()
-        let storageFacade = SubstrateStorageTestFacade()
-
-        let extrinsicFactory = DAppTxPayloadExtrinsicOperationFactory(
-            payload: try request.operationData.map(to: PolkadotExtensionTxPayload.self),
-            chain: chain,
-            runtimeProvider: runtimeProvider,
-            connection: connection,
-            resolver: DAppTxPayloadExtensionResolver(),
-            metadataHashOperationFactory: DAppMetadataHashFactoryStub(metadataHash: nil),
-            senderResolvingFactory: ExtrinsicSenderResolutionFactoryStub(
-                resolver: ExtrinsicCurrentSenderResolver(currentAccount: account)
-            ),
-            nonceOperationFactory: TransactionNonceOperationFactory(),
-            eraOperationFactory: PresetEraOperationFactory(
-                parameters: ExtrinsicEraParameters(blockNumber: 100, extrinsicEra: ExtrinsicGolden.era)
-            ),
-            blockHashOperationFactory: DAppBlockHashFactoryStub(),
-            signedExtensionFactory: ExtrinsicSignedExtensionFactory(),
-            operationQueue: operationQueue
-        )
-
-        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
-            account: account,
-            chain: chain,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            userStorageFacade: UserDataStorageTestFacade(),
-            substrateStorageFacade: storageFacade,
-            operationQueue: operationQueue
-        )
-
-        let feeOperationFactory = ExtrinsicProxyOperationFactory(
-            proxy: extrinsicFactory,
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            feeEstimationRegistry: ExtrinsicFeeEstimationRegistry(
-                chain: chain,
-                estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
-                    host: extrinsicFeeHost,
-                    customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
-                ),
-                feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            ),
-            operationManager: OperationManager(operationQueue: operationQueue),
-            usesStateCallForFee: chain.feeViaRuntimeCall
-        )
-
-        let interactor = DAppCreateTransactionConfirmInteractor(
-            request: request,
-            chain: chain,
-            account: account,
-            extrinsicFactory: extrinsicFactory,
-            feeOperationFactory: feeOperationFactory,
-            signingWrapperFactory: signingWrapperFactory,
-            priceProviderFactory: PriceProviderFactoryStub(priceData: nil),
-            currencyManager: CurrencyManagerStub(),
-            operationQueue: operationQueue
-        )
-
-        let view = MockDAppOperationConfirmViewProtocol()
-        let wireframe = MockDAppOperationConfirmWireframeProtocol()
-        let delegate = MockDAppOperationConfirmDelegate()
-
-        let presenter = DAppOperationConfirmPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            delegate: delegate,
-            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: .left(chain)),
-            balanceViewModelFacade: BalanceViewModelFactoryFacade(
-                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
-            ),
-            chain: .left(chain),
-            signAnalyticsContext: nil,
-            localizationManager: LocalizationManager.shared
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return Setup(
-            view: view,
-            wireframe: wireframe,
-            delegate: delegate,
-            presenter: presenter,
-            interactor: interactor,
-            request: request,
-            chain: chain
+        try Setup(
+            runtime: runtime,
+            fixture: fixture,
+            options: .init(walletType: walletType, signingWrapperFactory: signingWrapperFactory)
         )
     }
 

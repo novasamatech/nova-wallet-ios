@@ -15,22 +15,30 @@ protocol ExtrinsicFeeEstimatingWrapperFactoryProtocol {
 final class ExtrinsicFeeEstimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol {
     let host: ExtrinsicFeeEstimatorHostProtocol
     let customFeeEstimatorFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+    let nativeFeeEstimator: ExtrinsicFeeEstimating
 
+    /**
+     *  - Parameter nativeFeeEstimator: nil stands for `ExtrinsicNativeFeeEstimator`, which suits
+     *    every caller that builds its own extrinsics.
+     */
     init(
         host: ExtrinsicFeeEstimatorHostProtocol,
-        customFeeEstimatorFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+        customFeeEstimatorFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol,
+        nativeFeeEstimator: ExtrinsicFeeEstimating? = nil
     ) {
         self.host = host
         self.customFeeEstimatorFactory = customFeeEstimatorFactory
+
+        self.nativeFeeEstimator = nativeFeeEstimator ?? ExtrinsicNativeFeeEstimator(
+            chain: host.chain,
+            operationQueue: host.operationQueue
+        )
     }
 
     func createNativeFeeEstimatingWrapper(
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        ExtrinsicNativeFeeEstimator(
-            chain: host.chain,
-            operationQueue: host.operationQueue
-        ).createFeeEstimatingWrapper(
+        nativeFeeEstimator.createFeeEstimatingWrapper(
             connection: host.connection,
             runtimeService: host.runtimeProvider,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure

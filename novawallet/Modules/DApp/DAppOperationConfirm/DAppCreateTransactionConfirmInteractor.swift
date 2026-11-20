@@ -64,7 +64,7 @@ private extension DAppCreateTransactionConfirmInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: account.accountId,
             chainAddress: account.toAddress() ?? "",
-            feeAsset: result.feeAsset,
+            feeAsset: result.payment.feeAsset,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )
@@ -76,7 +76,7 @@ private extension DAppCreateTransactionConfirmInteractor {
     }
 
     func subscribePrice() {
-        let feeAsset = processedResult?.feeAsset?.asset ?? chain.utilityAssets().first
+        let feeAsset = processedResult?.payment.feeAsset?.asset ?? chain.utilityAssets().first
 
         guard let priceId = feeAsset?.priceId else {
             return
@@ -149,7 +149,7 @@ extension DAppCreateTransactionConfirmInteractor: DAppOperationConfirmInteractor
 
         let feeWrapper = feeOperationFactory.estimateFeeOperation(
             { $0 },
-            payingIn: processedResult.feeAsset?.chainAssetId
+            payingIn: processedResult.payment.feeAsset?.chainAssetId
         )
 
         executeCancellable(
@@ -193,7 +193,7 @@ extension DAppCreateTransactionConfirmInteractor: DAppOperationConfirmInteractor
         let extrinsicWrapper = extrinsicFactory.createWrapper(
             customClosure: { builder, _ in builder },
             indexes: [0],
-            payingFeeIn: processedResult.feeAsset?.chainAssetId,
+            payingFeeIn: processedResult.payment.feeAsset?.chainAssetId,
             signingClosure: { data, context in
                 try signer.sign(data, context: context).rawData()
             }
