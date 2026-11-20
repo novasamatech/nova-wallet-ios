@@ -33,7 +33,7 @@ private extension SubtensorPositionViewModelFactory {
             period: state.period,
             taoPrice: state.price.value,
             chartEndDate: state.chartEndDate,
-            avgBuyPrice: state.costBasis.averagePrice
+            avgBuyPrice: state.isOwnTradeSettling ? nil : state.costBasis.averagePrice
         )
     }
 
