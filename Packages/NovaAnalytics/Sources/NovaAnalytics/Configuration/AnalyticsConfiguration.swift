@@ -11,6 +11,8 @@ public struct AnalyticsConfiguration {
 
     public let isFirstLaunch: () -> Bool
 
+    public let assetListStyle: () -> AnalyticsAssetListStyle
+
     public let settingsManager: SettingsManagerProtocol
     public let logger: SDKLoggerProtocol
 
@@ -23,6 +25,7 @@ public struct AnalyticsConfiguration {
         appVersion: String,
         storeDirectory: URL,
         isFirstLaunch: @escaping () -> Bool,
+        assetListStyle: @escaping () -> AnalyticsAssetListStyle,
         settingsManager: SettingsManagerProtocol,
         logger: SDKLoggerProtocol,
         operationQueue: OperationQueue,
@@ -32,6 +35,7 @@ public struct AnalyticsConfiguration {
         self.appVersion = appVersion
         self.storeDirectory = storeDirectory
         self.isFirstLaunch = isFirstLaunch
+        self.assetListStyle = assetListStyle
         self.settingsManager = settingsManager
         self.logger = logger
         self.operationQueue = operationQueue
