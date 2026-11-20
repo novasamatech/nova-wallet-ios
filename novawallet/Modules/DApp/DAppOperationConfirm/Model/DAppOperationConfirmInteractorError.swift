@@ -7,6 +7,24 @@ enum DAppOperationConfirmInteractorError: Error {
     case signingFailed
 }
 
+extension DAppOperationConfirmInteractorError {
+    /**
+     *  The failures of a signer the confirmation presents in their own way are kept,
+     *  anything else is reported as a failed signing.
+     */
+    static func signingError(from error: Error) -> Error {
+        if let noKeysError = error as? NoKeysSigningWrapperError {
+            return noKeysError
+        } else if let hardwareSigningError = error as? HardwareSigningError {
+            return hardwareSigningError
+        } else if let operationError = error as? DAppOperationConfirmInteractorError {
+            return operationError
+        } else {
+            return DAppOperationConfirmInteractorError.signingFailed
+        }
+    }
+}
+
 extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         let title: String = R.string(

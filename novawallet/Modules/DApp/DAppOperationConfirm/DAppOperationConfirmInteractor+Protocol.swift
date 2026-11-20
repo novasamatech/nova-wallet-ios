@@ -43,16 +43,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
                 self?.presenter?.didReceive(responseResult: .success(response), for: request)
             case let .failure(error):
-                let interactorError: Error
-                if let noKeysError = error as? NoKeysSigningWrapperError {
-                    interactorError = noKeysError
-                } else if let hardwareSigningError = error as? HardwareSigningError {
-                    interactorError = hardwareSigningError
-                } else if let operationError = error as? DAppOperationConfirmInteractorError {
-                    interactorError = operationError
-                } else {
-                    interactorError = DAppOperationConfirmInteractorError.signingFailed
-                }
+                let interactorError = DAppOperationConfirmInteractorError.signingError(from: error)
 
                 self?.presenter?.didReceive(responseResult: .failure(interactorError), for: request)
             }

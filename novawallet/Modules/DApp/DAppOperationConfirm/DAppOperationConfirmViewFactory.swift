@@ -182,7 +182,7 @@ private extension DAppOperationConfirmViewFactory {
         signAnalyticsContext: DAppSignAnalyticsContext?
     ) -> DAppOperationConfirmViewProtocol? {
         createGenericView(
-            for: DAppCreateTransactionConfirmInteractor(request: request, chain: chain),
+            for: createCreateTransactionInteractor(for: request, chain: chain),
             chain: .left(chain),
             delegate: delegate,
             signAnalyticsContext: signAnalyticsContext,
@@ -206,40 +206,20 @@ private extension DAppOperationConfirmViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let substrateStorageFacade = SubstrateDataStorageFacade.shared
-
-        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
-            account: account,
-            chain: chain,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: substrateStorageFacade,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
-                host: extrinsicFeeHost,
-                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
-            ),
-            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-        )
-
-        let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-            operationQueue: operationQueue
-        )
 
         return DAppOperationConfirmInteractor(
             request: request,
             chain: chain,
             runtimeProvider: runtimeProvider,
-            feeEstimationRegistry: feeEstimationRegistry,
+            feeEstimationRegistry: createFeeEstimationRegistry(
+                for: account,
+                chain: chain,
+                connection: connection,
+                runtimeProvider: runtimeProvider
+            ),
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
-            metadataHashFactory: metadataHashFactory,
+            metadataHashFactory: createMetadataHashFactory(),
             userStorageFacade: UserDataStorageFacade.shared,
             priceProviderFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,

@@ -5281,6 +5281,7 @@
 		84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */; };
 		84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */; };
 		0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */; };
+		155E38F5C790122F87A2E491 /* DAppCreateTransactionConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */; };
 		8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */; };
 		0B01D806556C187786FAC801 /* DAppTxPayloadExtrinsicOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */; };
 		7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */; };
@@ -5678,6 +5679,7 @@
 		84E8BA0729FE888C00FD9F40 /* DAppUnknownChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */; };
 		84E8BA0929FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */; };
 		84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */; };
+		C9FDAD8C23C2120B2AB2CEF4 /* DAppTxPayloadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECBBC35BEB750A814653E436 /* DAppTxPayloadDetails.swift */; };
 		CC9B04B7EB267350A04BAEE1 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */; };
 		9AEA1CA3CBB1796CB9F14457 /* DAppTxPayloadExtrinsicOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */; };
 		BD4CEE12EFBC16E90A2FDB93 /* DAppTxPayloadSignerPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */; };
@@ -7178,6 +7180,7 @@
 		F5DD5BD30644FCA2491B03F1 /* SwipeGovVotingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08E58D49C9B543CC9A16EE3 /* SwipeGovVotingListViewController.swift */; };
 		F5F74CD4110DB94902AA836A /* ParaStkRebondViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F21FBC9BE578A300A77E9C5 /* ParaStkRebondViewLayout.swift */; };
 		F63A83EA1CA85D7A43103098 /* DAppOperationConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */; };
+		32C86D4D0E295C1563EC30CE /* DAppOperationConfirmViewFactory+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996842B7E313B74415FCA800 /* DAppOperationConfirmViewFactory+Extrinsic.swift */; };
 		F64C5FF96250F9A59875D7D6 /* ApplicationConfig+NovaAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */; };
 		F652C0081A957CCE6266D204 /* ImportCloudPasswordWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7A6C0160599D75B208923D /* ImportCloudPasswordWireframe.swift */; };
 		F656EA6D54BF90FBBE6471D8 /* DAppBrowserTabListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707D69D7EC1BD4295192633F /* DAppBrowserTabListPresenter.swift */; };
@@ -9953,6 +9956,7 @@
 		3B7691B95C17473083430CAA /* SubtensorPortfolioHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioHeaderView.swift; sourceTree = "<group>"; };
 		3B8473AA386E1AD6F0F0C964 /* ControllerAccountConfirmationInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationInteractor.swift; sourceTree = "<group>"; };
 		3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmViewFactory.swift; sourceTree = "<group>"; };
+		996842B7E313B74415FCA800 /* DAppOperationConfirmViewFactory+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppOperationConfirmViewFactory+Extrinsic.swift"; sourceTree = "<group>"; };
 		3BC3ECEE9326CFA2A15D2457 /* AHMInfoPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AHMInfoPresenter.swift; sourceTree = "<group>"; };
 		3BEEFB03BBA45F5143484398 /* ParaStkRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRedeemViewFactory.swift; sourceTree = "<group>"; };
 		3C3ADD92DEC7B0142C5C6696 /* AssetOperationNetworkListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkListInteractor.swift; sourceTree = "<group>"; };
@@ -12288,6 +12292,7 @@
 		84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmTests.swift; sourceTree = "<group>"; };
 		84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmTests.swift; sourceTree = "<group>"; };
 		1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactoryTests.swift; sourceTree = "<group>"; };
+		DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCreateTransactionConfirmTests.swift; sourceTree = "<group>"; };
 		D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadSignerPolicyTests.swift; sourceTree = "<group>"; };
 		DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtrinsicOperationFactoryTests.swift; sourceTree = "<group>"; };
 		6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtensionResolverTests.swift; sourceTree = "<group>"; };
@@ -12690,6 +12695,7 @@
 		84E8BA0629FE888C00FD9F40 /* DAppUnknownChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppUnknownChain.swift; sourceTree = "<group>"; };
 		84E8BA0829FF6ABA00FD9F40 /* ExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
 		84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactory.swift; sourceTree = "<group>"; };
+		ECBBC35BEB750A814653E436 /* DAppTxPayloadDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadDetails.swift; sourceTree = "<group>"; };
 		EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppTxPayloadExtrinsicOperationFactory+Building.swift"; sourceTree = "<group>"; };
 		5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadExtrinsicOperationFactory.swift; sourceTree = "<group>"; };
 		D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadSignerPolicy.swift; sourceTree = "<group>"; };
@@ -21026,6 +21032,7 @@
 				43FBC2EA83A121CEBD25549D /* DAppOperationConfirmViewController.swift */,
 				859E0EF774DF0D498FEF8FCB /* DAppOperationConfirmViewLayout.swift */,
 				3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */,
+				996842B7E313B74415FCA800 /* DAppOperationConfirmViewFactory+Extrinsic.swift */,
 				840D92A6278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift */,
 				C7A20005301F000100A1B2C3 /* DAppCreateTransactionConfirmInteractor.swift */,
 				840D92A8278EEE5C0007B979 /* DAppOperationBaseInteractor.swift */,
@@ -23293,6 +23300,7 @@
 				843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */,
 				843612C62790032400DC739E /* DAppOperationProcessedResult.swift */,
 				84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */,
+				ECBBC35BEB750A814653E436 /* DAppTxPayloadDetails.swift */,
 				EA83144740A97BA17E48B8C0 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift */,
 				5BD0842BE8DC9A30482DED8A /* DAppTxPayloadExtrinsicOperationFactory.swift */,
 				D0A2B87D4D229A584CE129AC /* DAppTxPayloadSignerPolicy.swift */,
@@ -28017,6 +28025,7 @@
 			children = (
 				84B7C6A2289BFA79001A3566 /* DAppOperationConfirmTests.swift */,
 				1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */,
+				DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */,
 				D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */,
 				DCB64B5AE85A3AA49CD18A7E /* DAppTxPayloadExtrinsicOperationFactoryTests.swift */,
 				6EA47064F7143D18FB519CE4 /* DAppTxPayloadExtensionResolverTests.swift */,
@@ -38207,6 +38216,7 @@
 				9F3E2D64D77BF89B474BF1E3 /* DAppOperationConfirmViewController.swift in Sources */,
 				7BD09D3022967C4D90AB4693 /* DAppOperationConfirmViewLayout.swift in Sources */,
 				F63A83EA1CA85D7A43103098 /* DAppOperationConfirmViewFactory.swift in Sources */,
+				32C86D4D0E295C1563EC30CE /* DAppOperationConfirmViewFactory+Extrinsic.swift in Sources */,
 				7754BD562B5021C30099C13E /* StakingProxyBaseProtocols.swift in Sources */,
 				D600448CB75095E6873E542F /* DAppTxDetailsProtocols.swift in Sources */,
 				84E25BE827E751B400290BF1 /* Charset+Encoding.swift in Sources */,
@@ -38603,6 +38613,7 @@
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
 				0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */,
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
+				C9FDAD8C23C2120B2AB2CEF4 /* DAppTxPayloadDetails.swift in Sources */,
 				CC9B04B7EB267350A04BAEE1 /* DAppTxPayloadExtrinsicOperationFactory+Building.swift in Sources */,
 				9AEA1CA3CBB1796CB9F14457 /* DAppTxPayloadExtrinsicOperationFactory.swift in Sources */,
 				BD4CEE12EFBC16E90A2FDB93 /* DAppTxPayloadSignerPolicy.swift in Sources */,
@@ -40719,6 +40730,7 @@
 				0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */,
+				155E38F5C790122F87A2E491 /* DAppCreateTransactionConfirmTests.swift in Sources */,
 				8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */,
 				0B01D806556C187786FAC801 /* DAppTxPayloadExtrinsicOperationFactoryTests.swift in Sources */,
 				7337CF2CA18C665C57303DD5 /* DAppTxPayloadExtensionResolverTests.swift in Sources */,
