@@ -35,7 +35,6 @@ struct SubtensorPositionState {
         }
     }
 
-    var hasResolvedHistory = false
     var chartEndDate = Date.distantPast
     var chartSelection: SubtensorPriceChartSelection?
 
