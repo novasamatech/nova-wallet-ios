@@ -18,6 +18,9 @@ final class DAppCreateTransactionConfirmInteractor: DAppOperationBaseInteractor 
     // Set once the payload has failed the verification: nothing can be signed and the dApp gets this as the result
     private var verificationError: DAppCreateTransactionError?
 
+    // Set when the request couldn't be prepared for a reason the dApp isn't responsible for
+    private var setupError: Error?
+
     private var priceProvider: StreamableProvider<PriceData>?
     private let processingCallStore = CancellableCallStore()
     private let feeCallStore = CancellableCallStore()
@@ -50,6 +53,7 @@ final class DAppCreateTransactionConfirmInteractor: DAppOperationBaseInteractor 
     deinit {
         processingCallStore.cancel()
         feeCallStore.cancel()
+        signCallStore.cancel()
     }
 }
 
@@ -58,6 +62,7 @@ final class DAppCreateTransactionConfirmInteractor: DAppOperationBaseInteractor 
 private extension DAppCreateTransactionConfirmInteractor {
     func completeSetup(with result: DAppTxPayloadProcessedResult) {
         processedResult = result
+        setupError = nil
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
@@ -92,7 +97,24 @@ private extension DAppCreateTransactionConfirmInteractor {
         }
 
         self.verificationError = verificationError
+
+        provideNoFee()
         presenter?.didReceive(modelResult: .failure(verificationError))
+    }
+
+    func handleSetupFailure(_ error: Error) {
+        setupError = error
+
+        provideNoFee()
+        presenter?.didReceive(
+            modelResult: .failure(DAppOperationConfirmInteractorError.requestNotPrepared(reason: error))
+        )
+    }
+
+    // Nothing is going to be estimated any more: without an answer the fee row would keep loading
+    func provideNoFee() {
+        let feeModel = FeeOutputModel(value: ExtrinsicFee.zero(), validationProvider: nil)
+        presenter?.didReceive(feeResult: .success(feeModel))
     }
 
     func respond(with result: Result<Data, DAppCreateTransactionError>) {
@@ -136,7 +158,7 @@ extension DAppCreateTransactionConfirmInteractor: DAppOperationConfirmInteractor
                 self?.completeSetup(with: processedResult)
             case let .failure(error):
                 self?.handleFailure(error) { error in
-                    self?.presenter?.didReceive(modelResult: .failure(error))
+                    self?.handleSetupFailure(error)
                 }
             }
         }
@@ -182,6 +204,9 @@ extension DAppCreateTransactionConfirmInteractor: DAppOperationConfirmInteractor
         }
 
         guard let processedResult else {
+            // no payload is verified, so nothing can be signed: the tap is answered with the reason
+            let error = DAppOperationConfirmInteractorError.requestNotPrepared(reason: setupError)
+            presenter?.didReceive(modelResult: .failure(error))
             return
         }
 

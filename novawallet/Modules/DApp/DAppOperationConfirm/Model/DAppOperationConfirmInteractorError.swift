@@ -5,6 +5,12 @@ enum DAppOperationConfirmInteractorError: Error {
     case extrinsicBadField(name: String)
     case invalidRawSignature(data: Data)
     case signingFailed
+
+    /**
+     *   There is nothing to sign: the request is still being prepared (no reason) or the preparation
+     *   has failed on the wallet's side, for example the node couldn't be reached
+     */
+    case requestNotPrepared(reason: Error?)
 }
 
 extension DAppOperationConfirmInteractorError {
@@ -55,6 +61,10 @@ extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
             message = R.string(
                 preferredLanguages: locale.rLanguages
             ).localizable.dappSignExtrinsicFailed()
+        case .requestNotPrepared:
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.operationErrorMessage()
         }
 
         return ErrorContent(title: title, message: message)

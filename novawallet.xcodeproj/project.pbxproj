@@ -5286,6 +5286,7 @@
 		0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */; };
 		155E38F5C790122F87A2E491 /* DAppCreateTransactionConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */; };
 		8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */; };
+		C58A75A184C0FD35422B4F33 /* DAppCreateTransactionSetupFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422B4F33499DA5CF74BDFD11 /* DAppCreateTransactionSetupFailureTests.swift */; };
 		5CB72649FEC92C60B3EAF399 /* DAppCreateTransactionFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3EAF399579D072E333D384A /* DAppCreateTransactionFeeTests.swift */; };
 		CDD838F46EF77B144218196E /* DAppCreateTransactionTestSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4218196E4673988B2FEE294B /* DAppCreateTransactionTestSetup.swift */; };
 		12C5D8F52A34EE5678ACC893 /* DAppTxPayloadPaymentResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78ACC893B6E7BBF9E57F48EF /* DAppTxPayloadPaymentResolverTests.swift */; };
@@ -12307,6 +12308,7 @@
 		1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppExtrinsicBuilderOperationFactoryTests.swift; sourceTree = "<group>"; };
 		DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCreateTransactionConfirmTests.swift; sourceTree = "<group>"; };
 		D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadSignerPolicyTests.swift; sourceTree = "<group>"; };
+		422B4F33499DA5CF74BDFD11 /* DAppCreateTransactionSetupFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCreateTransactionSetupFailureTests.swift; sourceTree = "<group>"; };
 		B3EAF399579D072E333D384A /* DAppCreateTransactionFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCreateTransactionFeeTests.swift; sourceTree = "<group>"; };
 		4218196E4673988B2FEE294B /* DAppCreateTransactionTestSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCreateTransactionTestSetup.swift; sourceTree = "<group>"; };
 		78ACC893B6E7BBF9E57F48EF /* DAppTxPayloadPaymentResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadPaymentResolverTests.swift; sourceTree = "<group>"; };
@@ -28054,6 +28056,7 @@
 				1C6BDE9F3D7A7A3C7BE5C339 /* DAppExtrinsicBuilderOperationFactoryTests.swift */,
 				DEFDB9539065FCD4667AC05D /* DAppCreateTransactionConfirmTests.swift */,
 				D7C2B707A39D328C8FEBF227 /* DAppTxPayloadSignerPolicyTests.swift */,
+				422B4F33499DA5CF74BDFD11 /* DAppCreateTransactionSetupFailureTests.swift */,
 				B3EAF399579D072E333D384A /* DAppCreateTransactionFeeTests.swift */,
 				4218196E4673988B2FEE294B /* DAppCreateTransactionTestSetup.swift */,
 				78ACC893B6E7BBF9E57F48EF /* DAppTxPayloadPaymentResolverTests.swift */,
@@ -40769,6 +40772,7 @@
 				0D0B2DA60791C1A6E3974C32 /* DAppExtrinsicBuilderOperationFactoryTests.swift in Sources */,
 				155E38F5C790122F87A2E491 /* DAppCreateTransactionConfirmTests.swift in Sources */,
 				8069959090D684C2B83E489D /* DAppTxPayloadSignerPolicyTests.swift in Sources */,
+				C58A75A184C0FD35422B4F33 /* DAppCreateTransactionSetupFailureTests.swift in Sources */,
 				5CB72649FEC92C60B3EAF399 /* DAppCreateTransactionFeeTests.swift in Sources */,
 				CDD838F46EF77B144218196E /* DAppCreateTransactionTestSetup.swift in Sources */,
 				12C5D8F52A34EE5678ACC893 /* DAppTxPayloadPaymentResolverTests.swift in Sources */,
