@@ -320,9 +320,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         if
             let utilityChainAsset = chainAsset.chain.utilityChainAsset(),
             utilityChainAsset.chainAssetId != chainAsset.chainAssetId {
-            assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: utilityChainAsset)
+            assetBalanceProviders[utilityChainAsset.chainAssetId] = assetBalanceSubscription(
+                chainAsset: utilityChainAsset
+            )
 
-            provideAssetBalanceExistenses(for: chainAsset)
+            provideAssetBalanceExistenses(for: utilityChainAsset)
         }
     }
 

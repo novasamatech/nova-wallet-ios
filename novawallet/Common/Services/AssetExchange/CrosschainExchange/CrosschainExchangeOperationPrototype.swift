@@ -52,7 +52,7 @@ extension CrosschainExchangeOperationPrototype: AssetExchangeOperationPrototypeP
         return cost
     }
 
-    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
+    func estimatedExecutionTimeWrapper(hasNextOperation _: Bool) -> CompoundOperationWrapper<TimeInterval> {
         guard let destinationAccount = host.wallet.fetch(for: assetOut.chain.accountRequest()) else {
             return .createWithError(ChainAccountFetchingError.accountNotExists)
         }

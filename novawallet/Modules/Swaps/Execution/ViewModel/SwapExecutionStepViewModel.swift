@@ -3,7 +3,7 @@ import Foundation
 struct SwapExecutionStepViewModel {
     enum Status {
         case done
-        case failed(details: String?, canViewTransaction: Bool)
+        case failed(details: String?, fundsLocation: String?, canViewTransaction: Bool)
         case notRun(number: String)
     }
 

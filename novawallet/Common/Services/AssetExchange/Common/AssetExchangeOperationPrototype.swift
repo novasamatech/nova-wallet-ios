@@ -7,7 +7,7 @@ protocol AssetExchangeOperationPrototypeProtocol {
 
     func estimatedCostInUsdt(using converter: AssetExchageUsdtConverting) throws -> Decimal
 
-    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval>
+    func estimatedExecutionTimeWrapper(hasNextOperation: Bool) -> CompoundOperationWrapper<TimeInterval>
 }
 
 class AssetExchangeBaseOperationPrototype {

@@ -146,7 +146,6 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
 
         state.chartEndDate = Date()
         state.history = history.map { .available($0) } ?? .notListed
-        state.hasResolvedHistory = true
         provideViewModel()
     }
 
@@ -158,7 +157,6 @@ extension SubtensorPositionPresenter: SubtensorPositionInteractorOutputProtocol 
         dataAnalytics.trackFailure(error, endpoint: .coingecko)
 
         state.history = .failed
-        state.hasResolvedHistory = true
         provideViewModel()
     }
 

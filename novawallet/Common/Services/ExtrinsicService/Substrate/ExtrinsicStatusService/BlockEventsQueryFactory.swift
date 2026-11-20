@@ -52,7 +52,8 @@ final class BlockEventsQueryFactory {
         JSONRPCOperation(
             engine: connection,
             method: RPCMethod.getChainBlock,
-            parameters: [blockHash.toHex(includePrefix: true)]
+            parameters: [blockHash.toHex(includePrefix: true)],
+            timeout: JSONRPCTimeout.singleNode
         )
     }
 

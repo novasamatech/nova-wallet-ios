@@ -173,7 +173,10 @@ final class StubAtomicOperation: AssetExchangeAtomicOperationProtocol {
 
     var swapLimit: AssetExchangeSwapLimit { args.swapLimit }
 
-    func executeWrapper(for _: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(
+        for _: AssetExchangeSwapLimit,
+        hasNextOperation _: Bool
+    ) -> CompoundOperationWrapper<Balance> {
         .createWithError(StubAssetExchangeEdgeError.notSupported)
     }
 
@@ -232,7 +235,7 @@ extension StubOperationPrototype: AssetExchangeOperationPrototypeProtocol {
         0
     }
 
-    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
+    func estimatedExecutionTimeWrapper(hasNextOperation _: Bool) -> CompoundOperationWrapper<TimeInterval> {
         .createWithResult(0)
     }
 }
