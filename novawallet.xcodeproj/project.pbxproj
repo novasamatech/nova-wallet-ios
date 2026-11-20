@@ -41579,7 +41579,7 @@
 			repositoryURL = "https://github.com/novasamatech/web3swift";
 			requirement = {
 				kind = exactVersion;
-				version = 3.3.1;
+				version = 3.3.2;
 			};
 		};
 		0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */ = {

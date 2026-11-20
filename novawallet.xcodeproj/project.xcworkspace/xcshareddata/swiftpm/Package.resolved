@@ -555,8 +555,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/web3swift",
       "state" : {
-        "revision" : "d70a03dfa19e69ac7400a675df8a6ecc25ea43eb",
-        "version" : "3.3.1"
+        "revision" : "3453dcda98b701bcca4b1a8b12df2de8de820afa",
+        "version" : "3.3.2"
       }
     },
     {
