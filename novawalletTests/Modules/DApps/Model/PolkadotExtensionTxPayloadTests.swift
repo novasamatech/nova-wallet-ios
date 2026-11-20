@@ -109,6 +109,29 @@ final class PolkadotExtensionTxPayloadTests: XCTestCase {
         XCTAssertNil(payload.context.token)
     }
 
+    func testDecodesContextWithGenesisHashOnly() throws {
+        // given
+
+        let json = """
+        {
+            "version": 1,
+            "callData": "0x00",
+            "extensions": [],
+            "context": { "genesisHash": "0x02" }
+        }
+        """
+
+        // when
+
+        let payload = try decodePayload(from: json)
+
+        // then
+
+        XCTAssertEqual(payload.context.genesisHash, "0x02")
+        XCTAssertNil(payload.context.bestBlockHeight)
+        XCTAssertNil(payload.context.bestBlockHash)
+    }
+
     func testIgnoresUnknownKeys() throws {
         // given
 

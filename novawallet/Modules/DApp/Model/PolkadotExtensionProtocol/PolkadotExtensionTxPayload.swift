@@ -29,14 +29,17 @@ struct PolkadotExtensionTxPayload: Decodable {
         let decimals: UInt16
     }
 
+    /**
+     *  The wallet reads only the genesis hash, so a payload without the rest is still a valid one.
+     */
     struct Context: Decodable {
         let token: Token?
-        let bestBlockHeight: BlockNumber
+        let bestBlockHeight: BlockNumber?
 
         /**
          *   The hash of the best block known to the dApp, in hex
          */
-        let bestBlockHash: String
+        let bestBlockHash: String?
 
         /**
          *   The genesis hash of the chain, in hex

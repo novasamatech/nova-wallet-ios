@@ -125,6 +125,15 @@ extension AccountAddress {
         return try factory.accountId(fromAddress: self, type: type)
     }
 
+    // The account is named either with an SS58 address of any prefix or with its account id in hex
+    func toSubstrateAccountIdOrHex() throws -> AccountId {
+        if hasPrefix("0x") {
+            try AccountId(hexString: self)
+        } else {
+            try toSubstrateAccountId()
+        }
+    }
+
     func toEthereumAccountId() throws -> AccountId {
         try extractEthereumAccountId()
     }

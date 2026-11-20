@@ -3,6 +3,11 @@ import Foundation
 protocol DAppBrowserStateMachineProtocol: AnyObject {
     func emit(nextState: DAppBrowserStateProtocol)
     func emit(response: DAppScriptResponse, nextState: DAppBrowserStateProtocol)
+
+    /**
+     *  The response settles a request with a failure no screen has told the user about
+     */
+    func emit(failureResponse: DAppScriptResponse, reason: String, nextState: DAppBrowserStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol)
     func emit(
         signingRequest: DAppOperationRequest,

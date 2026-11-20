@@ -44,23 +44,31 @@ class DAppBrowserBaseState {
         errorMessage: String,
         nextState: DAppBrowserStateProtocol
     ) {
-        guard
-            let requestIdLiteral = createStringLiteral(requestId),
-            let messageLiteral = createStringLiteral(errorMessage) else {
+        guard let response = createErrorResponse(for: requestId, errorMessage: errorMessage) else {
             let error = DAppBrowserStateError.unexpected(reason: "invalid error message")
             stateMachine?.emit(error: error, nextState: nextState)
             return
         }
 
-        let content = String(
-            format: "window.walletExtension.onAppResponse(%@, null, new Error(%@))",
-            requestIdLiteral,
-            messageLiteral
-        )
-
-        let response = DAppScriptResponse(content: content)
-
         stateMachine?.emit(response: response, nextState: nextState)
+    }
+
+    /**
+     *  Answers a createTransaction request with a failure the RFC defines. The user sees nothing
+     *  of it at this point, so the state machine is told the reason to leave a trace in the logs.
+     */
+    func provideFailure(
+        for requestId: String,
+        error: DAppCreateTransactionError,
+        nextState: DAppBrowserStateProtocol
+    ) {
+        guard let response = createErrorResponse(for: requestId, errorMessage: error.responseMessage) else {
+            let stateError = DAppBrowserStateError.unexpected(reason: "invalid error message")
+            stateMachine?.emit(error: stateError, nextState: nextState)
+            return
+        }
+
+        stateMachine?.emit(failureResponse: response, reason: error.responseMessage, nextState: nextState)
     }
 
     func provideSubscription<T: Encodable>(
@@ -99,6 +107,22 @@ private extension DAppBrowserBaseState {
         }
 
         return String(data: data, encoding: .utf8)
+    }
+
+    func createErrorResponse(for requestId: String, errorMessage: String) -> DAppScriptResponse? {
+        guard
+            let requestIdLiteral = createStringLiteral(requestId),
+            let messageLiteral = createStringLiteral(errorMessage) else {
+            return nil
+        }
+
+        let content = String(
+            format: "window.walletExtension.onAppResponse(%@, null, new Error(%@))",
+            requestIdLiteral,
+            messageLiteral
+        )
+
+        return DAppScriptResponse(content: content)
     }
 
     func createRequestIdLiteral(_ requestId: String) throws -> String {

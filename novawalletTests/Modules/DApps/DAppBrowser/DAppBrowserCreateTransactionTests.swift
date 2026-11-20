@@ -84,6 +84,25 @@ final class DAppBrowserCreateTransactionTests: XCTestCase {
         XCTAssertTrue(setup.stateMachine.lastState is DAppBrowserAuthorizedState)
     }
 
+    func testRespondsInvalidHexForGenesisHashThatIsNotHex() throws {
+        for malformedGenesisHash in ["genesis", "0xzz"] {
+            // given
+
+            let setup = try AuthorizedSetup(genesisHash: genesisHash)
+            let request = try createRequest(signer: nil, genesisHash: malformedGenesisHash)
+
+            // when
+
+            setup.state.handle(message: createMessage(with: request), dataSource: setup.dataSource)
+
+            // then
+
+            let message = try assertErrorResponse(in: setup.stateMachine, name: "InvalidHex")
+            XCTAssertEqual(message, "InvalidHex: genesisHash")
+            XCTAssertTrue(setup.stateMachine.lastState is DAppBrowserAuthorizedState)
+        }
+    }
+
     func testRespondsSignerUnavailableForForeignSigner() throws {
         let foreignAccountId = try XCTUnwrap(Data.random(of: 32))
 
@@ -600,6 +619,9 @@ private extension DAppBrowserCreateTransactionTests {
 
         XCTAssertEqual(String(errorMessage[nameRange]), name, file: file, line: line)
 
+        // no screen shows such a failure, so the state machine gets it for the logs
+        XCTAssertEqual(stateMachine.failureReasons, [errorMessage], file: file, line: line)
+
         return errorMessage
     }
 
@@ -687,6 +709,7 @@ final class DAppBrowserStateMachineRecorder: DAppBrowserStateMachineProtocol {
     }
 
     private(set) var responses: [DAppScriptResponse] = []
+    private(set) var failureReasons: [String] = []
     private(set) var signingRequests: [SigningRequest] = []
     private(set) var authRequests: [DAppAuthRequest] = []
     private(set) var errors: [Error] = []
@@ -699,6 +722,11 @@ final class DAppBrowserStateMachineRecorder: DAppBrowserStateMachineProtocol {
     func emit(response: DAppScriptResponse, nextState: DAppBrowserStateProtocol) {
         responses.append(response)
         lastState = nextState
+    }
+
+    func emit(failureResponse: DAppScriptResponse, reason: String, nextState: DAppBrowserStateProtocol) {
+        failureReasons.append(reason)
+        emit(response: failureResponse, nextState: nextState)
     }
 
     func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol) {

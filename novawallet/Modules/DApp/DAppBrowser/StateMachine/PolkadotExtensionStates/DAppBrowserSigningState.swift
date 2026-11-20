@@ -50,7 +50,7 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
                 stateMachine?.emit(error: error, nextState: nextState)
             }
         case let .failure(error):
-            provideError(for: requestId, errorMessage: error.responseMessage, nextState: nextState)
+            provideFailure(for: requestId, error: error, nextState: nextState)
         case nil:
             providerOperationError(.rejected, nextState: nextState)
         }

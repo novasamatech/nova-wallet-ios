@@ -44,6 +44,12 @@ extension DAppPolkadotExtensionTransport: DAppBrowserStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
+    func emit(failureResponse: DAppScriptResponse, reason: String, nextState: DAppBrowserStateProtocol) {
+        logger.warning("DApp request failed: \(reason)")
+
+        emit(response: failureResponse, nextState: nextState)
+    }
+
     func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol) {
         guard let dataSource = dataSource else {
             return
