@@ -53,16 +53,13 @@ back to whatever is available.
 
 `NovaAnalytics` and `NovaAuth` sources import UIKit/CoreData/DeviceCheck and every SDK
 dependency is iOS-only, so `swift test` builds for macOS and fails — test them through
-`xcodebuild` against a simulator destination instead. `NovaOperationSupport` has no test target
-(it mirrors app-only helper code — see project-layout.md); build it rather than testing it.
+`xcodebuild` against a simulator destination instead.
 
 ```bash
 (cd Packages/NovaAuth && RUN_IN_CI=true xcodebuild test -scheme NovaAuth \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAuth)
 (cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAnalytics)
-(cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaOperationSupport)
 ```
 
 Pin `-derivedDataPath` outside the shared DerivedData folder used by the app build.
@@ -134,8 +131,8 @@ Both run pinned versions through Mint, so results match CI and the build phases.
 
 ## Dependencies
 
-Mostly SPM, remote — plus three local packages under `Packages/`: `NovaAnalytics`,
-`NovaAuth`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
+Mostly SPM, remote — plus two local packages under `Packages/`: `NovaAnalytics` and
+`NovaAuth` (see project-layout.md). Versions are pinned in
 one place, `novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`,
 which also carries `logger-ios`, added when the local packages arrived. Testing a package on
 its own makes it write a `Packages/<Name>/Package.resolved`; those are git-ignored
@@ -146,15 +143,15 @@ Core (novasama-maintained):
 
 | Package                  | Version | Role                                        |
 |--------------------------|---------|---------------------------------------------|
-| `substrate-sdk-ios`      | 4.5.2   | Substrate RPC, SCALE, runtime, extrinsics   |
-| `Operation-iOS`          | 2.1.2   | Operations, providers, repositories, network |
-| `Foundation-iOS`         | 1.2.0   | Localization, common foundation utilities    |
+| `substrate-sdk-ios`      | 5.18.0  | Substrate RPC, SCALE, runtime, extrinsics   |
+| `Operation-iOS`          | 3.1.0   | Operations, providers, repositories, network |
+| `Foundation-iOS`         | 1.5.0   | Localization, common foundation utilities    |
 | `UIKit-iOS`              | 1.1.3   | UI primitives, modal presentation            |
-| `Keystore-iOS`           | 1.0.1   | Keychain + `SettingsManager`                 |
-| `Crypto-iOS` (NovaCrypto) | 0.4.1  | Keypairs, signing, mnemonics                 |
+| `Keystore-iOS`           | 1.1.0   | Keychain + `SettingsManager`                 |
+| `Crypto-iOS` (NovaCrypto) | 0.5.0  | Keypairs, signing, mnemonics                 |
 | `metadata-shortener-ios` | 0.2.1   | Metadata hash for hardware signing           |
 | `hydra-math-swift`       | 0.5.0   | Hydration pool maths                         |
-| `logger-ios`             | 0.0.1   | `SDKLogger`, used by the app + local packages |
+| `logger-ios`             | 0.1.0   | `SDKLogger`, used by the app + local packages |
 | `WalletConnectSwiftV2`   | 1.9.9   | WalletConnect (fork)                         |
 | `web3swift`              | 3.3.1   | EVM (fork)                                   |
 | `Starscream`             | 4.0.13  | WebSocket (fork)                             |
