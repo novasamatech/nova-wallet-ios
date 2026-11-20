@@ -89,12 +89,16 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
     ErrorPresentable,
     DAppBrowserSearchPresentable,
     DAppStakingNoticePresentable {
+    /**
+     *  Returns false when the confirmation can't be built, in which case nobody answers the request
+     */
+    @discardableResult
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
-    )
+    ) -> Bool
 
     func presentAuth(
         from view: DAppBrowserViewProtocol?,

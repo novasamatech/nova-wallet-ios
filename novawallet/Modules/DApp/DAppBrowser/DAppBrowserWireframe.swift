@@ -2,18 +2,19 @@ import Foundation
 import UIKit_iOS
 
 class BaseDAppBrowserWireframe {
+    @discardableResult
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
-    ) {
+    ) -> Bool {
         guard let confirmationView = DAppOperationConfirmViewFactory.createView(
             for: request,
             type: type,
             delegate: delegate
         ) else {
-            return
+            return false
         }
 
         view?.controller.presentWithCardLayout(
@@ -21,6 +22,8 @@ class BaseDAppBrowserWireframe {
             animated: true,
             completion: nil
         )
+
+        return true
     }
 
     func presentSearch(

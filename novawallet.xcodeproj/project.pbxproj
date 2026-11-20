@@ -5279,6 +5279,7 @@
 		84B7C715289BFA79001A3566 /* AccountExportPasswordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C69B289BFA79001A3566 /* AccountExportPasswordTests.swift */; };
 		84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */; };
 		C7A2000A301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */; };
+		A4B10CEE9A6ECD062AD2EC08 /* DAppBrowserConfirmationFallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2EC08BC7BE9F5B527249B /* DAppBrowserConfirmationFallbackTests.swift */; };
 		F14F16FA96321BAB0073E485 /* DAppPolkadotExtensionTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0073E485F437FB0B29132A4E /* DAppPolkadotExtensionTransportTests.swift */; };
 		0609093912F0A0B6CB79A3AF /* DAppBrowserRequestIdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */; };
 		84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */; };
@@ -12301,6 +12302,7 @@
 		84B7C69B289BFA79001A3566 /* AccountExportPasswordTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordTests.swift; sourceTree = "<group>"; };
 		84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppBrowserTests.swift; sourceTree = "<group>"; };
 		C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserCreateTransactionTests.swift; sourceTree = "<group>"; };
+		2AD2EC08BC7BE9F5B527249B /* DAppBrowserConfirmationFallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserConfirmationFallbackTests.swift; sourceTree = "<group>"; };
 		0073E485F437FB0B29132A4E /* DAppPolkadotExtensionTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppPolkadotExtensionTransportTests.swift; sourceTree = "<group>"; };
 		CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserRequestIdTests.swift; sourceTree = "<group>"; };
 		84B7C6A0289BFA79001A3566 /* DAppAuthConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmTests.swift; sourceTree = "<group>"; };
@@ -28035,6 +28037,7 @@
 				2292A6672E25C7BC001C0DBB /* DAppBrowserSigningChainResolverTests.swift */,
 				84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */,
 				C7A20009301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift */,
+				2AD2EC08BC7BE9F5B527249B /* DAppBrowserConfirmationFallbackTests.swift */,
 				0073E485F437FB0B29132A4E /* DAppPolkadotExtensionTransportTests.swift */,
 				CB79A3AF9CCE65A28B532E69 /* DAppBrowserRequestIdTests.swift */,
 			);
@@ -40726,6 +40729,7 @@
 				8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */,
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				C7A2000A301F000100A1B2C3 /* DAppBrowserCreateTransactionTests.swift in Sources */,
+				A4B10CEE9A6ECD062AD2EC08 /* DAppBrowserConfirmationFallbackTests.swift in Sources */,
 				F14F16FA96321BAB0073E485 /* DAppPolkadotExtensionTransportTests.swift in Sources */,
 				0609093912F0A0B6CB79A3AF /* DAppBrowserRequestIdTests.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,

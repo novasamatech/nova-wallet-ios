@@ -211,7 +211,24 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType) {
-        wireframe.presentOperationConfirm(from: view, request: request, type: type, delegate: self)
+        let isPresented = wireframe.presentOperationConfirm(
+            from: view,
+            request: request,
+            type: type,
+            delegate: self
+        )
+
+        // The dApp awaits the result of createTransaction and the transport takes no other message meanwhile
+        if !isPresented, case .createTransaction = type {
+            let error = DAppCreateTransactionError.signerUnavailable(
+                details: "the wallet can't open the confirmation for the chain"
+            )
+
+            interactor.processConfirmation(
+                response: DAppOperationResponse(createTransactionResult: .failure(error)),
+                forTransport: request.transportName
+            )
+        }
     }
 
     func didReceiveAuth(request: DAppAuthRequest) {
