@@ -412,6 +412,7 @@
 		0C1FE0E52E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */; };
 		0C1FE0E72E4629AA00517A1D /* MetaAccountOperationFactoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */; };
 		0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */; };
+		B6470D89D67A80B6613DF855 /* OperationWrapperCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4D4B02B28F1A540332827A /* OperationWrapperCharacterizationTests.swift */; };
 		0C1FE0EE2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */; };
 		0C1FE0F02E476C1E00517A1D /* AccountImportMetadataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EF2E476C1E00517A1D /* AccountImportMetadataFactory.swift */; };
 		0C1FE0F22E4770B900517A1D /* ChainAccountImportMetadataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0F12E4770B900517A1D /* ChainAccountImportMetadataFactory.swift */; };
@@ -5734,6 +5735,8 @@
 		84F0D9FC299D87A700F82CBC /* GovernanceBalanceConviction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F0D9FB299D87A700F82CBC /* GovernanceBalanceConviction.swift */; };
 		84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0926F14122006725FF /* ChainAsset.swift */; };
 		84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0D26F1D9B1006725FF /* CrowdloadSettingsTests.swift */; };
+		B6D5C9BAE618FA207475F647 /* DataProviderObserverCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63C578C81CB977ED3202028 /* DataProviderObserverCharacterizationTests.swift */; };
+		724C1479A1CDF424B48F5688 /* CoreDataRepositoryCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCDB4CCE35530B82871F0EEF /* CoreDataRepositoryCharacterizationTests.swift */; };
 		84F13F1026F1DC43006725FF /* ChainModelGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0F26F1DC43006725FF /* ChainModelGenerator.swift */; };
 		84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F1B26F2B8C1006725FF /* JSONRPCError+Presentable.swift */; };
 		84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4927A1869E00CA7554 /* OrmlAccount.swift */; };
@@ -7724,6 +7727,7 @@
 		0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountOperationFactory.swift; sourceTree = "<group>"; };
 		0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryError.swift; sourceTree = "<group>"; };
 		0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountTests.swift; sourceTree = "<group>"; };
+		2E4D4B02B28F1A540332827A /* OperationWrapperCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationWrapperCharacterizationTests.swift; sourceTree = "<group>"; };
 		0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryProvider.swift; sourceTree = "<group>"; };
 		0C1FE0EF2E476C1E00517A1D /* AccountImportMetadataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMetadataFactory.swift; sourceTree = "<group>"; };
 		0C1FE0F12E4770B900517A1D /* ChainAccountImportMetadataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountImportMetadataFactory.swift; sourceTree = "<group>"; };
@@ -12732,6 +12736,8 @@
 		84F0D9FB299D87A700F82CBC /* GovernanceBalanceConviction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceBalanceConviction.swift; sourceTree = "<group>"; };
 		84F13F0926F14122006725FF /* ChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAsset.swift; sourceTree = "<group>"; };
 		84F13F0D26F1D9B1006725FF /* CrowdloadSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloadSettingsTests.swift; sourceTree = "<group>"; };
+		C63C578C81CB977ED3202028 /* DataProviderObserverCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProviderObserverCharacterizationTests.swift; sourceTree = "<group>"; };
+		DCDB4CCE35530B82871F0EEF /* CoreDataRepositoryCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataRepositoryCharacterizationTests.swift; sourceTree = "<group>"; };
 		84F13F0F26F1DC43006725FF /* ChainModelGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainModelGenerator.swift; sourceTree = "<group>"; };
 		84F13F1B26F2B8C1006725FF /* JSONRPCError+Presentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONRPCError+Presentable.swift"; sourceTree = "<group>"; };
 		84F18D4927A1869E00CA7554 /* OrmlAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccount.swift; sourceTree = "<group>"; };
@@ -15514,6 +15520,7 @@
 			isa = PBXGroup;
 			children = (
 				0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */,
+				2E4D4B02B28F1A540332827A /* OperationWrapperCharacterizationTests.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -23975,6 +23982,8 @@
 				845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */,
 				C63637ACA7F34EDA810F8D88 /* StakingDashboardSubtensorMapperTests.swift */,
 				84F13F0D26F1D9B1006725FF /* CrowdloadSettingsTests.swift */,
+				C63C578C81CB977ED3202028 /* DataProviderObserverCharacterizationTests.swift */,
+				DCDB4CCE35530B82871F0EEF /* CoreDataRepositoryCharacterizationTests.swift */,
 				0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */,
 			);
 			path = Storage;
@@ -40615,6 +40624,7 @@
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
 				0C3731CE2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift in Sources */,
 				0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */,
+				B6470D89D67A80B6613DF855 /* OperationWrapperCharacterizationTests.swift in Sources */,
 				846A2C54252A0FDF00731018 /* FilterTests.swift in Sources */,
 				0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */,
 				2D7A55092E5D000100000002 /* SubtensorFixtureDecoding.swift in Sources */,
@@ -40623,6 +40633,8 @@
 				2D7A550D2E5D000100000002 /* SubtensorSwapApiDecodeTests.swift in Sources */,
 				8F1A31072E5F000100000002 /* SubtensorSubnetsOperationFactoryTests.swift in Sources */,
 				84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */,
+				B6D5C9BAE618FA207475F647 /* DataProviderObserverCharacterizationTests.swift in Sources */,
+				724C1479A1CDF424B48F5688 /* CoreDataRepositoryCharacterizationTests.swift in Sources */,
 				845C7F06263C45EC0024E797 /* AnyProviderAutoCleaner.swift in Sources */,
 				84B7C734289BFA79001A3566 /* StakingRewardDetailsTests.swift in Sources */,
 				8849AD5D29C3088800F4F7FF /* Caip19ParserTests.swift in Sources */,
