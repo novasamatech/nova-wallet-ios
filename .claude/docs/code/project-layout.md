@@ -13,11 +13,37 @@ boundary outside it. Placing code correctly is the most common review question.
 
 Operation combining, the `Longrun` primitives and the `CompoundOperationWrapper` conveniences
 (`insertingHead`/`insertingTail`, `addDependency(wrapper:)`, `createWithResult`/`createWithError`)
-come from Operation-iOS 3.x itself, for the packages and the app alike. The app still keeps its own
-`OperationCombiningService`, `Longrun` and `Scheduler` copies under `novawallet/Common/`; inside the
-app target they shadow the package types of the same name. Do not add a member to an app extension
-that Operation-iOS already declares on the same type — two identical members are ambiguous in the
-test targets, which import both modules.
+come from Operation-iOS 3.x itself, for the packages and the app alike. `Longrunable` and
+`AnyLongrun` are the package's; the app still keeps its own `OperationCombiningService`,
+`LongrunOperation` and `Scheduler` under `novawallet/Common/`.
+
+### Names the app shares with the packages
+
+substrate-sdk-ios 5, Operation-iOS 3 and Foundation-iOS 1.5 export public types under names the app
+already used for its own: `OperationCombiningService`, `Scheduler`, `DummySigner`,
+`StorageRequestFactory`, `MetadataHashOperationFactory`, `RuntimeCoderFactory`, the storage coding
+operations and more. The full list is the set of aliases in
+`novawalletTests/Helper/PackageNameDisambiguation.swift`.
+
+**Inside the app target the app's declaration shadows the package's one silently.** App code gets
+the app type, package code gets the package type, and nothing warns that there are two. The
+consequence to keep in mind: a fix or a behaviour change that lands in the package does not reach
+the app's copy.
+
+Rules:
+
+1. **No new copies.** Before adding a type, check whether a package already exports the name
+   (`grep` the checkouts under `SourcePackages/checkouts`). If it does, use the package type or
+   pick another name.
+2. **Delete a copy that has become identical** to the package's type and use the package one — this
+   is how the app's `Longrun.swift` went away. A copy that differs stays until its behaviour is
+   reconciled; converging the remaining ones is tracked separately, not done in passing.
+3. **A shared name needs an alias in the test targets.** Test files import both the app and the
+   packages, where such a name is ambiguous. Every app type that keeps a shared name gets
+   `typealias X = novawallet.X` in `PackageNameDisambiguation.swift`, and the alias is removed
+   together with the copy (code/testing.md).
+4. **No extension member that a package already declares on the same type.** Members can't be
+   aliased: two identical ones are ambiguous in the test targets, so the app's one is deleted.
 
 Nothing in a package may reference an app type — no `ApplicationConfig`, `GlobalConfig`,
 `Logger`, `UserDataStorageFacade`, `OperationManagerFacade`, `R.string` or

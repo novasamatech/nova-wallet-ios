@@ -39,6 +39,25 @@ New tests go in the folder mirroring the file under test. Do not create a parall
 
 Use these instead of building fixtures inline — they keep tests consistent and short.
 
+### Names shared with the packages
+
+A test file imports `@testable import novawallet` together with `SubstrateSdk`, `Operation_iOS` or
+`Foundation_iOS`, and since substrate-sdk-ios 5 / Operation-iOS 3 dozens of public package types
+have the name of an app type (code/project-layout.md, "Names the app shares with the packages").
+The app target resolves such a name to its own type; a test file sees both and fails with
+"ambiguous use".
+
+`novawalletTests/Helper/PackageNameDisambiguation.swift` (compiled into both test targets) settles
+it with `typealias X = novawallet.X`, so tests keep exercising the app's types:
+
+- A new "ambiguous" error for a type name in a test means the app has a type the package also
+  exports: add the alias there, do not qualify every use.
+- When an app copy is deleted in favour of the package type, delete its alias in the same change,
+  otherwise the alias no longer compiles.
+- Functions and extension members can't be aliased. Qualify a free function
+  (`novawallet.execute(wrapper:…)`); an extension member identical to a package one has to leave
+  the app.
+
 ## Cuckoo Mocks
 
 Protocol mocks are **generated** from `Cuckoofile.toml` (root) into

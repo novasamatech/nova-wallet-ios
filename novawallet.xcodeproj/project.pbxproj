@@ -3448,7 +3448,6 @@
 		7778FE552B9109C50023E801 /* AssetBalanceFormatterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2026F6860B00F0A25E /* AssetBalanceFormatterFactory.swift */; };
 		7778FE572B910A540023E801 /* LocalizationManager+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D924A927E2008F705E /* LocalizationManager+Shared.swift */; };
 		7778FE582B910A760023E801 /* MoneyPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */; };
-		7778FE592B910A930023E801 /* Longrun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ABE48262763BB00011A2A /* Longrun.swift */; };
 		7778FE5A2B910A9B0023E801 /* LongrunOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CB6F926276326005F798B /* LongrunOperation.swift */; };
 		7778FE5D2B910B7D0023E801 /* SettingsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013DA24A927E2008F705E /* SettingsExtension.swift */; };
 		7778FE5E2B910B8A0023E801 /* OperationManagerFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490148324AA27C1008F705E /* OperationManagerFacade.swift */; };
@@ -5093,7 +5092,6 @@
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
 		849A4EF8279ABBDD00AB6709 /* AssetBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF7279ABBDD00AB6709 /* AssetBalance.swift */; };
 		849A4EFA279ABC8800AB6709 /* AssetBalanceMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */; };
-		849ABE49262763BB00011A2A /* Longrun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ABE48262763BB00011A2A /* Longrun.swift */; };
 		849ABE562627738900011A2A /* Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ABE552627738900011A2A /* Mapping.swift */; };
 		849ABE5B2627739400011A2A /* ListReducing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ABE5A2627739400011A2A /* ListReducing.swift */; };
 		849ABE63262785F200011A2A /* ControllerMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ABE62262785F200011A2A /* ControllerMapper.swift */; };
@@ -12115,7 +12113,6 @@
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
 		849A4EF7279ABBDD00AB6709 /* AssetBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalance.swift; sourceTree = "<group>"; };
 		849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceMapper.swift; sourceTree = "<group>"; };
-		849ABE48262763BB00011A2A /* Longrun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Longrun.swift; sourceTree = "<group>"; };
 		849ABE552627738900011A2A /* Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapping.swift; sourceTree = "<group>"; };
 		849ABE5A2627739400011A2A /* ListReducing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListReducing.swift; sourceTree = "<group>"; };
 		849ABE62262785F200011A2A /* ControllerMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerMapper.swift; sourceTree = "<group>"; };
@@ -25007,7 +25004,6 @@
 			isa = PBXGroup;
 			children = (
 				845CB6F926276326005F798B /* LongrunOperation.swift */,
-				849ABE48262763BB00011A2A /* Longrun.swift */,
 				8ACFB2F0EF77865ACAAC3103 /* TimeLimitedLongrun.swift */,
 			);
 			path = Longrun;
@@ -33965,7 +33961,6 @@
 				77AE4FB02B90646100426519 /* BaseOperation+Cancellable.swift in Sources */,
 				2D65F6D02CCF901C00CC6F72 /* AppearanceIconsOptions.swift in Sources */,
 				0CCD18A52BA160950068D73A /* CurrencyRepository.swift in Sources */,
-				7778FE592B910A930023E801 /* Longrun.swift in Sources */,
 				778215D12B91B3BC006C7D13 /* PushNotificationHandlersFactory.swift in Sources */,
 				2DE8B0952E54445F00F8BD40 /* TransferCall.swift in Sources */,
 				7778FE4D2B9107EC0023E801 /* CompoundOperationWrapper+Add.swift in Sources */,
@@ -35071,7 +35066,6 @@
 				843461D126E2641500DCE0CD /* SubqueryRewardOperationFactory.swift in Sources */,
 				840DC840288090030039A054 /* Bool+Int.swift in Sources */,
 				84BAD20B2939C45900C55C49 /* EtherscanKeys.swift in Sources */,
-				849ABE49262763BB00011A2A /* Longrun.swift in Sources */,
 				8490111129E5A509005D688B /* URIScanPresenter.swift in Sources */,
 				0C1CF7182E531C1700B1DA66 /* AssetsHydraAaveExchange.swift in Sources */,
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
