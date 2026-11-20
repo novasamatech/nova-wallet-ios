@@ -1,27 +1,28 @@
 import SDKLogger
 
 /// `substrate-sdk-ios` 5 and Operation-iOS 3 log through logger-ios, whose requirements take the message
-/// lazily. `Logger` formats eagerly, so the closures are evaluated on the spot and handed to the app's
-/// own `LoggerProtocol` methods. SwiftyBeaver serialises its destinations itself, hence `@unchecked Sendable`.
+/// lazily. The closure goes on to SwiftyBeaver as it is, which runs it only for a destination that accepts
+/// the level: the SDK builds a debug line for every WebSocket frame, and a release build must not pay for it.
+/// SwiftyBeaver serialises its destinations itself, hence `@unchecked Sendable`.
 extension Logger: SDKLogger.SDKLoggerProtocol, @unchecked Sendable {
     func verbose(message: () -> String, file: String, function: String, line: Int) {
-        verbose(message: message(), file: file, function: function, line: line)
+        log.custom(level: .verbose, message: message(), file: file, function: function, line: line)
     }
 
     func debug(message: () -> String, file: String, function: String, line: Int) {
-        debug(message: message(), file: file, function: function, line: line)
+        log.custom(level: .debug, message: message(), file: file, function: function, line: line)
     }
 
     func info(message: () -> String, file: String, function: String, line: Int) {
-        info(message: message(), file: file, function: function, line: line)
+        log.custom(level: .info, message: message(), file: file, function: function, line: line)
     }
 
     func warning(message: () -> String, file: String, function: String, line: Int) {
-        warning(message: message(), file: file, function: function, line: line)
+        log.custom(level: .warning, message: message(), file: file, function: function, line: line)
     }
 
     func error(message: () -> String, file: String, function: String, line: Int) {
-        error(message: message(), file: file, function: function, line: line)
+        log.custom(level: .error, message: message(), file: file, function: function, line: line)
     }
 }
 
