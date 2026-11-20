@@ -40,6 +40,7 @@ enum AnalyticsFacadeFactory {
                     .infoDictionary?["CFBundleShortVersionString"] as? String ?? "",
                 storeDirectory: UserStorageParams.sharedStorageDirectoryURL,
                 isFirstLaunch: { settingsManager.isAppFirstLaunch },
+                assetListStyle: { settingsManager.assetListGroupStyle.analyticsStyle },
                 settingsManager: settingsManager,
                 logger: Logger.shared,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -58,5 +59,16 @@ extension NovaAuthFacade: AnalyticsAuthProvidingProtocol {
         }
         map.addDependency(endpoint.targetOperation)
         return endpoint.insertingTail(operation: map)
+    }
+}
+
+extension AssetListGroupsStyle {
+    var analyticsStyle: AnalyticsAssetListStyle {
+        switch self {
+        case .tokens:
+            .tokens
+        case .networks:
+            .networks
+        }
     }
 }

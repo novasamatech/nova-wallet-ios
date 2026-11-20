@@ -87,6 +87,7 @@ final class AnalyticsConsentAuthTests: XCTestCase {
             appVersion: "10.9.0",
             storeDirectory: storeDirectory,
             isFirstLaunch: { false },
+            assetListStyle: { .tokens },
             settingsManager: settings,
             logger: SilentLogger(),
             operationQueue: operationQueue,

@@ -971,6 +971,7 @@
 		0CA50CAF2AFE6094005668CD /* GetTokenOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */; };
 		0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */; };
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
+		3C108C96273435C5ADF93B88 /* GetTokenOptionsPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
 		0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */; };
@@ -8273,6 +8274,7 @@
 		0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewController.swift; sourceTree = "<group>"; };
 		0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsProtocols.swift; sourceTree = "<group>"; };
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
+		CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GetTokenOptionsPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
 		0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -16603,6 +16605,7 @@
 				0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */,
 				0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */,
 				0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */,
+				CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */,
 				0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */,
 				0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */,
 				0CB64E5F2B00AD83008F268F /* GetTokenOptionsWireframe.swift */,
@@ -34090,6 +34093,7 @@
 				84CAC1CC298A715900F78169 /* GovernanceOffchainVotesLocal.swift in Sources */,
 				84F2CEFC29A36CE9003EBE36 /* WalletNoAccountHandling.swift in Sources */,
 				0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */,
+				3C108C96273435C5ADF93B88 /* GetTokenOptionsPresenter+Analytics.swift in Sources */,
 				774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */,
 				849014C324AA87E4008F705E /* LocalAuthInteractor.swift in Sources */,
 				84BEE059255F4D5700D05EB3 /* AccountImportPreferredInfo.swift in Sources */,
