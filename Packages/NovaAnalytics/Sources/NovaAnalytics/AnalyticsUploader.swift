@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaOperationSupport
 
 public enum AnalyticsUploadAbort: Error {
     case consentWithdrawn

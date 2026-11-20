@@ -1,6 +1,5 @@
 import Foundation
 import NovaAuth
-import NovaOperationSupport
 import Operation_iOS
 import SDKLogger
 

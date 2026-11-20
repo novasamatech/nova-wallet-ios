@@ -1,7 +1,6 @@
 import Foundation
 import DeviceCheck
 import Operation_iOS
-import NovaOperationSupport
 
 protocol NovaAuthDeviceCheckProtocol: AnyObject {
     var isSupported: Bool { get }

@@ -9,16 +9,14 @@ let package = Package(
         .library(name: "NovaAuth", targets: ["NovaAuth"])
     ],
     dependencies: [
-        .package(path: "../NovaOperationSupport"),
-        .package(url: "https://github.com/novasamatech/Operation-iOS", exact: "2.1.2"),
-        .package(url: "https://github.com/novasamatech/Keystore-iOS", exact: "1.0.1"),
-        .package(url: "https://github.com/novasamatech/logger-ios", exact: "0.0.1")
+        .package(url: "https://github.com/novasamatech/Operation-iOS", exact: "3.1.0"),
+        .package(url: "https://github.com/novasamatech/Keystore-iOS", exact: "1.1.0"),
+        .package(url: "https://github.com/novasamatech/logger-ios", exact: "0.1.0")
     ],
     targets: [
         .target(
             name: "NovaAuth",
             dependencies: [
-                "NovaOperationSupport",
                 .product(name: "Operation-iOS", package: "Operation-iOS"),
                 .product(name: "Keystore-iOS", package: "Keystore-iOS"),
                 .product(name: "SDKLogger", package: "logger-ios")

@@ -1,5 +1,4 @@
 import Foundation
-import NovaOperationSupport
 import Operation_iOS
 
 final class NovaAuthBootstrapOperationFactory {

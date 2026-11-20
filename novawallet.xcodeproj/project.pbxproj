@@ -33311,7 +33311,6 @@
 			mainGroup = 8490139F24A80984008F705E;
 			packageReferences = (
 				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "NovaAuth" */,
-				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */,
 				FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */,
 				0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */,
 				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
@@ -41639,10 +41638,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaAuth;
 		};
-		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/NovaOperationSupport;
-		};
 		FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaAnalytics;
@@ -41727,7 +41722,7 @@
 			repositoryURL = "https://github.com/novasamatech/Keystore-iOS.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.0.1;
+				version = 1.1.0;
 			};
 		};
 		0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */ = {
@@ -41743,7 +41738,7 @@
 			repositoryURL = "https://github.com/novasamatech/Foundation-iOS.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.2.0;
+				version = 1.5.0;
 			};
 		};
 		0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */ = {
@@ -41871,7 +41866,7 @@
 			repositoryURL = "https://github.com/novasamatech/logger-ios";
 			requirement = {
 				kind = exactVersion;
-				version = 0.0.1;
+				version = 0.1.0;
 			};
 		};
 		0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */ = {
@@ -41887,7 +41882,7 @@
 			repositoryURL = "https://github.com/novasamatech/substrate-sdk-ios";
 			requirement = {
 				kind = exactVersion;
-				version = 4.5.2;
+				version = 5.18.0;
 			};
 		};
 		2D16735E2EE9BD06004ADA7F /* XCRemoteSwiftPackageReference "Operation-iOS" */ = {
@@ -41895,7 +41890,7 @@
 			repositoryURL = "https://github.com/novasamatech/Operation-iOS";
 			requirement = {
 				kind = exactVersion;
-				version = 2.1.2;
+				version = 3.1.0;
 			};
 		};
 		2D16736A2EE9BD2E004ADA7F /* XCRemoteSwiftPackageReference "Crypto-iOS" */ = {
@@ -41903,7 +41898,7 @@
 			repositoryURL = "https://github.com/novasamatech/Crypto-iOS";
 			requirement = {
 				kind = exactVersion;
-				version = 0.4.1;
+				version = 0.5.0;
 			};
 		};
 		2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {

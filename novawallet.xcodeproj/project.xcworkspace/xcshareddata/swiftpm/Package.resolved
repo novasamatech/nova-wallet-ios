@@ -1,5 +1,5 @@
 {
-  "originHash" : "bc6ba322cad82b4acf619e10875b7367362d72427f49312ef62d92a33c8289c8",
+  "originHash" : "6db12f1e41df63ec7219c76c4a7c7a3013a0a48419ebf29d3e2ed846f20d1142",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Crypto-iOS",
       "state" : {
-        "revision" : "f569b9c271c8694409bdb7ae3802408d48cc512a",
-        "version" : "0.4.1"
+        "revision" : "d14fede4bfdfedacd5b80851f3f4874e414f082a",
+        "version" : "0.5.0"
       }
     },
     {
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Foundation-iOS.git",
       "state" : {
-        "revision" : "980c067977adc8fa9b21be4e1895b890d3551d03",
-        "version" : "1.2.0"
+        "revision" : "1de7d2ba81196fdbfddced588c3de450e828e25e",
+        "version" : "1.5.0"
       }
     },
     {
@@ -231,8 +231,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Keystore-iOS.git",
       "state" : {
-        "revision" : "069ccbe1bec3ffafefaeb8a269291d11f6111b04",
-        "version" : "1.0.1"
+        "revision" : "105cfc6984f45a61ba410fbc3751e4952afb51e9",
+        "version" : "1.1.0"
       }
     },
     {
@@ -258,8 +258,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/logger-ios",
       "state" : {
-        "revision" : "cafece8626141b4430ddc8d5288d3444abd122de",
-        "version" : "0.0.1"
+        "revision" : "067337bd88bcb3fe61b208bc3050fa2e22670340",
+        "version" : "0.1.0"
       }
     },
     {
@@ -303,8 +303,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Operation-iOS",
       "state" : {
-        "revision" : "e60771338561aa529daeb9d984cb485a939709e0",
-        "version" : "2.1.2"
+        "revision" : "41c976890b2eea5a54235ac4bf09acc19e0a8fb9",
+        "version" : "3.1.0"
       }
     },
     {
@@ -393,8 +393,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/sr25519.c.git",
       "state" : {
-        "revision" : "f04ba5e9bfb48651334eee96167dfffc72b68c4d",
-        "version" : "0.2.1"
+        "revision" : "8ffec3fe0f0b169eaaba2537a3c66ff38fdb25df",
+        "version" : "0.3.0"
       }
     },
     {
@@ -420,8 +420,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/substrate-sdk-ios",
       "state" : {
-        "revision" : "67eee2c11c3c7ebb22c6ee255e5db73e1dedb404",
-        "version" : "4.5.2"
+        "revision" : "41711f739147a81e6a0078b4678528baffa159a2",
+        "version" : "5.18.0"
       }
     },
     {
