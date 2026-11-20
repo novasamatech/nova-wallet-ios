@@ -458,6 +458,8 @@
 		0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */; };
 		0C27F3842DA6CF2C00191FFF /* BlockWeight+Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */; };
 		0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */; };
+		097A7B2626CBFB99F492BD79 /* TransactionExtensionCoderCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */; };
+		CC603D786BB6BBBE3FDB7E6C /* TransactionExtensionCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */; };
 		0B96F3AC7726979B46B7FA62 /* ExtrinsicSignaturePayloadCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A7782668E48B71B32DB913 /* ExtrinsicSignaturePayloadCharacterizationTests.swift */; };
 		AA9357A26AB13D60BBDDA4E8 /* ExtrinsicBuilderCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A35248A707DB7A191354B22 /* ExtrinsicBuilderCharacterizationTests.swift */; };
 		0C27F38C2DA8162A00191FFF /* WeightPropertyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F38B2DA8162A00191FFF /* WeightPropertyWrappers.swift */; };
@@ -7762,6 +7764,8 @@
 		0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystePallet+ConstantPath.swift"; sourceTree = "<group>"; };
 		0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockWeight+Operation.swift"; sourceTree = "<group>"; };
 		0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateWeightTest.swift; sourceTree = "<group>"; };
+		459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExtensionCoderCharacterizationTests.swift; sourceTree = "<group>"; };
+		A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExtensionCharacterizationTests.swift; sourceTree = "<group>"; };
 		48A7782668E48B71B32DB913 /* ExtrinsicSignaturePayloadCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSignaturePayloadCharacterizationTests.swift; sourceTree = "<group>"; };
 		4A35248A707DB7A191354B22 /* ExtrinsicBuilderCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicBuilderCharacterizationTests.swift; sourceTree = "<group>"; };
 		0C27F38B2DA8162A00191FFF /* WeightPropertyWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightPropertyWrappers.swift; sourceTree = "<group>"; };
@@ -15604,6 +15608,8 @@
 			isa = PBXGroup;
 			children = (
 				0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */,
+				459E41622DF1438A15180659 /* TransactionExtensionCoderCharacterizationTests.swift */,
+				A0EBB2E869126ACD8D593C10 /* TransactionExtensionCharacterizationTests.swift */,
 				48A7782668E48B71B32DB913 /* ExtrinsicSignaturePayloadCharacterizationTests.swift */,
 				4A35248A707DB7A191354B22 /* ExtrinsicBuilderCharacterizationTests.swift */,
 				BC76E87DCFF3D7B4CE5B0906 /* SubstrateTransferCommandFactoryTests.swift */,
@@ -40478,6 +40484,8 @@
 				576F2FDA14FD68347EE180C9 /* ExtrinsicOperationFactoryCharacterizationTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
+				097A7B2626CBFB99F492BD79 /* TransactionExtensionCoderCharacterizationTests.swift in Sources */,
+				CC603D786BB6BBBE3FDB7E6C /* TransactionExtensionCharacterizationTests.swift in Sources */,
 				0B96F3AC7726979B46B7FA62 /* ExtrinsicSignaturePayloadCharacterizationTests.swift in Sources */,
 				AA9357A26AB13D60BBDDA4E8 /* ExtrinsicBuilderCharacterizationTests.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
