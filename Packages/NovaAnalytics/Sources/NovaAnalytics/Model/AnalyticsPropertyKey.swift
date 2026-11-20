@@ -33,6 +33,7 @@ public enum AnalyticsPropertyKey: String, CaseIterable {
     case screen
     case nftCountBucket = "nft_count_bucket"
     case chain
+    case chainId = "chain_id"
     case target
     case mode
     case flow

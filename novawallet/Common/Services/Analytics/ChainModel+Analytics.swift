@@ -5,6 +5,10 @@ extension ChainModel {
     var analyticsNetworkName: AnalyticsContentValue? {
         .networkName(name)
     }
+
+    var analyticsChainId: AnalyticsContentValue? {
+        .chainId(chainId)
+    }
 }
 
 extension ChainAsset {
