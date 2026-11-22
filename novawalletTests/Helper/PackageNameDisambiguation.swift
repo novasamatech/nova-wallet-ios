@@ -56,6 +56,7 @@ typealias StorageJSONDecodingOperation = novawallet.StorageJSONDecodingOperation
 typealias StorageConstantOperation<T: Decodable> = novawallet.StorageConstantOperation<T>
 typealias StorageDecodingOperationError = novawallet.StorageDecodingOperationError
 typealias StateCallPath = novawallet.StateCallPath
+typealias StateCallRpc = novawallet.StateCallRpc
 typealias StateCallRequestFactory = novawallet.StateCallRequestFactory
 typealias StateCallResultFromTypeNameDecoder<T: Decodable> = novawallet.StateCallResultFromTypeNameDecoder<T>
 

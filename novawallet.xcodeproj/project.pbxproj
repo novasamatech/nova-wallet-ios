@@ -2112,6 +2112,10 @@
 		2D7A550D2E5D000100000002 /* SubtensorSwapApiDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */; };
 		2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 2D7A550F2E5D000100000001 /* bittensor-v15-metadata */; };
 		7E16A0B1C2D3000100000002 /* westend-v16-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 7E16A0B1C2D3000100000001 /* westend-v16-metadata */; };
+		A553F0BEC54498F9342022B3 /* polkadot-v16-opaque-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 554BFC7543C3607FC69A46B4 /* polkadot-v16-opaque-metadata */; };
+		5997E5074DA5D911BBAF842A /* polkadot-v15-opaque-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 44E7A45413B0780F7D151AC5 /* polkadot-v15-opaque-metadata */; };
+		02B6AAB63E0CB2729B20B4A2 /* polkadot-asset-hub-v16-opaque-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 21A9E39A743706213B8F233D /* polkadot-asset-hub-v16-opaque-metadata */; };
+		5A33200BE262C9705D48B553 /* polkadot-asset-hub-v15-opaque-metadata in Resources */ = {isa = PBXBuildFile; fileRef = BBEB7D2B236755D8805D0B1D /* polkadot-asset-hub-v15-opaque-metadata */; };
 		A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */ = {isa = PBXBuildFile; fileRef = 5650467CEEFBA316E12AE712 /* runtime-avail.json */; };
 		1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 7723092C67AB5FEA616EABEF /* avail-metadata */; };
 		F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */ = {isa = PBXBuildFile; fileRef = A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */; };
@@ -4206,6 +4210,7 @@
 		843612C92790109100DC739E /* SigningWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612C82790109100DC739E /* SigningWrapperFactory.swift */; };
 		843612CB279011B400DC739E /* SigningWrapperFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612CA279011B400DC739E /* SigningWrapperFactoryStub.swift */; };
 		F395079A83D40CEE715856CF /* LoggerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715856CF2D4DD7CAEC6B91D7 /* LoggerSpy.swift */; };
+		6F8C32489C9FB5A515C6BC62 /* ScriptedJSONRPCEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285A9AA1870752111159D272 /* ScriptedJSONRPCEngine.swift */; };
 		8436B6D828480D2F00F24360 /* ModalPickerActionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436B6D728480D2F00F24360 /* ModalPickerActionTableViewCell.swift */; };
 		8436B6DA2848119C00F24360 /* AccountDetailsSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436B6D92848119C00F24360 /* AccountDetailsSelectionCell.swift */; };
 		8436B6DC2848998200F24360 /* ParaStkAccountDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436B6DB2848998200F24360 /* ParaStkAccountDetailsViewModelFactory.swift */; };
@@ -5833,6 +5838,9 @@
 		84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1625F559F200F32ED4 /* WestendStub.swift */; };
 		6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */; };
 		E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */; };
+		0038E58ED173A5F05E2D1CEF /* MetadataHashTestSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7241E5FB5C662C5501F552 /* MetadataHashTestSetup.swift */; };
+		27BE1B58B5C3D5CF58D650B8 /* RuntimeMetadataFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A765898D1007B68AC362E7 /* RuntimeMetadataFixture.swift */; };
+		AB7589A4E9A9F12398354A0B /* RuntimeMetadataOutline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073D30B890F0274DE1A20AD7 /* RuntimeMetadataOutline.swift */; };
 		04FC6CA8F07427AF370E57B7 /* DAppTxPayloadFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */; };
 		2F000A73B9B554F0570F9D13 /* DAppTxPayloadPaymentFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570F9D136344114053797C38 /* DAppTxPayloadPaymentFixtures.swift */; };
 		84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */; };
@@ -9458,6 +9466,10 @@
 		2D7A550D2E5D000100000001 /* SubtensorSwapApiDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSwapApiDecodeTests.swift; sourceTree = "<group>"; };
 		2D7A550F2E5D000100000001 /* bittensor-v15-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bittensor-v15-metadata"; sourceTree = "<group>"; };
 		7E16A0B1C2D3000100000001 /* westend-v16-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-v16-metadata"; sourceTree = "<group>"; };
+		554BFC7543C3607FC69A46B4 /* polkadot-v16-opaque-metadata */ = {isa = PBXFileReference; lastKnownFileType = file; path = "polkadot-v16-opaque-metadata"; sourceTree = "<group>"; };
+		44E7A45413B0780F7D151AC5 /* polkadot-v15-opaque-metadata */ = {isa = PBXFileReference; lastKnownFileType = file; path = "polkadot-v15-opaque-metadata"; sourceTree = "<group>"; };
+		21A9E39A743706213B8F233D /* polkadot-asset-hub-v16-opaque-metadata */ = {isa = PBXFileReference; lastKnownFileType = file; path = "polkadot-asset-hub-v16-opaque-metadata"; sourceTree = "<group>"; };
+		BBEB7D2B236755D8805D0B1D /* polkadot-asset-hub-v15-opaque-metadata */ = {isa = PBXFileReference; lastKnownFileType = file; path = "polkadot-asset-hub-v15-opaque-metadata"; sourceTree = "<group>"; };
 		5650467CEEFBA316E12AE712 /* runtime-avail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "runtime-avail.json"; sourceTree = "<group>"; };
 		7723092C67AB5FEA616EABEF /* avail-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "avail-metadata"; sourceTree = "<group>"; };
 		A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "polkadot-asset-hub-metadata"; sourceTree = "<group>"; };
@@ -11213,6 +11225,7 @@
 		843612C82790109100DC739E /* SigningWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapperFactory.swift; sourceTree = "<group>"; };
 		843612CA279011B400DC739E /* SigningWrapperFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapperFactoryStub.swift; sourceTree = "<group>"; };
 		715856CF2D4DD7CAEC6B91D7 /* LoggerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerSpy.swift; sourceTree = "<group>"; };
+		285A9AA1870752111159D272 /* ScriptedJSONRPCEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptedJSONRPCEngine.swift; sourceTree = "<group>"; };
 		8436B6D728480D2F00F24360 /* ModalPickerActionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerActionTableViewCell.swift; sourceTree = "<group>"; };
 		8436B6D92848119C00F24360 /* AccountDetailsSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionCell.swift; sourceTree = "<group>"; };
 		8436B6DB2848998200F24360 /* ParaStkAccountDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkAccountDetailsViewModelFactory.swift; sourceTree = "<group>"; };
@@ -12863,6 +12876,9 @@
 		84FACB1625F559F200F32ED4 /* WestendStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WestendStub.swift; sourceTree = "<group>"; };
 		0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageNameDisambiguation.swift; sourceTree = "<group>"; };
 		1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicGoldenFixtures.swift; sourceTree = "<group>"; };
+		CB7241E5FB5C662C5501F552 /* MetadataHashTestSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashTestSetup.swift; sourceTree = "<group>"; };
+		F3A765898D1007B68AC362E7 /* RuntimeMetadataFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataFixture.swift; sourceTree = "<group>"; };
+		073D30B890F0274DE1A20AD7 /* RuntimeMetadataOutline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataOutline.swift; sourceTree = "<group>"; };
 		F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadFixtures.swift; sourceTree = "<group>"; };
 		570F9D136344114053797C38 /* DAppTxPayloadPaymentFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTxPayloadPaymentFixtures.swift; sourceTree = "<group>"; };
 		84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceStub.swift; sourceTree = "<group>"; };
@@ -23891,6 +23907,7 @@
 				84B66A1726FE05B00038B963 /* ChainRegistryStub.swift */,
 				843612CA279011B400DC739E /* SigningWrapperFactoryStub.swift */,
 				715856CF2D4DD7CAEC6B91D7 /* LoggerSpy.swift */,
+				285A9AA1870752111159D272 /* ScriptedJSONRPCEngine.swift */,
 				8476D39727F431D5004D9A7A /* MockApplicationService.swift */,
 				8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */,
 				0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */,
@@ -25257,6 +25274,9 @@
 				84FACB1625F559F200F32ED4 /* WestendStub.swift */,
 				0499751B5D6A34E2BA62A7FE /* PackageNameDisambiguation.swift */,
 				1DF4279BFF31455D66927BB8 /* ExtrinsicGoldenFixtures.swift */,
+				CB7241E5FB5C662C5501F552 /* MetadataHashTestSetup.swift */,
+				F3A765898D1007B68AC362E7 /* RuntimeMetadataFixture.swift */,
+				073D30B890F0274DE1A20AD7 /* RuntimeMetadataOutline.swift */,
 				F1E9D4F82F633F846F8DEAB7 /* DAppTxPayloadFixtures.swift */,
 				570F9D136344114053797C38 /* DAppTxPayloadPaymentFixtures.swift */,
 				2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */,
@@ -29804,6 +29824,10 @@
 				84FACB2C25F562CB00F32ED4 /* westend-metadata */,
 				2D7A550F2E5D000100000001 /* bittensor-v15-metadata */,
 				7E16A0B1C2D3000100000001 /* westend-v16-metadata */,
+				554BFC7543C3607FC69A46B4 /* polkadot-v16-opaque-metadata */,
+				44E7A45413B0780F7D151AC5 /* polkadot-v15-opaque-metadata */,
+				21A9E39A743706213B8F233D /* polkadot-asset-hub-v16-opaque-metadata */,
+				BBEB7D2B236755D8805D0B1D /* polkadot-asset-hub-v15-opaque-metadata */,
 				5650467CEEFBA316E12AE712 /* runtime-avail.json */,
 				7723092C67AB5FEA616EABEF /* avail-metadata */,
 				A7B69065A06C4303AC2EED8E /* polkadot-asset-hub-metadata */,
@@ -33508,6 +33532,10 @@
 				84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */,
 				2D7A550F2E5D000100000002 /* bittensor-v15-metadata in Resources */,
 				7E16A0B1C2D3000100000002 /* westend-v16-metadata in Resources */,
+				A553F0BEC54498F9342022B3 /* polkadot-v16-opaque-metadata in Resources */,
+				5997E5074DA5D911BBAF842A /* polkadot-v15-opaque-metadata in Resources */,
+				02B6AAB63E0CB2729B20B4A2 /* polkadot-asset-hub-v16-opaque-metadata in Resources */,
+				5A33200BE262C9705D48B553 /* polkadot-asset-hub-v15-opaque-metadata in Resources */,
 				A0FFAF31724016F59334EF44 /* runtime-avail.json in Resources */,
 				1EA166CD7EB0021E94C47102 /* avail-metadata in Resources */,
 				F62F18B2E4F02D2E5187D756 /* polkadot-asset-hub-metadata in Resources */,
@@ -40625,6 +40653,7 @@
 				84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */,
 				843612CB279011B400DC739E /* SigningWrapperFactoryStub.swift in Sources */,
 				F395079A83D40CEE715856CF /* LoggerSpy.swift in Sources */,
+				6F8C32489C9FB5A515C6BC62 /* ScriptedJSONRPCEngine.swift in Sources */,
 				8846F73829D6F57700B8B776 /* MultibaseTests.swift in Sources */,
 				84300B2F26C1112300D64514 /* ConnectionPoolTests.swift in Sources */,
 				0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */,
@@ -40733,6 +40762,9 @@
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				6E239C7C7DDCF9E183BACF49 /* PackageNameDisambiguation.swift in Sources */,
 				E9B075C7BEE2F7765F6EA3BD /* ExtrinsicGoldenFixtures.swift in Sources */,
+				0038E58ED173A5F05E2D1CEF /* MetadataHashTestSetup.swift in Sources */,
+				27BE1B58B5C3D5CF58D650B8 /* RuntimeMetadataFixture.swift in Sources */,
+				AB7589A4E9A9F12398354A0B /* RuntimeMetadataOutline.swift in Sources */,
 				04FC6CA8F07427AF370E57B7 /* DAppTxPayloadFixtures.swift in Sources */,
 				2F000A73B9B554F0570F9D13 /* DAppTxPayloadPaymentFixtures.swift in Sources */,
 				2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */,
