@@ -13,15 +13,15 @@ protocol MetadataHashOperationFactoryProtocol {
 
 final class MetadataHashOperationFactory {
     let operationQueue: OperationQueue
-    let metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol
+    let sourceProvider: MetadataHashSourceProviding
 
     let cache: InMemoryCache<ChainModel.Id, Data>
 
     init(
-        metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol,
+        sourceProvider: MetadataHashSourceProviding,
         operationQueue: OperationQueue
     ) {
-        self.metadataRepositoryFactory = metadataRepositoryFactory
+        self.sourceProvider = sourceProvider
         self.operationQueue = operationQueue
         cache = InMemoryCache()
     }
@@ -40,23 +40,21 @@ final class MetadataHashOperationFactory {
         for chain: ChainModel,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<Data?> {
-        let rawMetadataOperation = metadataRepositoryFactory.createRepository().fetchOperation(
-            by: { chain.chainId },
-            options: RepositoryFetchOptions()
-        )
+        let sourceWrapper = sourceProvider.createFetchWrapper(for: chain.chainId, connection: connection)
 
         let runtimeVersionOperation = createRuntimeVersionOperation(for: connection)
 
         let generateAndCacheOperation = ClosureOperation<Data?> {
-            guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
-                throw CommonMetadataShortenerError.metadataMissing
+            // the hash can't exist without the metadata it is defined over: as for a runtime with metadata v14
+            guard let source = try sourceWrapper.targetOperation.extractNoCancellableResultData() else {
+                return nil
             }
 
             let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
-            guard rawMetadata.version == runtimeVersion.specVersion else {
+            guard source.specVersion == runtimeVersion.specVersion else {
                 throw CommonMetadataShortenerError.invalidMetadata(
-                    localVersion: rawMetadata.version,
+                    localVersion: source.specVersion,
                     remoteVersion: runtimeVersion.specVersion
                 )
             }
@@ -72,7 +70,7 @@ final class MetadataHashOperationFactory {
             let decimals = UInt8(utilityAsset.decimalPrecision)
 
             let params = MetadataHashParams(
-                metadata: rawMetadata.metadata,
+                metadata: source.metadata,
                 specVersion: runtimeVersion.specVersion,
                 specName: runtimeVersion.specName,
                 decimals: decimals,
@@ -87,11 +85,11 @@ final class MetadataHashOperationFactory {
         }
 
         generateAndCacheOperation.addDependency(runtimeVersionOperation)
-        generateAndCacheOperation.addDependency(rawMetadataOperation)
+        generateAndCacheOperation.addDependency(sourceWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: generateAndCacheOperation,
-            dependencies: [rawMetadataOperation, runtimeVersionOperation]
+            dependencies: sourceWrapper.allOperations + [runtimeVersionOperation]
         )
     }
 }

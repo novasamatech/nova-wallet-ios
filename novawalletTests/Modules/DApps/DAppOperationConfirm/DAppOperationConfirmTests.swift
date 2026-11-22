@@ -143,8 +143,9 @@ class DAppOperationConfirmTests: XCTestCase {
         )
 
         let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
-                storageFacade: storageFacade
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: storageFacade,
+                operationQueue: operationQueue
             ),
             operationQueue: operationQueue
         )

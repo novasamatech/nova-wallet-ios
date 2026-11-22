@@ -155,8 +155,9 @@ extension DAppOperationConfirmViewFactory {
 
     static func createMetadataHashFactory() -> MetadataHashOperationFactoryProtocol {
         MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
-                storageFacade: SubstrateDataStorageFacade.shared
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: SubstrateDataStorageFacade.shared,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
             ),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

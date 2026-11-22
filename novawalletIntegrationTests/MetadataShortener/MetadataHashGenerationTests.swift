@@ -50,7 +50,10 @@ final class MetadataHashGenerationTests: XCTestCase {
         let operationQueue = OperationQueue()
 
         let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: storageFacade,
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue
         )
 

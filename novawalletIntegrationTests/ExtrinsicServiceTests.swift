@@ -61,7 +61,10 @@ class ExtrinsicServiceTests: XCTestCase {
         let operationQueue = OperationQueue()
 
         let metadataHashOperationFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: storageFacade,
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue
         )
 
@@ -143,7 +146,10 @@ class ExtrinsicServiceTests: XCTestCase {
         let operationQueue = OperationQueue()
 
         let metadataHashOperationFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: storageFacade,
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue
         )
 

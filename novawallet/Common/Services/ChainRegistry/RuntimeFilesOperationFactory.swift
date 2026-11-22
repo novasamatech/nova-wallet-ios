@@ -62,13 +62,56 @@ protocol RuntimeFilesOperationFactoryProtocol {
         for chainId: ChainModel.Id,
         data closure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void>
+
+    /**
+     *  Constructs an operations wrapper that fetches the stored metadata
+     *  the chain's metadata hash is generated from.
+     *
+     *  - Parameters:
+     *      - chainId: Identifier of the chain the metadata belongs to.
+     *
+     *  - Returns: `CompoundOperationWrapper` which produces data
+     *  in case file exists on device and `nil` otherwise.
+     */
+    func fetchMetadataHashSourceOperation(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Data?>
+
+    /**
+     *  Constructs an operations wrapper that saves the metadata
+     *  the chain's metadata hash is generated from, replacing the previous one.
+     *
+     *  - Parameters:
+     *      - chainId: Identifier of the chain the metadata belongs to.
+     *      - closure: A closure that returns file's data on call. It is guaranteed that
+     *       the closure will be called as part of the wrapper execution and not earlier.
+     *
+     *  - Returns: `CompoundOperationWrapper` which produces nothing if completes successfully.
+     */
+    func saveMetadataHashSourceOperation(
+        for chainId: ChainModel.Id,
+        data closure: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<Void>
 }
 
 /**
  *  Common types file has `common-types` name. Chain type file hash $(chainId)-types name.
+ *  Metadata hash source file has $(chainId)-metadata-hash-source name.
  */
 
 final class RuntimeFilesOperationFactory: FilesOperationFactory {}
+
+extension RuntimeFilesOperationFactory {
+    /// Runtime files are a cache: they live in `Caches` (`tmp` if unavailable) in `runtime` directory
+    static func createDefault() -> RuntimeFilesOperationFactory {
+        let topDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ??
+            FileManager.default.temporaryDirectory
+        let runtimeDirectory = topDirectory.appendingPathComponent("runtime").path
+
+        return RuntimeFilesOperationFactory(
+            repository: FileRepository(),
+            directoryPath: runtimeDirectory
+        )
+    }
+}
 
 extension RuntimeFilesOperationFactory: RuntimeFilesOperationFactoryProtocol {
     func fetchCommonTypesOperation() -> CompoundOperationWrapper<Data?> {
@@ -89,5 +132,22 @@ extension RuntimeFilesOperationFactory: RuntimeFilesOperationFactoryProtocol {
         for chainId: ChainModel.Id, data closure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {
         saveFileOperation(for: "\(chainId)-types", data: closure)
+    }
+
+    func fetchMetadataHashSourceOperation(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Data?> {
+        fetchFileOperation(for: Self.metadataHashSourceFileName(for: chainId))
+    }
+
+    func saveMetadataHashSourceOperation(
+        for chainId: ChainModel.Id,
+        data closure: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<Void> {
+        saveFileOperation(for: Self.metadataHashSourceFileName(for: chainId), data: closure)
+    }
+}
+
+private extension RuntimeFilesOperationFactory {
+    static func metadataHashSourceFileName(for chainId: ChainModel.Id) -> String {
+        "\(chainId)-metadata-hash-source"
     }
 }

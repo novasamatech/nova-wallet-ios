@@ -218,7 +218,10 @@ class AutocompounDelegateStakeTests: XCTestCase {
             runtimeRegistry: runtimeProvider,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: MetadataHashOperationFactory(
-                metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+                sourceProvider: MetadataHashSourceProvider.createDefault(
+                    storageFacade: storageFacade,
+                    operationQueue: operationQueue
+                ),
                 operationQueue: operationQueue
             ),
             nonceOperationFactory: TransactionNonceOperationFactory(),
@@ -318,7 +321,10 @@ class AutocompounDelegateStakeTests: XCTestCase {
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: MetadataHashOperationFactory(
-                metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+                sourceProvider: MetadataHashSourceProvider.createDefault(
+                    storageFacade: storageFacade,
+                    operationQueue: operationQueue
+                ),
                 operationQueue: operationQueue
             ),
             nonceOperationFactory: TransactionNonceOperationFactory(),

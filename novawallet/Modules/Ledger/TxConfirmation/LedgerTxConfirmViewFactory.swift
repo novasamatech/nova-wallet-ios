@@ -111,12 +111,11 @@ struct LedgerTxConfirmViewFactory {
             GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
         }
 
-        let runtimeMetadataFactory = RuntimeMetadataRepositoryFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
         let proofOperationFactory = ExtrinsicProofOperationFactory(
-            metadataRepositoryFactory: runtimeMetadataFactory
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: SubstrateDataStorageFacade.shared,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         )
 
         let walletRepository = AccountRepositoryFactory(

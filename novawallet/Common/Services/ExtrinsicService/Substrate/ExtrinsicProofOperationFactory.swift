@@ -14,10 +14,10 @@ protocol ExtrinsicProofOperationFactoryProtocol {
 enum ExtrinsicProofOperationFactoryError: Error {}
 
 final class ExtrinsicProofOperationFactory {
-    let metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol
+    let sourceProvider: MetadataHashSourceProviding
 
-    init(metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol) {
-        self.metadataRepositoryFactory = metadataRepositoryFactory
+    init(sourceProvider: MetadataHashSourceProviding) {
+        self.sourceProvider = sourceProvider
     }
 
     private func createRuntimeVersionOperation(
@@ -37,15 +37,12 @@ extension ExtrinsicProofOperationFactory: ExtrinsicProofOperationFactoryProtocol
         connection: JSONRPCEngine,
         signatureParamsClosure: @escaping () throws -> ExtrinsicSignatureParams
     ) -> CompoundOperationWrapper<Data> {
-        let rawMetadataOperation = metadataRepositoryFactory.createRepository().fetchOperation(
-            by: { chain.chainId },
-            options: RepositoryFetchOptions()
-        )
+        let sourceWrapper = sourceProvider.createFetchWrapper(for: chain.chainId, connection: connection)
 
         let runtimeVersionOperation = createRuntimeVersionOperation(for: connection)
 
         let fetchOperation = ClosureOperation<Data> {
-            guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
+            guard let source = try sourceWrapper.targetOperation.extractNoCancellableResultData() else {
                 throw CommonMetadataShortenerError.metadataMissing
             }
 
@@ -53,9 +50,9 @@ extension ExtrinsicProofOperationFactory: ExtrinsicProofOperationFactoryProtocol
 
             let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
-            guard rawMetadata.version == runtimeVersion.specVersion else {
+            guard source.specVersion == runtimeVersion.specVersion else {
                 throw CommonMetadataShortenerError.invalidMetadata(
-                    localVersion: rawMetadata.version,
+                    localVersion: source.specVersion,
                     remoteVersion: runtimeVersion.specVersion
                 )
             }
@@ -74,7 +71,7 @@ extension ExtrinsicProofOperationFactory: ExtrinsicProofOperationFactoryProtocol
                 encodedCall: signatureParams.encodedCall,
                 encodedSignedExtra: signatureParams.includedInExtrinsicExtra,
                 encodedAdditionalSigned: signatureParams.includedInSignatureExtra,
-                encodedMetadata: rawMetadata.metadata,
+                encodedMetadata: source.metadata,
                 specVersion: runtimeVersion.specVersion,
                 specName: runtimeVersion.specName,
                 decimals: decimals,
@@ -86,11 +83,11 @@ extension ExtrinsicProofOperationFactory: ExtrinsicProofOperationFactoryProtocol
         }
 
         fetchOperation.addDependency(runtimeVersionOperation)
-        fetchOperation.addDependency(rawMetadataOperation)
+        fetchOperation.addDependency(sourceWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: fetchOperation,
-            dependencies: [rawMetadataOperation, runtimeVersionOperation]
+            dependencies: sourceWrapper.allOperations + [runtimeVersionOperation]
         )
     }
 }

@@ -45,7 +45,7 @@ final class ChainRegistryFactory {
 
         let dataFetchOperationFactory = DataOperationFactory()
 
-        let filesOperationFactory = createFilesOperationFactory()
+        let filesOperationFactory = RuntimeFilesOperationFactory.createDefault()
 
         let runtimeSyncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(runtimeMetadataRepository),
@@ -120,16 +120,6 @@ final class ChainRegistryFactory {
     }
 
     // swiftlint:enable function_body_length
-
-    private static func createFilesOperationFactory() -> RuntimeFilesOperationFactoryProtocol {
-        let topDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ??
-            FileManager.default.temporaryDirectory
-        let runtimeDirectory = topDirectory.appendingPathComponent("runtime").path
-        return RuntimeFilesOperationFactory(
-            repository: FileRepository(),
-            directoryPath: runtimeDirectory
-        )
-    }
 
     private static func createChainProvider(
         from repositoryFacade: StorageFacadeProtocol,

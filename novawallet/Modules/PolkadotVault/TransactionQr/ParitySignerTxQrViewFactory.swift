@@ -52,12 +52,11 @@ struct ParitySignerTxQrViewFactory {
         let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let walletRepository = repositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
-        let runtimeMetadataFactory = RuntimeMetadataRepositoryFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
         let proofOperationFactory = ExtrinsicProofOperationFactory(
-            metadataRepositoryFactory: runtimeMetadataFactory
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: SubstrateDataStorageFacade.shared,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         )
 
         return ParitySignerTxQrInteractor(

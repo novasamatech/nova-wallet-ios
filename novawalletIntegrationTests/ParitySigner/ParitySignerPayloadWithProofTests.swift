@@ -119,16 +119,19 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
 
         let operationQueue = OperationQueue()
 
-        let runtimeRepositoryFactory = RuntimeMetadataRepositoryFactory(storageFacade: storageFacade)
+        let hashSourceProvider = MetadataHashSourceProvider.createDefault(
+            storageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
 
         let extrinsicProofFactory = ExtrinsicProofOperationFactory(
-            metadataRepositoryFactory: runtimeRepositoryFactory
+            sourceProvider: hashSourceProvider
         )
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: runtimeRepositoryFactory,
+            sourceProvider: hashSourceProvider,
             operationQueue: operationQueue
         )
 

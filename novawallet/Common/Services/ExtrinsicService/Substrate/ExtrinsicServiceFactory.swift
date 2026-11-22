@@ -171,7 +171,10 @@ final class ExtrinsicServiceFactory {
         self.engine = engine
 
         metadataHashOperationFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
+            sourceProvider: MetadataHashSourceProvider.createDefault(
+                storageFacade: substrateStorageFacade,
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue
         )
 
