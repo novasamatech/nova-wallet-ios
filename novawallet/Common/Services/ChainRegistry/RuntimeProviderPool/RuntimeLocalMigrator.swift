@@ -11,7 +11,8 @@ extension RuntimeLocalMigrating {
 }
 
 enum RuntimeLocalVersion {
-    static let latest: UInt32 = 2
+    // 3: metadata v16 is requested when the runtime has it, an item cached by a build that asked for v15 is refetched
+    static let latest: UInt32 = 3
 }
 
 struct RuntimeLocalMigrator: RuntimeLocalMigrating {

@@ -31,7 +31,9 @@ protocol RuntimeFetchOperationFactoryProtocol {
 final class RuntimeFetchOperationFactory {
     static let availableVersionsCall = "Metadata_metadata_versions"
     static let metadataAtVersionCall = "Metadata_metadata_at_version"
-    static let latestSupportedVersion: UInt32 = 15
+
+    // a runtime may also list an unstable version (u32::MAX), which the limit leaves out
+    static let latestSupportedVersion: UInt32 = 16
 
     let operationQueue: OperationQueue
 
