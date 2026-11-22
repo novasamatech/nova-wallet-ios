@@ -161,9 +161,25 @@ or this wallet can't sign this type of transaction (`SignerUnavailable`).
 Signer errors and user cancellation behave as in `signPayload`. Of `TxPayloadV1.context` only
 `genesisHash` is required: the wallet reads nothing else from it.
 
-The app requests metadata v15 at most, and `RuntimeTypeRegistryFactory` rejects v16, so in production
-every request resolves to v4 today. The v5 path is covered by unit tests on the Westend metadata v16
-fixture with `VerifyMultiSignature` added by hand.
+The app decodes a chain with metadata v16 whenever the runtime offers it
+(architecture/chain-registry.md, "Metadata versions"), so the version rule works on what the runtime
+declares and v5 is reachable:
+
+| Runtime | A request resolves to |
+|---------|-----------------------|
+| Lists format 4, `txExtVersion` is 0 or `null` — every runtime today | v4, byte for byte what metadata v15 gave |
+| Lists format 5 and an extension version that has `VerifyMultiSignature`, `txExtVersion` names it — Polkadot Asset Hub, Polkadot People and Paseo Asset Hub declare such a version 1 (seen on 22 Nov 2026, spec 2005003 / 2005006) | v5 with that extension version |
+| Doesn't list format 4 and has `VerifyMultiSignature` in version 0 — no runtime yet | v5 with extension version 0 |
+| One extension version only (Polkadot, Kusama and Westend relay chains, Hydration, Bittensor, …) or metadata v15 at most (Avail, Mythos, …) | v4; a non-zero `txExtVersion` → `UnsupportedTxExtensionVersion` |
+
+Asset Hub's version 1 set puts `UnitTransactionExtension` in front of `VerifyMultiSignature` (the
+signature covers only what follows it) and adds `AsPgas`, `AsDotnsGateway` — options, read as `None`
+when the dApp omits them — and `RestrictOrigins`, a flag the dApp has to send, else
+`MissingMandatoryExtension`.
+
+Both paths are covered by unit tests on real metadata v16 (`DAppCreateTransactionV16Tests`; the customised
+Westend fixture stays for the cases no runtime has). A v5 transaction has not been submitted to a live
+chain from the app yet.
 
 ## DApp Catalogue
 

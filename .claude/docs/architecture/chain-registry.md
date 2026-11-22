@@ -100,6 +100,27 @@ Rules:
 - Metadata shortening for hardware-wallet signing goes through `MetadataHashOperationFactory` /
   `metadata-shortener-ios`.
 
+### Metadata versions
+
+`RuntimeFetchOperationFactory` asks the runtime which metadata versions it has
+(`Metadata_metadata_versions`) and takes the newest one up to `latestSupportedVersion` (16); a runtime
+that can't list versions is read with `state_getMetadata`. `RuntimeTypeRegistryFactory` types v14, v15
+and v16 the same way. v16 adds what v15 can't say: the extrinsic formats the runtime accepts, the
+transaction extensions of each extension version, and view functions.
+
+- A runtime may list an unstable version as `u32::MAX` (Mythos, peaq); the limit leaves it out.
+- With v16 `getSignedExtensions()` returns the extensions of every extension version. The set of a
+  legacy (v4) extrinsic is `getSignedExtensions(forExtensionVersion: 0)`.
+- **The metadata hash is defined over v15** (RFC-78), whatever the app decodes with.
+  `MetadataHashOperationFactory` and `ExtrinsicProofOperationFactory` take the bytes from
+  `MetadataHashSourceProvider`: the stored item while it is v15 or older, otherwise v15 of the stored
+  spec version, fetched once at a pinned block and kept by `RuntimeFilesOperationFactory`
+  (`<chainId>-metadata-hash-source`, the spec version in front of the bytes). Never hand the stored
+  metadata to the shortener directly.
+- Changing what is requested needs `RuntimeLocalVersion.latest` raised: `RuntimeSyncService` refetches
+  every item saved with an older value when the node next reports its runtime version (on connect),
+  and the app keeps decoding with the cached item until the new one is saved.
+
 ## Connections
 
 `ConnectionPool` creates one `ChainConnection` (a `WebSocketEngine`) per enabled chain, sharing it
