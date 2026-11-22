@@ -81,6 +81,24 @@ final class RuntimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol {
 
         return RuntimeTypeRegistryInfo(runtimeMetadata: post14Metadata, typeRegistryCatalog: catalog)
     }
+
+    private func createForPostV14Metadata(
+        _ post14Metadata: PostV14RuntimeMetadataProtocol,
+        versioningData: Data,
+        chain: RuntimeProviderChainProtocol
+    ) throws -> RuntimeTypeRegistryInfo {
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
+
+        let catalog = try TypeRegistryCatalog.createFromSiDefinition(
+            versioningData: versioningData,
+            runtimeMetadata: post14Metadata,
+            customExtensions: signedExtensionFactory.createCoders(for: post14Metadata),
+            customTypeMapper: CustomSiMappers.all,
+            customNameMapper: ScaleInfoCamelCaseMapper()
+        )
+
+        return RuntimeTypeRegistryInfo(runtimeMetadata: post14Metadata, typeRegistryCatalog: catalog)
+    }
 }
 
 extension RuntimeTypeRegistryFactory {
@@ -95,7 +113,9 @@ extension RuntimeTypeRegistryFactory {
             return try createForPostV14MetadataAndDefaultTyping(metadata, chain: chain)
         case let .v15(metadata):
             return try createForPostV14MetadataAndDefaultTyping(metadata, chain: chain)
-        case .v13, .v16:
+        case let .v16(metadata):
+            return try createForPostV14MetadataAndDefaultTyping(metadata, chain: chain)
+        case .v13:
             throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
         }
     }
@@ -119,28 +139,11 @@ extension RuntimeTypeRegistryFactory {
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
         case let .v14(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: chainTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
         case let .v15(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: chainTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
-        case .v16:
-            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
-            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
+        case let .v16(metadata):
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
         }
     }
 
@@ -162,28 +165,11 @@ extension RuntimeTypeRegistryFactory {
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
         case let .v14(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: commonTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+            return try createForPostV14Metadata(metadata, versioningData: commonTypes, chain: chain)
         case let .v15(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: commonTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
-        case .v16:
-            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
-            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
+            return try createForPostV14Metadata(metadata, versioningData: commonTypes, chain: chain)
+        case let .v16(metadata):
+            return try createForPostV14Metadata(metadata, versioningData: commonTypes, chain: chain)
         }
     }
 
@@ -207,28 +193,11 @@ extension RuntimeTypeRegistryFactory {
 
             return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
         case let .v14(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: chainTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
         case let .v15(metadata):
-            let catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: chainTypes,
-                runtimeMetadata: metadata,
-                customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                customTypeMapper: CustomSiMappers.all,
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
-
-            return RuntimeTypeRegistryInfo(runtimeMetadata: metadata, typeRegistryCatalog: catalog)
-        case .v16:
-            // the app requests metadata v15 at most; v16 gets its own typing when the app starts asking for it
-            throw RuntimeTypeRegistryFactoryError.unsupportedRuntimeVersion
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
+        case let .v16(metadata):
+            return try createForPostV14Metadata(metadata, versioningData: chainTypes, chain: chain)
         }
     }
 }
