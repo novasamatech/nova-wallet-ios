@@ -1345,6 +1345,11 @@
 		0CE92A672B2ADBBA009A21E9 /* RuntimeProviderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */; };
 		0CE933862BFF90B4000F3EFE /* RuntimeLocalMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */; };
 		0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */; };
+		1618E66A94F75EAF0FFEE7E2 /* RuntimeMetadataV16MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6665138561C903857A9703FE /* RuntimeMetadataV16MigrationTests.swift */; };
+		16DE589629B6BDA5F16EC58E /* RuntimeMetadataV16CodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF28123DDADB5379CE390B6 /* RuntimeMetadataV16CodingTests.swift */; };
+		71EF97FB145D3C6D997051FE /* RuntimeMetadataV16EquivalenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3D3D8B53837A0D60DC9BB1 /* RuntimeMetadataV16EquivalenceTests.swift */; };
+		748EDE078DA30761B4D7F486 /* RuntimeTypeRegistryFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F2D9ED4F21F980CC729D75 /* RuntimeTypeRegistryFactoryTests.swift */; };
+		7146ADE1970D561BF73F84E3 /* RuntimeMetadataFetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CC6EBCDC5E26816EF84C05 /* RuntimeMetadataFetchTests.swift */; };
 		0CE9338A2C00538D000F3EFE /* RuntimeTypeRegistryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933892C00538D000F3EFE /* RuntimeTypeRegistryFactory.swift */; };
 		0CE9338C2C0096AA000F3EFE /* CloudBackupSyncMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */; };
 		0CE9338E2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9338D2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift */; };
@@ -4430,6 +4435,8 @@
 		8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */; };
 		3790577BA4BA4DD4DE43E4F2 /* DelegationCallWrappingCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA66C885BD3C4C350DE4E8C /* DelegationCallWrappingCharacterizationTests.swift */; };
 		576F2FDA14FD68347EE180C9 /* ExtrinsicOperationFactoryCharacterizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39588824EC05D1ADC481D0C /* ExtrinsicOperationFactoryCharacterizationTests.swift */; };
+		E6C840290DCEE18BC87355FF /* MetadataHashV16Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAC8046FFE62E8C25DAFE32 /* MetadataHashV16Tests.swift */; };
+		4E71D819FFE6B75DDDEBBB8D /* MetadataHashSourceProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EE76B534148C6590A10611 /* MetadataHashSourceProviderTests.swift */; };
 		845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845532CF2684690D00C2645D /* ParachainSlotLease.swift */; };
 		8455AB4528F7F05400974E88 /* ReferendumStatusViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */; };
 		8455AB4A28F80D9300974E88 /* ReferendumTrackType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */; };
@@ -8688,6 +8695,11 @@
 		0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderChain.swift; sourceTree = "<group>"; };
 		0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeLocalMigrator.swift; sourceTree = "<group>"; };
 		0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRuntimeMetadataFetcher.swift; sourceTree = "<group>"; };
+		6665138561C903857A9703FE /* RuntimeMetadataV16MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataV16MigrationTests.swift; sourceTree = "<group>"; };
+		AFF28123DDADB5379CE390B6 /* RuntimeMetadataV16CodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataV16CodingTests.swift; sourceTree = "<group>"; };
+		CB3D3D8B53837A0D60DC9BB1 /* RuntimeMetadataV16EquivalenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataV16EquivalenceTests.swift; sourceTree = "<group>"; };
+		22F2D9ED4F21F980CC729D75 /* RuntimeTypeRegistryFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeTypeRegistryFactoryTests.swift; sourceTree = "<group>"; };
+		10CC6EBCDC5E26816EF84C05 /* RuntimeMetadataFetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataFetchTests.swift; sourceTree = "<group>"; };
 		0CE933892C00538D000F3EFE /* RuntimeTypeRegistryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeTypeRegistryFactory.swift; sourceTree = "<group>"; };
 		0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncMediator.swift; sourceTree = "<group>"; };
 		0CE9338D2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModelType+ExtrinsicLimit.swift"; sourceTree = "<group>"; };
@@ -11451,6 +11463,8 @@
 		8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessingTests.swift; sourceTree = "<group>"; };
 		ACA66C885BD3C4C350DE4E8C /* DelegationCallWrappingCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationCallWrappingCharacterizationTests.swift; sourceTree = "<group>"; };
 		F39588824EC05D1ADC481D0C /* ExtrinsicOperationFactoryCharacterizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicOperationFactoryCharacterizationTests.swift; sourceTree = "<group>"; };
+		2EAC8046FFE62E8C25DAFE32 /* MetadataHashV16Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashV16Tests.swift; sourceTree = "<group>"; };
+		A5EE76B534148C6590A10611 /* MetadataHashSourceProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashSourceProviderTests.swift; sourceTree = "<group>"; };
 		845532CF2684690D00C2645D /* ParachainSlotLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainSlotLease.swift; sourceTree = "<group>"; };
 		8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumStatusViewModelFactory.swift; sourceTree = "<group>"; };
 		8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTrackType.swift; sourceTree = "<group>"; };
@@ -24000,6 +24014,11 @@
 				8469936A26CD1BBE002CC786 /* RuntimePoolTests.swift */,
 				84D9C41026CD361C004AB2AB /* SpecVersionSubscriptionTests.swift */,
 				0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */,
+				6665138561C903857A9703FE /* RuntimeMetadataV16MigrationTests.swift */,
+				AFF28123DDADB5379CE390B6 /* RuntimeMetadataV16CodingTests.swift */,
+				CB3D3D8B53837A0D60DC9BB1 /* RuntimeMetadataV16EquivalenceTests.swift */,
+				22F2D9ED4F21F980CC729D75 /* RuntimeTypeRegistryFactoryTests.swift */,
+				10CC6EBCDC5E26816EF84C05 /* RuntimeMetadataFetchTests.swift */,
 			);
 			path = ChainRegistry;
 			sourceTree = "<group>";
@@ -24582,6 +24601,8 @@
 				8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */,
 				ACA66C885BD3C4C350DE4E8C /* DelegationCallWrappingCharacterizationTests.swift */,
 				F39588824EC05D1ADC481D0C /* ExtrinsicOperationFactoryCharacterizationTests.swift */,
+				2EAC8046FFE62E8C25DAFE32 /* MetadataHashV16Tests.swift */,
+				A5EE76B534148C6590A10611 /* MetadataHashSourceProviderTests.swift */,
 				881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */,
 				5A1F0A012F1000000000E101 /* AnnouncementsRemoteTests.swift */,
 			);
@@ -40623,6 +40644,8 @@
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
 				3790577BA4BA4DD4DE43E4F2 /* DelegationCallWrappingCharacterizationTests.swift in Sources */,
 				576F2FDA14FD68347EE180C9 /* ExtrinsicOperationFactoryCharacterizationTests.swift in Sources */,
+				E6C840290DCEE18BC87355FF /* MetadataHashV16Tests.swift in Sources */,
+				4E71D819FFE6B75DDDEBBB8D /* MetadataHashSourceProviderTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
 				6D0E5530C4E0CC46C2A8C376 /* StorageCodingCharacterizationTests.swift in Sources */,
@@ -40647,6 +40670,11 @@
 				842D1E8124D0BEF400C30A7A /* RTests.swift in Sources */,
 				F47F6403263BD90000FF67E9 /* StubBalanceViewModelFactory.swift in Sources */,
 				0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */,
+				1618E66A94F75EAF0FFEE7E2 /* RuntimeMetadataV16MigrationTests.swift in Sources */,
+				16DE589629B6BDA5F16EC58E /* RuntimeMetadataV16CodingTests.swift in Sources */,
+				71EF97FB145D3C6D997051FE /* RuntimeMetadataV16EquivalenceTests.swift in Sources */,
+				748EDE078DA30761B4D7F486 /* RuntimeTypeRegistryFactoryTests.swift in Sources */,
+				7146ADE1970D561BF73F84E3 /* RuntimeMetadataFetchTests.swift in Sources */,
 				2D19BDEF2E97CAFA00B120FE /* TestJSONRPCEngine.swift in Sources */,
 				84BEE63026CBFDBC00757009 /* ChainRegistryTests.swift in Sources */,
 				84B7C73C289BFA79001A3566 /* StakingRewardPayoutsTests.swift in Sources */,
