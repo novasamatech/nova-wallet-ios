@@ -13,10 +13,19 @@ extension RawRuntimeMetadata: RuntimeContainerSourceProtocol {
 }
 
 protocol RuntimeFetchOperationFactoryProtocol {
+    /// The newest metadata the app supports among the versions the runtime offers
     func createMetadataFetchWrapper(
         for chainId: ChainModel.Id,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RawRuntimeMetadata>
+
+    /// Metadata of exactly the given version; nil when the runtime doesn't provide it
+    func createMetadataFetchWrapper(
+        for chainId: ChainModel.Id,
+        connection: JSONRPCEngine,
+        version: UInt32,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<RawRuntimeMetadata?>
 }
 
 final class RuntimeFetchOperationFactory {
@@ -114,5 +123,35 @@ extension RuntimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol {
         resultWrapper.addDependency(wrapper: versionedMetadataWrapper)
 
         return resultWrapper.insertingHead(operations: versionedMetadataWrapper.allOperations)
+    }
+
+    func createMetadataFetchWrapper(
+        for _: ChainModel.Id,
+        connection: JSONRPCEngine,
+        version: UInt32,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<RawRuntimeMetadata?> {
+        let requestWrapper: CompoundOperationWrapper<Data> = StateCallRequestFactory(
+            rpcTimeout: JSONRPCTimeout.hour
+        ).createStaticCodingWrapper(
+            for: Self.metadataAtVersionCall,
+            paramsClosure: { try version.scaleEncoded() },
+            connection: connection,
+            decoder: StateCallRawDataDecoder(),
+            at: blockHash
+        )
+
+        let mapOperation = ClosureOperation<RawRuntimeMetadata?> {
+            let rawMetadata = RawRuntimeMetadata(
+                content: try requestWrapper.targetOperation.extractNoCancellableResultData(),
+                isOpaque: true
+            )
+
+            return try rawMetadata.readMetadataVersion() != nil ? rawMetadata : nil
+        }
+
+        mapOperation.addDependency(requestWrapper.targetOperation)
+
+        return requestWrapper.insertingTail(operation: mapOperation)
     }
 }
