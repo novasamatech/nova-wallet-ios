@@ -177,9 +177,10 @@ extension ExtrinsicGoldenRuntime {
     }
 }
 
-/// Changes applied to the real Westend metadata v16 fixture. No runtime the app has a fixture for declares
-/// `VerifyMultiSignature`, so the extension is added by hand, typed as pallet-verify-signature of polkadot-sdk
-/// defines it; the formats and the extension sets are replaced to reach the cases real chains don't have yet.
+/// Changes applied to the real Westend metadata v16 fixture. Westend doesn't declare `VerifyMultiSignature`,
+/// so the extension is added by hand with `Signed` as its first variant; the formats and the extension sets
+/// are replaced to reach the cases real chains don't have yet. Polkadot Asset Hub declares the extension
+/// itself, with `Disabled` first: `DAppCreateTransactionV16Tests` cover it on the real metadata.
 struct DAppTxPayloadV16Customization {
     static let verifySignatureTypeId: SiLookupId = 1_000_000
 
@@ -296,7 +297,7 @@ extension ExtrinsicGoldenRuntime {
     static let westendV16TransactionVersion: UInt32 = 27
 
     /// Westend as metadata v16: the fixture substrate-sdk-ios tests its v16 decoding with, typed the way
-    /// `RuntimeTypeRegistryFactory` types v14/v15 metadata (the app itself doesn't request v16 yet).
+    /// `RuntimeTypeRegistryFactory` types metadata of a chain without its own types.
     static func westendV16(
         customization: DAppTxPayloadV16Customization? = nil
     ) throws -> ExtrinsicGoldenRuntime {
