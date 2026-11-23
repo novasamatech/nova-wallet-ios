@@ -5,6 +5,7 @@ import SubstrateSdk
 protocol EvmTransactionBuilderProtocol: AnyObject {
     func toAddress(_ address: AccountAddress) -> EvmTransactionBuilderProtocol
     func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol
+    func usingEip1559(maxFeePerGas: BigUInt, maxPriorityFeePerGas: BigUInt) -> EvmTransactionBuilderProtocol
     func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilderProtocol
     func usingNonce(_ nonce: BigUInt) -> EvmTransactionBuilderProtocol
     func sendingValue(_ value: BigUInt) -> EvmTransactionBuilderProtocol
@@ -23,6 +24,7 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
     let chainId: String
 
     private var transaction: EthereumTransaction
+    private var eip1559Fees: EvmEip1559Fees?
     private var signature: EthereumSignature?
 
     private var serializer = EthereumSerializationFactory()
@@ -39,6 +41,11 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
 
     func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(gasPrice: gasPrice.toHexString())
+        return self
+    }
+
+    func usingEip1559(maxFeePerGas: BigUInt, maxPriorityFeePerGas: BigUInt) -> EvmTransactionBuilderProtocol {
+        eip1559Fees = EvmEip1559Fees(maxFeePerGas: maxFeePerGas, maxPriorityFeePerGas: maxPriorityFeePerGas)
         return self
     }
 
@@ -70,7 +77,8 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
         let signingData = try serializer.serialize(
             transaction: transaction,
             chainId: chainId,
-            signature: nil
+            signature: nil,
+            eip1559Fees: eip1559Fees
         )
 
         let rawSignature = try closure(signingData)
@@ -88,7 +96,8 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
         try serializer.serialize(
             transaction: transaction,
             chainId: chainId,
-            signature: signature
+            signature: signature,
+            eip1559Fees: eip1559Fees
         )
     }
 }
