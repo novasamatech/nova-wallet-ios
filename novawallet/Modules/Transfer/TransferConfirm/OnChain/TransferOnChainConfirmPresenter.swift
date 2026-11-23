@@ -96,7 +96,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
             let assetInfo = feeAsset.asset.displayInfo
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.value.amount,
+                fee.value.displayAmount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
@@ -250,7 +250,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.interactor.submit(
                 amount: amountInPlank,
                 recepient: strongSelf.recepientAccountAddress,
-                lastFee: strongSelf.fee?.value.amount
+                lastFee: strongSelf.fee?.value.displayAmount
             )
         }
     }

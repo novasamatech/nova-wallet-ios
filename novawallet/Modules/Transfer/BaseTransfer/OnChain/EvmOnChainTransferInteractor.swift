@@ -171,7 +171,7 @@ extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
             lastFeeModel = model
 
             let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
-            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
+            let feeValue = ExtrinsicFee(amount: model.reserve, displayAmount: model.fee, payer: nil, weight: .zero)
             let feeModel = FeeOutputModel(value: feeValue, validationProvider: validationProvider)
             presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):

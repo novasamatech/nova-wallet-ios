@@ -96,12 +96,14 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
                 guard let self else { return }
 
                 switch result {
+                case let .success(fee) where giftAmountWithFee <= fee.reserve:
+                    completion(.failure(GiftClaimError.feeExceedsGift))
                 case let .success(fee):
                     let description = helper.createFinalDescription(
                         chainAsset: chainAsset,
                         claimableGift: claimableGift,
                         onChainAmountWithFee: baseData.onChainAmountWithFee,
-                        feeAmount: fee.fee,
+                        feeAmount: fee.reserve,
                         claimingAccountId: baseData.claimingAccountId
                     )
 

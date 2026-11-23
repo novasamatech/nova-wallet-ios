@@ -140,7 +140,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
             let assetInfo = feeAsset.asset.displayInfo
 
             let feeDecimal = Decimal.fromSubstrateAmount(
-                fee.value.amount,
+                fee.value.displayAmount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 

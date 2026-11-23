@@ -218,8 +218,7 @@ private extension EvmTransactionService {
             let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
 
             return try builder
-                .usingGasLimit(price.gasLimit)
-                .usingGasPrice(price.gasPrice)
+                .usingPrice(price)
                 .usingNonce(nonce)
                 .signing(using: { data in
                     try signer.sign(data, context: .evmTransaction).rawData()
@@ -259,8 +258,8 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
 
                 return EvmFeeModel(
                     gasLimit: gasLimit,
-                    defaultGasPrice: defaultGasPrice,
-                    maxPriorityGasPrice: maxPriorityGasPrice
+                    defaultGasPrice: maxPriorityGasPrice ?? defaultGasPrice,
+                    eip1559: nil
                 )
             }
 

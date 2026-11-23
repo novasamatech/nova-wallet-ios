@@ -101,3 +101,19 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
         )
     }
 }
+
+extension EvmTransactionBuilderProtocol {
+    func usingPrice(_ price: EvmTransactionPrice) -> EvmTransactionBuilderProtocol {
+        let builder = usingGasLimit(price.gasLimit)
+
+        switch price.pricing {
+        case let .legacy(gasPrice):
+            return builder.usingGasPrice(gasPrice)
+        case let .eip1559(fees):
+            return builder.usingEip1559(
+                maxFeePerGas: fees.maxFeePerGas,
+                maxPriorityFeePerGas: fees.maxPriorityFeePerGas
+            )
+        }
+    }
+}

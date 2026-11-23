@@ -172,7 +172,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
                 self?.lastFee = model
                 let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
                 let feeModel = FeeOutputModel(
-                    value: ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero),
+                    value: ExtrinsicFee(amount: model.reserve, displayAmount: model.fee, payer: nil, weight: .zero),
                     validationProvider: validationProvider
                 )
 
@@ -295,7 +295,7 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
             return
         }
 
-        let txPrice = EvmTransactionPrice(gasLimit: feeModel.gasLimit, gasPrice: feeModel.gasPrice)
+        let txPrice = feeModel.transactionPrice
 
         if shouldSendTransaction {
             confirmSend(for: transaction, price: txPrice, service: ethereumService, signer: signer)

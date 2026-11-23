@@ -108,7 +108,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
             extrinsicService.submit(
                 extrinsicClosure,
-                price: EvmTransactionPrice(gasLimit: lastFeeModel.gasLimit, gasPrice: lastFeeModel.gasPrice),
+                price: lastFeeModel.transactionPrice,
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in

@@ -256,7 +256,7 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
-        let totalFee = try? feeDescription?.createAccumulatedFee().amount
+        let totalFee = try? feeDescription?.createAccumulatedFee().displayAmount
         let claimFee = feeDescription?.claimFee.amount ?? 0
 
         let amountWithClaimFee = amount.map { $0 + claimFee }

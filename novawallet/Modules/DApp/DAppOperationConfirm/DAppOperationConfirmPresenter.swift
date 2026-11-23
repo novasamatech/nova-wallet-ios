@@ -68,12 +68,12 @@ final class DAppOperationConfirmPresenter {
 
         let assetInfo = confirmationModel?.feeAsset?.assetDisplayInfo ?? chain.utilityAssetBalanceInfo
 
-        guard feeModel.value.amount > 0, let assetInfo else {
+        guard feeModel.value.displayAmount > 0, let assetInfo else {
             view?.didReceive(feeViewModel: .empty)
             return
         }
 
-        let amountDecimal = feeModel.value.amount.decimal(assetInfo: assetInfo)
+        let amountDecimal = feeModel.value.displayAmount.decimal(assetInfo: assetInfo)
 
         let viewModel = balanceViewModelFacade.balanceFromPrice(
             targetAssetInfo: assetInfo,
