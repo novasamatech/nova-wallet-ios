@@ -225,7 +225,8 @@ enum ChainModelGenerator {
         isEthereumBased: Bool = false,
         hasProxy: Bool = true,
         hasMultisig: Bool = true,
-        enabled: Bool = true
+        enabled: Bool = true,
+        additional: JSON? = nil
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
@@ -291,7 +292,7 @@ enum ChainModelGenerator {
             externalApis: externalApis,
             explorers: explorers,
             order: 0,
-            additional: nil,
+            additional: additional,
             syncMode: enabled ? .full : .disabled,
             source: .remote,
             connectionMode: .autoBalanced

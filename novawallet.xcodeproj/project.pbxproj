@@ -4415,6 +4415,7 @@
 		8454C26A2632B8CE00657DAD /* BalancesPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2692632B8CE00657DAD /* BalancesPallet+Events.swift */; };
 		8454C26F2632BBAA00657DAD /* ExtrinsicProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */; };
 		8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */; };
+		0FC4DF6D784C279A7063919F /* EvmFeeModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */; };
 		845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845532CF2684690D00C2645D /* ParachainSlotLease.swift */; };
 		8455AB4528F7F05400974E88 /* ReferendumStatusViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */; };
 		8455AB4A28F80D9300974E88 /* ReferendumTrackType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */; };
@@ -11381,6 +11382,7 @@
 		8454C2692632B8CE00657DAD /* BalancesPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+Events.swift"; sourceTree = "<group>"; };
 		8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessing.swift; sourceTree = "<group>"; };
 		8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessingTests.swift; sourceTree = "<group>"; };
+		D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmFeeModelTests.swift; sourceTree = "<group>"; };
 		845532CF2684690D00C2645D /* ParachainSlotLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainSlotLease.swift; sourceTree = "<group>"; };
 		8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumStatusViewModelFactory.swift; sourceTree = "<group>"; };
 		8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTrackType.swift; sourceTree = "<group>"; };
@@ -31151,8 +31153,17 @@
 		AC00020000000000000000FC /* ExtrinsicService */ = {
 			isa = PBXGroup;
 			children = (
+				333785B3195729DD5B42602B /* Evm */,
 			);
 			path = ExtrinsicService;
+			sourceTree = "<group>";
+		};
+		333785B3195729DD5B42602B /* Evm */ = {
+			isa = PBXGroup;
+			children = (
+				D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */,
+			);
+			path = Evm;
 			sourceTree = "<group>";
 		};
 		AC6B93411E3444BFB71691BE /* FeeValidation */ = {
@@ -40466,6 +40477,7 @@
 				84B7C735289BFA79001A3566 /* StakingRedeemTests.swift in Sources */,
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
+				0FC4DF6D784C279A7063919F /* EvmFeeModelTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
