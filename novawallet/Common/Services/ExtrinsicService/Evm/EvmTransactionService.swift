@@ -56,7 +56,7 @@ protocol EvmTransactionServiceProtocol {
 final class EvmTransactionService {
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
-    let maxPriorityGasPriceProvider: EvmGasPriceProviderProtocol
+    let maxPriorityGasPriceProvider: EvmEip1559PriceProviderProtocol?
     let defaultGasPriceProvider: EvmGasPriceProviderProtocol
     let gasLimitProvider: EvmGasLimitProviderProtocol
     let nonceProvider: EvmNonceProviderProtocol
@@ -68,7 +68,7 @@ final class EvmTransactionService {
     init(
         accountId: AccountId,
         operationFactory: EthereumOperationFactoryProtocol,
-        maxPriorityGasPriceProvider: EvmGasPriceProviderProtocol,
+        maxPriorityGasPriceProvider: EvmEip1559PriceProviderProtocol?,
         defaultGasPriceProvider: EvmGasPriceProviderProtocol,
         gasLimitProvider: EvmGasLimitProviderProtocol,
         nonceProvider: EvmNonceProviderProtocol,
@@ -78,7 +78,7 @@ final class EvmTransactionService {
     ) {
         self.accountId = accountId
         self.operationFactory = operationFactory
-        self.maxPriorityGasPriceProvider = maxPriorityGasPriceProvider
+        self.maxPriorityGasPriceProvider = chain.forcesLegacyEvmTransactions ? nil : maxPriorityGasPriceProvider
         self.defaultGasPriceProvider = defaultGasPriceProvider
         self.gasLimitProvider = gasLimitProvider
         self.nonceProvider = nonceProvider
@@ -91,7 +91,7 @@ final class EvmTransactionService {
     init(
         accountId: AccountId,
         operationFactory: EthereumOperationFactoryProtocol,
-        maxPriorityGasPriceProvider: EvmGasPriceProviderProtocol,
+        maxPriorityGasPriceProvider: EvmEip1559PriceProviderProtocol?,
         defaultGasPriceProvider: EvmGasPriceProviderProtocol,
         gasLimitProvider: EvmGasLimitProviderProtocol,
         nonceProvider: EvmNonceProviderProtocol,
@@ -249,23 +249,26 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
 
             let gasEstimationWrapper = gasLimitProvider.getGasLimitWrapper(for: transaction)
             let defaultGasPriceWrapper = defaultGasPriceProvider.getGasPriceWrapper()
-            let maxPriorityPriceWrapper = maxPriorityGasPriceProvider.getGasPriceWrapper()
+            let eip1559PriceWrapper = maxPriorityGasPriceProvider?.getEip1559PriceWrapper()
 
             let mapOperation = ClosureOperation<EvmFeeModel> {
                 let gasLimit = try gasEstimationWrapper.targetOperation.extractNoCancellableResultData()
                 let defaultGasPrice = try defaultGasPriceWrapper.targetOperation.extractNoCancellableResultData()
-                let maxPriorityGasPrice = try? maxPriorityPriceWrapper.targetOperation.extractNoCancellableResultData()
+                let eip1559 = try? eip1559PriceWrapper?.targetOperation.extractNoCancellableResultData()
 
                 return EvmFeeModel(
                     gasLimit: gasLimit,
-                    defaultGasPrice: maxPriorityGasPrice ?? defaultGasPrice,
-                    eip1559: nil
+                    defaultGasPrice: defaultGasPrice,
+                    eip1559: eip1559
                 )
             }
 
             mapOperation.addDependency(gasEstimationWrapper.targetOperation)
             mapOperation.addDependency(defaultGasPriceWrapper.targetOperation)
-            mapOperation.addDependency(maxPriorityPriceWrapper.targetOperation)
+
+            if let eip1559PriceWrapper {
+                mapOperation.addDependency(eip1559PriceWrapper.targetOperation)
+            }
 
             mapOperation.completionBlock = {
                 queue.async {
@@ -279,7 +282,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             }
 
             let operations = gasEstimationWrapper.allOperations + defaultGasPriceWrapper.allOperations +
-                maxPriorityPriceWrapper.allOperations + [mapOperation]
+                (eip1559PriceWrapper?.allOperations ?? []) + [mapOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {

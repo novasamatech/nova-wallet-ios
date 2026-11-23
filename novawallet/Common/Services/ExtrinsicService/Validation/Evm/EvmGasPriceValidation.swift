@@ -32,7 +32,7 @@ extension EvmGasPriceValidationProvider: ExtrinsicValidationProviderProtocol {
         onRefresh: @escaping () -> Void,
         locale: Locale
     ) -> DataValidating? {
-        guard let maxPriorityPrice = model.maxPriorityGasPrice else {
+        guard model.eip1559 == nil, let maxPriorityPrice = model.maxPriorityGasPrice else {
             return nil
         }
 
