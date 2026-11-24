@@ -105,7 +105,8 @@ private extension GiftSubmissionFactory {
                     ) = error
                 else { throw error }
 
-                let transferMayStillLand = underlyingError is FinalExtrinsicStatusError
+                let transferMayStillLand = underlyingError is FinalExtrinsicStatusError ||
+                    (underlyingError as? EvmTransactionMonitorError)?.mayStillLand == true
 
                 guard !transferMayStillLand else {
                     return .createWithResult(())

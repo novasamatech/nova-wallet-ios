@@ -9,19 +9,25 @@ final class EvmGiftSubmissionFactory {
     let chain: ChainModel
     let transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
+    let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
+    let operationQueue: OperationQueue
 
     init(
         submissionFactory: GiftSubmissionFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         chain: ChainModel,
         transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol,
-        transferCommandFactory: EvmTransferCommandFactory
+        transferCommandFactory: EvmTransferCommandFactory,
+        balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.submissionFactory = submissionFactory
         self.signingWrapper = signingWrapper
         self.chain = chain
         self.transactionMonitorFactory = transactionMonitorFactory
         self.transferCommandFactory = transferCommandFactory
+        self.balanceQueryFactory = balanceQueryFactory
+        self.operationQueue = operationQueue
     }
 
     func createSubmitWrapper(
@@ -57,17 +63,41 @@ final class EvmGiftSubmissionFactory {
             signer: signingWrapper
         )
 
-        let mapOperation = ClosureOperation<SubmittedGiftTransactionMetadata> {
+        let resultWrapper = createSubmissionResultWrapper(
+            dependingOn: submitAndMonitorWrapper,
+            giftWrapper: giftWrapper,
+            callCodingPath: { callCodingPath }
+        )
+
+        resultWrapper.addDependency(wrapper: submitAndMonitorWrapper)
+
+        return resultWrapper.insertingHead(operations: submitAndMonitorWrapper.allOperations)
+    }
+}
+
+// MARK: - Private
+
+private extension EvmGiftSubmissionFactory {
+    func createSubmissionResultWrapper(
+        dependingOn submitAndMonitorWrapper: CompoundOperationWrapper<EvmTransactionMonitorSubmission>,
+        giftWrapper: CompoundOperationWrapper<GiftModel>,
+        callCodingPath: @escaping () -> CallCodingPath?
+    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
+        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
             let result = submitAndMonitorWrapper.targetOperation.result
             let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
 
             switch result {
             case let .success(submission):
                 if case let .success(successSubmission) = submission.status {
-                    return SubmittedGiftTransactionMetadata(
-                        txHash: successSubmission.transactionHash,
-                        senderResolution: nil,
-                        callCodingPath: callCodingPath
+                    return .createWithResult(
+                        SubmittedGiftTransactionMetadata(
+                            txHash: successSubmission.transactionHash,
+                            senderResolution: nil,
+                            callCodingPath: callCodingPath()
+                        )
                     )
                 } else {
                     throw GiftTransferConfirmError.giftSubmissionFailed(
@@ -75,6 +105,8 @@ final class EvmGiftSubmissionFactory {
                         underlyingError: nil
                     )
                 }
+            case let .failure(EvmTransactionMonitorError.dropped(transactionHash)):
+                return createDroppedFundingWrapper(for: gift, transactionHash: transactionHash)
             case let .failure(error):
                 throw GiftTransferConfirmError.giftSubmissionFailed(
                     giftAccountId: gift.giftAccountId,
@@ -87,13 +119,51 @@ final class EvmGiftSubmissionFactory {
                 )
             }
         }
+    }
 
-        mapOperation.addDependency(submitAndMonitorWrapper.targetOperation)
+    func createDroppedFundingWrapper(
+        for gift: GiftModel,
+        transactionHash: String
+    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
+        let balanceWrapper: CompoundOperationWrapper<AssetBalance>
 
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: submitAndMonitorWrapper.allOperations
-        )
+        do {
+            let chainAsset = try chain.chainAssetOrError(for: gift.chainAssetId.assetId)
+            balanceWrapper = balanceQueryFactory.queryBalance(for: gift.giftAccountId, chainAsset: chainAsset)
+        } catch {
+            balanceWrapper = .createWithError(error)
+        }
+
+        let resultOperation = ClosureOperation<SubmittedGiftTransactionMetadata> {
+            let balance: AssetBalance
+
+            do {
+                balance = try balanceWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                throw GiftTransferConfirmError.giftSubmissionFailed(
+                    giftAccountId: gift.giftAccountId,
+                    underlyingError: EvmTransactionMonitorError.stillPending(transactionHash: transactionHash)
+                )
+            }
+
+            // A landed funding keeps the gift even if its hash was replaced: the secret must survive.
+            guard balance.transferable > gift.amount / 2 else {
+                throw GiftTransferConfirmError.giftSubmissionFailed(
+                    giftAccountId: gift.giftAccountId,
+                    underlyingError: EvmTransactionMonitorError.dropped(transactionHash: transactionHash)
+                )
+            }
+
+            return SubmittedGiftTransactionMetadata(
+                txHash: transactionHash,
+                senderResolution: nil,
+                callCodingPath: nil
+            )
+        }
+
+        resultOperation.addDependency(balanceWrapper.targetOperation)
+
+        return balanceWrapper.insertingTail(operation: resultOperation)
     }
 }
 

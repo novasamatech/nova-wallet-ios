@@ -144,6 +144,12 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
                 message: localizedStrings.commonNotEnoughFeeMessage(),
                 actionTitle: localizedStrings.commonGotIt()
             )
+        case let .giftClaimFailed(_, monitorError as EvmTransactionMonitorError) where monitorError.mayStillLand:
+            wireframe.present(
+                error: monitorError,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
         default:
             presentRetryableError()
         }

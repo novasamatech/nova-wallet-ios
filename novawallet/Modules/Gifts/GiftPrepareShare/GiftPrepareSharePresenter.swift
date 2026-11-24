@@ -169,6 +169,12 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
                     message: localizedStrings.giftErrorAlreadyClaimedMessage(),
                     actionTitle: localizedStrings.commonGotIt()
                 )
+            case let .giftClaimFailed(_, monitorError as EvmTransactionMonitorError) where monitorError.mayStillLand:
+                wireframe.present(
+                    error: monitorError,
+                    from: view,
+                    locale: localizationManager.selectedLocale
+                )
             default:
                 if flowStyle == .share {
                     presentReclaimRetryable()
