@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "你的代币";
 "tabbar.more.title" = "更多";
 "tabbar.swaps.title" = "兑换";
+"common.transaction.still.pending.message" = "您的交易仍在等待网络确认。确认后，资金将到账。";
+"common.transaction.taking.longer.title" = "耗时比平时更长";
+"gift.create.pending.message" = "您的礼物交易仍在等待网络确认。确认后，礼物将显示在“礼物”中。";

@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "Tokenlarınız";
 "tabbar.more.title" = "Daha fazla";
 "tabbar.swaps.title" = "Takaslar";
+"common.transaction.still.pending.message" = "İşleminiz hâlâ ağ tarafından onaylanmayı bekliyor. Varlıklar, işlem onaylandıktan sonra hesabınıza ulaşacaktır.";
+"common.transaction.taking.longer.title" = "Normalden uzun sürüyor";
+"gift.create.pending.message" = "Hediye işleminiz hâlâ ağ tarafından onaylanmayı bekliyor. Hediye, onaylandıktan sonra Hediyeler bölümünde görünecektir.";

@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "I tuoi token";
 "tabbar.more.title" = "Altro";
 "tabbar.swaps.title" = "Scambi";
+"common.transaction.still.pending.message" = "La tua transazione è ancora in attesa sulla rete. I fondi arriveranno una volta confermata.";
+"common.transaction.taking.longer.title" = "Ci sta mettendo più del solito";
+"gift.create.pending.message" = "La tua transazione regalo è ancora in attesa sulla rete. Il regalo apparirà nella sezione Regali una volta confermata.";
