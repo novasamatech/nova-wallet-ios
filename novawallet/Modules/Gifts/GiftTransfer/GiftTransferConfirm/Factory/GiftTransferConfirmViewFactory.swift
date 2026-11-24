@@ -155,6 +155,7 @@ private extension GiftTransferConfirmViewFactory {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     static func createEvmTransferConfirmInteractor(
         for chainAsset: ChainAsset,
         wallet: MetaAccountModel,
@@ -197,7 +198,11 @@ private extension GiftTransferConfirmViewFactory {
 
         let transactionMonitorFactory = TransactionSubmitMonitorFactory(
             submissionService: transactionService,
-            evmOperationFactory: operationFactory,
+            queryOperationFactory: EvmWebSocketOperationFactory(
+                connection: chainRegistry.getOneShotConnection(for: chain.chainId) ?? connection,
+                timeout: JSONRPCTimeout.withNodeSwitch
+            ),
+            timing: EvmTransactionMonitorTiming(chain: chain),
             operationQueue: operationQueue
         )
 

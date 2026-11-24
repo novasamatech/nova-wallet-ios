@@ -1,6 +1,15 @@
 import Foundation
-import BigInt
 
 enum EvmTransactionMonitorError: Error {
-    case timeout(blocksWaited: BigUInt)
+    case dropped(transactionHash: String)
+    case stillPending(transactionHash: String)
+
+    var mayStillLand: Bool {
+        switch self {
+        case .dropped:
+            false
+        case .stillPending:
+            true
+        }
+    }
 }

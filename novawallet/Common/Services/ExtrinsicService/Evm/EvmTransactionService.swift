@@ -3,11 +3,6 @@ import BigInt
 import SubstrateSdk
 import Operation_iOS
 
-struct EvmSubscriptionStatus {
-    let lastBlockNumber: BigUInt
-    let transactionHash: String
-}
-
 struct EvmSubmittedTransaction {
     let transactionHash: String
     let sender: AccountId
@@ -41,8 +36,6 @@ typealias EvmSignTransactionResult = Result<Data, Error>
 typealias EvmTransactionSubmitClosure = (EvmSubmitTransactionResult) -> Void
 typealias EvmTransactionSignClosure = (EvmSignTransactionResult) -> Void
 typealias EvmTransactionBuilderClosure = (EvmTransactionBuilderProtocol) throws -> EvmTransactionBuilderProtocol
-typealias EvmSubscriptionIdClosure = (UInt16) -> Bool
-typealias EvmSubscriptionStatusClosure = (Result<EvmSubscriptionStatus, Error>) -> Void
 
 protocol EvmTransactionServiceProtocol {
     func estimateFee(
@@ -58,17 +51,6 @@ protocol EvmTransactionServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmTransactionSubmitClosure
     )
-
-    func submitAndWatch(
-        _ closure: @escaping EvmTransactionBuilderClosure,
-        price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
-        subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
-        notificationClosure: @escaping EvmSubscriptionStatusClosure
-    )
-
-    func cancelTransactionWatch(for subscriptionId: UInt16)
 
     func createSubmissionWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
@@ -148,93 +130,6 @@ final class EvmTransactionService {
 // MARK: - Private
 
 private extension EvmTransactionService {
-    func createSubmitAndSubscribeWrapper(
-        _ closure: @escaping EvmTransactionBuilderClosure,
-        price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol,
-        subscriptionQueue: DispatchQueue,
-        subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
-        notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ) -> CompoundOperationWrapper<Void> {
-        do {
-            let transactionWrapper = try createSignedTransactionWrapper(
-                closure,
-                price: price,
-                signer: signer
-            )
-
-            let sendOperation = operationFactory.createSendTransactionOperation {
-                try transactionWrapper.targetOperation.extractNoCancellableResultData().rawData
-            }
-
-            let subscriptionOperation = createSubscriptionOperation(
-                transactionHash: { try sendOperation.extractNoCancellableResultData() },
-                runningIn: subscriptionQueue,
-                subscriptionIdClosure: subscriptionIdClosure,
-                notificationClosure: notificationClosure
-            )
-
-            sendOperation.addDependency(transactionWrapper.targetOperation)
-            subscriptionOperation.addDependency(sendOperation)
-
-            let wrapper = CompoundOperationWrapper(
-                targetOperation: subscriptionOperation,
-                dependencies: transactionWrapper.allOperations + [sendOperation]
-            )
-
-            return wrapper
-        } catch {
-            return .createWithError(error)
-        }
-    }
-
-    func createSubscriptionOperation(
-        transactionHash: @escaping () throws -> (String),
-        runningIn queue: DispatchQueue,
-        subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
-        notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ) -> BaseOperation<Void> {
-        ClosureOperation {
-            let transactionHash = try transactionHash()
-
-            let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void
-            updateClosure = { [weak self, transactionHash] update in
-                guard let chainId = self?.evmChainId else { return }
-
-                let blockNumber = update.params.result.blockNumber
-
-                self?.logger.debug("Did receive new evm block: \(blockNumber) \(chainId)")
-
-                let status = EvmSubscriptionStatus(
-                    lastBlockNumber: blockNumber,
-                    transactionHash: transactionHash
-                )
-
-                notificationClosure(.success(status))
-            }
-
-            let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
-                queue.async { notificationClosure(.failure(error)) }
-                self?.logger.error("Did receive subscription error: \(error) \(unsubscribed)")
-            }
-
-            let subscriptionId = try self.operationFactory.connection.subscribe(
-                EvmSubscriptionMessage.subscribeMethod,
-                params: EvmSubscriptionMessage.NewHeadsParams(),
-                unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
-                updateClosure: updateClosure,
-                failureClosure: failureClosure
-            )
-
-            guard subscriptionIdClosure(subscriptionId) else {
-                self.operationFactory.connection.cancelForIdentifier(subscriptionId)
-                return
-            }
-
-            self.logger.debug("Did create evm native balance subscription: \(self.evmChainId)")
-        }
-    }
-
     func createSignedTransactionWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
@@ -365,30 +260,6 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 completionClosure(.failure(error))
             }
         }
-    }
-
-    func submitAndWatch(
-        _ closure: @escaping EvmTransactionBuilderClosure,
-        price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
-        subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
-        notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ) {
-        let wrapper = createSubmitAndSubscribeWrapper(
-            closure,
-            price: price,
-            signer: signer,
-            subscriptionQueue: queue,
-            subscriptionIdClosure: subscriptionIdClosure,
-            notificationClosure: notificationClosure
-        )
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
-    func cancelTransactionWatch(for subscriptionId: UInt16) {
-        operationFactory.connection.cancelForIdentifier(subscriptionId)
     }
 
     func createSubmissionWrapper(
