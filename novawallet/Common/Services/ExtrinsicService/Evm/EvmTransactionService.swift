@@ -8,6 +8,32 @@ struct EvmSubscriptionStatus {
     let transactionHash: String
 }
 
+struct EvmSubmittedTransaction {
+    let transactionHash: String
+    let sender: AccountId
+    let nonce: BigUInt
+}
+
+private struct EvmSignedTransaction {
+    let rawData: Data
+    let nonce: BigUInt
+
+    func resolveHash(from sendResult: Result<String, Error>?, logger: LoggerProtocol) throws -> String {
+        switch sendResult {
+        case let .success(transactionHash):
+            return transactionHash
+        case let .failure(error as JSONRPCError) where error.isDefinitiveEvmSendRejection:
+            throw error
+        case let .failure(error):
+            logger.warning("Evm send outcome is uncertain, watching local hash: \(error)")
+        case .none:
+            logger.warning("Evm send has no result, watching local hash")
+        }
+
+        return try rawData.keccak256().toHex(includePrefix: true)
+    }
+}
+
 typealias EvmFeeTransactionResult = Result<EvmFeeModel, Error>
 typealias EvmEstimateFeeClosure = (EvmFeeTransactionResult) -> Void
 typealias EvmSubmitTransactionResult = Result<String, Error>
@@ -43,6 +69,12 @@ protocol EvmTransactionServiceProtocol {
     )
 
     func cancelTransactionWatch(for subscriptionId: UInt16)
+
+    func createSubmissionWrapper(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        price: EvmTransactionPrice,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<EvmSubmittedTransaction>
 
     func sign(
         _ closure: @escaping EvmTransactionBuilderClosure,
@@ -132,7 +164,7 @@ private extension EvmTransactionService {
             )
 
             let sendOperation = operationFactory.createSendTransactionOperation {
-                try transactionWrapper.targetOperation.extractNoCancellableResultData()
+                try transactionWrapper.targetOperation.extractNoCancellableResultData().rawData
             }
 
             let subscriptionOperation = createSubscriptionOperation(
@@ -207,23 +239,25 @@ private extension EvmTransactionService {
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
         signer: SigningWrapperProtocol
-    ) throws -> CompoundOperationWrapper<Data> {
+    ) throws -> CompoundOperationWrapper<EvmSignedTransaction> {
         let address = try accountId.toAddress(using: chainFormat)
         let initBuilder = EvmTransactionBuilder(address: address, chainId: evmChainId)
         let builder = try closure(initBuilder)
 
         let nonceWrapper = nonceProvider.getNonceWrapper(for: accountId, block: .pending)
 
-        let buildOperation = ClosureOperation<Data> {
+        let buildOperation = ClosureOperation<EvmSignedTransaction> {
             let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try builder
+            let rawData = try builder
                 .usingPrice(price)
                 .usingNonce(nonce)
                 .signing(using: { data in
                     try signer.sign(data, context: .evmTransaction).rawData()
                 })
                 .build()
+
+            return EvmSignedTransaction(rawData: rawData, nonce: nonce)
         }
 
         buildOperation.addDependency(nonceWrapper.targetOperation)
@@ -307,7 +341,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             )
 
             let sendOperation = operationFactory.createSendTransactionOperation {
-                try transactionWrapper.targetOperation.extractNoCancellableResultData()
+                try transactionWrapper.targetOperation.extractNoCancellableResultData().rawData
             }
 
             sendOperation.addDependency(transactionWrapper.targetOperation)
@@ -357,6 +391,50 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
         operationFactory.connection.cancelForIdentifier(subscriptionId)
     }
 
+    func createSubmissionWrapper(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        price: EvmTransactionPrice,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<EvmSubmittedTransaction> {
+        do {
+            let transactionWrapper = try createSignedTransactionWrapper(
+                closure,
+                price: price,
+                signer: signer
+            )
+
+            let sendOperation = operationFactory.createSendTransactionOperation {
+                try transactionWrapper.targetOperation.extractNoCancellableResultData().rawData
+            }
+
+            sendOperation.addDependency(transactionWrapper.targetOperation)
+
+            let mapOperation = ClosureOperation<EvmSubmittedTransaction> { [accountId, logger] in
+                let signedTransaction = try transactionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let transactionHash = try signedTransaction.resolveHash(
+                    from: sendOperation.result,
+                    logger: logger
+                )
+
+                return EvmSubmittedTransaction(
+                    transactionHash: transactionHash,
+                    sender: accountId,
+                    nonce: signedTransaction.nonce
+                )
+            }
+
+            mapOperation.addDependency(sendOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: transactionWrapper.allOperations + [sendOperation]
+            )
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
     func sign(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
@@ -374,7 +452,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             transactionWrapper.targetOperation.completionBlock = {
                 queue.async {
                     do {
-                        let txData = try transactionWrapper.targetOperation.extractNoCancellableResultData()
+                        let txData = try transactionWrapper.targetOperation.extractNoCancellableResultData().rawData
                         completionClosure(.success(txData))
                     } catch {
                         completionClosure(.failure(error))
