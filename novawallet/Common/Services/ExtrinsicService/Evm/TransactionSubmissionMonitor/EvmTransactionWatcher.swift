@@ -1,10 +1,12 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 final class EvmTransactionWatcher {
     typealias Completion = (Result<EvmTransactionMonitorSubmission, Error>) -> Void
 
     let queryOperationFactory: EthereumOperationFactoryProtocol
+    let headsConnection: JSONRPCEngine?
     let timing: EvmTransactionMonitorTiming
     let processingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -18,15 +20,19 @@ final class EvmTransactionWatcher {
     private var state: EvmTransactionMonitorState?
     private var completion: Completion?
     private var isFinished = false
+    private var headsSubscriptionId: UInt16?
+    private var lastCheckStartedAt: Date?
 
     init(
         queryOperationFactory: EthereumOperationFactoryProtocol,
+        headsConnection: JSONRPCEngine?,
         timing: EvmTransactionMonitorTiming,
         processingQueue: DispatchQueue,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.queryOperationFactory = queryOperationFactory
+        self.headsConnection = headsConnection
         self.timing = timing
         self.processingQueue = processingQueue
         self.operationQueue = operationQueue
@@ -46,6 +52,8 @@ extension EvmTransactionWatcher {
 
         deadlineScheduler.notifyAfter(timing.waitBudget)
         pollScheduler.notifyAfter(timing.pollInterval)
+
+        subscribeHeads()
     }
 
     func stop() {
@@ -61,10 +69,51 @@ extension EvmTransactionWatcher {
 private extension EvmTransactionWatcher {
     enum Trigger: String {
         case timer
+        case head
+    }
+
+    func subscribeHeads() {
+        guard let headsConnection else { return }
+
+        typealias HeadsUpdate = JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>
+
+        let updateClosure: (HeadsUpdate) -> Void = { [weak self] _ in
+            self?.processingQueue.async { [weak self] in
+                self?.handleHead()
+            }
+        }
+
+        let failureClosure: (Error, Bool) -> Void = { [weak self] error, _ in
+            self?.logger.warning("EVM monitor: heads subscription failed \(error)")
+        }
+
+        do {
+            headsSubscriptionId = try headsConnection.subscribe(
+                EvmSubscriptionMessage.subscribeMethod,
+                params: EvmSubscriptionMessage.NewHeadsParams(),
+                unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
+                updateClosure: updateClosure,
+                failureClosure: failureClosure
+            )
+        } catch {
+            logger.warning("EVM monitor: heads subscription unavailable \(error)")
+        }
+    }
+
+    func handleHead() {
+        guard !isFinished else { return }
+
+        if let lastCheckStartedAt, Date().timeIntervalSince(lastCheckStartedAt) < timing.minHeadCheckSpacing {
+            return
+        }
+
+        startCheck(trigger: .head)
     }
 
     func startCheck(trigger: Trigger) {
         guard !isFinished, !callStore.hasCall, let transaction else { return }
+
+        lastCheckStartedAt = Date()
 
         executeCancellable(
             wrapper: createCheckWrapper(for: transaction),
@@ -200,6 +249,11 @@ private extension EvmTransactionWatcher {
         pollScheduler.cancel()
         deadlineScheduler.cancel()
         callStore.cancel()
+
+        if let headsSubscriptionId {
+            headsConnection?.cancelForIdentifier(headsSubscriptionId)
+            self.headsSubscriptionId = nil
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 protocol TransactionSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
@@ -12,6 +13,7 @@ protocol TransactionSubmitMonitorFactoryProtocol {
 final class TransactionSubmitMonitorFactory {
     let submissionService: EvmTransactionServiceProtocol
     let queryOperationFactory: EthereumOperationFactoryProtocol
+    let headsConnection: JSONRPCEngine?
     let timing: EvmTransactionMonitorTiming
     let operationQueue: OperationQueue
     let processingQueue = DispatchQueue(label: "io.novawallet.evm.transaction.monitor.\(UUID().uuidString)")
@@ -20,12 +22,14 @@ final class TransactionSubmitMonitorFactory {
     init(
         submissionService: EvmTransactionServiceProtocol,
         queryOperationFactory: EthereumOperationFactoryProtocol,
+        headsConnection: JSONRPCEngine?,
         timing: EvmTransactionMonitorTiming,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.submissionService = submissionService
         self.queryOperationFactory = queryOperationFactory
+        self.headsConnection = headsConnection
         self.timing = timing
         self.operationQueue = operationQueue
         self.logger = logger
@@ -51,6 +55,7 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
 
         let watcher = EvmTransactionWatcher(
             queryOperationFactory: queryOperationFactory,
+            headsConnection: headsConnection,
             timing: timing,
             processingQueue: processingQueue,
             operationQueue: operationQueue,

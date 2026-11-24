@@ -187,6 +187,7 @@ private extension GiftClaimViewFactory {
                 connection: chainRegistry.getOneShotConnection(for: chainAsset.chain.chainId) ?? connection,
                 timeout: JSONRPCTimeout.withNodeSwitch
             ),
+            headsConnection: connection,
             timing: EvmTransactionMonitorTiming(chain: chainAsset.chain),
             operationQueue: operationQueue
         )

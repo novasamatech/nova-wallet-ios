@@ -202,6 +202,7 @@ private extension GiftTransferConfirmViewFactory {
                 connection: chainRegistry.getOneShotConnection(for: chain.chainId) ?? connection,
                 timeout: JSONRPCTimeout.withNodeSwitch
             ),
+            headsConnection: connection,
             timing: EvmTransactionMonitorTiming(chain: chain),
             operationQueue: operationQueue
         )
