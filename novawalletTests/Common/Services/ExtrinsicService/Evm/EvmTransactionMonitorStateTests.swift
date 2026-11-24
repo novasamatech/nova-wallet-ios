@@ -111,10 +111,10 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
         XCTAssertFalse(try decodeError(message: "replacement transaction underpriced").isDefinitiveEvmSendRejection)
     }
 
-    func testInsufficientFundsIsDefinitive() throws {
+    func testInsufficientFundsIsNotDefinitive() throws {
         let message = "insufficient funds for gas * price + value: balance 0, tx cost 21000"
 
-        XCTAssertTrue(try decodeError(message: message).isDefinitiveEvmSendRejection)
+        XCTAssertFalse(try decodeError(message: message).isDefinitiveEvmSendRejection)
     }
 
     func testUnknownMessageIsNotDefinitive() throws {

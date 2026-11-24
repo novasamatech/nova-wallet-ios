@@ -28,7 +28,6 @@ private enum EvmSendRejectionMarkers {
     ]
 
     static let definitive: [String] = [
-        "insufficient funds",
         "underpriced",
         "less than block base fee",
         "intrinsic gas too low",
