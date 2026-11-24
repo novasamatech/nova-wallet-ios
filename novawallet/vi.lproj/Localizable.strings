@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "Các token của bạn";
 "tabbar.more.title" = "Thêm";
 "tabbar.swaps.title" = "Hoán đổi";
+"common.transaction.still.pending.message" = "Giao dịch của bạn vẫn đang chờ mạng lưới xử lý. Tiền sẽ được chuyển đến sau khi giao dịch được xác nhận.";
+"common.transaction.taking.longer.title" = "Mất nhiều thời gian hơn bình thường";
+"gift.create.pending.message" = "Giao dịch quà tặng của bạn vẫn đang chờ mạng lưới xử lý. Quà tặng sẽ xuất hiện trong mục Quà tặng sau khi giao dịch được xác nhận.";

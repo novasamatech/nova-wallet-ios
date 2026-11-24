@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "Ваши токены";
 "tabbar.more.title" = "Ещё";
 "tabbar.swaps.title" = "Обмены";
+"common.transaction.still.pending.message" = "Ваша транзакция всё ещё ожидает подтверждения сетью. Средства поступят после её подтверждения.";
+"common.transaction.taking.longer.title" = "Это занимает больше времени, чем обычно";
+"gift.create.pending.message" = "Ваша транзакция с подарком всё ещё ожидает подтверждения сетью. Подарок появится в разделе «Подарки» после её подтверждения.";

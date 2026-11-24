@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "Saját tokenek";
 "tabbar.more.title" = "Továbbiak";
 "tabbar.swaps.title" = "Cserék";
+"common.transaction.still.pending.message" = "A tranzakciód még mindig a hálózatra vár. Az összeg azután érkezik meg, hogy a tranzakciót megerősítették.";
+"common.transaction.taking.longer.title" = "A szokásosnál tovább tart";
+"gift.create.pending.message" = "Az ajándék tranzakciód még mindig a hálózatra vár. Az ajándék a megerősítés után jelenik meg az Ajándékok között.";

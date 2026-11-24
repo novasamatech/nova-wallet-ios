@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "Token Anda";
 "tabbar.more.title" = "Lainnya";
 "tabbar.swaps.title" = "Swap";
+"common.transaction.still.pending.message" = "Transaksi Anda masih menunggu jaringan. Dana akan tiba setelah transaksi dikonfirmasi.";
+"common.transaction.taking.longer.title" = "Memerlukan waktu lebih lama dari biasanya";
+"gift.create.pending.message" = "Transaksi hadiah Anda masih menunggu jaringan. Hadiah akan muncul di Hadiah setelah transaksi dikonfirmasi.";

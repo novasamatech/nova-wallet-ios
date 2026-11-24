@@ -2392,3 +2392,6 @@
 "swaps.token.select.your.tokens" = "あなたのトークン";
 "tabbar.more.title" = "その他";
 "tabbar.swaps.title" = "スワップ";
+"common.transaction.still.pending.message" = "トランザクションはまだネットワークで処理を待っています。確認されると資金が到着します。";
+"common.transaction.taking.longer.title" = "通常より時間がかかっています";
+"gift.create.pending.message" = "ギフトのトランザクションはまだネットワークで処理を待っています。確認されると、「ギフト」にギフトが表示されます。";
