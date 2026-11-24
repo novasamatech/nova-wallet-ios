@@ -60,13 +60,17 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
     }
 
     func testNonceNotConsumedResetsStreak() {
-        var state = makeState()
-        _ = decideConsumed(&state, at: [4, 8, 12, 16])
-        _ = state.decide(on: .noReceipt(latestNonce: nonce), at: time(20))
+        var resetState = makeState()
+        _ = decideConsumed(&resetState, at: [4, 8, 12, 16])
+        _ = resetState.decide(on: .noReceipt(latestNonce: nonce), at: time(20))
+        var fewChecksState = resetState
+        var shortWindowState = resetState
 
-        let decisions = decideConsumed(&state, at: [24, 28, 32, 36, 40, 44, 60])
+        let fewChecks = decideConsumed(&fewChecksState, at: [24, 64])
+        let shortWindow = decideConsumed(&shortWindowState, at: [24, 28, 32, 40])
 
-        XCTAssertEqual(decisions, [.wait, .wait, .wait, .wait, .wait, .wait, .verifyDropped])
+        XCTAssertEqual(fewChecks, [.wait, .wait])
+        XCTAssertEqual(shortWindow, [.wait, .wait, .wait, .wait])
     }
 
     func testUnavailableCheckKeepsStreak() {
@@ -80,8 +84,24 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
         XCTAssertEqual(consumed, [.wait, .verifyDropped])
     }
 
+    func testVerificationWithStatusOneIsSuccess() {
+        let decision = makeState().decideVerification(.success(makeReceipt(status: "0x1")))
+
+        XCTAssertEqual(decision, .success(transactionHash: txHash, blockHash: blockHash))
+    }
+
+    func testVerificationWithStatusZeroIsFailure() {
+        let decision = makeState().decideVerification(.success(makeReceipt(status: "0x0")))
+
+        XCTAssertEqual(decision, .failure(transactionHash: txHash))
+    }
+
     func testVerificationWithoutReceiptIsDropped() {
         XCTAssertEqual(makeState().decideVerification(.success(nil)), .dropped)
+    }
+
+    func testVerificationErrorKeepsWaiting() {
+        XCTAssertEqual(makeState().decideVerification(.failure(CommonError.undefined)), .wait)
     }
 
     func testBudgetEndsAsStillPending() {
@@ -90,6 +110,14 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
         let decision = state.decide(on: .noReceipt(latestNonce: nonce), at: time(120))
 
         XCTAssertEqual(decision, .stillPending)
+    }
+
+    func testReceiptWinsOverBudget() {
+        var state = makeState()
+
+        let decision = state.decide(on: .receipt(makeReceipt(status: "0x1")), at: time(130))
+
+        XCTAssertEqual(decision, .success(transactionHash: txHash, blockHash: blockHash))
     }
 
     func testTimingFallsBackToTwelveSecondBlocks() {
