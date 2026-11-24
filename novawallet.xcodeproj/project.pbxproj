@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */; };
 		F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */; };
 		0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */; };
 		7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */; };
@@ -7317,6 +7318,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorStateTests.swift; sourceTree = "<group>"; };
 		8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionWatcher.swift; sourceTree = "<group>"; };
 		8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorState.swift; sourceTree = "<group>"; };
 		B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralPositionTests.swift; sourceTree = "<group>"; };
@@ -31164,6 +31166,7 @@
 		333785B3195729DD5B42602B /* Evm */ = {
 			isa = PBXGroup;
 			children = (
+				551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */,
 				D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */,
 			);
 			path = Evm;
@@ -40420,6 +40423,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */,
 				7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */,
 				6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */,
 				978F8A271B9E4D6393C114FF /* SubtensorOutcomeParserTests.swift in Sources */,
