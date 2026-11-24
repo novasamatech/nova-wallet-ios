@@ -99,6 +99,8 @@ private extension GiftsStatusTracker {
         if let balance, balance.transferable > (gift.amount / 2) {
             existingBalances.store(value: balance, for: giftAccountId)
             status = .pending
+        } else if gift.status == .created {
+            return
         } else if balance != nil || existingBalances.fetchValue(for: giftAccountId) != nil {
             // don't wait for previously tracked gifts since we know for sure that they existed
             status = .claimed
@@ -248,12 +250,15 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
     func startTracking(for gift: GiftModel) {
         guard
             let chain = chainRegistry.getChain(for: gift.chainAssetId.chainId),
-            let chainAsset = chain.chainAsset(for: gift.chainAssetId.assetId)
+            let chainAsset = chain.chainAsset(for: gift.chainAssetId.assetId),
+            gift.status != .created || chainAsset.asset.isAnyEvm
         else { return }
 
         let giftAccountId = gift.giftAccountId
 
-        addSyncingAccountId(giftAccountId)
+        if gift.status != .created {
+            addSyncingAccountId(giftAccountId)
+        }
 
         giftChainMapping.store(
             value: chain.chainId,
