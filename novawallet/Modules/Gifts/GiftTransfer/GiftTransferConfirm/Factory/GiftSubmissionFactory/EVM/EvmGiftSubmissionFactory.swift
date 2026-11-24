@@ -146,7 +146,6 @@ private extension EvmGiftSubmissionFactory {
                 )
             }
 
-            // A landed funding keeps the gift even if its hash was replaced: the secret must survive.
             guard balance.transferable > gift.amount / 2 else {
                 throw GiftTransferConfirmError.giftSubmissionFailed(
                     giftAccountId: gift.giftAccountId,

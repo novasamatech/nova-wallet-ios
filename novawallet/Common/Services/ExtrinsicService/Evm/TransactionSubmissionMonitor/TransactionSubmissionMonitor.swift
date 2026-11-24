@@ -62,7 +62,6 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
             logger: logger
         )
 
-        // The operation owns the watcher: schedulers and callbacks only hold it weakly.
         let monitorOperation = AsyncClosureOperation<EvmTransactionMonitorSubmission>(
             operationClosure: { completion in
                 let transaction = try submissionWrapper.targetOperation.extractNoCancellableResultData()
