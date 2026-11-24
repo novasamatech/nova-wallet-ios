@@ -116,7 +116,12 @@ extension GiftSubmissionFactoryFacade {
             signingWrapper: signingWrapper,
             chain: chainAsset.chain,
             transactionMonitorFactory: transactionMonitorFactory,
-            transferCommandFactory: EvmTransferCommandFactory()
+            transferCommandFactory: EvmTransferCommandFactory(),
+            balanceQueryFactory: WalletRemoteQueryWrapperFactory(
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                operationQueue: operationQueue
+            ),
+            operationQueue: operationQueue
         )
     }
 }

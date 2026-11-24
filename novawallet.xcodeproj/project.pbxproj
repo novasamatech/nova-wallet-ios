@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */; };
+		F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */; };
+		0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */; };
 		7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */; };
 		6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */; };
 		645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE2C5025AEA5C5FC9BF3F74 /* SwapBaseInteractor+CollateralLimit.swift */; };
@@ -1735,7 +1738,6 @@
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
 		2D09850E2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D09850D2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift */; };
-		2D09858E2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D09858D2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift */; };
 		2D0985952EE183B7007A5E54 /* EvmTransactionMonitorSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985942EE183B7007A5E54 /* EvmTransactionMonitorSubmission.swift */; };
 		2D0985992EE183D5007A5E54 /* EvmTransactionMonitorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985982EE183D5007A5E54 /* EvmTransactionMonitorError.swift */; };
 		2D0985E12EE2BEA8007A5E54 /* PVScanAddressMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985E02EE2BEA8007A5E54 /* PVScanAddressMatcher.swift */; };
@@ -7316,6 +7318,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorStateTests.swift; sourceTree = "<group>"; };
+		8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionWatcher.swift; sourceTree = "<group>"; };
+		8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorState.swift; sourceTree = "<group>"; };
 		B947FF9FA14901816D16649A /* HydraAaveCollateralPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveCollateralPositionTests.swift; sourceTree = "<group>"; };
 		6F3B1C8DAE2041F5B7C9D312 /* HydraAaveFlowStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveFlowStateTests.swift; sourceTree = "<group>"; };
 		E9BD114D2AE1689520B180C5 /* SwapFlowPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFlowPresentable.swift; sourceTree = "<group>"; };
@@ -9051,7 +9056,6 @@
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
 		2D09850D2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSubmissionMonitor.swift; sourceTree = "<group>"; };
-		2D09858D2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorTimeout.swift; sourceTree = "<group>"; };
 		2D0985942EE183B7007A5E54 /* EvmTransactionMonitorSubmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorSubmission.swift; sourceTree = "<group>"; };
 		2D0985982EE183D5007A5E54 /* EvmTransactionMonitorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorError.swift; sourceTree = "<group>"; };
 		2D0985E02EE2BEA8007A5E54 /* PVScanAddressMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVScanAddressMatcher.swift; sourceTree = "<group>"; };
@@ -18355,9 +18359,10 @@
 		2D0985092EDEF7F7007A5E54 /* TransactionSubmissionMonitor */ = {
 			isa = PBXGroup;
 			children = (
+				8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */,
+				8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */,
 				2D09850D2EDEF829007A5E54 /* TransactionSubmissionMonitor.swift */,
 				2D0985942EE183B7007A5E54 /* EvmTransactionMonitorSubmission.swift */,
-				2D09858D2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift */,
 				2D0985982EE183D5007A5E54 /* EvmTransactionMonitorError.swift */,
 			);
 			path = TransactionSubmissionMonitor;
@@ -31161,6 +31166,7 @@
 		333785B3195729DD5B42602B /* Evm */ = {
 			isa = PBXGroup;
 			children = (
+				551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */,
 				D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */,
 			);
 			path = Evm;
@@ -33980,6 +33986,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */,
+				0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */,
 				645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */,
 				234062D9905BC4437C760123 /* SwapModel+Collateral.swift in Sources */,
 				6699FA2EDBEA52E8C09A6125 /* SwapModel+Provider.swift in Sources */,
@@ -34179,7 +34187,6 @@
 				84276687297AB22B0063E08E /* TableViewCellPosition.swift in Sources */,
 				0C21D77C2AB42A3500EB2DBD /* ScreenOpenService.swift in Sources */,
 				2DAF6ABD2CF4947200A8D132 /* WebViewRenderImageViewModel.swift in Sources */,
-				2D09858E2EE1837C007A5E54 /* EvmTransactionMonitorTimeout.swift in Sources */,
 				841E5559282E6A7700C8438F /* ParaStkDurationOperationFactory.swift in Sources */,
 				0C0F6E3D2D473CF400943A7C /* MythosStakingClaimableRewardsService.swift in Sources */,
 				841E553E282D469F00C8438F /* ParachainStakingDelegator.swift in Sources */,
@@ -40416,6 +40423,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */,
 				7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */,
 				6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */,
 				978F8A271B9E4D6393C114FF /* SubtensorOutcomeParserTests.swift in Sources */,

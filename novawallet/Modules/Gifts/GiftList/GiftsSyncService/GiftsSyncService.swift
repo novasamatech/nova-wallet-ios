@@ -58,7 +58,7 @@ private extension GiftsSyncService {
     func updateSubscriptions(for changes: [DataProviderChange<GiftModel>]) {
         changes
             .compactMap(\.item)
-            .filter { $0.status == .pending }
+            .filter { $0.status == .pending || $0.status == .created }
             .forEach { statusTracker.startTracking(for: $0) }
 
         changes
@@ -115,6 +115,10 @@ extension GiftsSyncService: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionH
                     gifts.store(value: gift, for: gift.identifier)
                 case let .delete(deletedIdentifier):
                     gifts.removeValue(for: deletedIdentifier)
+
+                    if let giftAccountId = try? Data(hexString: deletedIdentifier) {
+                        statusTracker.stopTracking(for: giftAccountId)
+                    }
                 }
             }
             updateSubscriptions(for: changes)

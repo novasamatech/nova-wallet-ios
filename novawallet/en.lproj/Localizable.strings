@@ -402,6 +402,8 @@
 "common.not.enough.fee.message" = "Sorry, you don't have enough funds to pay the network fee.";
 "common.not.enough.balance.message" = "Sorry, you don\'t have enough funds to spend the specified amount";
 "common.transaction.failed" = "Transaction failed. Please, try again later.";
+"common.transaction.taking.longer.title" = "Taking longer than usual";
+"common.transaction.still.pending.message" = "Your transaction is still waiting for the network. The funds will arrive once it's confirmed.";
 "staking.custom.validators.list.title" = "Select validators";
 "staking.custom.fill.button.title" = "Fill rest with recommended";
 "staking.custom.clear.button.title" = "Clear filters";
@@ -2036,6 +2038,7 @@
 "gift.reclaim.dialog.message" = "If you reclaim this gift, the shared link will be disabled, and tokens will be refunded to your wallet.
 Do you want to continue?";
 "gift.reclaim.success.status" = "You’ve successfully reclaimed your gift";
+"gift.create.pending.message" = "Your gift transaction is still waiting for the network. The gift will appear in Gifts once it's confirmed.";
 "feature.unsupported.sheet.title.gift" = "Gifting is not supported for %@ wallets";
 "feature.unsupported.sheet.message.gift" = "To create or manage gifts, please switch to a different type of wallet.";
 "feature.unsupported.sheet.title.subtensor.staking" = "Bittensor staking is not supported for %@ wallets";

@@ -95,6 +95,11 @@ final class GiftTransferConfirmPresenter: GiftTransferPresenter {
 
         view?.didStopLoading()
 
+        if let monitorError = error as? EvmTransactionMonitorError, monitorError.mayStillLand {
+            presentPendingCreation()
+            return
+        }
+
         wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
             error,
             view: view,
@@ -108,6 +113,30 @@ final class GiftTransferConfirmPresenter: GiftTransferPresenter {
 // MARK: - Private
 
 private extension GiftTransferConfirmPresenter {
+    func presentPendingCreation() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        let closeAction = AlertPresentableAction(title: strings.commonGotIt(), style: .cancel) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: nil,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: strings.commonTransactionTakingLongerTitle(),
+            message: strings.giftCreatePendingMessage(),
+            actions: [closeAction],
+            closeAction: nil
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+    }
+
     func provideNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         view?.didReceiveNetwork(viewModel: viewModel)
