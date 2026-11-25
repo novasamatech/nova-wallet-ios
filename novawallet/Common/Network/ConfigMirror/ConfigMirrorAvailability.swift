@@ -7,10 +7,19 @@ protocol ConfigMirrorAvailabilityProtocol {
     func registerFailure(_ error: Error) -> Bool
 }
 
-/// Makes requests skip the mirror for a while after it could not be reached,
-/// so that an unreachable mirror is waited for once and not by every request.
+/// Makes requests skip the mirror for a while after it turned out to be unavailable, so that
+/// it is not waited for by every request. When the pause ends every request tries the mirror again.
 final class ConfigMirrorAvailability {
-    static let shared = ConfigMirrorAvailability()
+    // Errors of the device's own connectivity and a cancellation say nothing about the mirror
+    private static let unrelatedErrorCodes: Set<Int> = [
+        NSURLErrorCancelled,
+        NSURLErrorNotConnectedToInternet,
+        NSURLErrorDataNotAllowed,
+        NSURLErrorInternationalRoamingOff,
+        NSURLErrorCallIsActive
+    ]
+
+    private static let serverErrorStatusCode = 500
 
     private let cooldown: TimeInterval
     private let uptimeClosure: () -> TimeInterval
@@ -41,8 +50,7 @@ extension ConfigMirrorAvailability: ConfigMirrorAvailabilityProtocol {
     }
 
     func registerFailure(_ error: Error) -> Bool {
-        // A wrong status or body concerns one file and is answered fast, so only a connection failure counts
-        guard error.isConnectionFailure else {
+        guard isMirrorWide(error) else {
             return false
         }
 
@@ -61,10 +69,16 @@ extension ConfigMirrorAvailability: ConfigMirrorAvailabilityProtocol {
     }
 }
 
-private extension Error {
-    var isConnectionFailure: Bool {
-        let nsError = self as NSError
+private extension ConfigMirrorAvailability {
+    // A missing file or an unusable body concerns one file and is answered fast. A connection failure
+    // or a server error is about the mirror as a whole, so it is worth skipping.
+    func isMirrorWide(_ error: Error) -> Bool {
+        if case let ConfigMirrorFailure.unexpectedStatus(statusCode?) = error {
+            return statusCode >= Self.serverErrorStatusCode
+        }
 
-        return nsError.domain == NSURLErrorDomain && nsError.code != NSURLErrorCancelled
+        let nsError = error as NSError
+
+        return nsError.domain == NSURLErrorDomain && !Self.unrelatedErrorCodes.contains(nsError.code)
     }
 }

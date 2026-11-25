@@ -106,19 +106,26 @@ image downloader bypasses the mirror until the protocol class is added to its co
   body and, for a `.json` file, a body that does not parse as JSON. The body is checked because
   callers such as `DataOperationFactory` decode after the request is over, when it is too late to
   fall back. The original request is then performed as the caller made it and its answer is handed
-  over as it is.
+  over as it is. A non-JSON answer (an image) is passed on as it arrives, so a failure after its
+  first chunk is reported to the caller and is not retried on GitHub; it is still logged and
+  counted against the mirror.
 - **Timeouts.** The mirror attempt gets `ConfigMirrorConstants.attemptTimeout` (5 s) and never more
   than half of the request's own timeout. All of them are idle timeouts. A JSON from the mirror
   is held back until it is complete and checked, so for the caller's timeout that download is
   silence; anything else, and the whole answer of the original URL, is passed on as it arrives.
-- **Cool-down.** After the mirror could not be reached (a URL session error; not a status or a
-  body failure, which are fast and concern one file) `ConfigMirrorAvailability` makes every
-  request skip the mirror for `ConfigMirrorConstants.unavailabilityCooldown` (60 s). A cancelled
-  request says nothing about the mirror.
+- **Cool-down.** After a failure that is about the mirror as a whole — it could not be reached
+  (a URL session error) or it answered with a status of 500 and above — `ConfigMirrorAvailability`
+  makes every request skip the mirror for `ConfigMirrorConstants.unavailabilityCooldown` (60 s).
+  A 4xx status and an unusable body are fast and concern one file, so they don't start it.
+  Neither do a cancelled request and errors of the device's own connectivity (no internet,
+  cellular data or roaming off, a call in progress). When the pause ends every request tries the
+  mirror again; there is no single probe.
 - **HTTP cache.** The protocol performs its requests through `ConfigMirrorLoader`, a session of
   its own that uses `URLCache.shared`. The mirror answer is cached under the mirror URL and the
-  GitHub one under the GitHub URL, by their own headers and the caller's cache policy. The answer
-  handed to the caller is not stored a second time.
+  GitHub one under the GitHub URL, by their own headers and the caller's cache policy. Nothing is
+  stored for a request whose cache policy ignores the local cache, such as the image downloader's:
+  that caller keeps the answer itself. The answer handed to the caller is not stored a second
+  time.
 - **Logging.** Every fallback is logged at `warning` with the mirror path and the error, and so is
   the start of a cool-down. A mirror that keeps failing is otherwise invisible, because the app
   goes on working from GitHub.

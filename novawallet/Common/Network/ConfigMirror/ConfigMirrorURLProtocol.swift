@@ -7,8 +7,10 @@ import Operation_iOS
 /// so nothing that is keyed by the url (caches, stored files) knows about the mirror.
 final class ConfigMirrorURLProtocol: URLProtocol {
     struct Dependencies {
-        var urlResolver: ConfigMirrorURLResolverProtocol = ConfigMirrorURLResolver.shared
-        var availability: ConfigMirrorAvailabilityProtocol = ConfigMirrorAvailability.shared
+        var urlResolver: ConfigMirrorURLResolverProtocol = ConfigMirrorURLResolver(
+            applicationConfig: ApplicationConfig.shared
+        )
+        var availability: ConfigMirrorAvailabilityProtocol = ConfigMirrorAvailability()
         var loader: ConfigMirrorLoaderProtocol = ConfigMirrorLoader()
         var mirrorTimeout: TimeInterval = ConfigMirrorConstants.attemptTimeout
         var logger: LoggerProtocol = Logger.shared
@@ -85,16 +87,10 @@ final class ConfigMirrorURLProtocol: URLProtocol {
 private extension ConfigMirrorURLProtocol {
     enum Constants {
         static let handledKey = "io.novawallet.configMirror.handled"
-        static let requestTimeoutShare: TimeInterval = 2
+        static let maxRequestTimeoutShare: Double = 0.5
         static let successStatusCode = 200
         static let jsonExtension = "json"
         static let httpVersion = "HTTP/1.1"
-    }
-
-    enum MirrorFailure: Error {
-        case unexpectedStatus(Int?)
-        case emptyBody
-        case malformedJson
     }
 
     /// A copy of the caller's request marked not to be picked up by this class again.
@@ -111,7 +107,7 @@ private extension ConfigMirrorURLProtocol {
             innerRequest.url = mirrorURL
             innerRequest.timeoutInterval = min(
                 dependencies.mirrorTimeout,
-                request.timeoutInterval / Constants.requestTimeoutShare
+                request.timeoutInterval * Constants.maxRequestTimeoutShare
             )
         }
 
@@ -135,8 +131,18 @@ private extension ConfigMirrorURLProtocol {
                 passMirrorDataToClient()
             }
         case let .completed(error):
-            if let failure = error ?? validateMirrorAnswer(from: mirrorURL), !isMirrorAccepted {
-                fallBack(from: mirrorURL, failure: failure)
+            let failure = error ?? validateMirrorAnswer(from: mirrorURL)
+
+            if let failure {
+                reportMirrorFailure(failure, mirrorURL: mirrorURL)
+            }
+
+            // a part of the body that the caller already has can't be taken back to read the original url
+            if failure != nil, !isMirrorAccepted {
+                mirrorResponse = nil
+                mirrorData = Data()
+
+                loadOriginal()
             } else {
                 passMirrorDataToClient()
                 complete(with: error)
@@ -156,18 +162,18 @@ private extension ConfigMirrorURLProtocol {
     /// so an answer of the mirror counts only if its body is usable.
     func validateMirrorAnswer(from mirrorURL: URL) -> Error? {
         guard hasSuccessStatus(mirrorResponse) else {
-            return MirrorFailure.unexpectedStatus((mirrorResponse as? HTTPURLResponse)?.statusCode)
+            return ConfigMirrorFailure.unexpectedStatus((mirrorResponse as? HTTPURLResponse)?.statusCode)
         }
 
         guard isMirrorAccepted || !mirrorData.isEmpty else {
-            return MirrorFailure.emptyBody
+            return ConfigMirrorFailure.emptyBody
         }
 
         guard isJson(mirrorURL), (try? JSONSerialization.jsonObject(with: mirrorData)) == nil else {
             return nil
         }
 
-        return MirrorFailure.malformedJson
+        return ConfigMirrorFailure.malformedJson
     }
 
     func passMirrorDataToClient() {
@@ -200,19 +206,14 @@ private extension ConfigMirrorURLProtocol {
         return response ?? mirrorResponse
     }
 
-    func fallBack(from mirrorURL: URL, failure: Error) {
+    func reportMirrorFailure(_ failure: Error, mirrorURL: URL) {
         let logger = dependencies.logger
 
-        logger.warning("Config mirror failed for \(mirrorURL.path), reading the original url: \(failure)")
+        logger.warning("Config mirror failed for \(mirrorURL.path): \(failure)")
 
         if dependencies.availability.registerFailure(failure) {
-            logger.warning("Config mirror can't be reached, skipping it until the cool-down ends")
+            logger.warning("Config mirror is unavailable, skipping it until the cool-down ends")
         }
-
-        mirrorResponse = nil
-        mirrorData = Data()
-
-        loadOriginal()
     }
 
     func loadOriginal() {
@@ -272,6 +273,12 @@ private extension ConfigMirrorURLProtocol {
     @objc func execute(_ box: ClosureBox) {
         box.closure()
     }
+}
+
+enum ConfigMirrorFailure: Error {
+    case unexpectedStatus(Int?)
+    case emptyBody
+    case malformedJson
 }
 
 private final class ClosureBox: NSObject {

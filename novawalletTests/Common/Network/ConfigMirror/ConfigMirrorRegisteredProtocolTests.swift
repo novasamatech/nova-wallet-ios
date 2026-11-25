@@ -4,7 +4,7 @@ import Operation_iOS
 @testable import novawallet
 
 /// The real fetch paths against the registered protocol: only the transport under it is replaced
-final class ConfigMirrorIntegrationTests: XCTestCase {
+final class ConfigMirrorRegisteredProtocolTests: XCTestCase {
     private let gitHubPrefix = "https://github.novatest/novasamatech/nova-utils/master/"
     private let mirrorPrefix = "https://mirror.novatest/v1/config/"
     private let redPixelPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC"

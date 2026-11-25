@@ -74,7 +74,8 @@ final class ConfigMirrorURLProtocolTests: XCTestCase {
     func testFallsBackToOriginalUrlWhenMirrorAnswerIsUnusable() {
         let cases: [(name: String, events: [ConfigMirrorLoadEvent], startsCooldown: Bool)] = [
             ("no file", [response(404, mirrorUrl), .data(Data("{}".utf8)), .completed(nil)], false),
-            ("not ready", [response(503, mirrorUrl), .completed(nil)], false),
+            ("not ready", [response(503, mirrorUrl), .completed(nil)], true),
+            ("server error", [response(500, mirrorUrl), .data(mirrorBody), .completed(nil)], true),
             ("other success status", [response(204, mirrorUrl), .data(mirrorBody), .completed(nil)], false),
             ("empty body", [response(200, mirrorUrl), .completed(nil)], false),
             ("truncated json", [response(200, mirrorUrl), .data(Data(#"[{"chainId":"#.utf8)), .completed(nil)], false),
@@ -182,6 +183,7 @@ final class ConfigMirrorURLProtocolTests: XCTestCase {
         loader.send([.data(Data("b".utf8)), .completed(nil)], toRequest: 0)
 
         XCTAssertEqual(client.events.suffix(2), ["data b", "finished"])
+        XCTAssertTrue(logger.warnings.isEmpty)
 
         // once a part of the body is handed over there is no way back to the original url
         start(URLRequest(url: gitHubIconUrl))
@@ -189,6 +191,11 @@ final class ConfigMirrorURLProtocolTests: XCTestCase {
 
         XCTAssertEqual(client.events.last, "failed \(URLError.Code.timedOut.rawValue)")
         XCTAssertEqual(loader.requests.count, 2)
+
+        // the failure still counts against the mirror
+        XCTAssertEqual(logger.warnings.count, 2)
+        XCTAssertTrue(logger.warnings.first?.contains("/v1/config/icons/DOT.png") ?? false)
+        XCTAssertFalse(availability.isAvailable)
     }
 }
 

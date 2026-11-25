@@ -25,15 +25,33 @@ final class ConfigMirrorAvailabilityTests: XCTestCase {
         clock.uptime += 1
 
         XCTAssertTrue(availability.isAvailable)
-        XCTAssertTrue(availability.registerFailure(URLError(.secureConnectionFailed)))
+        XCTAssertTrue(availability.registerFailure(URLError(.networkConnectionLost)))
         XCTAssertFalse(availability.isAvailable)
     }
 
-    func testOnlyConnectionFailuresStartCooldown() {
+    func testServerErrorStartsCooldown() {
+        for statusCode in [500, 502, 503, 504] {
+            let availability = makeAvailability()
+
+            XCTAssertTrue(availability.registerFailure(ConfigMirrorFailure.unexpectedStatus(statusCode)), "\(statusCode)")
+            XCTAssertFalse(availability.isAvailable, "\(statusCode)")
+        }
+    }
+
+    func testFailuresOfOneFileOrOfDeviceItselfDoNotStartCooldown() {
         let availability = makeAvailability()
 
         let errors: [Error] = [
             URLError(.cancelled),
+            URLError(.notConnectedToInternet),
+            URLError(.dataNotAllowed),
+            URLError(.internationalRoamingOff),
+            URLError(.callIsActive),
+            ConfigMirrorFailure.unexpectedStatus(404),
+            ConfigMirrorFailure.unexpectedStatus(204),
+            ConfigMirrorFailure.unexpectedStatus(nil),
+            ConfigMirrorFailure.emptyBody,
+            ConfigMirrorFailure.malformedJson,
             NetworkResponseError.resourceNotFound,
             NetworkBaseError.unexpectedEmptyData,
             DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))

@@ -6,8 +6,6 @@ protocol ConfigMirrorURLResolverProtocol {
 }
 
 struct ConfigMirrorURLResolver {
-    static let shared = ConfigMirrorURLResolver(applicationConfig: ApplicationConfig.shared)
-
     let mirrorBaseURL: URL
     let sources: [String]
 

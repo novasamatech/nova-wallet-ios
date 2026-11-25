@@ -7218,7 +7218,8 @@
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
 		1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */; };
-		14E75A1D659B2F28FC1DE9EA /* ConfigMirrorIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1359E2499365567C7CC026 /* ConfigMirrorIntegrationTests.swift */; };
+		40336AD48AC9FC1E1F1CD588 /* ConfigMirrorLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05319DC725F0F29C7F0C795 /* ConfigMirrorLoaderTests.swift */; };
+		14E75A1D659B2F28FC1DE9EA /* ConfigMirrorRegisteredProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1359E2499365567C7CC026 /* ConfigMirrorRegisteredProtocolTests.swift */; };
 		39ED263FB8A1920CFEAFA4B0 /* ConfigMirrorURLProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7A28CFFBF499F583FCD8EF /* ConfigMirrorURLProtocolTests.swift */; };
 		14C8ECB482ADCDEF980E566D /* ConfigMirrorAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */; };
 		E91B8D71BE7E131643482D76 /* ConfigMirrorTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */; };
@@ -14247,7 +14248,8 @@
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
 		A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLResolverTests.swift; sourceTree = "<group>"; };
-		AD1359E2499365567C7CC026 /* ConfigMirrorIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorIntegrationTests.swift; sourceTree = "<group>"; };
+		D05319DC725F0F29C7F0C795 /* ConfigMirrorLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorLoaderTests.swift; sourceTree = "<group>"; };
+		AD1359E2499365567C7CC026 /* ConfigMirrorRegisteredProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorRegisteredProtocolTests.swift; sourceTree = "<group>"; };
 		FC7A28CFFBF499F583FCD8EF /* ConfigMirrorURLProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLProtocolTests.swift; sourceTree = "<group>"; };
 		BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorAvailabilityTests.swift; sourceTree = "<group>"; };
 		69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorTestDoubles.swift; sourceTree = "<group>"; };
@@ -21397,7 +21399,8 @@
 			isa = PBXGroup;
 			children = (
 				A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */,
-				AD1359E2499365567C7CC026 /* ConfigMirrorIntegrationTests.swift */,
+				D05319DC725F0F29C7F0C795 /* ConfigMirrorLoaderTests.swift */,
+				AD1359E2499365567C7CC026 /* ConfigMirrorRegisteredProtocolTests.swift */,
 				FC7A28CFFBF499F583FCD8EF /* ConfigMirrorURLProtocolTests.swift */,
 				BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */,
 				69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */,
@@ -40692,7 +40695,8 @@
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
 				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
 				1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */,
-				14E75A1D659B2F28FC1DE9EA /* ConfigMirrorIntegrationTests.swift in Sources */,
+				40336AD48AC9FC1E1F1CD588 /* ConfigMirrorLoaderTests.swift in Sources */,
+				14E75A1D659B2F28FC1DE9EA /* ConfigMirrorRegisteredProtocolTests.swift in Sources */,
 				39ED263FB8A1920CFEAFA4B0 /* ConfigMirrorURLProtocolTests.swift in Sources */,
 				14C8ECB482ADCDEF980E566D /* ConfigMirrorAvailabilityTests.swift in Sources */,
 				E91B8D71BE7E131643482D76 /* ConfigMirrorTestDoubles.swift in Sources */,
