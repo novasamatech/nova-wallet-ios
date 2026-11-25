@@ -33,6 +33,7 @@ struct DAppSearchViewFactory {
             selectedCategoryId: selectedCategoryId,
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,
+            analyticsTracker: AnalyticsFacadeFactory.createDefault(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

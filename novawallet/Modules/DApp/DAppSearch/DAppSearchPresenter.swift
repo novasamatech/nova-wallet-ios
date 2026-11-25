@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import Operation_iOS
+import NovaAnalytics
 
 final class DAppSearchPresenter: DAppSearchingByQuery {
     weak var view: DAppSearchViewProtocol?
@@ -13,11 +14,13 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
 
     private(set) var query: String?
     private(set) var selectedCategoryId: String?
+    private var stakingQueryKind: DAppStakingQueryKind = .none
 
     weak var delegate: DAppSearchDelegate?
 
     let viewModelFactory: DAppListViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
+    let analyticsTracker: AnalyticsTrackingProtocol
 
     let logger: LoggerProtocol?
 
@@ -29,6 +32,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
         selectedCategoryId: String?,
         delegate: DAppSearchDelegate,
         applicationConfig: ApplicationConfigProtocol,
+        analyticsTracker: AnalyticsTrackingProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -39,6 +43,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
         self.selectedCategoryId = selectedCategoryId
         self.delegate = delegate
         self.applicationConfig = applicationConfig
+        self.analyticsTracker = analyticsTracker
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -59,7 +64,20 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     }
 
     private func provideStakingBanner() {
-        view?.didReceive(stakingBannerVisible: DAppStakingDetection.isStakingQuery(query))
+        let previousKind = stakingQueryKind
+        stakingQueryKind = DAppStakingDetection.queryKind(query)
+
+        view?.didReceive(stakingBannerVisible: stakingQueryKind != .none)
+
+        // recorded when the banner appears or changes its kind, never per typed character;
+        // the query itself must not be recorded
+        if stakingQueryKind != previousKind {
+            trackDAppStakingPromptShown(
+                placement: .searchBanner,
+                kind: stakingQueryKind.analyticsPromptKind,
+                host: nil
+            )
+        }
     }
 
     // the classification happens here because this is the only delegate-independent
@@ -105,7 +123,19 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func activateStaking() {
-        wireframe.redirectToStaking(from: view)
+        trackDAppStakingPromptAction(
+            placement: .searchBanner,
+            kind: stakingQueryKind.analyticsPromptKind,
+            action: .goToStaking,
+            host: nil
+        )
+
+        switch stakingQueryKind {
+        case .bittensor:
+            wireframe.redirectToBittensorStaking(from: view, source: .dappSearchBanner)
+        case .staking, .none:
+            wireframe.redirectToStaking(from: view)
+        }
     }
 
     func selectDApp(viewModel: DAppViewModel) {
@@ -138,7 +168,10 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             completeSearch(with: .query(string: searchQuery))
         }
 
-        guard search(by: query, in: dAppList).isEmpty else {
+        // a TAO-related address gets the Bittensor notice in place of the unknown dApp warning
+        let isBittensorSite = DAppStakingDetection.isBittensorSite(result: .query(string: query ?? ""))
+
+        guard search(by: query, in: dAppList).isEmpty, !isBittensorSite else {
             proceedClosure()
 
             return
