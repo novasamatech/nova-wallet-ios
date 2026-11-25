@@ -66,10 +66,10 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     // place that has the curated dApp list; the delegate might present a screen from
     // the underlying view, so it is notified only after the search is dismissed
     private func completeSearch(with result: DAppSearchResult) {
-        let isThirdPartyStaking = DAppStakingDetection.isThirdPartyStakingSite(
+        let isThirdPartyStaking = DAppStakingDetection.stakingSiteKind(
             result: result,
             dAppList: dAppList
-        )
+        ) != .none
 
         wireframe.close(from: view) { [weak self] in
             self?.delegate?.didCompleteDAppSearchResult(
