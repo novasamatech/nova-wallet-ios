@@ -27,6 +27,10 @@ protocol TransactionWatching: AnyObject {
     func stop()
 }
 
+protocol PendingTransactionPickupProtocol {
+    func createRequestsWrapper() -> CompoundOperationWrapper<[TransactionTrackingRequest]>
+}
+
 protocol TransactionHistoryResolving {
     func createResolutionWrapper(
         for key: TransactionTrackingKey,

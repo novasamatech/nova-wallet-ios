@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransactionTrackingFacade {
     let trackers: [ChainTransactionTracking]
     let resolver: TransactionHistoryResolving
+    let pickup: PendingTransactionPickupProtocol
     let chainRegistry: ChainRegistryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let eventCenter: EventCenterProtocol
@@ -19,6 +20,7 @@ final class TransactionTrackingFacade {
     init(
         trackers: [ChainTransactionTracking],
         resolver: TransactionHistoryResolving,
+        pickup: PendingTransactionPickupProtocol,
         chainRegistry: ChainRegistryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         eventCenter: EventCenterProtocol,
@@ -27,6 +29,7 @@ final class TransactionTrackingFacade {
     ) {
         self.trackers = trackers
         self.resolver = resolver
+        self.pickup = pickup
         self.chainRegistry = chainRegistry
         self.applicationHandler = applicationHandler
         self.eventCenter = eventCenter
@@ -45,10 +48,19 @@ extension TransactionTrackingFacade: TransactionTrackingFacadeProtocol {
         mutex.unlock()
 
         guard isFirstActivation else {
+            runPickup()
             return
         }
 
         applicationHandler.delegate = self
+
+        chainRegistry.chainsSubscribe(self, runningInQueue: .global(qos: .utility)) { [weak self] changes in
+            guard changes.contains(where: { if case .insert = $0 { true } else { false } }) else {
+                return
+            }
+
+            self?.runPickup()
+        }
     }
 
     @discardableResult
@@ -212,6 +224,21 @@ private extension TransactionTrackingFacade {
         }
     }
 
+    func runPickup() {
+        execute(
+            wrapper: pickup.createRequestsWrapper(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: nil
+        ) { [weak self] result in
+            switch result {
+            case let .success(requests):
+                requests.forEach { self?.track($0) }
+            case let .failure(error):
+                self?.logger.error("Tracking: pickup failed \(error)")
+            }
+        }
+    }
+
     func pruneRecentlyResolved(now: Date) {
         recentlyResolved = recentlyResolved.filter {
             now.timeIntervalSince($0.value) < Constants.recentlyResolvedLifetime
@@ -239,6 +266,8 @@ extension TransactionTrackingFacade: ApplicationHandlerDelegate {
         mutex.unlock()
 
         watches.forEach { $0.checkNow() }
+
+        runPickup()
     }
 }
 
@@ -249,6 +278,7 @@ extension TransactionTrackingFacade {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let logger = Logger.shared
+        let storageFacade = SubstrateDataStorageFacade.shared
 
         let trackers: [ChainTransactionTracking] = [
             EvmTransactionTracker(
@@ -258,9 +288,17 @@ extension TransactionTrackingFacade {
             )
         ]
 
+        let pickup = PendingTransactionPickup(
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry,
+            trackers: trackers,
+            logger: logger
+        )
+
         return TransactionTrackingFacade(
             trackers: trackers,
-            resolver: TransactionHistoryResolver(storageFacade: SubstrateDataStorageFacade.shared),
+            resolver: TransactionHistoryResolver(storageFacade: storageFacade),
+            pickup: pickup,
             chainRegistry: chainRegistry,
             applicationHandler: ApplicationHandler(),
             eventCenter: EventCenter.shared,

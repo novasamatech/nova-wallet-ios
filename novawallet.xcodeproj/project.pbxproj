@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */; };
 		F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */; };
 		DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */; };
 		12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */; };
@@ -7324,6 +7325,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionPickup.swift; sourceTree = "<group>"; };
 		6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolutionMapper.swift; sourceTree = "<group>"; };
 		25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolver.swift; sourceTree = "<group>"; };
 		BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionTracker.swift; sourceTree = "<group>"; };
@@ -23340,6 +23342,7 @@
 		142F296907C084F48FD3F335 /* TransactionTracking */ = {
 			isa = PBXGroup;
 			children = (
+				043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */,
 				25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */,
 				BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */,
 				1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */,
@@ -34013,6 +34016,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */,
 				F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */,
 				DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */,
 				12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */,

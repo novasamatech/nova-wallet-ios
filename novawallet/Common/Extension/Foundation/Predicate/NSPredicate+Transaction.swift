@@ -199,6 +199,10 @@ extension NSPredicate {
         )
     }
 
+    static func filterTransactionsBy(status: TransactionHistoryItem.Status) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.status), status.rawValue)
+    }
+
     static func filterSwapTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
         let assetIdIn = NSPredicate(
             format: "%K == %d", #keyPath(CDTransactionItem.swap.assetIdIn),
