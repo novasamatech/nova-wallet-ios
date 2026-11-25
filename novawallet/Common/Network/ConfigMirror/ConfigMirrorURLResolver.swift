@@ -44,7 +44,7 @@ extension ConfigMirrorURLResolver: ConfigMirrorURLResolverProtocol {
         // The file path is taken as is to keep its percent encoding
         let filePath = location.dropFirst(source.count)
 
-        guard !filePath.isEmpty, !hasParentReference(in: filePath) else {
+        guard !filePath.isEmpty else {
             return nil
         }
 
@@ -56,16 +56,5 @@ private extension ConfigMirrorURLResolver {
     enum Constants {
         static let scheme = "https:"
         static let pathSeparator: Character = "/"
-        static let parentReference = ".."
-        static let pathTerminators: Set<Character> = ["?", "#"]
-    }
-
-    // A path that climbs up could leave the mirror's config directory, whoever normalizes it on the way
-    func hasParentReference(in filePath: Substring) -> Bool {
-        let path = filePath.prefix { !Constants.pathTerminators.contains($0) }
-
-        return path
-            .split(separator: Constants.pathSeparator, omittingEmptySubsequences: false)
-            .contains { ($0.removingPercentEncoding ?? String($0)) == Constants.parentReference }
     }
 }

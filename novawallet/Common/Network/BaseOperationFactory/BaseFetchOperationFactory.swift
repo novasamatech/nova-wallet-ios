@@ -2,14 +2,6 @@ import Foundation
 import Operation_iOS
 
 class BaseFetchOperationFactory {
-    private let mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol
-
-    // Must stay the only designated initializer and callable without arguments: the subclasses rely on
-    // the implicit `super.init()`, which the compiler adds only when there is a single designated one.
-    init(mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol = ConfigMirrorFetchOperationFactory()) {
-        self.mirrorFetchFactory = mirrorFetchFactory
-    }
-
     func createRequestFactory(
         from url: URL,
         shouldUseCache: Bool,
@@ -41,15 +33,10 @@ class BaseFetchOperationFactory {
         shouldUseCache: Bool = true,
         timeout: TimeInterval? = nil
     ) -> BaseOperation<T> where T: Decodable {
+        let requestFactory = createRequestFactory(from: url, shouldUseCache: shouldUseCache, timeout: timeout)
         let resultFactory: AnyNetworkResultFactory<T> = createResultFactory()
 
-        return mirrorFetchFactory.createFetchOperation(
-            from: url,
-            timeout: timeout,
-            resultFactory: resultFactory
-        ) { requestURL, requestTimeout in
-            createRequestFactory(from: requestURL, shouldUseCache: shouldUseCache, timeout: requestTimeout)
-        }
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
     func createResultFactory<T>() -> AnyNetworkResultFactory<T> where T: Decodable {

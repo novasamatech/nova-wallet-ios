@@ -7,16 +7,12 @@ final class RemoteImageViewModel: NSObject {
     let url: URL
     let fallbackImage: UIImage?
 
-    private let imageSourceFactory: ConfigMirrorImageSourceFactory
-
     init(
         url: URL,
-        fallbackImage: UIImage? = nil,
-        imageSourceFactory: ConfigMirrorImageSourceFactory = ConfigMirrorImageSourceFactory()
+        fallbackImage: UIImage? = nil
     ) {
         self.url = url
         self.fallbackImage = fallbackImage
-        self.imageSourceFactory = imageSourceFactory
     }
 }
 
@@ -48,11 +44,9 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
             options.append(.transition(.fade(0.25)))
         }
 
-        let imageSource = imageSourceFactory.createSource(for: url)
-
         imageView.kf.setImage(
-            with: imageSource.source,
-            options: options + imageSource.options
+            with: url,
+            options: options
         ) { [weak self] result in
             guard let self else {
                 return

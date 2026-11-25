@@ -7,15 +7,6 @@ struct CommonRemoteImageProvider: RemoteImageProvider {
     typealias ImageInfo = CommonImageInfo
 
     let imageManager: KingfisherManager
-    let imageSourceFactory: ConfigMirrorImageSourceFactory
-
-    init(
-        imageManager: KingfisherManager,
-        imageSourceFactory: ConfigMirrorImageSourceFactory = ConfigMirrorImageSourceFactory()
-    ) {
-        self.imageManager = imageManager
-        self.imageSourceFactory = imageSourceFactory
-    }
 
     func downloadImageOperation(using imageInfo: ImageInfo) -> BaseOperation<UIImage> {
         let downloader = imageManager.downloader
@@ -31,7 +22,7 @@ struct CommonRemoteImageProvider: RemoteImageProvider {
 
             let options: KingfisherOptionsInfo = [.processor(processor)]
 
-            imageSourceFactory.downloadImage(with: url, using: downloader, options: options) { result in
+            downloader.downloadImage(with: url, options: options) { result in
                 var resultImage: UIImage
 
                 switch result {

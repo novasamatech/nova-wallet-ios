@@ -4,6 +4,9 @@ import Foundation_iOS
 
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
+        // goes first for every request of the launch to nova-utils to be read from the config mirror
+        ConfigMirrorURLProtocol.register()
+
         let presenter = RootPresenter()
         let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
         let keychain = Keychain()

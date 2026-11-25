@@ -7,17 +7,7 @@ protocol ConfigMirrorAvailabilityProtocol {
     func registerFailure(_ error: Error) -> Bool
 }
 
-extension ConfigMirrorAvailabilityProtocol {
-    func reportFailure(_ error: Error, for mirrorURL: URL, logger: LoggerProtocol) {
-        logger.warning("Config mirror failed for \(mirrorURL.path), reading the original url: \(error)")
-
-        if registerFailure(error) {
-            logger.warning("Config mirror can't be reached, skipping it until the cool-down ends")
-        }
-    }
-}
-
-/// Makes files and images skip the mirror for a while after it could not be reached,
+/// Makes requests skip the mirror for a while after it could not be reached,
 /// so that an unreachable mirror is waited for once and not by every request.
 final class ConfigMirrorAvailability {
     static let shared = ConfigMirrorAvailability()

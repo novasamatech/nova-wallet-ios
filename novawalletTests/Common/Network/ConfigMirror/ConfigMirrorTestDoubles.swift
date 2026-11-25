@@ -1,11 +1,9 @@
 import Foundation
-import Operation_iOS
 @testable import novawallet
 
 final class ConfigMirrorLoggerSpy: LoggerProtocol {
     private let mutex = NSLock()
     private var recordedWarnings: [String] = []
-    private var recordedOthers: [String] = []
 
     var warnings: [String] {
         mutex.lock()
@@ -14,117 +12,111 @@ final class ConfigMirrorLoggerSpy: LoggerProtocol {
         return recordedWarnings
     }
 
-    /// An empty string for a missing warning lets an assertion fail instead of trapping
-    func warning(at index: Int) -> String {
-        let warnings = self.warnings
-
-        return warnings.indices.contains(index) ? warnings[index] : ""
-    }
-
-    var otherMessages: [String] {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        return recordedOthers
-    }
-
-    func verbose(message: String, file _: String, function _: String, line _: Int) {
-        recordOther(message)
-    }
-
-    func debug(message: String, file _: String, function _: String, line _: Int) {
-        recordOther(message)
-    }
-
-    func info(message: String, file _: String, function _: String, line _: Int) {
-        recordOther(message)
-    }
-
     func warning(message: String, file _: String, function _: String, line _: Int) {
         mutex.lock()
         recordedWarnings.append(message)
         mutex.unlock()
     }
 
-    func error(message: String, file _: String, function _: String, line _: Int) {
-        recordOther(message)
-    }
-
-    private func recordOther(_ message: String) {
-        mutex.lock()
-        recordedOthers.append(message)
-        mutex.unlock()
-    }
+    func verbose(message _: String, file _: String, function _: String, line _: Int) {}
+    func debug(message _: String, file _: String, function _: String, line _: Int) {}
+    func info(message _: String, file _: String, function _: String, line _: Int) {}
+    func error(message _: String, file _: String, function _: String, line _: Int) {}
 }
 
 final class ConfigMirrorTestClock {
-    private let mutex = NSLock()
-    private var currentUptime: TimeInterval = 1000
+    var uptime: TimeInterval = 1000
+}
 
-    var uptime: TimeInterval {
+/// Keeps the requests it is asked to load. A test either sends the events itself
+/// or sets `answerClosure` to have every request answered with 200 from a background queue.
+final class ConfigMirrorFakeLoader: ConfigMirrorLoaderProtocol {
+    private struct Task: ConfigMirrorLoadTaskProtocol {
+        let cancelClosure: () -> Void
+
+        func cancel() {
+            cancelClosure()
+        }
+    }
+
+    private let mutex = NSLock()
+    private var eventClosures: [(ConfigMirrorLoadEvent) -> Void] = []
+    private(set) var requests: [URLRequest] = []
+    private(set) var cancelledRequests: [Int] = []
+
+    var answerClosure: ((String) -> Data)?
+    var loadClosure: () -> Void = {}
+    var cancelClosure: () -> Void = {}
+
+    var requestedUrls: [String] {
         mutex.lock()
         defer { mutex.unlock() }
 
-        return currentUptime
+        return requests.compactMap { $0.url?.absoluteString }
     }
 
-    func advance(by interval: TimeInterval) {
+    func load(
+        _ request: URLRequest,
+        eventClosure: @escaping (ConfigMirrorLoadEvent) -> Void
+    ) -> ConfigMirrorLoadTaskProtocol {
         mutex.lock()
-        currentUptime += interval
+        let index = requests.count
+        requests.append(request)
+        eventClosures.append(eventClosure)
         mutex.unlock()
+
+        loadClosure()
+
+        if let url = request.url, let body = answerClosure?(url.absoluteString) {
+            let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)
+            let events = [response.map { ConfigMirrorLoadEvent.response($0) }, .data(body), .completed(nil)]
+
+            DispatchQueue.global().async { events.compactMap { $0 }.forEach(eventClosure) }
+        }
+
+        return Task { [weak self] in
+            self?.mutex.lock()
+            self?.cancelledRequests.append(index)
+            self?.mutex.unlock()
+
+            self?.cancelClosure()
+        }
+    }
+
+    func send(_ events: [ConfigMirrorLoadEvent], toRequest index: Int) {
+        guard eventClosures.indices.contains(index) else {
+            return
+        }
+
+        events.forEach(eventClosures[index])
     }
 }
 
-/// Stands in for the mirror-aware fetch: records what a factory asks for and answers
-/// by passing the given response through the factory's own result factory.
-final class ConfigMirrorFetchOperationFactorySpy: ConfigMirrorFetchFactoryProtocol {
-    struct Call {
-        let url: URL
-        let timeout: TimeInterval?
-        let request: URLRequest?
-        let probeRequest: URLRequest?
+/// Writes down what the protocol hands to its client, one line per call
+final class ConfigMirrorClientSpy: NSObject, URLProtocolClient {
+    private(set) var events: [String] = []
+
+    func urlProtocol(_: URLProtocol, didReceive response: URLResponse, cacheStoragePolicy policy: URLCache.StoragePolicy) {
+        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+        let isStored = policy != .notAllowed
+
+        events.append("response \(statusCode) \(response.url?.absoluteString ?? "") stored=\(isStored)")
     }
 
-    let probeUrl: URL
-    let probeTimeout: TimeInterval?
-
-    var responseData = Data()
-    var responseStatusCode = 200
-
-    private(set) var calls: [Call] = []
-
-    init(probeUrl: URL, probeTimeout: TimeInterval?) {
-        self.probeUrl = probeUrl
-        self.probeTimeout = probeTimeout
+    func urlProtocol(_: URLProtocol, didLoad data: Data) {
+        events.append("data \(String(data: data, encoding: .utf8) ?? "")")
     }
 
-    func createFetchOperation<T>(
-        from url: URL,
-        timeout: TimeInterval?,
-        resultFactory: AnyNetworkResultFactory<T>,
-        requestFactoryClosure: ConfigMirrorRequestFactoryClosure
-    ) -> BaseOperation<T> {
-        let call = Call(
-            url: url,
-            timeout: timeout,
-            request: try? requestFactoryClosure(url, timeout).createRequest(),
-            probeRequest: try? requestFactoryClosure(probeUrl, probeTimeout).createRequest()
-        )
-
-        calls.append(call)
-
-        let response = HTTPURLResponse(
-            url: url,
-            statusCode: responseStatusCode,
-            httpVersion: "HTTP/1.1",
-            headerFields: nil
-        )
-
-        switch resultFactory.createResult(data: responseData, response: response, error: nil) {
-        case let .success(value):
-            return .createWithResult(value)
-        case let .failure(error):
-            return .createWithError(error)
-        }
+    func urlProtocolDidFinishLoading(_: URLProtocol) {
+        events.append("finished")
     }
+
+    func urlProtocol(_: URLProtocol, didFailWithError error: Error) {
+        events.append("failed \((error as NSError).code)")
+    }
+
+    func urlProtocol(_: URLProtocol, wasRedirectedTo _: URLRequest, redirectResponse _: URLResponse) {}
+    func urlProtocol(_: URLProtocol, cachedResponseIsValid _: CachedURLResponse) {}
+    func urlProtocol(_: URLProtocol, didReceive _: URLAuthenticationChallenge) {}
+    func urlProtocol(_: URLProtocol, didCancel _: URLAuthenticationChallenge) {}
 }

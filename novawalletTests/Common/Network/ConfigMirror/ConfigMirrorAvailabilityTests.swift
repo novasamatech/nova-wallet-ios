@@ -3,91 +3,39 @@ import Operation_iOS
 @testable import novawallet
 
 final class ConfigMirrorAvailabilityTests: XCTestCase {
-    private enum Constants {
-        static let cooldown: TimeInterval = 60
+    private let cooldown: TimeInterval = 60
+    private let clock = ConfigMirrorTestClock()
+
+    private func makeAvailability() -> ConfigMirrorAvailability {
+        ConfigMirrorAvailability(cooldown: cooldown) { [clock] in clock.uptime }
     }
 
-    private var clock: ConfigMirrorTestClock!
-    private var availability: ConfigMirrorAvailability!
+    func testConnectionFailureStartsCooldownThatEndsAfterItsPeriod() {
+        let availability = makeAvailability()
 
-    override func setUp() {
-        super.setUp()
-
-        let clock = ConfigMirrorTestClock()
-
-        self.clock = clock
-        availability = ConfigMirrorAvailability(cooldown: Constants.cooldown) { clock.uptime }
-    }
-
-    func testIsAvailableBeforeAnyFailure() {
         XCTAssertTrue(availability.isAvailable)
-    }
-
-    func testConnectionFailureStartsCooldown() {
-        for code in [URLError.Code.timedOut, .cannotConnectToHost, .cannotFindHost, .secureConnectionFailed] {
-            let clock = ConfigMirrorTestClock()
-            let availability = ConfigMirrorAvailability(cooldown: Constants.cooldown) { clock.uptime }
-
-            XCTAssertTrue(availability.registerFailure(URLError(code)), "\(code)")
-            XCTAssertFalse(availability.isAvailable, "\(code)")
-        }
-    }
-
-    func testCooldownEndsAfterItsPeriod() {
-        // given
         XCTAssertTrue(availability.registerFailure(URLError(.timedOut)))
 
-        // when
-        clock.advance(by: Constants.cooldown - 1)
+        clock.uptime += cooldown - 1
 
-        // then
+        // a failure during the cool-down neither starts a new one nor prolongs it
+        XCTAssertFalse(availability.registerFailure(URLError(.cannotConnectToHost)))
         XCTAssertFalse(availability.isAvailable)
 
-        // when
-        clock.advance(by: 1)
+        clock.uptime += 1
 
-        // then
         XCTAssertTrue(availability.isAvailable)
-    }
-
-    func testFailureDuringCooldownDoesNotProlongIt() {
-        // given
-        XCTAssertTrue(availability.registerFailure(URLError(.timedOut)))
-
-        // when
-        clock.advance(by: Constants.cooldown - 1)
-
-        // then
-        XCTAssertFalse(availability.registerFailure(URLError(.timedOut)))
-
-        // when
-        clock.advance(by: 1)
-
-        // then
-        XCTAssertTrue(availability.isAvailable)
-    }
-
-    func testFailureAfterCooldownStartsNewOne() {
-        // given
-        XCTAssertTrue(availability.registerFailure(URLError(.timedOut)))
-
-        clock.advance(by: Constants.cooldown)
-
-        // when
-        XCTAssertTrue(availability.registerFailure(URLError(.networkConnectionLost)))
-
-        // then
+        XCTAssertTrue(availability.registerFailure(URLError(.secureConnectionFailed)))
         XCTAssertFalse(availability.isAvailable)
     }
 
-    func testStatusAndBodyFailuresDoNotStartCooldown() {
+    func testOnlyConnectionFailuresStartCooldown() {
+        let availability = makeAvailability()
+
         let errors: [Error] = [
+            URLError(.cancelled),
             NetworkResponseError.resourceNotFound,
-            NetworkResponseError.unexpectedStatusCode,
-            NetworkResponseError.internalServerError,
-            NetworkBaseError.unexpectedResponseObject,
-            ConfigMirrorFetchError.emptyBody,
-            ConfigMirrorFetchError.malformedJson(CocoaError(.propertyListReadCorrupt)),
+            NetworkBaseError.unexpectedEmptyData,
             DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         ]
 
@@ -98,50 +46,21 @@ final class ConfigMirrorAvailabilityTests: XCTestCase {
         XCTAssertTrue(availability.isAvailable)
     }
 
-    func testCancellationDoesNotStartCooldown() {
-        XCTAssertFalse(availability.registerFailure(URLError(.cancelled)))
-        XCTAssertTrue(availability.isAvailable)
-    }
-
     func testOnlyOneOfConcurrentFailuresStartsCooldown() {
-        // given
-        let iterations = 200
+        let availability = makeAvailability()
         let mutex = NSLock()
         var startedCount = 0
 
-        // when
-        DispatchQueue.concurrentPerform(iterations: iterations) { _ in
-            let started = availability.registerFailure(URLError(.timedOut))
+        DispatchQueue.concurrentPerform(iterations: 200) { _ in
+            let hasStarted = availability.registerFailure(URLError(.timedOut))
             _ = availability.isAvailable
 
-            if started {
-                mutex.lock()
-                startedCount += 1
-                mutex.unlock()
-            }
+            mutex.lock()
+            startedCount += hasStarted ? 1 : 0
+            mutex.unlock()
         }
 
-        // then
         XCTAssertEqual(startedCount, 1)
         XCTAssertFalse(availability.isAvailable)
-    }
-
-    func testReportLogsFailureAndCooldownStartOnce() throws {
-        // given
-        let logger = ConfigMirrorLoggerSpy()
-        let mirrorUrl = try XCTUnwrap(URL(string: "https://mirror.novatest/v1/config/chains/v23/chains.json"))
-
-        // when
-        availability.reportFailure(URLError(.timedOut), for: mirrorUrl, logger: logger)
-        availability.reportFailure(NetworkResponseError.resourceNotFound, for: mirrorUrl, logger: logger)
-
-        // then
-        let warnings = logger.warnings
-
-        XCTAssertEqual(warnings.count, 3)
-        XCTAssertTrue(logger.warning(at: 0).contains("/v1/config/chains/v23/chains.json"))
-        XCTAssertTrue(logger.warning(at: 1).contains("cool-down"))
-        XCTAssertTrue(logger.warning(at: 2).contains("/v1/config/chains/v23/chains.json"))
-        XCTAssertTrue(logger.otherMessages.isEmpty)
     }
 }

@@ -90,29 +90,35 @@ Conventions:
 
 Files of the nova-utils `master` branch are read from the nova-infra mirror
 (`ApplicationConfig.configMirrorBaseURL`) first and from GitHub when the mirror attempt fails.
-Config URLs stay the GitHub ones: `ConfigMirrorURLResolver` maps them to the mirror at fetch time,
-so caches and files keyed by URL keep their keys. The fallback lives in three shared places and
-nowhere else: `DataOperationFactory` and `BaseFetchOperationFactory` (through the injected
-`ConfigMirrorFetchOperationFactory`), and Kingfisher loads (through
-`ConfigMirrorImageSourceFactory`, used by `RemoteImageViewModel` and the remote image providers).
-Fetch a nova-utils file or image through one of them — a hand-built `NetworkOperation` or
-Kingfisher call bypasses the mirror. Other repositories and branches are not mirrored and are
-fetched as before.
+There is one hook for that, below every caller: `ConfigMirrorURLProtocol`, a `URLProtocol` that
+handles a GET request when `ConfigMirrorURLResolver` maps its URL to the mirror. The caller keeps
+requesting the GitHub URL and gets a response for that URL, so caches and files keyed by URL
+(CoreData JSON providers, the Kingfisher image cache, stored XCM and types files) need no change.
+Other repositories and branches are not mirrored and their requests are not touched.
+
+`ConfigMirrorURLProtocol.register()` is called once, first thing in
+`RootPresenterFactory.createPresenter`. It covers `URLSession.shared` (what `NetworkOperation`
+uses) and the session of `KingfisherManager.shared.downloader`. **A nova-utils file or image is
+mirrored only when it is requested through one of these two.** A session of your own or another
+image downloader bypasses the mirror until the protocol class is added to its configuration.
 
 - **What fails a mirror attempt.** Any status but 200, a network or TLS error, a timeout, an empty
   body and, for a `.json` file, a body that does not parse as JSON. The body is checked because
-  callers of `DataOperationFactory` decode after the operation has completed, when it is too late
-  to fall back. A mirror image that cannot be processed fails the same way. The GitHub attempt is
-  not checked and behaves as it did before the mirror.
+  callers such as `DataOperationFactory` decode after the request is over, when it is too late to
+  fall back. The original request is then performed as the caller made it and its answer is handed
+  over as it is.
 - **Timeouts.** The mirror attempt gets `ConfigMirrorConstants.attemptTimeout` (5 s) and never more
-  than half of the caller's own timeout; the GitHub attempt keeps the caller's timeout. Images use
-  the same mirror timeout through a Kingfisher request modifier that touches only the mirror
-  request.
+  than half of the request's own timeout. All of them are idle timeouts. A JSON from the mirror
+  is held back until it is complete and checked, so for the caller's timeout that download is
+  silence; anything else, and the whole answer of the original URL, is passed on as it arrives.
 - **Cool-down.** After the mirror could not be reached (a URL session error; not a status or a
-  body failure, which are fast and concern one file) `ConfigMirrorAvailability` makes files and
-  images skip the mirror for `ConfigMirrorConstants.unavailabilityCooldown` (60 s). The state is
-  in memory, shared by both factories and injected into them. It is read when an operation or an
-  image source is created.
+  body failure, which are fast and concern one file) `ConfigMirrorAvailability` makes every
+  request skip the mirror for `ConfigMirrorConstants.unavailabilityCooldown` (60 s). A cancelled
+  request says nothing about the mirror.
+- **HTTP cache.** The protocol performs its requests through `ConfigMirrorLoader`, a session of
+  its own that uses `URLCache.shared`. The mirror answer is cached under the mirror URL and the
+  GitHub one under the GitHub URL, by their own headers and the caller's cache policy. The answer
+  handed to the caller is not stored a second time.
 - **Logging.** Every fallback is logged at `warning` with the mirror path and the error, and so is
   the start of a cool-down. A mirror that keeps failing is otherwise invisible, because the app
   goes on working from GitHub.
