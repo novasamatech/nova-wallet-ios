@@ -207,12 +207,9 @@ private extension TransactionTrackingFacade {
     func handle(_ result: TransactionWatchResult, for key: TransactionTrackingKey, watchId: UUID) {
         mutex.lock()
         let acceptedWatch = accept(result, for: key, watchId: watchId)
-        let releasesBackgroundTime = !hasBackgroundWindow()
         mutex.unlock()
 
-        if releasesBackgroundTime {
-            backgroundTimeKeeper?.release()
-        }
+        releaseBackgroundTimeIfIdle()
 
         guard let acceptedWatch, case let .decided(outcome) = result else {
             return
@@ -264,12 +261,9 @@ private extension TransactionTrackingFacade {
         recentlyResolved[key] = RecentResolution(resolvedAt: Date(), outcome: outcome)
         pruneRecentlyResolved(now: Date())
         let keyWaiters = waiters.removeValue(forKey: key)
-        let releasesBackgroundTime = !hasBackgroundWindow()
         mutex.unlock()
 
-        if releasesBackgroundTime {
-            backgroundTimeKeeper?.release()
-        }
+        releaseBackgroundTimeIfIdle()
 
         keyWaiters?.values.forEach { $0(.resolved(outcome)) }
 
@@ -331,8 +325,17 @@ private extension TransactionTrackingFacade {
         return waiter
     }
 
-    func hasBackgroundWindow() -> Bool {
-        entries.values.contains { ($0.backgroundUntil ?? .distantPast) > Date() }
+    func releaseBackgroundTimeIfIdle() {
+        // Checked on main: an entry is registered before its keep request is posted there, so a keep that ran is seen.
+        backgroundTimeKeeper?.release { [weak self] in
+            guard let self else { return true }
+
+            mutex.lock()
+            let isIdle = entries.values.allSatisfy { ($0.backgroundUntil ?? .distantPast) <= Date() }
+            mutex.unlock()
+
+            return isIdle
+        }
     }
 
     func runPickup() {

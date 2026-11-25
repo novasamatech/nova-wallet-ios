@@ -4,6 +4,7 @@ protocol BackgroundTimeKeeping: AnyObject {
     func keepAwake(until date: Date)
     func keepAwakeIfInBackground(until date: Date)
     func release()
+    func release(when isIdle: @escaping () -> Bool)
 }
 
 final class BackgroundTimeKeeper {
@@ -37,7 +38,15 @@ extension BackgroundTimeKeeper: BackgroundTimeKeeping {
     }
 
     func release() {
+        release { true }
+    }
+
+    func release(when isIdle: @escaping () -> Bool) {
         DispatchQueue.main.async { [weak self] in
+            guard isIdle() else {
+                return
+            }
+
             self?.keepUntil = nil
             self?.end(reason: "released")
         }
