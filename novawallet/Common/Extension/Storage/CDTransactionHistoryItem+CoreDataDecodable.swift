@@ -21,13 +21,18 @@ extension CDTransactionItem: CoreDataCodable {
         sender = try container.decode(String.self, forKey: .sender)
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
         amountInPlank = try container.decodeIfPresent(String.self, forKey: .amountInPlank)
-        status = try container.decode(Int16.self, forKey: .status)
 
-        timestamp = try container.decode(Int64.self, forKey: .timestamp)
+        let incomingStatus = try container.decode(Int16.self, forKey: .status)
+        let stored = TransactionHistoryItem.Status(rawValue: status) ?? .pending
+        let incoming = TransactionHistoryItem.Status(rawValue: incomingStatus) ?? .pending
+        let keepsStoredResult = sourceValue != .substrate &&
+            TransactionHistoryStatusRank.isDowngrade(from: stored, to: incoming)
 
-        if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
-            self.fee = fee
+        if !keepsStoredResult {
+            status = incomingStatus
+            try populateResult(from: container)
         }
+
         if let feeAssetId = try container.decodeIfPresent(UInt32.self, forKey: .feeAssetId) {
             self.feeAssetId = NSNumber(value: feeAssetId)
         } else {
@@ -39,17 +44,6 @@ extension CDTransactionItem: CoreDataCodable {
 
         call = try container.decodeIfPresent(Data.self, forKey: .call)
 
-        if let number = try container.decodeIfPresent(UInt64.self, forKey: .blockNumber) {
-            blockNumber = NSNumber(value: number)
-        } else {
-            blockNumber = nil
-        }
-
-        if let index = try container.decodeIfPresent(Int16.self, forKey: .txIndex) {
-            txIndex = NSNumber(value: index)
-        } else {
-            txIndex = nil
-        }
         if let swapContainer = try? container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap) {
             if swap == nil {
                 let newSwap = CDTransactionSwapItem(context: context)
@@ -107,6 +101,28 @@ extension CDTransactionItem: CoreDataCodable {
                 swap.assetIdOut.map { UInt32(bitPattern: $0.int32Value) },
                 forKey: .assetIdOut
             )
+        }
+    }
+}
+
+private extension CDTransactionItem {
+    func populateResult(from container: KeyedDecodingContainer<TransactionHistoryItem.CodingKeys>) throws {
+        timestamp = try container.decode(Int64.self, forKey: .timestamp)
+
+        if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
+            self.fee = fee
+        }
+
+        if let number = try container.decodeIfPresent(UInt64.self, forKey: .blockNumber) {
+            blockNumber = NSNumber(value: number)
+        } else {
+            blockNumber = nil
+        }
+
+        if let index = try container.decodeIfPresent(Int16.self, forKey: .txIndex) {
+            txIndex = NSNumber(value: index)
+        } else {
+            txIndex = nil
         }
     }
 }

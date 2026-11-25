@@ -74,6 +74,26 @@ extension TransactionHistoryItem {
     }
 }
 
+enum TransactionHistoryStatusRank {
+    static func isDowngrade(
+        from stored: TransactionHistoryItem.Status,
+        to incoming: TransactionHistoryItem.Status
+    ) -> Bool {
+        rank(of: incoming) < rank(of: stored)
+    }
+
+    private static func rank(of status: TransactionHistoryItem.Status) -> Int {
+        switch status {
+        case .pending:
+            0
+        case .failed:
+            1
+        case .success:
+            2
+        }
+    }
+}
+
 extension TransactionHistoryItemSource {
     init(assetTypeString: String?) {
         let assetType: AssetType? = assetTypeString.flatMap { .init(rawValue: $0) }
