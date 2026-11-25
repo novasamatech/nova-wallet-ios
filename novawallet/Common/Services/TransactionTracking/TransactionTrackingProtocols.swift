@@ -10,6 +10,11 @@ protocol TransactionTrackingFacadeProtocol: AnyObject {
 
     @discardableResult
     func track(_ request: TransactionTrackingRequest) -> TransactionTrackingHandleProtocol
+
+    func createResultWrapper(
+        for key: TransactionTrackingKey,
+        budget: TimeInterval
+    ) -> CompoundOperationWrapper<TransactionTrackingResult>
 }
 
 protocol ChainTransactionTracking: AnyObject {

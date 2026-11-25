@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */; };
 		F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */; };
 		E51B6D47495EB354653CBAA1 /* TransactionTrackingFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */; };
 		7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */; };
@@ -7327,6 +7328,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionTrackingFacade+Shared.swift"; sourceTree = "<group>"; };
 		8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
 		5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingFacadeTests.swift; sourceTree = "<group>"; };
 		043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionPickup.swift; sourceTree = "<group>"; };
@@ -23346,6 +23348,7 @@
 		142F296907C084F48FD3F335 /* TransactionTracking */ = {
 			isa = PBXGroup;
 			children = (
+				1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */,
 				043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */,
 				25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */,
 				BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */,
@@ -34030,6 +34033,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */,
 				7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */,
 				F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */,
 				DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */,

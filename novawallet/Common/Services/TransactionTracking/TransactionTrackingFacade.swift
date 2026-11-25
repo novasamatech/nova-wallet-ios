@@ -3,6 +3,8 @@ import Foundation_iOS
 import Operation_iOS
 
 final class TransactionTrackingFacade {
+    typealias Waiter = (TransactionTrackingResult) -> Void
+
     let trackers: [ChainTransactionTracking]
     let resolver: TransactionHistoryResolving
     let pickup: PendingTransactionPickupProtocol
@@ -14,7 +16,8 @@ final class TransactionTrackingFacade {
 
     private let mutex = NSLock()
     private var entries: [TransactionTrackingKey: Entry] = [:]
-    private var recentlyResolved: [TransactionTrackingKey: Date] = [:]
+    private var recentlyResolved: [TransactionTrackingKey: RecentResolution] = [:]
+    private var waiters: [TransactionTrackingKey: [UUID: Waiter]] = [:]
     private var isActivated = false
 
     init(
@@ -73,6 +76,28 @@ extension TransactionTrackingFacade: TransactionTrackingFacadeProtocol {
 
         return TransactionTrackingHandle(key: request.key)
     }
+
+    func createResultWrapper(
+        for key: TransactionTrackingKey,
+        budget: TimeInterval
+    ) -> CompoundOperationWrapper<TransactionTrackingResult> {
+        let waiterId = UUID()
+
+        let operation = AsyncClosureOperation<TransactionTrackingResult>(
+            operationClosure: { [weak self] completion in
+                guard let self else {
+                    throw BaseOperationError.parentOperationCancelled
+                }
+
+                attachWaiter(waiterId, for: key, budget: budget) { completion(.success($0)) }
+            },
+            cancelationClosure: { [weak self] in
+                _ = self?.takeWaiter(waiterId, for: key)
+            }
+        )
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
 }
 
 // MARK: - Private
@@ -83,6 +108,11 @@ private extension TransactionTrackingFacade {
         var watch: TransactionWatching
         var watchId: UUID
         var isResolving: Bool
+    }
+
+    struct RecentResolution {
+        let resolvedAt: Date
+        let outcome: TransactionTrackingOutcome
     }
 
     enum Constants {
@@ -211,9 +241,12 @@ private extension TransactionTrackingFacade {
     ) {
         mutex.lock()
         entries[key] = nil
-        recentlyResolved[key] = Date()
+        recentlyResolved[key] = RecentResolution(resolvedAt: Date(), outcome: outcome)
         pruneRecentlyResolved(now: Date())
+        let keyWaiters = waiters.removeValue(forKey: key)
         mutex.unlock()
+
+        keyWaiters?.values.forEach { $0(.resolved(outcome)) }
 
         switch result {
         case .success:
@@ -222,6 +255,55 @@ private extension TransactionTrackingFacade {
         case let .failure(error):
             logger.error("Tracking: \(key) resolution failed \(error)")
         }
+    }
+
+    func attachWaiter(
+        _ waiterId: UUID,
+        for key: TransactionTrackingKey,
+        budget: TimeInterval,
+        waiter: @escaping Waiter
+    ) {
+        mutex.lock()
+
+        if let resolution = recentlyResolved[key] {
+            mutex.unlock()
+            waiter(.resolved(resolution.outcome))
+            return
+        }
+
+        guard entries[key] != nil else {
+            mutex.unlock()
+            logger.warning("Tracking: \(key) not tracked, waiter still pending")
+            waiter(.stillPending)
+            return
+        }
+
+        waiters[key, default: [:]][waiterId] = waiter
+        mutex.unlock()
+
+        logger.debug("Tracking: \(key) waiter attached")
+
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + budget) { [weak self] in
+            guard let waiter = self?.takeWaiter(waiterId, for: key) else {
+                return
+            }
+
+            self?.logger.debug("Tracking: \(key) waiter still pending")
+            waiter(.stillPending)
+        }
+    }
+
+    func takeWaiter(_ waiterId: UUID, for key: TransactionTrackingKey) -> Waiter? {
+        mutex.lock()
+        let waiter = waiters[key]?.removeValue(forKey: waiterId)
+
+        if waiters[key]?.isEmpty == true {
+            waiters[key] = nil
+        }
+
+        mutex.unlock()
+
+        return waiter
     }
 
     func runPickup() {
@@ -241,7 +323,7 @@ private extension TransactionTrackingFacade {
 
     func pruneRecentlyResolved(now: Date) {
         recentlyResolved = recentlyResolved.filter {
-            now.timeIntervalSince($0.value) < Constants.recentlyResolvedLifetime
+            now.timeIntervalSince($0.value.resolvedAt) < Constants.recentlyResolvedLifetime
         }
 
         let overflow = recentlyResolved.count - Constants.recentlyResolvedLimit
@@ -251,7 +333,7 @@ private extension TransactionTrackingFacade {
         }
 
         recentlyResolved
-            .sorted { $0.value < $1.value }
+            .sorted { $0.value.resolvedAt < $1.value.resolvedAt }
             .prefix(overflow)
             .forEach { recentlyResolved[$0.key] = nil }
     }
@@ -269,41 +351,4 @@ extension TransactionTrackingFacade: ApplicationHandlerDelegate {
 
         runPickup()
     }
-}
-
-// MARK: - Shared
-
-extension TransactionTrackingFacade {
-    static let shared: TransactionTrackingFacadeProtocol = {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let logger = Logger.shared
-        let storageFacade = SubstrateDataStorageFacade.shared
-
-        let trackers: [ChainTransactionTracking] = [
-            EvmTransactionTracker(
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue,
-                logger: logger
-            )
-        ]
-
-        let pickup = PendingTransactionPickup(
-            storageFacade: storageFacade,
-            chainRegistry: chainRegistry,
-            trackers: trackers,
-            logger: logger
-        )
-
-        return TransactionTrackingFacade(
-            trackers: trackers,
-            resolver: TransactionHistoryResolver(storageFacade: storageFacade),
-            pickup: pickup,
-            chainRegistry: chainRegistry,
-            applicationHandler: ApplicationHandler(),
-            eventCenter: EventCenter.shared,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-    }()
 }
