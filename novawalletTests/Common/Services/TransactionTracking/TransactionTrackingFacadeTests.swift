@@ -2,6 +2,7 @@ import BigInt
 import Cuckoo
 import Foundation_iOS
 @testable import novawallet
+import Operation_iOS
 import XCTest
 
 final class TransactionTrackingFacadeTests: XCTestCase {
@@ -41,6 +42,40 @@ final class TransactionTrackingFacadeTests: XCTestCase {
         verify(resolver, times(1)).createResolutionWrapper(for: any(), outcome: any())
         verify(tracker, times(1)).startWatch(for: any(), chain: any(), onResult: any())
     }
+
+    func testBudgetEndAnswersStillPendingAndWatchStillResolves() throws {
+        let facade = makeFacade()
+        let request = makeRequest(nonce: 7, mode: .fresh)
+        let resolved = expectation(description: "Resolution notified")
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { _ in resolved.fulfill() }
+        }
+
+        facade.track(request)
+        let result = try waitForResult(of: facade.createResultWrapper(for: request.key, budget: 0.05))
+        verify(watch, never()).stop()
+        resultClosures.first?(.decided(.dropped(.nonceConsumed)))
+        wait(for: [resolved], timeout: Constants.defaultExpectationDuration)
+
+        guard case .stillPending = result else { return XCTFail("Budget end did not answer still pending") }
+        verify(resolver, times(1)).createResolutionWrapper(for: any(), outcome: any())
+    }
+
+    func testWaiterAttachedAfterResolutionGetsTheOutcome() throws {
+        let facade = makeFacade()
+        let request = makeRequest(nonce: 7, mode: .fresh)
+        let resolved = expectation(description: "Resolution notified")
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { _ in resolved.fulfill() }
+        }
+
+        facade.track(request)
+        resultClosures.first?(.decided(.dropped(.nonceConsumed)))
+        wait(for: [resolved], timeout: Constants.defaultExpectationDuration)
+        let result = try waitForResult(of: facade.createResultWrapper(for: request.key, budget: 60))
+
+        guard case .resolved(.dropped) = result else { return XCTFail("Late waiter did not get the outcome") }
+    }
 }
 
 private extension TransactionTrackingFacadeTests {
@@ -74,6 +109,17 @@ private extension TransactionTrackingFacadeTests {
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
+    }
+
+    func waitForResult(
+        of wrapper: CompoundOperationWrapper<TransactionTrackingResult>
+    ) throws -> TransactionTrackingResult {
+        let completed = expectation(description: "Result delivered")
+        wrapper.targetOperation.completionBlock = { completed.fulfill() }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [completed], timeout: Constants.defaultExpectationDuration)
+
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
     func makeRequest(nonce: BigUInt?, mode: TransactionTrackingMode) -> TransactionTrackingRequest {
