@@ -2,6 +2,8 @@ import Foundation
 import Operation_iOS
 
 class BaseFetchOperationFactory {
+    private let mirrorFetchFactory = ConfigMirrorFetchOperationFactory()
+
     func createRequestFactory(
         from url: URL,
         shouldUseCache: Bool,
@@ -33,10 +35,15 @@ class BaseFetchOperationFactory {
         shouldUseCache: Bool = true,
         timeout: TimeInterval? = nil
     ) -> BaseOperation<T> where T: Decodable {
-        let requestFactory = createRequestFactory(from: url, shouldUseCache: shouldUseCache, timeout: timeout)
         let resultFactory: AnyNetworkResultFactory<T> = createResultFactory()
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        return mirrorFetchFactory.createFetchOperation(
+            from: url,
+            timeout: timeout,
+            resultFactory: resultFactory
+        ) { requestURL, requestTimeout in
+            self.createRequestFactory(from: requestURL, shouldUseCache: shouldUseCache, timeout: requestTimeout)
+        }
     }
 
     func createResultFactory<T>() -> AnyNetworkResultFactory<T> where T: Decodable {

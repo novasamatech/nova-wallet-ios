@@ -9,33 +9,37 @@ final class DataOperationFactory: DataOperationFactoryProtocol {
     let timeout: TimeInterval?
     let ignoresCache: Bool
 
+    private let mirrorFetchFactory = ConfigMirrorFetchOperationFactory()
+
     init(timeout: TimeInterval? = nil, ignoresCache: Bool = false) {
         self.timeout = timeout
         self.ignoresCache = ignoresCache
     }
 
     func fetchData(from url: URL) -> BaseOperation<Data> {
-        let requestFactory = BlockNetworkRequestFactory { [timeout, ignoresCache] in
-            var request = URLRequest(url: url)
-            request.httpMethod = HttpMethod.get.rawValue
-
-            if let timeout {
-                request.timeoutInterval = timeout
-            }
-
-            if ignoresCache {
-                request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-            }
-
-            return request
-        }
-
         let resultFactory = AnyNetworkResultFactory<Data> { data in
             data
         }
 
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        return mirrorFetchFactory.createFetchOperation(
+            from: url,
+            timeout: timeout,
+            resultFactory: resultFactory
+        ) { [ignoresCache] requestURL, requestTimeout in
+            BlockNetworkRequestFactory {
+                var request = URLRequest(url: requestURL)
+                request.httpMethod = HttpMethod.get.rawValue
 
-        return operation
+                if let requestTimeout {
+                    request.timeoutInterval = requestTimeout
+                }
+
+                if ignoresCache {
+                    request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+                }
+
+                return request
+            }
+        }
     }
 }
