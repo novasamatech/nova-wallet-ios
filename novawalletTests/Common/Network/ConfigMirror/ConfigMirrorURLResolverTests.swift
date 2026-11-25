@@ -96,12 +96,93 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
         assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master")
     }
 
-    func testAppConfigCoversBothGitHubFormsOfEveryConfiguredUrl() throws {
+    func testIgnoresPathThatClimbsUp() {
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/../../../v1/other/endpoint?x=1")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/../../secret.json")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/..")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/..")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/../x.json")
+    }
+
+    func testIgnoresPercentEncodedPathThatClimbsUp() {
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/%2e%2e/%2e%2e/v1/other")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/%2E%2E/x.json")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/%2e%2E/x.json")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/.%2e/x.json")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/%2E./x.json")
+        assertNoMirror(of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/%2e%2e")
+    }
+
+    func testKeepsDotsThatDoNotClimbUp() {
+        assertMirror(
+            of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/v1.2/a..b/...svg",
+            is: "https://mirror.novatest/v1/config/icons/v1.2/a..b/...svg"
+        )
+        assertMirror(
+            of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/./DOT.svg",
+            is: "https://mirror.novatest/v1/config/icons/./DOT.svg"
+        )
+        assertMirror(
+            of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/DOT.svg?path=../x#../y",
+            is: "https://mirror.novatest/v1/config/icons/DOT.svg?path=../x#../y"
+        )
+        assertMirror(
+            of: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/%252e%252e/DOT.svg",
+            is: "https://mirror.novatest/v1/config/icons/%252e%252e/DOT.svg"
+        )
+    }
+
+    func testAppConfigMapsEveryNovaUtilsUrlToMirror() throws {
         let config = ApplicationConfig.shared
         let appResolver = ConfigMirrorURLResolver(applicationConfig: config)
         let mirrorBase = config.configMirrorBaseURL.absoluteString
 
         XCTAssertTrue(mirrorBase.hasSuffix("/v1/config/"))
+
+        let fileUrls: [String: URL] = [
+            "chainListURL": config.chainListURL,
+            "defaultAssetsURL": config.defaultAssetsURL,
+            "preConfiguredLightChainListURL": config.preConfiguredLightChainListURL,
+            "preConfiguredChainDirectoryURL": config.preConfiguredChainDirectoryURL.appendingPathComponent("0xabc.json"),
+            "evmAssetsURL": config.evmAssetsURL,
+            "xcmTransfersURL": config.xcmTransfersURL,
+            "xcmDynamicTransfersURL": config.xcmDynamicTransfersURL,
+            "globalConfigURL": config.globalConfigURL,
+            "dAppsListURL": config.dAppsListURL,
+            "preferredValidatorsURL": config.preferredValidatorsURL,
+            "bittensorConfigURL": config.bittensorConfigURL,
+            "governanceDAppsListURL": config.governanceDAppsListURL,
+            "commonTypesURL": config.commonTypesURL,
+            "slip44URL": config.slip44URL
+        ]
+
+        let pathPrefixes: [String: String] = [
+            "whiteAppearanceIconsPath": config.whiteAppearanceIconsPath,
+            "coloredAppearanceIconsPath": config.coloredAppearanceIconsPath,
+            "bannersContentPath": config.bannersContentPath,
+            "assetHubMigrationConfigsPath": config.assetHubMigrationConfigsPath,
+            "legalDocumentsPath": config.legalDocumentsPath,
+            "announcementsPath": config.announcementsPath
+        ]
+
+        for (name, url) in fileUrls {
+            let mirrorUrl = appResolver.mirrorURL(for: url)?.absoluteString ?? ""
+
+            XCTAssertTrue(mirrorUrl.hasPrefix(mirrorBase), name)
+            XCTAssertTrue(mirrorUrl.hasSuffix("/" + url.lastPathComponent), name)
+        }
+
+        for (name, prefix) in pathPrefixes {
+            let url = try XCTUnwrap(URL(string: prefix + "file.json"), name)
+            let collapsedUrl = try XCTUnwrap(URL(string: (prefix as NSString).appendingPathComponent("file.json")), name)
+
+            for prefixedUrl in [url, collapsedUrl] {
+                let mirrorUrl = appResolver.mirrorURL(for: prefixedUrl)?.absoluteString ?? ""
+
+                XCTAssertTrue(mirrorUrl.hasPrefix(mirrorBase), name)
+                XCTAssertTrue(mirrorUrl.hasSuffix("/file.json"), name)
+            }
+        }
 
         XCTAssertEqual(
             appResolver.mirrorURL(for: config.commonTypesURL)?.absoluteString,
@@ -114,9 +195,16 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
             appResolver.mirrorURL(for: iconUrl)?.absoluteString,
             mirrorBase + "icons/tokens/white/v1/DOT.svg"
         )
+    }
+
+    func testAppConfigKeepsOtherRepositoriesOnGitHub() {
+        let config = ApplicationConfig.shared
+        let appResolver = ConfigMirrorURLResolver(applicationConfig: config)
 
         XCTAssertNil(appResolver.mirrorURL(for: config.inAppUpdatesEntrypointURL))
+        XCTAssertNil(appResolver.mirrorURL(for: config.inAppUpdatesChangelogsURL))
         XCTAssertNil(appResolver.mirrorURL(for: config.logoURL))
+        XCTAssertNil(appResolver.mirrorURL(for: GovernanceDelegateMetadataFactory.baseUrl.appendingPathComponent("a.json")))
     }
 
     private func assertMirror(

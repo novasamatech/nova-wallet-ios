@@ -1,6 +1,8 @@
 import Foundation
 
 extension ApplicationConfig {
+    // A compile-time constant on purpose: the global config that carries `infraUrl` is itself fetched
+    // through the mirror. The host must match `infraUrl` in nova-utils `global/config*.json`.
     var configMirrorBaseURL: URL {
         #if F_RELEASE
             URL(string: "https://nova-infra.novasama-tech.org/v1/config/")!
