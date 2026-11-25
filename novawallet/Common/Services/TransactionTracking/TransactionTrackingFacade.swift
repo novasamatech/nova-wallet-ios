@@ -3,6 +3,8 @@ import Foundation_iOS
 import Operation_iOS
 
 final class TransactionTrackingFacade {
+    typealias Waiter = (TransactionTrackingResult) -> Void
+
     let trackers: [ChainTransactionTracking]
     let resolver: TransactionHistoryResolving
     let pickup: PendingTransactionPickupProtocol
@@ -11,10 +13,12 @@ final class TransactionTrackingFacade {
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let backgroundTimeKeeper: BackgroundTimeKeeping?
 
     private let mutex = NSLock()
     private var entries: [TransactionTrackingKey: Entry] = [:]
-    private var recentlyResolved: [TransactionTrackingKey: Date] = [:]
+    private var recentlyResolved: [TransactionTrackingKey: RecentResolution] = [:]
+    private var waiters: [TransactionTrackingKey: [UUID: Waiter]] = [:]
     private var isActivated = false
 
     init(
@@ -25,7 +29,8 @@ final class TransactionTrackingFacade {
         applicationHandler: ApplicationHandlerProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        backgroundTimeKeeper: BackgroundTimeKeeping? = nil
     ) {
         self.trackers = trackers
         self.resolver = resolver
@@ -35,6 +40,7 @@ final class TransactionTrackingFacade {
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
+        self.backgroundTimeKeeper = backgroundTimeKeeper
     }
 }
 
@@ -67,11 +73,38 @@ extension TransactionTrackingFacade: TransactionTrackingFacadeProtocol {
     func track(_ request: TransactionTrackingRequest) -> TransactionTrackingHandleProtocol {
         mutex.lock()
         let replacedWatch = register(request)
+        let backgroundUntil = entries[request.key]?.backgroundUntil
         mutex.unlock()
 
         replacedWatch?.stop()
 
+        if let backgroundUntil {
+            backgroundTimeKeeper?.keepAwakeIfInBackground(until: backgroundUntil)
+        }
+
         return TransactionTrackingHandle(key: request.key)
+    }
+
+    func createResultWrapper(
+        for key: TransactionTrackingKey,
+        budget: TimeInterval
+    ) -> CompoundOperationWrapper<TransactionTrackingResult> {
+        let waiterId = UUID()
+
+        let operation = AsyncClosureOperation<TransactionTrackingResult>(
+            operationClosure: { [weak self] completion in
+                guard let self else {
+                    throw BaseOperationError.parentOperationCancelled
+                }
+
+                attachWaiter(waiterId, for: key, budget: budget) { completion(.success($0)) }
+            },
+            cancelationClosure: { [weak self] in
+                _ = self?.takeWaiter(waiterId, for: key)
+            }
+        )
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }
 
@@ -83,6 +116,12 @@ private extension TransactionTrackingFacade {
         var watch: TransactionWatching
         var watchId: UUID
         var isResolving: Bool
+        var backgroundUntil: Date?
+    }
+
+    struct RecentResolution {
+        let resolvedAt: Date
+        let outcome: TransactionTrackingOutcome
     }
 
     enum Constants {
@@ -156,13 +195,21 @@ private extension TransactionTrackingFacade {
             self?.handle(result, for: key, watchId: watchId)
         }
 
-        return Entry(request: request, watch: watch, watchId: watchId, isResolving: false)
+        var entry = Entry(request: request, watch: watch, watchId: watchId, isResolving: false)
+
+        if backgroundTimeKeeper != nil, !request.mode.isRecovered {
+            entry.backgroundUntil = Date().addingTimeInterval(tracker.backgroundWindow(for: chain))
+        }
+
+        return entry
     }
 
     func handle(_ result: TransactionWatchResult, for key: TransactionTrackingKey, watchId: UUID) {
         mutex.lock()
         let acceptedWatch = accept(result, for: key, watchId: watchId)
         mutex.unlock()
+
+        releaseBackgroundTimeIfIdle()
 
         guard let acceptedWatch, case let .decided(outcome) = result else {
             return
@@ -211,9 +258,14 @@ private extension TransactionTrackingFacade {
     ) {
         mutex.lock()
         entries[key] = nil
-        recentlyResolved[key] = Date()
+        recentlyResolved[key] = RecentResolution(resolvedAt: Date(), outcome: outcome)
         pruneRecentlyResolved(now: Date())
+        let keyWaiters = waiters.removeValue(forKey: key)
         mutex.unlock()
+
+        releaseBackgroundTimeIfIdle()
+
+        keyWaiters?.values.forEach { $0(.resolved(outcome)) }
 
         switch result {
         case .success:
@@ -221,6 +273,68 @@ private extension TransactionTrackingFacade {
             logger.debug("Tracking: \(key) resolved \(outcome)")
         case let .failure(error):
             logger.error("Tracking: \(key) resolution failed \(error)")
+        }
+    }
+
+    func attachWaiter(
+        _ waiterId: UUID,
+        for key: TransactionTrackingKey,
+        budget: TimeInterval,
+        waiter: @escaping Waiter
+    ) {
+        mutex.lock()
+
+        if let resolution = recentlyResolved[key] {
+            mutex.unlock()
+            waiter(.resolved(resolution.outcome))
+            return
+        }
+
+        guard entries[key] != nil else {
+            mutex.unlock()
+            logger.warning("Tracking: \(key) not tracked, waiter still pending")
+            waiter(.stillPending)
+            return
+        }
+
+        waiters[key, default: [:]][waiterId] = waiter
+        mutex.unlock()
+
+        logger.debug("Tracking: \(key) waiter attached")
+
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + budget) { [weak self] in
+            guard let waiter = self?.takeWaiter(waiterId, for: key) else {
+                return
+            }
+
+            self?.logger.debug("Tracking: \(key) waiter still pending")
+            waiter(.stillPending)
+        }
+    }
+
+    func takeWaiter(_ waiterId: UUID, for key: TransactionTrackingKey) -> Waiter? {
+        mutex.lock()
+        let waiter = waiters[key]?.removeValue(forKey: waiterId)
+
+        if waiters[key]?.isEmpty == true {
+            waiters[key] = nil
+        }
+
+        mutex.unlock()
+
+        return waiter
+    }
+
+    func releaseBackgroundTimeIfIdle() {
+        // Checked on main: an entry is registered before its keep request is posted there, so a keep that ran is seen.
+        backgroundTimeKeeper?.release { [weak self] in
+            guard let self else { return true }
+
+            mutex.lock()
+            let isIdle = entries.values.allSatisfy { ($0.backgroundUntil ?? .distantPast) <= Date() }
+            mutex.unlock()
+
+            return isIdle
         }
     }
 
@@ -241,7 +355,7 @@ private extension TransactionTrackingFacade {
 
     func pruneRecentlyResolved(now: Date) {
         recentlyResolved = recentlyResolved.filter {
-            now.timeIntervalSince($0.value) < Constants.recentlyResolvedLifetime
+            now.timeIntervalSince($0.value.resolvedAt) < Constants.recentlyResolvedLifetime
         }
 
         let overflow = recentlyResolved.count - Constants.recentlyResolvedLimit
@@ -251,7 +365,7 @@ private extension TransactionTrackingFacade {
         }
 
         recentlyResolved
-            .sorted { $0.value < $1.value }
+            .sorted { $0.value.resolvedAt < $1.value.resolvedAt }
             .prefix(overflow)
             .forEach { recentlyResolved[$0.key] = nil }
     }
@@ -261,6 +375,8 @@ private extension TransactionTrackingFacade {
 
 extension TransactionTrackingFacade: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
+        backgroundTimeKeeper?.release()
+
         mutex.lock()
         let watches = entries.values.filter { !$0.isResolving }.map(\.watch)
         mutex.unlock()
@@ -269,41 +385,14 @@ extension TransactionTrackingFacade: ApplicationHandlerDelegate {
 
         runPickup()
     }
-}
 
-// MARK: - Shared
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+        let backgroundUntil = entries.values.compactMap(\.backgroundUntil).max()
+        mutex.unlock()
 
-extension TransactionTrackingFacade {
-    static let shared: TransactionTrackingFacadeProtocol = {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let logger = Logger.shared
-        let storageFacade = SubstrateDataStorageFacade.shared
-
-        let trackers: [ChainTransactionTracking] = [
-            EvmTransactionTracker(
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue,
-                logger: logger
-            )
-        ]
-
-        let pickup = PendingTransactionPickup(
-            storageFacade: storageFacade,
-            chainRegistry: chainRegistry,
-            trackers: trackers,
-            logger: logger
-        )
-
-        return TransactionTrackingFacade(
-            trackers: trackers,
-            resolver: TransactionHistoryResolver(storageFacade: storageFacade),
-            pickup: pickup,
-            chainRegistry: chainRegistry,
-            applicationHandler: ApplicationHandler(),
-            eventCenter: EventCenter.shared,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-    }()
+        if let backgroundUntil {
+            backgroundTimeKeeper?.keepAwake(until: backgroundUntil)
+        }
+    }
 }

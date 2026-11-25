@@ -71,6 +71,11 @@ enum TransactionWatchResult {
     case undecided
 }
 
+enum TransactionTrackingResult {
+    case resolved(TransactionTrackingOutcome)
+    case stillPending
+}
+
 struct TransactionTrackingHandle: TransactionTrackingHandleProtocol {
     let key: TransactionTrackingKey
 }

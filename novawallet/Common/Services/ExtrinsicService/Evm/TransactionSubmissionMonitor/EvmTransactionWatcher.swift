@@ -1,12 +1,10 @@
 import Foundation
 import Operation_iOS
-import SubstrateSdk
 
 final class EvmTransactionWatcher {
-    typealias Completion = (Result<EvmTransactionMonitorSubmission, Error>) -> Void
+    typealias Completion = (TransactionWatchResult) -> Void
 
     let queryOperationFactory: EthereumOperationFactoryProtocol
-    let headsConnection: JSONRPCEngine?
     let timing: EvmTransactionMonitorTiming
     let processingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -20,19 +18,16 @@ final class EvmTransactionWatcher {
     private var state: EvmTransactionMonitorState?
     private var completion: Completion?
     private var isFinished = false
-    private var headsSubscriptionId: UInt16?
     private var lastCheckStartedAt: Date?
 
     init(
         queryOperationFactory: EthereumOperationFactoryProtocol,
-        headsConnection: JSONRPCEngine?,
         timing: EvmTransactionMonitorTiming,
         processingQueue: DispatchQueue,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.queryOperationFactory = queryOperationFactory
-        self.headsConnection = headsConnection
         self.timing = timing
         self.processingQueue = processingQueue
         self.operationQueue = operationQueue
@@ -68,8 +63,6 @@ extension EvmTransactionWatcher {
         }
 
         pollScheduler.notifyAfter(nextPollInterval())
-
-        subscribeHeads()
     }
 
     func stop() {
@@ -84,6 +77,16 @@ extension EvmTransactionWatcher {
 
             startCheck(trigger: .request)
         }
+    }
+
+    func didReceiveHead() {
+        guard !isFinished, let state, Date().timeIntervalSince(state.startedAt) < timing.waitBudget else { return }
+
+        if let lastCheckStartedAt, Date().timeIntervalSince(lastCheckStartedAt) < timing.minHeadCheckSpacing {
+            return
+        }
+
+        startCheck(trigger: .head)
     }
 }
 
@@ -106,44 +109,6 @@ private extension EvmTransactionWatcher {
     func nextPollInterval() -> TimeInterval {
         let age = state.map { Date().timeIntervalSince($0.startedAt) } ?? 0
         return timing.interval(forAge: age)
-    }
-
-    func subscribeHeads() {
-        guard let headsConnection else { return }
-
-        typealias HeadsUpdate = JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>
-
-        let updateClosure: (HeadsUpdate) -> Void = { [weak self] _ in
-            self?.processingQueue.async { [weak self] in
-                self?.handleHead()
-            }
-        }
-
-        let failureClosure: (Error, Bool) -> Void = { [weak self] error, _ in
-            self?.logger.warning("EVM monitor: heads subscription failed \(error)")
-        }
-
-        do {
-            headsSubscriptionId = try headsConnection.subscribe(
-                EvmSubscriptionMessage.subscribeMethod,
-                params: EvmSubscriptionMessage.NewHeadsParams(),
-                unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
-                updateClosure: updateClosure,
-                failureClosure: failureClosure
-            )
-        } catch {
-            logger.warning("EVM monitor: heads subscription unavailable \(error)")
-        }
-    }
-
-    func handleHead() {
-        guard !isFinished else { return }
-
-        if let lastCheckStartedAt, Date().timeIntervalSince(lastCheckStartedAt) < timing.minHeadCheckSpacing {
-            return
-        }
-
-        startCheck(trigger: .head)
     }
 
     func startCheck(trigger: Trigger) {
@@ -247,26 +212,27 @@ private extension EvmTransactionWatcher {
         case .verifyDropped:
             verifyDropped()
         case let .success(receipt):
-            let status = EvmTransactionMonitorSubmission.TransactionStatus.success(
-                .init(transactionHash: receipt.transactionHash, blockHash: receipt.blockHash)
-            )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
+            finish(with: .decided(.included(Self.inclusion(from: receipt))))
         case let .failure(receipt):
-            let status = EvmTransactionMonitorSubmission.TransactionStatus.failure(
-                .init(transactionHash: receipt.transactionHash)
-            )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
+            finish(with: .decided(.includedFailed(Self.inclusion(from: receipt), .evmReverted)))
         case .dropped:
             logger.warning("EVM monitor: \(transaction.transactionHash) dropped")
-            finish(with: .failure(EvmTransactionMonitorError.dropped(transactionHash: transaction.transactionHash)))
+            finish(with: .decided(.dropped(.nonceConsumed)))
         case .stillPending:
             logger.warning("EVM monitor: \(transaction.transactionHash) still pending")
-            let error = EvmTransactionMonitorError.stillPending(transactionHash: transaction.transactionHash)
-            finish(with: .failure(error))
+            finish(with: .undecided)
         }
     }
 
-    func finish(with result: Result<EvmTransactionMonitorSubmission, Error>) {
+    static func inclusion(from receipt: EthereumTransactionReceipt) -> TransactionInclusion {
+        TransactionInclusion(
+            blockHash: receipt.blockHash,
+            blockNumber: receipt.blockNumberValue,
+            actualFee: receipt.fee
+        )
+    }
+
+    func finish(with result: TransactionWatchResult) {
         guard !isFinished else { return }
 
         tearDown()
@@ -285,11 +251,6 @@ private extension EvmTransactionWatcher {
         pollScheduler.cancel()
         deadlineScheduler.cancel()
         callStore.cancel()
-
-        if let headsSubscriptionId {
-            headsConnection?.cancelForIdentifier(headsSubscriptionId)
-            self.headsSubscriptionId = nil
-        }
     }
 }
 

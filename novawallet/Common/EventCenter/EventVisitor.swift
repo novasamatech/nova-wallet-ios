@@ -24,6 +24,7 @@ protocol EventVisitorProtocol: AnyObject {
     func processRuntimeCoderCreationFailed(event: RuntimeCoderCreationFailed)
 
     func processBlockTimeChanged(event: BlockTimeChanged)
+    func processEvmNewHead(event: EvmNewHeadReceived)
 
     func processAssetBalanceChanged(event: AssetBalanceChanged)
     func processSwapExecutionFinished(event: SwapExecutionFinished)
@@ -61,6 +62,7 @@ extension EventVisitorProtocol {
     func processRuntimeCoderCreationFailed(event _: RuntimeCoderCreationFailed) {}
 
     func processBlockTimeChanged(event _: BlockTimeChanged) {}
+    func processEvmNewHead(event _: EvmNewHeadReceived) {}
 
     func processAssetBalanceChanged(event _: AssetBalanceChanged) {}
     func processSwapExecutionFinished(event _: SwapExecutionFinished) {}

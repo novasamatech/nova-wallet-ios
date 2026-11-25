@@ -164,11 +164,12 @@ struct TransferConfirmOnChainViewFactory {
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(for: ethereumResponse)
 
-        let repositoryFactory = SubstrateRepositoryFactory()
-        let transactionStorage = repositoryFactory.createTxRepository()
-        let persistentExtrinsicService = PersistentExtrinsicService(
-            repository: transactionStorage,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        let trackedSubmissionFactory = EvmTrackedSubmissionFactory(
+            chain: chain,
+            submissionService: extrinsicService,
+            trackingFacade: TransactionTrackingFacade.shared,
+            historyRepository: SubstrateRepositoryFactory().createTxRepository(),
+            operationQueue: operationQueue
         )
 
         return TransferEvmOnChainConfirmInteractor(
@@ -182,10 +183,9 @@ struct TransferConfirmOnChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             signingWrapper: signingWrapper,
-            persistExtrinsicService: persistentExtrinsicService,
+            trackedSubmissionFactory: trackedSubmissionFactory,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
-            transactionTrackingFacade: TransactionTrackingFacade.shared,
             selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: operationQueue

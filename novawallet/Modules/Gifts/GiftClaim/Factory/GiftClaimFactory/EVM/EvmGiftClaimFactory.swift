@@ -102,7 +102,8 @@ private extension EvmGiftClaimFactory {
             return self.transactionMonitorFactory.submitAndMonitorWrapper(
                 transactionBuilderClosure,
                 price: evmFee.transactionPrice,
-                signer: signingWrapper
+                signer: signingWrapper,
+                historyDraft: { _ in nil }
             )
         }
     }

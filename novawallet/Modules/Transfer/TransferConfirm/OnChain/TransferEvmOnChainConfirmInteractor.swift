@@ -4,10 +4,9 @@ import Operation_iOS
 
 final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
-    let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let trackedSubmissionFactory: EvmTrackedSubmissionFactoryProtocol
     let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
-    let transactionTrackingFacade: TransactionTrackingFacadeProtocol
     let selfReceiveRevealer: TransferSelfReceiveRevealer
 
     var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
@@ -25,19 +24,17 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
-        persistExtrinsicService: PersistentExtrinsicServiceProtocol,
+        trackedSubmissionFactory: EvmTrackedSubmissionFactoryProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
-        transactionTrackingFacade: TransactionTrackingFacadeProtocol,
         selfReceiveRevealer: TransferSelfReceiveRevealer,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
-        self.persistExtrinsicService = persistExtrinsicService
+        self.trackedSubmissionFactory = trackedSubmissionFactory
         self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
-        self.transactionTrackingFacade = transactionTrackingFacade
         self.selfReceiveRevealer = selfReceiveRevealer
 
         super.init(
@@ -53,33 +50,6 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
-    }
-
-    private func persistExtrinsicAndComplete(
-        details: PersistTransferDetails,
-        type: EvmTransferType,
-        trackingRequest: TransactionTrackingRequest
-    ) {
-        persistExtrinsicService.saveTransfer(
-            source: type.transactionSource,
-            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-            details: details,
-            runningIn: .main
-        ) { [weak self, transactionTrackingFacade] result in
-            transactionTrackingFacade.track(trackingRequest)
-
-            guard let self = self else {
-                return
-            }
-
-            switch result {
-            case .success:
-                self.eventCenter.notify(with: WalletTransactionListUpdated())
-                self.completeSubmission(recepient: details.receiver)
-            case let .failure(error):
-                self.presenter?.didReceiveError(error)
-            }
-        }
     }
 }
 
@@ -112,10 +82,34 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
             let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
 
-            let submissionWrapper = extrinsicService.createSubmissionWrapper(
+            let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+
+            let historyDraft: EvmHistoryDraftClosure = { [persistenceFilter, selectedAccount] transaction in
+                guard persistenceFilter.canPersistExtrinsic(for: selectedAccount), let callCodingPath else {
+                    return nil
+                }
+
+                return PersistExtrinsicFactory.createTransferItem(
+                    source: transferType.transactionSource,
+                    chainAssetId: chainAssetId,
+                    details: PersistTransferDetails(
+                        sender: sender,
+                        receiver: recepient,
+                        amount: amount.value,
+                        txHash: try Data(hexString: transaction.transactionHash),
+                        callPath: callCodingPath,
+                        fee: lastFee,
+                        feeAssetId: nil,
+                        nonce: transaction.nonce
+                    )
+                )
+            }
+
+            let submissionWrapper = trackedSubmissionFactory.submitAndTrackWrapper(
                 extrinsicClosure,
                 price: lastFeeModel.transactionPrice,
-                signer: signingWrapper
+                signer: signingWrapper,
+                historyDraft: historyDraft
             )
 
             execute(
@@ -126,30 +120,9 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                 guard let self else { return }
 
                 switch result {
-                case let .success(transaction):
-                    let trackingRequest = createTrackingRequest(for: transaction)
-
-                    guard
-                        persistenceFilter.canPersistExtrinsic(for: selectedAccount),
-                        let callCodingPath,
-                        let txHashData = try? Data(hexString: transaction.transactionHash) else {
-                        transactionTrackingFacade.track(trackingRequest)
-                        completeSubmission(recepient: recepient)
-                        return
-                    }
-
-                    let details = PersistTransferDetails(
-                        sender: sender,
-                        receiver: recepient,
-                        amount: amount.value,
-                        txHash: txHashData,
-                        callPath: callCodingPath,
-                        fee: lastFee,
-                        feeAssetId: nil,
-                        nonce: transaction.nonce
-                    )
-
-                    persistExtrinsicAndComplete(details: details, type: transferType, trackingRequest: trackingRequest)
+                case .success:
+                    eventCenter.notify(with: WalletTransactionListUpdated())
+                    completeSubmission(recepient: recepient)
                 case let .failure(error):
                     presenter?.didReceiveError(error)
                 }
@@ -163,14 +136,6 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 // MARK: Private
 
 private extension TransferEvmOnChainConfirmInteractor {
-    func createTrackingRequest(for transaction: EvmSubmittedTransaction) -> TransactionTrackingRequest {
-        TransactionTrackingRequest(
-            key: TransactionTrackingKey(chainId: chain.chainId, transactionHash: transaction.transactionHash),
-            evidence: .evm(EvmTrackingEvidence(sender: transaction.sender, nonce: transaction.nonce)),
-            mode: .fresh
-        )
-    }
-
     func completeSubmission(recepient: AccountAddress) {
         submitionPresenter?.didCompleteSubmition(by: nil)
 

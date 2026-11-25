@@ -116,6 +116,7 @@ final class EvmNativeSubscriptionManager {
 
                 if let chainId = self?.chainId {
                     self?.logger?.debug("Did receive new evm block: \(blockNumber) \(chainId)")
+                    self?.eventCenter?.notify(with: EvmNewHeadReceived(chainId: chainId))
                 }
 
                 self?.processBlock(blockNumber)

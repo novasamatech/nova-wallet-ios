@@ -121,6 +121,7 @@ extension GiftSubmissionFactoryFacade {
                 chainRegistry: ChainRegistryFacade.sharedRegistry,
                 operationQueue: operationQueue
             ),
+            persistsHistory: persistenceFilter.canPersistExtrinsic(for: selectedAccount),
             operationQueue: operationQueue
         )
     }

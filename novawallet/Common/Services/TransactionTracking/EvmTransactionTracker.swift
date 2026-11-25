@@ -5,14 +5,25 @@ import BigInt
 
 final class EvmTransactionTracker {
     let chainRegistry: ChainRegistryProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let processingQueue = DispatchQueue(label: "io.novawallet.transaction.tracking.evm")
     let logger: LoggerProtocol
 
-    init(chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+    private var watchersByChain: [ChainModel.Id: NSHashTable<EvmTransactionWatcher>] = [:]
+
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        eventCenter: EventCenterProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
         self.chainRegistry = chainRegistry
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
+
+        eventCenter.add(observer: self, dispatchIn: processingQueue)
     }
 }
 
@@ -21,6 +32,10 @@ final class EvmTransactionTracker {
 extension EvmTransactionTracker: ChainTransactionTracking {
     func canTrack(chain: ChainModel) -> Bool {
         chain.isEthereumBased
+    }
+
+    func backgroundWindow(for chain: ChainModel) -> TimeInterval {
+        EvmTransactionMonitorTiming(chain: chain).waitBudget
     }
 
     func startWatch(
@@ -69,7 +84,6 @@ private extension EvmTransactionTracker {
                 connection: connection,
                 timeout: JSONRPCTimeout.withNodeSwitch
             ),
-            headsConnection: nil,
             timing: EvmTransactionMonitorTiming(chain: chain),
             processingQueue: processingQueue,
             operationQueue: operationQueue,
@@ -82,20 +96,18 @@ private extension EvmTransactionTracker {
             nonce: Self.watchedNonce(from: evidence.nonce, mode: request.mode)
         )
 
-        let completion: EvmTransactionWatcher.Completion = { result in
-            onResult(Self.mapResult(result))
-        }
+        processingQueue.async { [weak self] in
+            self?.addWatcher(watcher, for: chain.chainId)
 
-        processingQueue.async {
             switch request.mode {
             case .fresh:
-                watcher.start(watching: transaction, deadline: nil, completion: completion)
+                watcher.start(watching: transaction, deadline: nil, completion: onResult)
             case let .recovered(rowAge):
                 watcher.start(
                     watching: transaction,
                     submittedAt: Date().addingTimeInterval(-rowAge),
                     deadline: Constants.recoveredWatchLimit,
-                    completion: completion
+                    completion: onResult
                 )
             }
         }
@@ -107,26 +119,18 @@ private extension EvmTransactionTracker {
         return watcher
     }
 
-    static func mapResult(_ result: Result<EvmTransactionMonitorSubmission, Error>) -> TransactionWatchResult {
-        switch result {
-        case let .success(submission):
-            let inclusion = TransactionInclusion(
-                blockHash: submission.receipt.blockHash,
-                blockNumber: submission.receipt.blockNumberValue,
-                actualFee: submission.receipt.fee
-            )
+    func addWatcher(_ watcher: EvmTransactionWatcher, for chainId: ChainModel.Id) {
+        let watchers = watchersByChain[chainId] ?? NSHashTable.weakObjects()
+        watchers.add(watcher)
+        watchersByChain[chainId] = watchers
+    }
+}
 
-            switch submission.status {
-            case .success:
-                return .decided(.included(inclusion))
-            case .failure:
-                return .decided(.includedFailed(inclusion, .evmReverted))
-            }
-        case .failure(EvmTransactionMonitorError.dropped):
-            return .decided(.dropped(.nonceConsumed))
-        case .failure:
-            return .undecided
-        }
+// MARK: - EventVisitorProtocol
+
+extension EvmTransactionTracker: EventVisitorProtocol {
+    func processEvmNewHead(event: EvmNewHeadReceived) {
+        watchersByChain[event.chainId]?.allObjects.forEach { $0.didReceiveHead() }
     }
 }
 
