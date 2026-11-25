@@ -41,28 +41,49 @@ final class EvmTransactionWatcher {
 }
 
 extension EvmTransactionWatcher {
-    func start(watching transaction: EvmSubmittedTransaction, completion: @escaping Completion) {
+    func start(
+        watching transaction: EvmSubmittedTransaction,
+        submittedAt: Date = Date(),
+        deadline: TimeInterval?,
+        completion: @escaping Completion
+    ) {
         guard !isFinished else { return }
 
         self.transaction = transaction
         self.completion = completion
-        state = EvmTransactionMonitorState(nonce: transaction.nonce, timing: timing, startedAt: Date())
+        state = EvmTransactionMonitorState(
+            nonce: transaction.nonce,
+            timing: timing,
+            startedAt: submittedAt,
+            deadline: deadline
+        )
 
-        logger.debug("EVM monitor: watching \(transaction.transactionHash) nonce \(transaction.nonce)")
+        let nonce = transaction.nonce.map { String($0) } ?? "unknown"
+        logger.debug("EVM monitor: watching \(transaction.transactionHash) nonce \(nonce)")
 
-        deadlineScheduler.notifyAfter(timing.waitBudget)
-        pollScheduler.notifyAfter(timing.pollInterval)
+        let remainingTime = deadline.map { $0 - Date().timeIntervalSince(submittedAt) } ?? 0
+
+        if remainingTime > 0 {
+            deadlineScheduler.notifyAfter(remainingTime)
+        }
+
+        pollScheduler.notifyAfter(nextPollInterval())
 
         subscribeHeads()
     }
 
     func stop() {
-        guard !isFinished else { return }
+        processingQueue.async {
+            self.performStop()
+        }
+    }
 
-        tearDown()
-        completion = nil
+    func checkNow() {
+        processingQueue.async { [weak self] in
+            guard let self, !isFinished else { return }
 
-        logger.debug("EVM monitor: stopped \(transaction?.transactionHash ?? "before start")")
+            startCheck(trigger: .request)
+        }
     }
 }
 
@@ -70,6 +91,21 @@ private extension EvmTransactionWatcher {
     enum Trigger: String {
         case timer
         case head
+        case request
+    }
+
+    func performStop() {
+        guard !isFinished else { return }
+
+        tearDown()
+        completion = nil
+
+        logger.debug("EVM monitor: stopped \(transaction?.transactionHash ?? "before start")")
+    }
+
+    func nextPollInterval() -> TimeInterval {
+        let age = state.map { Date().timeIntervalSince($0.startedAt) } ?? 0
+        return timing.interval(forAge: age)
     }
 
     func subscribeHeads() {
@@ -207,19 +243,19 @@ private extension EvmTransactionWatcher {
 
         switch decision {
         case .wait:
-            pollScheduler.notifyAfter(timing.pollInterval)
+            pollScheduler.notifyAfter(nextPollInterval())
         case .verifyDropped:
             verifyDropped()
-        case let .success(transactionHash, blockHash):
+        case let .success(receipt):
             let status = EvmTransactionMonitorSubmission.TransactionStatus.success(
-                .init(transactionHash: transactionHash, blockHash: blockHash)
+                .init(transactionHash: receipt.transactionHash, blockHash: receipt.blockHash)
             )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status)))
-        case let .failure(transactionHash):
+            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
+        case let .failure(receipt):
             let status = EvmTransactionMonitorSubmission.TransactionStatus.failure(
-                .init(transactionHash: transactionHash)
+                .init(transactionHash: receipt.transactionHash)
             )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status)))
+            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
         case .dropped:
             logger.warning("EVM monitor: \(transaction.transactionHash) dropped")
             finish(with: .failure(EvmTransactionMonitorError.dropped(transactionHash: transaction.transactionHash)))

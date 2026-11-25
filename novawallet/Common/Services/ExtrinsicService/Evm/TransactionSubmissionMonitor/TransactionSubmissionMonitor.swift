@@ -52,6 +52,7 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
         }
 
         let processingQueue = processingQueue
+        let waitBudget = timing.waitBudget
 
         let watcher = EvmTransactionWatcher(
             queryOperationFactory: queryOperationFactory,
@@ -67,13 +68,11 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
                 let transaction = try submissionWrapper.targetOperation.extractNoCancellableResultData()
 
                 processingQueue.async {
-                    watcher.start(watching: transaction, completion: completion)
+                    watcher.start(watching: transaction, deadline: waitBudget, completion: completion)
                 }
             },
             cancelationClosure: {
-                processingQueue.async {
-                    watcher.stop()
-                }
+                watcher.stop()
             }
         )
 

@@ -6,7 +6,7 @@ import Operation_iOS
 struct EvmSubmittedTransaction {
     let transactionHash: String
     let sender: AccountId
-    let nonce: BigUInt
+    let nonce: BigUInt?
 }
 
 private struct EvmSignedTransaction {
