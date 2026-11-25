@@ -28,6 +28,7 @@ public enum AnalyticsPropertyKey: String, CaseIterable {
     case convictionLevel = "conviction_level"
     case dappHost = "dapp_host"
     case isKnownDapp = "is_known_dapp"
+    case placement
     case provider
     case bannerId = "banner_id"
     case screen

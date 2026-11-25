@@ -31,6 +31,8 @@ public enum AnalyticsEventName: String, CaseIterable {
     case sendCompleted = "send_completed"
     case sendFailed = "send_failed"
     case dappOpened = "dapp_opened"
+    case dappStakingPromptShown = "dapp_staking_prompt_shown"
+    case dappStakingPromptAction = "dapp_staking_prompt_action"
     case governanceVoteCast = "governance_vote_cast"
     case tabSwitched = "tab_switched"
     case buyInitiated = "buy_initiated"
