@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		910AA40BE99851AC479B7CA5 /* BackgroundTimeKeeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615E54C163EA6A574E88603A /* BackgroundTimeKeeper.swift */; };
 		9C0501B5445E60D8436DF9EB /* EvmNewHeadReceived.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D66F54EE736491D201E23CB /* EvmNewHeadReceived.swift */; };
 		C20B6133976235717B9E2B5E /* EvmTrackedSubmissionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66C6147423DB2E0D4760F52 /* EvmTrackedSubmissionFactory.swift */; };
 		90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */; };
@@ -7330,6 +7331,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		615E54C163EA6A574E88603A /* BackgroundTimeKeeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTimeKeeper.swift; sourceTree = "<group>"; };
 		8D66F54EE736491D201E23CB /* EvmNewHeadReceived.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNewHeadReceived.swift; sourceTree = "<group>"; };
 		C66C6147423DB2E0D4760F52 /* EvmTrackedSubmissionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTrackedSubmissionFactory.swift; sourceTree = "<group>"; };
 		1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionTrackingFacade+Shared.swift"; sourceTree = "<group>"; };
@@ -23352,6 +23354,7 @@
 		142F296907C084F48FD3F335 /* TransactionTracking */ = {
 			isa = PBXGroup;
 			children = (
+				615E54C163EA6A574E88603A /* BackgroundTimeKeeper.swift */,
 				C66C6147423DB2E0D4760F52 /* EvmTrackedSubmissionFactory.swift */,
 				1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */,
 				043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */,
@@ -34039,6 +34042,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				910AA40BE99851AC479B7CA5 /* BackgroundTimeKeeper.swift in Sources */,
 				9C0501B5445E60D8436DF9EB /* EvmNewHeadReceived.swift in Sources */,
 				C20B6133976235717B9E2B5E /* EvmTrackedSubmissionFactory.swift in Sources */,
 				90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */,

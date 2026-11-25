@@ -13,6 +13,7 @@ final class TransactionTrackingFacade {
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+    let backgroundTimeKeeper: BackgroundTimeKeeping?
 
     private let mutex = NSLock()
     private var entries: [TransactionTrackingKey: Entry] = [:]
@@ -28,7 +29,8 @@ final class TransactionTrackingFacade {
         applicationHandler: ApplicationHandlerProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        backgroundTimeKeeper: BackgroundTimeKeeping? = nil
     ) {
         self.trackers = trackers
         self.resolver = resolver
@@ -38,6 +40,7 @@ final class TransactionTrackingFacade {
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
+        self.backgroundTimeKeeper = backgroundTimeKeeper
     }
 }
 
@@ -70,9 +73,14 @@ extension TransactionTrackingFacade: TransactionTrackingFacadeProtocol {
     func track(_ request: TransactionTrackingRequest) -> TransactionTrackingHandleProtocol {
         mutex.lock()
         let replacedWatch = register(request)
+        let backgroundUntil = entries[request.key]?.backgroundUntil
         mutex.unlock()
 
         replacedWatch?.stop()
+
+        if let backgroundUntil {
+            backgroundTimeKeeper?.keepAwakeIfInBackground(until: backgroundUntil)
+        }
 
         return TransactionTrackingHandle(key: request.key)
     }
@@ -108,6 +116,7 @@ private extension TransactionTrackingFacade {
         var watch: TransactionWatching
         var watchId: UUID
         var isResolving: Bool
+        var backgroundUntil: Date?
     }
 
     struct RecentResolution {
@@ -186,13 +195,24 @@ private extension TransactionTrackingFacade {
             self?.handle(result, for: key, watchId: watchId)
         }
 
-        return Entry(request: request, watch: watch, watchId: watchId, isResolving: false)
+        var entry = Entry(request: request, watch: watch, watchId: watchId, isResolving: false)
+
+        if backgroundTimeKeeper != nil, !request.mode.isRecovered {
+            entry.backgroundUntil = Date().addingTimeInterval(tracker.backgroundWindow(for: chain))
+        }
+
+        return entry
     }
 
     func handle(_ result: TransactionWatchResult, for key: TransactionTrackingKey, watchId: UUID) {
         mutex.lock()
         let acceptedWatch = accept(result, for: key, watchId: watchId)
+        let releasesBackgroundTime = !hasBackgroundWindow()
         mutex.unlock()
+
+        if releasesBackgroundTime {
+            backgroundTimeKeeper?.release()
+        }
 
         guard let acceptedWatch, case let .decided(outcome) = result else {
             return
@@ -244,7 +264,12 @@ private extension TransactionTrackingFacade {
         recentlyResolved[key] = RecentResolution(resolvedAt: Date(), outcome: outcome)
         pruneRecentlyResolved(now: Date())
         let keyWaiters = waiters.removeValue(forKey: key)
+        let releasesBackgroundTime = !hasBackgroundWindow()
         mutex.unlock()
+
+        if releasesBackgroundTime {
+            backgroundTimeKeeper?.release()
+        }
 
         keyWaiters?.values.forEach { $0(.resolved(outcome)) }
 
@@ -306,6 +331,10 @@ private extension TransactionTrackingFacade {
         return waiter
     }
 
+    func hasBackgroundWindow() -> Bool {
+        entries.values.contains { ($0.backgroundUntil ?? .distantPast) > Date() }
+    }
+
     func runPickup() {
         execute(
             wrapper: pickup.createRequestsWrapper(),
@@ -343,6 +372,8 @@ private extension TransactionTrackingFacade {
 
 extension TransactionTrackingFacade: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
+        backgroundTimeKeeper?.release()
+
         mutex.lock()
         let watches = entries.values.filter { !$0.isResolving }.map(\.watch)
         mutex.unlock()
@@ -350,5 +381,15 @@ extension TransactionTrackingFacade: ApplicationHandlerDelegate {
         watches.forEach { $0.checkNow() }
 
         runPickup()
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+        let backgroundUntil = entries.values.compactMap(\.backgroundUntil).max()
+        mutex.unlock()
+
+        if let backgroundUntil {
+            backgroundTimeKeeper?.keepAwake(until: backgroundUntil)
+        }
     }
 }

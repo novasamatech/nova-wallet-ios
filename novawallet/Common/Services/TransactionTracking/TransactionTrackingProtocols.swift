@@ -20,6 +20,8 @@ protocol TransactionTrackingFacadeProtocol: AnyObject {
 protocol ChainTransactionTracking: AnyObject {
     func canTrack(chain: ChainModel) -> Bool
 
+    func backgroundWindow(for chain: ChainModel) -> TimeInterval
+
     func startWatch(
         for request: TransactionTrackingRequest,
         chain: ChainModel,

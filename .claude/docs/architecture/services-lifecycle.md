@@ -113,7 +113,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
 | `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
 | `SubtensorProcessServices.shared`             | Bittensor backend API + response cache, subnet config, markets, cost basis, catalogue, one TAO stake-state source per account |
-| `TransactionTrackingFacade.shared`            | One watch per submitted EVM transaction; resolves its history rows; process lifetime, never throttled |
+| `TransactionTrackingFacade.shared`            | One watch per submitted EVM transaction; resolves its history rows; process lifetime, never throttled; keeps up to ≈ 30 s of background time while a transaction sent in the last `waitBudget` is pending |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |

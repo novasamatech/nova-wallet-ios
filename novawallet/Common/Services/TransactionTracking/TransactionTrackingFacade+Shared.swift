@@ -32,7 +32,8 @@ extension TransactionTrackingFacade {
             applicationHandler: ApplicationHandler(),
             eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
-            logger: logger
+            logger: logger,
+            backgroundTimeKeeper: BackgroundTimeKeeper(logger: logger)
         )
     }()
 }

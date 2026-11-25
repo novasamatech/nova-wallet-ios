@@ -34,6 +34,10 @@ extension EvmTransactionTracker: ChainTransactionTracking {
         chain.isEthereumBased
     }
 
+    func backgroundWindow(for chain: ChainModel) -> TimeInterval {
+        EvmTransactionMonitorTiming(chain: chain).waitBudget
+    }
+
     func startWatch(
         for request: TransactionTrackingRequest,
         chain: ChainModel,
