@@ -1,6 +1,7 @@
 import UIKit
 import UIKit_iOS
 import Foundation_iOS
+import NovaAnalytics
 
 typealias FlowStatusPresentingClosure = (ModalAlertPresenting, ControllerBackedProtocol?) -> Void
 
@@ -41,7 +42,7 @@ private extension MainTabBarWireframe {
         (stakingViewController as? UINavigationController)?.popToRootViewController(animated: true)
 
         if let stakingController: StakingDashboardViewProtocol = stakingViewController?.contentViewController() {
-            stakingController.openStaking(for: navigation.chainAssetId)
+            stakingController.openStaking(for: navigation.chainAssetId, source: .deepLink)
         }
     }
 

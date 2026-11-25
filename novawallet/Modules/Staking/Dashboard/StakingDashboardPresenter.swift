@@ -9,6 +9,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
+    let analyticsTracker: AnalyticsTrackingProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -17,8 +18,8 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
-    private var pendingChainAssetId: ChainAssetId?
-    private let pendingNavigationTimeout = Debouncer(delay: 10)
+    private var pendingNavigation: PendingNavigation?
+    private let pendingNavigationTimeout: Debouncer
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -28,12 +29,16 @@ final class StakingDashboardPresenter: AnalyticsTracking {
         privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
+        analyticsTracker: AnalyticsTrackingProtocol,
+        pendingNavigationTimeout: TimeInterval = Constants.pendingNavigationTimeout,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.announcementViewModelFactory = announcementViewModelFactory
+        self.analyticsTracker = analyticsTracker
+        self.pendingNavigationTimeout = Debouncer(delay: pendingNavigationTimeout)
         self.logger = logger
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
@@ -44,10 +49,21 @@ final class StakingDashboardPresenter: AnalyticsTracking {
 // MARK: - Private
 
 private extension StakingDashboardPresenter {
+    struct PendingNavigation {
+        let chainAssetId: ChainAssetId
+        let source: StakingFlowSource
+    }
+
+    enum Constants {
+        static let pendingNavigationTimeout: TimeInterval = 10
+    }
+
     func processPendingNavigation(waitingForSync: Bool) {
-        guard let chainAssetId = pendingChainAssetId, let model = lastResult?.model else {
+        guard let pendingNavigation, let model = lastResult?.model else {
             return
         }
+
+        let chainAssetId = pendingNavigation.chainAssetId
 
         if let item = model.active.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
             clearPendingNavigation()
@@ -65,7 +81,7 @@ private extension StakingDashboardPresenter {
 
         clearPendingNavigation()
 
-        showStartStaking(for: item.chainAsset, source: .deepLink)
+        showStartStaking(for: item.chainAsset, source: pendingNavigation.source)
     }
 
     func completePendingNavigation() {
@@ -74,7 +90,7 @@ private extension StakingDashboardPresenter {
     }
 
     func clearPendingNavigation() {
-        pendingChainAssetId = nil
+        pendingNavigation = nil
         pendingNavigationTimeout.cancel()
     }
 
@@ -173,8 +189,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         showStartStaking(for: item.chainAsset, source: .dashboard)
     }
 
-    func openStaking(for chainAssetId: ChainAssetId) {
-        pendingChainAssetId = chainAssetId
+    func openStaking(for chainAssetId: ChainAssetId, source: StakingFlowSource) {
+        pendingNavigation = PendingNavigation(chainAssetId: chainAssetId, source: source)
 
         pendingNavigationTimeout.debounce { [weak self] in
             self?.completePendingNavigation()

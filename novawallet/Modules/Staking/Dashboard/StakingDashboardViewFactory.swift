@@ -47,6 +47,7 @@ struct StakingDashboardViewFactory {
             privacyStateManager: PrivacyStateManager.shared,
             localizationManager: LocalizationManager.shared,
             appearanceFacade: AppearanceFacade.shared,
+            analyticsTracker: AnalyticsFacadeFactory.createDefault(),
             logger: Logger.shared
         )
 

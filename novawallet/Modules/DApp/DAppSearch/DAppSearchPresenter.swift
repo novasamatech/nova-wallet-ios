@@ -66,16 +66,13 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     // place that has the curated dApp list; the delegate might present a screen from
     // the underlying view, so it is notified only after the search is dismissed
     private func completeSearch(with result: DAppSearchResult) {
-        let isThirdPartyStaking = DAppStakingDetection.stakingSiteKind(
-            result: result,
-            dAppList: dAppList
-        ) != .none
+        let noticeContext = DAppStakingNoticeContext(
+            kind: DAppStakingDetection.stakingSiteKind(result: result, dAppList: dAppList),
+            host: analyticsHost(for: result)
+        )
 
         wireframe.close(from: view) { [weak self] in
-            self?.delegate?.didCompleteDAppSearchResult(
-                result,
-                isThirdPartyStaking: isThirdPartyStaking
-            )
+            self?.delegate?.didCompleteDAppSearchResult(result, noticeContext: noticeContext)
         }
     }
 }

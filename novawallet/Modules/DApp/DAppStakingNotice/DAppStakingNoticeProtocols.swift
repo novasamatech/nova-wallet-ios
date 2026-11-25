@@ -2,7 +2,9 @@ protocol DAppStakingNoticeDelegate: AnyObject {
     func dappStakingNoticeDidSelectContinue()
 }
 
-protocol DAppStakingNoticeViewProtocol: ControllerBackedProtocol {}
+protocol DAppStakingNoticeViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: DAppStakingNoticeViewModel)
+}
 
 protocol DAppStakingNoticePresenterProtocol: AnyObject {
     func setup()

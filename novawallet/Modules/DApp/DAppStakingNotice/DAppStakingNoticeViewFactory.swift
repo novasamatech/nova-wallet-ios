@@ -2,11 +2,19 @@ import Foundation
 import Foundation_iOS
 
 struct DAppStakingNoticeViewFactory {
-    static func createView(with delegate: DAppStakingNoticeDelegate) -> DAppStakingNoticeViewProtocol? {
+    static func createView(
+        for context: DAppStakingNoticeContext,
+        delegate: DAppStakingNoticeDelegate
+    ) -> DAppStakingNoticeViewProtocol? {
         let wireframe = DAppStakingNoticeWireframe()
         wireframe.delegate = delegate
 
-        let presenter = DAppStakingNoticePresenter(wireframe: wireframe)
+        let presenter = DAppStakingNoticePresenter(
+            context: context,
+            wireframe: wireframe,
+            analyticsTracker: AnalyticsFacadeFactory.createDefault(),
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = DAppStakingNoticeViewController(
             presenter: presenter,

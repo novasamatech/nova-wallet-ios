@@ -28,6 +28,17 @@ extension DAppSearchPresenter: AnalyticsTracking {
         )
     }
 
+    func analyticsHost(for result: DAppSearchResult) -> AnalyticsContentValue? {
+        let url: URL? = switch result {
+        case let .dApp(dApp):
+            dApp.url
+        case let .query(query):
+            DAppBrowserTab.resolveUrl(for: query)
+        }
+
+        return url.flatMap { AnalyticsContentValue.dappHost($0) }
+    }
+
     func trackSearchQueryOpened(_ searchQuery: String) {
         guard let url = DAppBrowserTab.resolveUrl(for: searchQuery) else {
             return
