@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */; };
+		E51B6D47495EB354653CBAA1 /* TransactionTrackingFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */; };
 		7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */; };
 		F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */; };
 		DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */; };
@@ -7325,6 +7327,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
+		5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingFacadeTests.swift; sourceTree = "<group>"; };
 		043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionPickup.swift; sourceTree = "<group>"; };
 		6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolutionMapper.swift; sourceTree = "<group>"; };
 		25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolver.swift; sourceTree = "<group>"; };
@@ -24489,9 +24493,18 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		F51F06C7A0D8089EB7887369 /* TransactionTracking */ = {
+			isa = PBXGroup;
+			children = (
+				5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */,
+			);
+			path = TransactionTracking;
+			sourceTree = "<group>";
+		};
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F51F06C7A0D8089EB7887369 /* TransactionTracking */,
 				4418DCC1D980497D96EF9A7B /* TransactionSubscription */,
 				AC00020000000000000000FC /* ExtrinsicService */,
 				FEEDAA0000000000000000A2 /* Analytics */,
@@ -25917,6 +25930,7 @@
 		8489EDD8264DE40800FF997E /* Migration */ = {
 			isa = PBXGroup;
 			children = (
+				8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */,
 				D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */,
 				849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */,
 				0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */,
@@ -40460,6 +40474,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */,
+				E51B6D47495EB354653CBAA1 /* TransactionTrackingFacadeTests.swift in Sources */,
 				E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */,
 				7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */,
 				6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */,

@@ -86,6 +86,14 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
         XCTAssertEqual(consumed, [.wait, .verifyDropped])
     }
 
+    func testConsumedNonceFinishesDroppedRuleAfterDeadline() {
+        var state = EvmTransactionMonitorState(nonce: nonce, timing: timing, startedAt: startedAt, deadline: 86400)
+
+        let decisions = decideConsumed(&state, at: [90000, 90040, 90080, 90120])
+
+        XCTAssertEqual(decisions, [.wait, .wait, .wait, .verifyDropped])
+    }
+
     func testVerificationWithStatusOneIsSuccess() {
         let decision = makeState().decideVerification(.success(makeReceipt(status: "0x1")))
 
