@@ -1,6 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 final class EvmTransactionTracker {
     let chainRegistry: ChainRegistryProtocol
@@ -31,6 +32,16 @@ extension EvmTransactionTracker: ChainTransactionTracking {
         case let .evm(evidence):
             return try startWatch(for: request, evidence: evidence, chain: chain, onResult: onResult)
         }
+    }
+}
+
+extension EvmTransactionTracker {
+    static func watchedNonce(from nonce: BigUInt?, mode: TransactionTrackingMode) -> BigUInt? {
+        guard case let .recovered(rowAge) = mode, rowAge >= Constants.recoveredWatchLimit else {
+            return nonce
+        }
+
+        return nil
     }
 }
 
@@ -68,7 +79,7 @@ private extension EvmTransactionTracker {
         let transaction = EvmSubmittedTransaction(
             transactionHash: request.key.transactionHash,
             sender: evidence.sender,
-            nonce: evidence.nonce
+            nonce: Self.watchedNonce(from: evidence.nonce, mode: request.mode)
         )
 
         let completion: EvmTransactionWatcher.Completion = { result in

@@ -94,6 +94,19 @@ final class EvmTransactionMonitorStateTests: XCTestCase {
         XCTAssertEqual(decisions, [.wait, .wait, .wait, .verifyDropped])
     }
 
+    func testOnlyRecoveredRowsYoungerThanADayAreDecidedDropped() {
+        let oldNonce = EvmTransactionTracker.watchedNonce(from: nonce, mode: .recovered(rowAge: 86400))
+        let youngNonce = EvmTransactionTracker.watchedNonce(from: nonce, mode: .recovered(rowAge: 60))
+        var oldRow = EvmTransactionMonitorState(nonce: oldNonce, timing: timing, startedAt: startedAt, deadline: 86400)
+        var youngRow = EvmTransactionMonitorState(nonce: youngNonce, timing: timing, startedAt: startedAt, deadline: 86400)
+
+        let oldDecisions = decideConsumed(&oldRow, at: [86400, 86440, 86480, 86520])
+        let youngDecisions = decideConsumed(&youngRow, at: [60, 100, 140, 180])
+
+        XCTAssertEqual(oldDecisions, Array(repeating: .stillPending, count: 4))
+        XCTAssertEqual(youngDecisions, [.wait, .wait, .wait, .verifyDropped])
+    }
+
     func testVerificationWithStatusOneIsSuccess() {
         let decision = makeState().decideVerification(.success(makeReceipt(status: "0x1")))
 
