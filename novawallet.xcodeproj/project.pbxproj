@@ -5008,6 +5008,8 @@
 		84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */; };
 		84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6B2935E1A80033F47D /* UserAgent.swift */; };
 		E8753F0812E624E888AC3FFF /* ConfigMirrorURLResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */; };
+		1E42FFFD7AF78A2774D736EB /* ConfigMirrorAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA389E0633BB8B3102A5998 /* ConfigMirrorAvailability.swift */; };
+		37EBBD3119E5D982B67D70EA /* ConfigMirrorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED6BF98FE2AA297CDF37A8 /* ConfigMirrorConstants.swift */; };
 		4E7EE33B9F81BD458D1EDEED /* ConfigMirrorFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E119CB9AD2A2CEF1D97332 /* ConfigMirrorFetchOperationFactory.swift */; };
 		84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */; };
 		84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */; };
@@ -7221,6 +7223,10 @@
 		E844BF3F6343165C9015A48C /* DataOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A14C6F6EE1702FFBCC1CA2E /* DataOperationFactoryTests.swift */; };
 		47B3D8CC6610501888E41BCE /* ConfigMirrorStubURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC28F5A4F3D5FAFE7C6BB050 /* ConfigMirrorStubURLProtocol.swift */; };
 		1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */; };
+		0B49BC8F44E3F06D5649EEC0 /* ConfigMirrorFetchResilienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51321D54A66FE9FF12F5863E /* ConfigMirrorFetchResilienceTests.swift */; };
+		004F3E8E5253148E8F6C68A0 /* ConfigMirrorFetchTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4B35A9CF5DE8158644F4F /* ConfigMirrorFetchTestCase.swift */; };
+		14C8ECB482ADCDEF980E566D /* ConfigMirrorAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */; };
+		E91B8D71BE7E131643482D76 /* ConfigMirrorTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */; };
 		C0E3289F9EA052827429DCF1 /* ConfigMirrorFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3887DE6A6528F972FADADD16 /* ConfigMirrorFetchOperationFactoryTests.swift */; };
 		FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
 		FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000C2 /* NovaAnalytics */; };
@@ -11995,6 +12001,8 @@
 		84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanERC20OperationFactory.swift; sourceTree = "<group>"; };
 		84953F6B2935E1A80033F47D /* UserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgent.swift; sourceTree = "<group>"; };
 		0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLResolver.swift; sourceTree = "<group>"; };
+		FCA389E0633BB8B3102A5998 /* ConfigMirrorAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorAvailability.swift; sourceTree = "<group>"; };
+		FEED6BF98FE2AA297CDF37A8 /* ConfigMirrorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorConstants.swift; sourceTree = "<group>"; };
 		53E119CB9AD2A2CEF1D97332 /* ConfigMirrorFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorFetchOperationFactory.swift; sourceTree = "<group>"; };
 		84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryContext.swift; sourceTree = "<group>"; };
 		84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryFactoryFacade.swift; sourceTree = "<group>"; };
@@ -14250,6 +14258,10 @@
 		0A14C6F6EE1702FFBCC1CA2E /* DataOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataOperationFactoryTests.swift; sourceTree = "<group>"; };
 		BC28F5A4F3D5FAFE7C6BB050 /* ConfigMirrorStubURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorStubURLProtocol.swift; sourceTree = "<group>"; };
 		A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLResolverTests.swift; sourceTree = "<group>"; };
+		51321D54A66FE9FF12F5863E /* ConfigMirrorFetchResilienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorFetchResilienceTests.swift; sourceTree = "<group>"; };
+		34C4B35A9CF5DE8158644F4F /* ConfigMirrorFetchTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorFetchTestCase.swift; sourceTree = "<group>"; };
+		BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorAvailabilityTests.swift; sourceTree = "<group>"; };
+		69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorTestDoubles.swift; sourceTree = "<group>"; };
 		3887DE6A6528F972FADADD16 /* ConfigMirrorFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
@@ -21399,6 +21411,10 @@
 			children = (
 				BC28F5A4F3D5FAFE7C6BB050 /* ConfigMirrorStubURLProtocol.swift */,
 				A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */,
+				51321D54A66FE9FF12F5863E /* ConfigMirrorFetchResilienceTests.swift */,
+				34C4B35A9CF5DE8158644F4F /* ConfigMirrorFetchTestCase.swift */,
+				BE608584CE21880D80065574 /* ConfigMirrorAvailabilityTests.swift */,
+				69C29DEB1470FCAF25B1EE5E /* ConfigMirrorTestDoubles.swift */,
 				3887DE6A6528F972FADADD16 /* ConfigMirrorFetchOperationFactoryTests.swift */,
 			);
 			path = ConfigMirror;
@@ -27068,6 +27084,8 @@
 			isa = PBXGroup;
 			children = (
 				0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */,
+				FCA389E0633BB8B3102A5998 /* ConfigMirrorAvailability.swift */,
+				FEED6BF98FE2AA297CDF37A8 /* ConfigMirrorConstants.swift */,
 				53E119CB9AD2A2CEF1D97332 /* ConfigMirrorFetchOperationFactory.swift */,
 			);
 			path = ConfigMirror;
@@ -34419,6 +34437,8 @@
 				88B1C34229BA046000DCA101 /* StakingRebagConfirmError.swift in Sources */,
 				84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */,
 				E8753F0812E624E888AC3FFF /* ConfigMirrorURLResolver.swift in Sources */,
+				1E42FFFD7AF78A2774D736EB /* ConfigMirrorAvailability.swift in Sources */,
+				37EBBD3119E5D982B67D70EA /* ConfigMirrorConstants.swift in Sources */,
 				4E7EE33B9F81BD458D1EDEED /* ConfigMirrorFetchOperationFactory.swift in Sources */,
 				2D0985E62EE2BEC3007A5E54 /* PVSecretScanMatcher.swift in Sources */,
 				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
@@ -40719,6 +40739,10 @@
 				E844BF3F6343165C9015A48C /* DataOperationFactoryTests.swift in Sources */,
 				47B3D8CC6610501888E41BCE /* ConfigMirrorStubURLProtocol.swift in Sources */,
 				1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */,
+				0B49BC8F44E3F06D5649EEC0 /* ConfigMirrorFetchResilienceTests.swift in Sources */,
+				004F3E8E5253148E8F6C68A0 /* ConfigMirrorFetchTestCase.swift in Sources */,
+				14C8ECB482ADCDEF980E566D /* ConfigMirrorAvailabilityTests.swift in Sources */,
+				E91B8D71BE7E131643482D76 /* ConfigMirrorTestDoubles.swift in Sources */,
 				C0E3289F9EA052827429DCF1 /* ConfigMirrorFetchOperationFactoryTests.swift in Sources */,
 				0F9122F579FF4871B1379387 /* BittensorApiDecimalTests.swift in Sources */,
 				09008728FBB34750884450BD /* SubtensorSubnetCatalogueOperationFactoryTests.swift in Sources */,

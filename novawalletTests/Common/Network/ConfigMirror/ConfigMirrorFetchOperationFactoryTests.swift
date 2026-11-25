@@ -2,43 +2,7 @@ import XCTest
 import Operation_iOS
 @testable import novawallet
 
-final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
-    private enum Constants {
-        static let mirrorHost = "mirror.novatest"
-        static let gitHubHost = "github.novatest"
-        static let otherHost = "other.novatest"
-        static let callerTimeout: TimeInterval = 30
-        static let mirrorTimeout: TimeInterval = 7
-        static let expectationTimeout: TimeInterval = 10
-    }
-
-    private let gitHubUrl = URL(string: "https://github.novatest/novasamatech/nova-utils/master/chains/v23/chains.json")!
-    private let mirrorUrl = URL(string: "https://mirror.novatest/v1/config/chains/v23/chains.json")!
-    private let otherUrl = URL(string: "https://other.novatest/novasamatech/branding/master/logo.png")!
-
-    private let mirrorBody = Data("mirror".utf8)
-    private let gitHubBody = Data("github".utf8)
-    private let otherBody = Data("other".utf8)
-
-    private let operationQueue = OperationQueue()
-
-    override func setUp() {
-        super.setUp()
-
-        ConfigMirrorStubURLProtocol.reset(
-            hosts: [Constants.mirrorHost, Constants.gitHubHost, Constants.otherHost]
-        )
-
-        XCTAssertTrue(URLProtocol.registerClass(ConfigMirrorStubURLProtocol.self))
-    }
-
-    override func tearDown() {
-        URLProtocol.unregisterClass(ConfigMirrorStubURLProtocol.self)
-        ConfigMirrorStubURLProtocol.reset()
-
-        super.tearDown()
-    }
-
+final class ConfigMirrorFetchOperationFactoryTests: ConfigMirrorFetchTestCase {
     func testUsesMirrorBodyAndSkipsGitHubWhenMirrorSucceeds() throws {
         // given
         ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: mirrorBody))
@@ -50,6 +14,7 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         // then
         XCTAssertEqual(data, mirrorBody)
         XCTAssertEqual(ConfigMirrorStubURLProtocol.requestedUrls, [mirrorUrl.absoluteString])
+        XCTAssertTrue(logger.warnings.isEmpty)
     }
 
     func testFallsBackToGitHubWhenMirrorHasNoFile() throws {
@@ -61,10 +26,8 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
     }
 
     func testFallsBackToGitHubOnAnyOtherMirrorStatus() throws {
-        for statusCode in [204, 301, 400, 401, 403, 429, 500, 502] {
-            ConfigMirrorStubURLProtocol.reset(
-                hosts: [Constants.mirrorHost, Constants.gitHubHost, Constants.otherHost]
-            )
+        for statusCode in [201, 204, 206, 301, 400, 401, 403, 429, 500, 502] {
+            resetStubs()
 
             try assertFallsBackToGitHub(whenMirrorAnswers: .response(statusCode: statusCode, body: mirrorBody))
         }
@@ -137,6 +100,20 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         }
 
         XCTAssertEqual(ConfigMirrorStubURLProtocol.requestedUrls, [otherUrl.absoluteString])
+        XCTAssertTrue(logger.warnings.isEmpty)
+    }
+
+    func testDoesNotValidateBodyOfNotMirroredUrl() throws {
+        // given
+        let emptyJsonUrl = try XCTUnwrap(URL(string: "https://other.novatest/some/empty.json"))
+
+        ConfigMirrorStubURLProtocol.stub(emptyJsonUrl, with: .response(statusCode: 200, body: Data()))
+
+        // when
+        let data = try fetch(emptyJsonUrl)
+
+        // then
+        XCTAssertTrue(data.isEmpty)
     }
 
     func testBoundsMirrorAttemptAndKeepsCallerTimeoutForGitHub() throws {
@@ -153,9 +130,9 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         XCTAssertEqual(timeouts, [Constants.mirrorTimeout, Constants.callerTimeout])
     }
 
-    func testMirrorAttemptIsNeverLongerThanCallerTimeout() throws {
+    func testMirrorAttemptTakesAtMostHalfOfCallerTimeout() throws {
         // given
-        let callerTimeout: TimeInterval = 3
+        let callerTimeout: TimeInterval = 10
 
         ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 404, body: Data()))
         ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
@@ -166,7 +143,7 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         // then
         let timeouts = ConfigMirrorStubURLProtocol.requests.map(\.timeoutInterval)
 
-        XCTAssertEqual(timeouts, [callerTimeout, callerTimeout])
+        XCTAssertEqual(timeouts, [5, callerTimeout])
     }
 
     func testBoundsMirrorAttemptWhenCallerHasNoTimeout() throws {
@@ -182,6 +159,64 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         let defaultTimeout = URLRequest(url: gitHubUrl).timeoutInterval
 
         XCTAssertEqual(timeouts, [Constants.mirrorTimeout, defaultTimeout])
+    }
+
+    func testDefaultMirrorTimeoutIsTheSharedConstant() throws {
+        // given
+        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: mirrorBody))
+
+        let factory = ConfigMirrorFetchOperationFactory(
+            urlResolver: resolver,
+            availability: availability,
+            logger: logger
+        )
+
+        // when
+        let operation = factory.createFetchOperation(
+            from: gitHubUrl,
+            timeout: nil,
+            resultFactory: AnyNetworkResultFactory<Data> { data in data }
+        ) { requestUrl, requestTimeout in
+            BlockNetworkRequestFactory {
+                var request = URLRequest(url: requestUrl)
+                request.timeoutInterval = requestTimeout ?? request.timeoutInterval
+                return request
+            }
+        }
+
+        _ = try run(operation)
+
+        // then
+        XCTAssertEqual(
+            ConfigMirrorStubURLProtocol.requests.map(\.timeoutInterval),
+            [ConfigMirrorConstants.attemptTimeout]
+        )
+    }
+
+    func testBuildsRequestFactoriesBeforeReturning() throws {
+        // given
+        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 404, body: Data()))
+        ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
+
+        var builtUrls: [URL] = []
+
+        // when
+        let operation = makeFactory().createFetchOperation(
+            from: gitHubUrl,
+            timeout: nil,
+            resultFactory: AnyNetworkResultFactory<Data> { data in data }
+        ) { requestUrl, _ in
+            builtUrls.append(requestUrl)
+
+            return BlockNetworkRequestFactory { URLRequest(url: requestUrl) }
+        }
+
+        // then
+        XCTAssertEqual(builtUrls, [gitHubUrl, mirrorUrl])
+
+        _ = try run(operation)
+
+        XCTAssertEqual(builtUrls, [gitHubUrl, mirrorUrl])
     }
 
     func testDependentOperationReadsFallbackResult() throws {
@@ -204,7 +239,7 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         serialQueue.addOperations([fetchOperation, mapOperation], waitUntilFinished: true)
 
         // then
-        XCTAssertEqual(try mapOperation.extractNoCancellableResultData(), "github")
+        XCTAssertEqual(try mapOperation.extractNoCancellableResultData(), #"{"source":"github"}"#)
     }
 
     func testCancellationStopsMirrorAttemptAndSkipsGitHub() throws {
@@ -258,6 +293,10 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
             ConfigMirrorStubURLProtocol.requestedUrls,
             [mirrorUrl.absoluteString, otherUrl.absoluteString]
         )
+
+        // a cancelled attempt says nothing about the mirror
+        XCTAssertTrue(availability.isAvailable)
+        XCTAssertTrue(logger.warnings.isEmpty)
     }
 
     func testCancellationDuringGitHubAttemptStopsIt() throws {
@@ -301,73 +340,5 @@ final class ConfigMirrorFetchOperationFactoryTests: XCTestCase {
         wait(for: [finished, gitHubStopped], timeout: Constants.expectationTimeout)
 
         XCTAssertNil(operation.result)
-    }
-}
-
-private extension ConfigMirrorFetchOperationFactoryTests {
-    func makeOperation(
-        for url: URL,
-        timeout: TimeInterval?,
-        mirrorTimeout: TimeInterval = Constants.mirrorTimeout
-    ) -> BaseOperation<Data> {
-        let resolver = ConfigMirrorURLResolver(
-            mirrorBaseURL: URL(string: "https://\(Constants.mirrorHost)/v1/config/")!,
-            sources: ["\(Constants.gitHubHost)/novasamatech/nova-utils/master/"]
-        )
-
-        let factory = ConfigMirrorFetchOperationFactory(urlResolver: resolver, mirrorTimeout: mirrorTimeout)
-
-        return factory.createFetchOperation(
-            from: url,
-            timeout: timeout,
-            resultFactory: AnyNetworkResultFactory<Data> { data in data }
-        ) { requestUrl, requestTimeout in
-            BlockNetworkRequestFactory {
-                var request = URLRequest(url: requestUrl)
-                request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-
-                if let requestTimeout {
-                    request.timeoutInterval = requestTimeout
-                }
-
-                return request
-            }
-        }
-    }
-
-    func fetch(
-        _ url: URL,
-        timeout: TimeInterval? = Constants.callerTimeout,
-        mirrorTimeout: TimeInterval = Constants.mirrorTimeout
-    ) throws -> Data {
-        try run(makeOperation(for: url, timeout: timeout, mirrorTimeout: mirrorTimeout))
-    }
-
-    func run(_ operation: BaseOperation<Data>) throws -> Data {
-        operationQueue.addOperations([operation], waitUntilFinished: true)
-
-        return try operation.extractNoCancellableResultData()
-    }
-
-    func assertFallsBackToGitHub(
-        whenMirrorAnswers mirrorStub: ConfigMirrorStubURLProtocol.Stub,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) throws {
-        // given
-        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: mirrorStub)
-        ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
-
-        // when
-        let data = try fetch(gitHubUrl)
-
-        // then
-        XCTAssertEqual(data, gitHubBody, file: file, line: line)
-        XCTAssertEqual(
-            ConfigMirrorStubURLProtocol.requestedUrls,
-            [mirrorUrl.absoluteString, gitHubUrl.absoluteString],
-            file: file,
-            line: line
-        )
     }
 }

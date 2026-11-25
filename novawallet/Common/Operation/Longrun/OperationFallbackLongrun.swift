@@ -12,6 +12,7 @@ final class OperationFallbackLongrun<T>: Longrunable {
 
     private let primaryClosure: () -> BaseOperation<T>
     private let fallbackClosure: () -> BaseOperation<T>
+    private let onPrimaryFailure: ((Error) -> Void)?
 
     private let mutex = NSLock()
     private var isCancelled = false
@@ -20,10 +21,12 @@ final class OperationFallbackLongrun<T>: Longrunable {
 
     init(
         primaryClosure: @escaping () -> BaseOperation<T>,
-        fallbackClosure: @escaping () -> BaseOperation<T>
+        fallbackClosure: @escaping () -> BaseOperation<T>,
+        onPrimaryFailure: ((Error) -> Void)? = nil
     ) {
         self.primaryClosure = primaryClosure
         self.fallbackClosure = fallbackClosure
+        self.onPrimaryFailure = onPrimaryFailure
     }
 
     func start(with completionClosure: @escaping (Result<T, Error>) -> Void) {
@@ -78,12 +81,13 @@ private extension OperationFallbackLongrun {
             return
         }
 
-        if case .failure = result, !isFallback {
+        if case let .failure(error) = result, !isFallback {
             let fallbackOperation = createOperation(using: fallbackClosure, isFallback: true)
             pendingOperation = fallbackOperation
 
             mutex.unlock()
 
+            onPrimaryFailure?(error)
             fallbackOperation.start()
             return
         }

@@ -2,180 +2,226 @@ import XCTest
 import Operation_iOS
 @testable import novawallet
 
-final class BaseFetchOperationFactoryTests: XCTestCase {
+final class BaseFetchOperationFactoryTests: ConfigMirrorFetchTestCase {
     struct Payload: Decodable, Equatable {
         let source: String
     }
 
-    private enum Constants {
-        static let gitHubHost = "raw.githubusercontent.com"
+    private final class Subclass: BaseFetchOperationFactory {
+        let name: String
+
+        init(name: String) {
+            self.name = name
+        }
+    }
+
+    private enum Settings {
+        static let timeout: TimeInterval = 8
+        static let probeTimeout: TimeInterval = 2
         static let getMethod = "GET"
-        static let masterPrefix = "https://raw.githubusercontent.com/novasamatech/nova-utils/master/"
-        static let refsMasterPrefix = "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/"
-        static let callerTimeout: TimeInterval = 4
     }
 
-    private let config = ApplicationConfig.shared
-    private let mirrorBody = Data(#"{"source":"mirror"}"#.utf8)
-    private let gitHubBody = Data(#"{"source":"github"}"#.utf8)
-    private let factory = BaseFetchOperationFactory()
+    private let probeUrl = URL(string: "https://probe.novatest/file.json")!
 
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-
-        let mirrorHost = try XCTUnwrap(config.configMirrorBaseURL.host)
-
-        ConfigMirrorStubURLProtocol.reset(hosts: [Constants.gitHubHost, mirrorHost])
-
-        XCTAssertTrue(URLProtocol.registerClass(ConfigMirrorStubURLProtocol.self))
-    }
-
-    override func tearDown() {
-        URLProtocol.unregisterClass(ConfigMirrorStubURLProtocol.self)
-        ConfigMirrorStubURLProtocol.reset()
-
-        super.tearDown()
-    }
-
-    func testDecodesMirrorBodyAndSkipsGitHub() throws {
+    func testAsksMirrorFetchForUrlWithGivenTimeoutAndDecodesItsAnswer() throws {
         // given
-        let gitHubUrl = config.globalConfigURL
-        let mirrorUrl = try mirrorUrl(for: gitHubUrl, prefix: Constants.masterPrefix)
+        let spy = ConfigMirrorFetchOperationFactorySpy(probeUrl: probeUrl, probeTimeout: Settings.probeTimeout)
+        spy.responseData = mirrorBody
 
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: spy)
+
+        // when
+        let payload: Payload = try run(
+            factory.createFetchOperation(from: gitHubUrl, shouldUseCache: false, timeout: Settings.timeout)
+        )
+
+        // then
+        XCTAssertEqual(payload, Payload(source: "mirror"))
+        XCTAssertEqual(spy.calls.map(\.url), [gitHubUrl])
+        XCTAssertEqual(spy.calls.map(\.timeout), [Settings.timeout])
+        XCTAssertTrue(ConfigMirrorStubURLProtocol.requests.isEmpty)
+    }
+
+    func testBuildsJsonGetForAnyUrlItIsAskedFor() throws {
+        // given
+        let spy = ConfigMirrorFetchOperationFactorySpy(probeUrl: probeUrl, probeTimeout: Settings.probeTimeout)
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: spy)
+
+        // when
+        let operation: BaseOperation<Payload> = factory.createFetchOperation(
+            from: gitHubUrl,
+            shouldUseCache: false,
+            timeout: Settings.timeout
+        )
+
+        // then
+        XCTAssertNotNil(operation)
+
+        let call = try XCTUnwrap(spy.calls.first)
+        let request = try XCTUnwrap(call.request)
+        let probeRequest = try XCTUnwrap(call.probeRequest)
+
+        XCTAssertEqual(request.url, gitHubUrl)
+        XCTAssertEqual(request.timeoutInterval, Settings.timeout)
+        XCTAssertEqual(probeRequest.url, probeUrl)
+        XCTAssertEqual(probeRequest.timeoutInterval, Settings.probeTimeout)
+
+        for builtRequest in [request, probeRequest] {
+            XCTAssertEqual(builtRequest.httpMethod, Settings.getMethod)
+            XCTAssertEqual(builtRequest.cachePolicy, .reloadIgnoringLocalAndRemoteCacheData)
+            XCTAssertEqual(
+                builtRequest.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue),
+                HttpContentType.json.rawValue
+            )
+        }
+    }
+
+    func testBuildsCachingRequestWithoutTimeoutByDefault() throws {
+        // given
+        let spy = ConfigMirrorFetchOperationFactorySpy(probeUrl: probeUrl, probeTimeout: nil)
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: spy)
+
+        // when
+        let operation: BaseOperation<Payload> = factory.createFetchOperation(from: gitHubUrl)
+
+        // then
+        XCTAssertNotNil(operation)
+
+        let call = try XCTUnwrap(spy.calls.first)
+        let request = try XCTUnwrap(call.request)
+        let plainRequest = URLRequest(url: gitHubUrl)
+
+        XCTAssertNil(call.timeout)
+        XCTAssertEqual(request.timeoutInterval, plainRequest.timeoutInterval)
+        XCTAssertEqual(request.cachePolicy, plainRequest.cachePolicy)
+    }
+
+    func testReportsDecodingFailure() {
+        // given
+        let spy = ConfigMirrorFetchOperationFactorySpy(probeUrl: probeUrl, probeTimeout: nil)
+        spy.responseData = Data("[]".utf8)
+
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: spy)
+
+        // when
+        let operation: BaseOperation<Payload> = factory.createFetchOperation(from: gitHubUrl)
+
+        // then
+        XCTAssertThrowsError(try run(operation)) { error in
+            XCTAssertTrue(error is DecodingError)
+        }
+    }
+
+    func testOperationDoesNotKeepFactoryAlive() {
+        // given
+        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: mirrorBody))
+
+        var factory: BaseFetchOperationFactory? = BaseFetchOperationFactory(mirrorFetchFactory: makeFactory())
+        weak var weakFactory = factory
+
+        let operation: BaseOperation<Payload>? = factory?.createFetchOperation(from: gitHubUrl)
+
+        // when
+        factory = nil
+
+        // then
+        XCTAssertNil(weakFactory)
+        XCTAssertEqual(try operation.map { try run($0) }, Payload(source: "mirror"))
+    }
+
+    func testSubclassWithOwnInitializerStillFetches() throws {
+        // given
+        ConfigMirrorStubURLProtocol.stub(otherUrl, with: .response(statusCode: 200, body: gitHubBody))
+
+        let factory = Subclass(name: "subclass")
+
+        // when
+        let payload: Payload = try run(factory.createFetchOperation(from: otherUrl))
+
+        // then
+        XCTAssertEqual(payload, Payload(source: "github"))
+        XCTAssertEqual(ConfigMirrorStubURLProtocol.requestedUrls, [otherUrl.absoluteString])
+    }
+
+    // MARK: Together with the mirror fetch
+
+    func testReadsMirrorFirst() throws {
+        // given
         ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: mirrorBody))
         ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
 
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: makeFactory())
+
         // when
-        let payload = try fetch(factory.createFetchOperation(from: gitHubUrl))
+        let payload: Payload = try run(factory.createFetchOperation(from: gitHubUrl))
 
         // then
         XCTAssertEqual(payload, Payload(source: "mirror"))
         XCTAssertEqual(ConfigMirrorStubURLProtocol.requestedUrls, [mirrorUrl.absoluteString])
     }
 
-    func testFallsBackToGitHubKeepingRequestSettings() throws {
-        // given
-        let gitHubUrl = try XCTUnwrap(URL(string: config.legalDocumentsPath)).appendingPathComponent("documents.json")
-        let mirrorUrl = try mirrorUrl(for: gitHubUrl, prefix: Constants.refsMasterPrefix)
+    func testReadsGitHubWhenMirrorBodyCanNotBeDecoded() throws {
+        for body in [Data("<html>".utf8), Data(#"{"other":1}"#.utf8), Data()] {
+            resetStubs()
 
+            // given
+            ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: body))
+            ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
+
+            let factory = BaseFetchOperationFactory(mirrorFetchFactory: makeFactory())
+
+            // when
+            let payload: Payload = try run(factory.createFetchOperation(from: gitHubUrl))
+
+            // then
+            XCTAssertEqual(payload, Payload(source: "github"))
+            XCTAssertEqual(
+                ConfigMirrorStubURLProtocol.requestedUrls,
+                [mirrorUrl.absoluteString, gitHubUrl.absoluteString]
+            )
+        }
+    }
+
+    func testKeepsRequestSettingsForBothAttemptsAndSplitsTimeout() throws {
+        // given
         ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 503, body: Data()))
         ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
 
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: makeFactory())
+
         // when
-        let payload = try fetch(
-            factory.createFetchOperation(
-                from: gitHubUrl,
-                shouldUseCache: false,
-                timeout: Constants.callerTimeout
-            )
+        let payload: Payload = try run(
+            factory.createFetchOperation(from: gitHubUrl, shouldUseCache: false, timeout: Settings.timeout)
         )
 
         // then
         XCTAssertEqual(payload, Payload(source: "github"))
-        XCTAssertEqual(
-            ConfigMirrorStubURLProtocol.requestedUrls,
-            [mirrorUrl.absoluteString, gitHubUrl.absoluteString]
-        )
 
         let requests = ConfigMirrorStubURLProtocol.requests
 
-        XCTAssertEqual(requests.map(\.timeoutInterval), [Constants.callerTimeout, Constants.callerTimeout])
+        XCTAssertEqual(requests.map(\.timeoutInterval), [Settings.timeout / 2, Settings.timeout])
         XCTAssertEqual(
             requests.map(\.cachePolicy),
             [.reloadIgnoringLocalAndRemoteCacheData, .reloadIgnoringLocalAndRemoteCacheData]
         )
-        XCTAssertEqual(requests.map(\.httpMethod), [Constants.getMethod, Constants.getMethod])
         XCTAssertEqual(
-            requests.last?.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue),
-            HttpContentType.json.rawValue
+            requests.map { $0.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue) },
+            [HttpContentType.json.rawValue, HttpContentType.json.rawValue]
         )
-    }
-
-    func testBoundsMirrorAttemptAndKeepsDefaultsForGitHub() throws {
-        // given
-        let gitHubUrl = config.preferredValidatorsURL
-        let mirrorUrl = try mirrorUrl(for: gitHubUrl, prefix: Constants.masterPrefix)
-
-        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .failure(.timedOut))
-        ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
-
-        // when
-        let payload = try fetch(factory.createFetchOperation(from: gitHubUrl))
-
-        // then
-        XCTAssertEqual(payload, Payload(source: "github"))
-
-        let requests = ConfigMirrorStubURLProtocol.requests
-        let plainRequest = URLRequest(url: gitHubUrl)
-
-        XCTAssertEqual(
-            requests.map(\.timeoutInterval),
-            [ConfigMirrorFetchOperationFactory.Constants.mirrorTimeout, plainRequest.timeoutInterval]
-        )
-        XCTAssertEqual(requests.map(\.cachePolicy), [plainRequest.cachePolicy, plainRequest.cachePolicy])
-    }
-
-    func testFallsBackToGitHubWhenMirrorBodyCanNotBeDecoded() throws {
-        // given
-        let gitHubUrl = config.bittensorConfigURL
-        let mirrorUrl = try mirrorUrl(for: gitHubUrl, prefix: Constants.masterPrefix)
-
-        ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 200, body: Data("<html>".utf8)))
-        ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
-
-        // when
-        let payload = try fetch(factory.createFetchOperation(from: gitHubUrl))
-
-        // then
-        XCTAssertEqual(payload, Payload(source: "github"))
     }
 
     func testReportsGitHubFailureWhenBothFail() throws {
         // given
-        let gitHubUrl = config.globalConfigURL
-        let mirrorUrl = try mirrorUrl(for: gitHubUrl, prefix: Constants.masterPrefix)
-
         ConfigMirrorStubURLProtocol.stub(mirrorUrl, with: .response(statusCode: 404, body: Data()))
         ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 500, body: Data()))
 
+        let factory = BaseFetchOperationFactory(mirrorFetchFactory: makeFactory())
+        let operation: BaseOperation<Payload> = factory.createFetchOperation(from: gitHubUrl)
+
         // when
-        XCTAssertThrowsError(try fetch(factory.createFetchOperation(from: gitHubUrl))) { error in
+        XCTAssertThrowsError(try run(operation)) { error in
             // then
             XCTAssertEqual(error as? NetworkResponseError, .internalServerError)
         }
-    }
-
-    func testFetchesDelegateRegistryDirectly() throws {
-        // given
-        let gitHubUrl = GovernanceDelegateMetadataFactory.baseUrl.appendingPathComponent("polkadot.json")
-
-        ConfigMirrorStubURLProtocol.stub(gitHubUrl, with: .response(statusCode: 200, body: gitHubBody))
-
-        // when
-        let operation: BaseOperation<Payload> = factory.createFetchOperation(from: gitHubUrl)
-        let payload = try fetch(operation)
-
-        // then
-        XCTAssertTrue(operation is NetworkOperation<Payload>)
-        XCTAssertEqual(payload, Payload(source: "github"))
-        XCTAssertEqual(ConfigMirrorStubURLProtocol.requestedUrls, [gitHubUrl.absoluteString])
-    }
-}
-
-private extension BaseFetchOperationFactoryTests {
-    func mirrorUrl(for gitHubUrl: URL, prefix: String) throws -> URL {
-        let original = gitHubUrl.absoluteString
-
-        XCTAssertTrue(original.hasPrefix(prefix))
-
-        let filePath = String(original.dropFirst(prefix.count))
-
-        return try XCTUnwrap(URL(string: config.configMirrorBaseURL.absoluteString + filePath))
-    }
-
-    func fetch(_ operation: BaseOperation<Payload>) throws -> Payload {
-        OperationQueue().addOperations([operation], waitUntilFinished: true)
-
-        return try operation.extractNoCancellableResultData()
     }
 }

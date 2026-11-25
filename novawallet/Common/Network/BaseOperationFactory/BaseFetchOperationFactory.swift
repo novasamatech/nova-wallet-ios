@@ -2,7 +2,13 @@ import Foundation
 import Operation_iOS
 
 class BaseFetchOperationFactory {
-    private let mirrorFetchFactory = ConfigMirrorFetchOperationFactory()
+    private let mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol
+
+    // Must stay the only designated initializer and callable without arguments: the subclasses rely on
+    // the implicit `super.init()`, which the compiler adds only when there is a single designated one.
+    init(mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol = ConfigMirrorFetchOperationFactory()) {
+        self.mirrorFetchFactory = mirrorFetchFactory
+    }
 
     func createRequestFactory(
         from url: URL,
@@ -42,7 +48,7 @@ class BaseFetchOperationFactory {
             timeout: timeout,
             resultFactory: resultFactory
         ) { requestURL, requestTimeout in
-            self.createRequestFactory(from: requestURL, shouldUseCache: shouldUseCache, timeout: requestTimeout)
+            createRequestFactory(from: requestURL, shouldUseCache: shouldUseCache, timeout: requestTimeout)
         }
     }
 

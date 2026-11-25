@@ -9,11 +9,16 @@ final class DataOperationFactory: DataOperationFactoryProtocol {
     let timeout: TimeInterval?
     let ignoresCache: Bool
 
-    private let mirrorFetchFactory = ConfigMirrorFetchOperationFactory()
+    private let mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol
 
-    init(timeout: TimeInterval? = nil, ignoresCache: Bool = false) {
+    init(
+        timeout: TimeInterval? = nil,
+        ignoresCache: Bool = false,
+        mirrorFetchFactory: ConfigMirrorFetchFactoryProtocol = ConfigMirrorFetchOperationFactory()
+    ) {
         self.timeout = timeout
         self.ignoresCache = ignoresCache
+        self.mirrorFetchFactory = mirrorFetchFactory
     }
 
     func fetchData(from url: URL) -> BaseOperation<Data> {
@@ -25,8 +30,8 @@ final class DataOperationFactory: DataOperationFactoryProtocol {
             from: url,
             timeout: timeout,
             resultFactory: resultFactory
-        ) { [ignoresCache] requestURL, requestTimeout in
-            BlockNetworkRequestFactory {
+        ) { requestURL, requestTimeout in
+            BlockNetworkRequestFactory { [ignoresCache] in
                 var request = URLRequest(url: requestURL)
                 request.httpMethod = HttpMethod.get.rawValue
 
