@@ -1796,6 +1796,7 @@
 		2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */; };
 		2D1C5D2A2C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */; };
 		2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */; };
+		B138DB60D5A5F24F356B94DC /* ConfigMirrorImageSourceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3E95A9DAF7A07BC6C619B /* ConfigMirrorImageSourceFactory.swift */; };
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
 		2D1E04092ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1E04082ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift */; };
@@ -7215,6 +7216,7 @@
 		FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED30000000000000000001 /* PrivacyManifestTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
+		FCBE71D66CD446513878A6CE /* ConfigMirrorImageSourceFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FDB0B65BD194336F207F2C /* ConfigMirrorImageSourceFactoryTests.swift */; };
 		1A5664AB82EC1F67D0301CF3 /* BaseFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1111157F01FAE86D68D5368C /* BaseFetchOperationFactoryTests.swift */; };
 		E844BF3F6343165C9015A48C /* DataOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A14C6F6EE1702FFBCC1CA2E /* DataOperationFactoryTests.swift */; };
 		47B3D8CC6610501888E41BCE /* ConfigMirrorStubURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC28F5A4F3D5FAFE7C6BB050 /* ConfigMirrorStubURLProtocol.swift */; };
@@ -9114,6 +9116,7 @@
 		2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditInteractor.swift; sourceTree = "<group>"; };
 		2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkPresenterProtocols.swift; sourceTree = "<group>"; };
 		2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRetrieveOperationFactory.swift; sourceTree = "<group>"; };
+		C5D3E95A9DAF7A07BC6C619B /* ConfigMirrorImageSourceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorImageSourceFactory.swift; sourceTree = "<group>"; };
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
 		2D1E04082ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGiftReclaimWrapperFactory.swift; sourceTree = "<group>"; };
@@ -14242,6 +14245,7 @@
 		FEED30000000000000000001 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
+		B2FDB0B65BD194336F207F2C /* ConfigMirrorImageSourceFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorImageSourceFactoryTests.swift; sourceTree = "<group>"; };
 		1111157F01FAE86D68D5368C /* BaseFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		0A14C6F6EE1702FFBCC1CA2E /* DataOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataOperationFactoryTests.swift; sourceTree = "<group>"; };
 		BC28F5A4F3D5FAFE7C6BB050 /* ConfigMirrorStubURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorStubURLProtocol.swift; sourceTree = "<group>"; };
@@ -18552,6 +18556,7 @@
 			children = (
 				2D5D0CDF2D53D426000E32F6 /* RemoteImageProvider */,
 				2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */,
+				C5D3E95A9DAF7A07BC6C619B /* ConfigMirrorImageSourceFactory.swift */,
 				2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */,
 				2DBB28902CD42ED800DFA0AD /* ChainLogoImageInfo.swift */,
 			);
@@ -23775,9 +23780,18 @@
 			path = TriangularedView;
 			sourceTree = "<group>";
 		};
+		1F13E0996C7594C499F51F52 /* ImageRetrieve */ = {
+			isa = PBXGroup;
+			children = (
+				B2FDB0B65BD194336F207F2C /* ConfigMirrorImageSourceFactoryTests.swift */,
+			);
+			path = ImageRetrieve;
+			sourceTree = "<group>";
+		};
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				1F13E0996C7594C499F51F52 /* ImageRetrieve */,
 				3F2839BD3CD74DFC806B7019 /* Network */,
 				0CAA10092E7A0009007E41C4 /* Logger */,
 				FEEDAA0000000000000000D3 /* GlobalConfig */,
@@ -34453,6 +34467,7 @@
 				2DEDEF5E2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift in Sources */,
 				77A0B2ED2A3B7F3300CBF653 /* DAppCollectionViewCell.swift in Sources */,
 				2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */,
+				B138DB60D5A5F24F356B94DC /* ConfigMirrorImageSourceFactory.swift in Sources */,
 				77DB70EE2B709E4300288F26 /* Web3AlertRemoteModel.swift in Sources */,
 				0C0F6DBA2D3EE9C200943A7C /* MythosStakingDetails.swift in Sources */,
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,
@@ -40699,6 +40714,7 @@
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
 				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
+				FCBE71D66CD446513878A6CE /* ConfigMirrorImageSourceFactoryTests.swift in Sources */,
 				1A5664AB82EC1F67D0301CF3 /* BaseFetchOperationFactoryTests.swift in Sources */,
 				E844BF3F6343165C9015A48C /* DataOperationFactoryTests.swift in Sources */,
 				47B3D8CC6610501888E41BCE /* ConfigMirrorStubURLProtocol.swift in Sources */,

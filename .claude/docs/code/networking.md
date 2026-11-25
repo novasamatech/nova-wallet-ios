@@ -86,6 +86,20 @@ Conventions:
 - All base URLs come from `ApplicationConfig` or `GlobalConfig` (see
   architecture/services-lifecycle.md). API keys come from `CIKeys.generated.swift`.
 
+### Config mirror
+
+Files of the nova-utils `master` branch are read from the nova-infra mirror
+(`ApplicationConfig.configMirrorBaseURL`) first and from GitHub when the mirror attempt fails for
+any reason (any status but 200, a network or TLS error, a timeout). Config URLs stay the GitHub
+ones: `ConfigMirrorURLResolver` maps them to the mirror at fetch time, so caches and files keyed by
+URL keep their keys. The fallback lives in three shared places and nowhere else:
+`DataOperationFactory` and `BaseFetchOperationFactory` (through
+`ConfigMirrorFetchOperationFactory`), and Kingfisher loads (through
+`ConfigMirrorImageSourceFactory`, used by `RemoteImageViewModel` and the remote image providers).
+Fetch a nova-utils file or image through one of them — a hand-built `NetworkOperation` or
+Kingfisher call bypasses the mirror. Other repositories and branches are not mirrored and are
+fetched as before.
+
 ### Backends in use
 
 | Directory                     | Backend                                                     |
