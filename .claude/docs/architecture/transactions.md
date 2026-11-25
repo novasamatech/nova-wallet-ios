@@ -54,6 +54,10 @@ Add a new call there, not inline in an Interactor.
 `EvmFallbackGasLimit` when estimation fails. The flow mirrors the substrate one
 (build → estimate → sign via `SigningWrapperFactory.createEthereumSigner` → submit).
 
+- Send through `EvmTrackedSubmissionFactory`: it writes the pending history row from a draft, then tracks
+  the transaction on `TransactionTrackingFacade.shared`. A screen that waits for the outcome uses
+  `submitAndMonitorWrapper`, which shares the facade's watch.
+
 ## Fee Handling
 
 - Fees are modelled by `ExtrinsicFeeProtocol` / `FeeOutputModel`, never raw `BigUInt` in the UI.
