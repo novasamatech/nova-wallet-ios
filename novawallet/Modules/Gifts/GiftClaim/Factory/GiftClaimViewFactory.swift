@@ -181,14 +181,11 @@ private extension GiftClaimViewFactory {
             callbackQueue: .main
         )
 
-        let transactionMonitorFactory = TransactionSubmitMonitorFactory(
+        let transactionMonitorFactory = EvmTrackedSubmissionFactory(
+            chain: chainAsset.chain,
             submissionService: transactionService,
-            queryOperationFactory: EvmWebSocketOperationFactory(
-                connection: chainRegistry.getOneShotConnection(for: chainAsset.chain.chainId) ?? connection,
-                timeout: JSONRPCTimeout.withNodeSwitch
-            ),
-            headsConnection: connection,
-            timing: EvmTransactionMonitorTiming(chain: chainAsset.chain),
+            trackingFacade: TransactionTrackingFacade.shared,
+            historyRepository: SubstrateRepositoryFactory().createTxRepository(),
             operationQueue: operationQueue
         )
 

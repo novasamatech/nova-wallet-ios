@@ -2,7 +2,6 @@ import Foundation
 
 struct EvmTransactionMonitorSubmission {
     let status: TransactionStatus
-    let receipt: EthereumTransactionReceipt
 
     var transactionHash: String {
         switch status {

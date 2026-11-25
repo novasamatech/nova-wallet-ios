@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 
 final class EvmTransactionWatcher {
-    typealias Completion = (Result<EvmTransactionMonitorSubmission, Error>) -> Void
+    typealias Completion = (TransactionWatchResult) -> Void
 
     let queryOperationFactory: EthereumOperationFactoryProtocol
     let headsConnection: JSONRPCEngine?
@@ -247,26 +247,27 @@ private extension EvmTransactionWatcher {
         case .verifyDropped:
             verifyDropped()
         case let .success(receipt):
-            let status = EvmTransactionMonitorSubmission.TransactionStatus.success(
-                .init(transactionHash: receipt.transactionHash, blockHash: receipt.blockHash)
-            )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
+            finish(with: .decided(.included(Self.inclusion(from: receipt))))
         case let .failure(receipt):
-            let status = EvmTransactionMonitorSubmission.TransactionStatus.failure(
-                .init(transactionHash: receipt.transactionHash)
-            )
-            finish(with: .success(EvmTransactionMonitorSubmission(status: status, receipt: receipt)))
+            finish(with: .decided(.includedFailed(Self.inclusion(from: receipt), .evmReverted)))
         case .dropped:
             logger.warning("EVM monitor: \(transaction.transactionHash) dropped")
-            finish(with: .failure(EvmTransactionMonitorError.dropped(transactionHash: transaction.transactionHash)))
+            finish(with: .decided(.dropped(.nonceConsumed)))
         case .stillPending:
             logger.warning("EVM monitor: \(transaction.transactionHash) still pending")
-            let error = EvmTransactionMonitorError.stillPending(transactionHash: transaction.transactionHash)
-            finish(with: .failure(error))
+            finish(with: .undecided)
         }
     }
 
-    func finish(with result: Result<EvmTransactionMonitorSubmission, Error>) {
+    static func inclusion(from receipt: EthereumTransactionReceipt) -> TransactionInclusion {
+        TransactionInclusion(
+            blockHash: receipt.blockHash,
+            blockNumber: receipt.blockNumberValue,
+            actualFee: receipt.fee
+        )
+    }
+
+    func finish(with result: TransactionWatchResult) {
         guard !isFinished else { return }
 
         tearDown()

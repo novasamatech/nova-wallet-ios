@@ -60,7 +60,8 @@ final class EvmGiftSubmissionFactory {
         let submitAndMonitorWrapper = transactionMonitorFactory.submitAndMonitorWrapper(
             extrinsicClosure,
             price: evmFee.transactionPrice,
-            signer: signingWrapper
+            signer: signingWrapper,
+            historyDraft: { _ in nil }
         )
 
         let resultWrapper = createSubmissionResultWrapper(

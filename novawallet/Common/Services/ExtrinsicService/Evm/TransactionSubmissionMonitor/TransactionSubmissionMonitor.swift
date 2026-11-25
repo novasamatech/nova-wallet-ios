@@ -1,83 +1,59 @@
 import Foundation
 import Operation_iOS
-import SubstrateSdk
 
 protocol TransactionSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        historyDraft: @escaping EvmHistoryDraftClosure
     ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission>
-}
-
-final class TransactionSubmitMonitorFactory {
-    let submissionService: EvmTransactionServiceProtocol
-    let queryOperationFactory: EthereumOperationFactoryProtocol
-    let headsConnection: JSONRPCEngine?
-    let timing: EvmTransactionMonitorTiming
-    let operationQueue: OperationQueue
-    let processingQueue = DispatchQueue(label: "io.novawallet.evm.transaction.monitor.\(UUID().uuidString)")
-    let logger: LoggerProtocol
-
-    init(
-        submissionService: EvmTransactionServiceProtocol,
-        queryOperationFactory: EthereumOperationFactoryProtocol,
-        headsConnection: JSONRPCEngine?,
-        timing: EvmTransactionMonitorTiming,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol = Logger.shared
-    ) {
-        self.submissionService = submissionService
-        self.queryOperationFactory = queryOperationFactory
-        self.headsConnection = headsConnection
-        self.timing = timing
-        self.operationQueue = operationQueue
-        self.logger = logger
-    }
 }
 
 // MARK: - TransactionSubmitMonitorFactoryProtocol
 
-extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtocol {
+extension EvmTrackedSubmissionFactory: TransactionSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        historyDraft: @escaping EvmHistoryDraftClosure
     ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
-        // Built on execution: the builder closure may read operations the caller makes this wrapper depend on.
-        let submissionWrapper = OperationCombiningService<EvmSubmittedTransaction>.compoundNonOptionalWrapper(
+        let trackWrapper = submitAndTrackWrapper(closure, price: price, signer: signer, historyDraft: historyDraft)
+        let budget = EvmTransactionMonitorTiming(chain: chain).waitBudget
+
+        let resultWrapper = OperationCombiningService<TransactionTrackingResult>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [submissionService] in
-            submissionService.createSubmissionWrapper(closure, price: price, signer: signer)
+        ) { [chain, trackingFacade] in
+            let transaction = try trackWrapper.targetOperation.extractNoCancellableResultData()
+            let key = TransactionTrackingKey(chainId: chain.chainId, transactionHash: transaction.transactionHash)
+
+            return trackingFacade.createResultWrapper(for: key, budget: budget)
         }
 
-        let processingQueue = processingQueue
-        let waitBudget = timing.waitBudget
+        resultWrapper.addDependency(wrapper: trackWrapper)
 
-        let watcher = EvmTransactionWatcher(
-            queryOperationFactory: queryOperationFactory,
-            headsConnection: headsConnection,
-            timing: timing,
-            processingQueue: processingQueue,
-            operationQueue: operationQueue,
-            logger: logger
-        )
+        let mapOperation = ClosureOperation<EvmTransactionMonitorSubmission> {
+            let transactionHash = try trackWrapper.targetOperation.extractNoCancellableResultData().transactionHash
 
-        let monitorOperation = AsyncClosureOperation<EvmTransactionMonitorSubmission>(
-            operationClosure: { completion in
-                let transaction = try submissionWrapper.targetOperation.extractNoCancellableResultData()
-
-                processingQueue.async {
-                    watcher.start(watching: transaction, deadline: waitBudget, completion: completion)
-                }
-            },
-            cancelationClosure: {
-                watcher.stop()
+            switch try resultWrapper.targetOperation.extractNoCancellableResultData() {
+            case let .resolved(.included(inclusion)):
+                return EvmTransactionMonitorSubmission(
+                    status: .success(.init(transactionHash: transactionHash, blockHash: inclusion.blockHash))
+                )
+            case .resolved(.includedFailed):
+                return EvmTransactionMonitorSubmission(status: .failure(.init(transactionHash: transactionHash)))
+            case .resolved(.dropped):
+                throw EvmTransactionMonitorError.dropped(transactionHash: transactionHash)
+            case .stillPending:
+                throw EvmTransactionMonitorError.stillPending(transactionHash: transactionHash)
             }
-        )
+        }
 
-        monitorOperation.addDependency(submissionWrapper.targetOperation)
+        mapOperation.addDependency(resultWrapper.targetOperation)
 
-        return submissionWrapper.insertingTail(operation: monitorOperation)
+        return resultWrapper
+            .insertingHead(operations: trackWrapper.allOperations)
+            .insertingTail(operation: mapOperation)
     }
 }

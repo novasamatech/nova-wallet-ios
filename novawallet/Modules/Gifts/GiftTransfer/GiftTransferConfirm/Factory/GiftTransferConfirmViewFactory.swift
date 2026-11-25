@@ -196,14 +196,11 @@ private extension GiftTransferConfirmViewFactory {
             operationQueue: operationQueue
         )
 
-        let transactionMonitorFactory = TransactionSubmitMonitorFactory(
+        let transactionMonitorFactory = EvmTrackedSubmissionFactory(
+            chain: chain,
             submissionService: transactionService,
-            queryOperationFactory: EvmWebSocketOperationFactory(
-                connection: chainRegistry.getOneShotConnection(for: chain.chainId) ?? connection,
-                timeout: JSONRPCTimeout.withNodeSwitch
-            ),
-            headsConnection: connection,
-            timing: EvmTransactionMonitorTiming(chain: chain),
+            trackingFacade: TransactionTrackingFacade.shared,
+            historyRepository: SubstrateRepositoryFactory().createTxRepository(),
             operationQueue: operationQueue
         )
 
