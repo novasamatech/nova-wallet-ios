@@ -29,18 +29,18 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         self.repository = repository
     }
 
-    func createTransferSaveOperation(
+    static func createTransferItem(
         source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails
-    ) -> CompoundOperationWrapper<Void> {
+    ) -> TransactionHistoryItem {
         let timestamp = Int64(Date().timeIntervalSince1970)
         let feeString = details.fee.map { String($0) }
 
         let txHash = details.txHash.toHex(includePrefix: true)
         let identifier = TransactionHistoryItem.createIdentifier(from: txHash, source: source)
 
-        let transferItem = TransactionHistoryItem(
+        return TransactionHistoryItem(
             identifier: identifier,
             source: source,
             chainId: chainAssetId.chainId,
@@ -60,6 +60,14 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             swap: nil,
             nonce: details.nonce.map { String($0) }
         )
+    }
+
+    func createTransferSaveOperation(
+        source: TransactionHistoryItemSource,
+        chainAssetId: ChainAssetId,
+        details: PersistTransferDetails
+    ) -> CompoundOperationWrapper<Void> {
+        let transferItem = Self.createTransferItem(source: source, chainAssetId: chainAssetId, details: details)
 
         let operation = repository.saveOperation({ [transferItem] }, { [] })
 
