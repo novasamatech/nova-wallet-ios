@@ -9,6 +9,7 @@ struct PersistTransferDetails {
     let callPath: CallCodingPath
     let fee: BigUInt?
     let feeAssetId: AssetModel.Id?
+    var nonce: BigUInt?
 }
 
 struct PersistExtrinsicDetails {

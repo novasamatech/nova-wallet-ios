@@ -27,6 +27,7 @@ struct TransactionHistoryItem: Codable {
         case callPath
         case call
         case swap
+        case nonce
     }
 
     enum Status: Int16, Codable {
@@ -52,6 +53,7 @@ struct TransactionHistoryItem: Codable {
     let callPath: CallCodingPath
     let call: Data?
     let swap: SwapHistoryData?
+    var nonce: String?
 }
 
 extension TransactionHistoryItem: Identifiable {
@@ -71,6 +73,26 @@ extension TransactionHistoryItem {
 
     var isIdentifierMatchesLocal: Bool {
         identifier == TransactionHistoryItem.createIdentifier(from: txHash, source: source)
+    }
+}
+
+enum TransactionHistoryStatusRank {
+    static func isDowngrade(
+        from stored: TransactionHistoryItem.Status,
+        to incoming: TransactionHistoryItem.Status
+    ) -> Bool {
+        rank(of: incoming) < rank(of: stored)
+    }
+
+    private static func rank(of status: TransactionHistoryItem.Status) -> Int {
+        switch status {
+        case .pending:
+            0
+        case .failed:
+            1
+        case .success:
+            2
+        }
     }
 }
 

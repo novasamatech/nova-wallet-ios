@@ -89,6 +89,7 @@ private extension MainTabBarViewFactory {
             eventCenter: EventCenter.shared,
             preSyncServiceCoodrinator: preSyncServiceCoordinator,
             serviceCoordinator: serviceCoordinator,
+            transactionTrackingFacade: TransactionTrackingFacade.shared,
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,

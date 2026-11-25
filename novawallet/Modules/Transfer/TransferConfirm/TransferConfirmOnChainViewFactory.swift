@@ -185,6 +185,7 @@ struct TransferConfirmOnChainViewFactory {
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
+            transactionTrackingFacade: TransactionTrackingFacade.shared,
             selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: operationQueue

@@ -14,6 +14,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let screenOpenService: ScreenOpenServiceProtocol
     let preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
+    let transactionTrackingFacade: TransactionTrackingFacadeProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
 
@@ -44,6 +45,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         eventCenter: EventCenterProtocol,
         preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
+        transactionTrackingFacade: TransactionTrackingFacadeProtocol,
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
@@ -69,6 +71,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.cloudBackupMediator = cloudBackupMediator
         self.preSyncServiceCoodrinator = preSyncServiceCoodrinator
         self.serviceCoordinator = serviceCoordinator
+        self.transactionTrackingFacade = transactionTrackingFacade
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
@@ -98,6 +101,7 @@ private extension MainTabBarInteractor {
             switch result {
             case .success:
                 self?.serviceCoordinator.setup()
+                self?.transactionTrackingFacade.activate()
                 self?.inAppUpdatesService.syncUp()
                 self?.applicationHandler.delegate = self
             case .failure:

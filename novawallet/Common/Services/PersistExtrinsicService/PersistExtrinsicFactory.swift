@@ -57,7 +57,8 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txIndex: nil,
             callPath: details.callPath,
             call: nil,
-            swap: nil
+            swap: nil,
+            nonce: details.nonce.map { String($0) }
         )
 
         let operation = repository.saveOperation({ [transferItem] }, { [] })

@@ -189,6 +189,20 @@ extension NSPredicate {
         NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.source), source.rawValue)
     }
 
+    static func filterTransactionsBy(chainId: ChainModel.Id, transactionHash: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@ AND %K ==[c] %@",
+            #keyPath(CDTransactionItem.chainId),
+            chainId,
+            #keyPath(CDTransactionItem.txHash),
+            transactionHash
+        )
+    }
+
+    static func filterTransactionsBy(status: TransactionHistoryItem.Status) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.status), status.rawValue)
+    }
+
     static func filterSwapTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
         let assetIdIn = NSPredicate(
             format: "%K == %d", #keyPath(CDTransactionItem.swap.assetIdIn),

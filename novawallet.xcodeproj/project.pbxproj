@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */; };
+		E51B6D47495EB354653CBAA1 /* TransactionTrackingFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */; };
+		7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */; };
+		F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */; };
+		DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */; };
+		12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */; };
+		7CE4F7AFD4049E8B31D412D7 /* TransactionTrackingFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */; };
+		FC750E0C720950BBB8E31EFF /* TransactionTrackingProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */; };
+		0856834E5056E1E185762910 /* TransactionTrackingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */; };
 		E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */; };
 		F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */; };
 		0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */; };
@@ -7318,6 +7327,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
+		5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingFacadeTests.swift; sourceTree = "<group>"; };
+		043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionPickup.swift; sourceTree = "<group>"; };
+		6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolutionMapper.swift; sourceTree = "<group>"; };
+		25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolver.swift; sourceTree = "<group>"; };
+		BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionTracker.swift; sourceTree = "<group>"; };
+		1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingFacade.swift; sourceTree = "<group>"; };
+		9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingProtocols.swift; sourceTree = "<group>"; };
+		B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingModels.swift; sourceTree = "<group>"; };
 		551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorStateTests.swift; sourceTree = "<group>"; };
 		8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionWatcher.swift; sourceTree = "<group>"; };
 		8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorState.swift; sourceTree = "<group>"; };
@@ -11483,6 +11501,7 @@
 		845D8ED82977F18300F22133 /* GovernanceDelegateStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateStats.swift; sourceTree = "<group>"; };
 		845E49822636C87B002F8C22 /* ActionManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionManageViewModel.swift; sourceTree = "<group>"; };
 		845E5DCA80CF3EED2C89DE09 /* SubstrateDataModel40.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel40.xcdatamodel; sourceTree = "<group>"; };
+		8F4C0D4E7039075790FB5B53 /* SubstrateDataModel41.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel41.xcdatamodel; sourceTree = "<group>"; };
 		845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Evm.swift"; sourceTree = "<group>"; };
 		845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallCodingPath+Evm.swift"; sourceTree = "<group>"; };
 		845FB5F69EE4029CDC9DF35B /* StakingSetupProxyViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupProxyViewLayout.swift; sourceTree = "<group>"; };
@@ -23324,9 +23343,23 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		142F296907C084F48FD3F335 /* TransactionTracking */ = {
+			isa = PBXGroup;
+			children = (
+				043F56D377C182F4D35FCA6D /* PendingTransactionPickup.swift */,
+				25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */,
+				BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */,
+				1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */,
+				9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */,
+				B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */,
+			);
+			path = TransactionTracking;
+			sourceTree = "<group>";
+		};
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				142F296907C084F48FD3F335 /* TransactionTracking */,
 				FEEDAA0000000000000000A1 /* Analytics */,
 				2E4ED365661A4DDB8B291B52 /* AssetVisibility */,
 				AA1014D50747A645B9585D3C /* Announcements */,
@@ -24460,9 +24493,18 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		F51F06C7A0D8089EB7887369 /* TransactionTracking */ = {
+			isa = PBXGroup;
+			children = (
+				5537F9D7571DACC0F5EAB91C /* TransactionTrackingFacadeTests.swift */,
+			);
+			path = TransactionTracking;
+			sourceTree = "<group>";
+		};
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F51F06C7A0D8089EB7887369 /* TransactionTracking */,
 				4418DCC1D980497D96EF9A7B /* TransactionSubscription */,
 				AC00020000000000000000FC /* ExtrinsicService */,
 				FEEDAA0000000000000000A2 /* Analytics */,
@@ -24712,6 +24754,7 @@
 		8457F91126EB9088006803E1 /* EntityToModel */ = {
 			isa = PBXGroup;
 			children = (
+				6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */,
 				845B821826EF808D00D25C72 /* MetaAccountMapper.swift */,
 				2DB586292EB74AB700950F7D /* GiftMapper.swift */,
 				773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */,
@@ -25887,6 +25930,7 @@
 		8489EDD8264DE40800FF997E /* Migration */ = {
 			isa = PBXGroup;
 			children = (
+				8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */,
 				D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */,
 				849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */,
 				0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */,
@@ -33986,6 +34030,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */,
+				F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */,
+				DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */,
+				12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */,
+				7CE4F7AFD4049E8B31D412D7 /* TransactionTrackingFacade.swift in Sources */,
+				FC750E0C720950BBB8E31EFF /* TransactionTrackingProtocols.swift in Sources */,
+				0856834E5056E1E185762910 /* TransactionTrackingModels.swift in Sources */,
 				F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */,
 				0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */,
 				645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */,
@@ -40423,6 +40474,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */,
+				E51B6D47495EB354653CBAA1 /* TransactionTrackingFacadeTests.swift in Sources */,
 				E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */,
 				7A94A5D595D638B0C7FB4EB7 /* HydraAaveCollateralPositionTests.swift in Sources */,
 				6F3B1C8DAE2041F5B7C9D311 /* HydraAaveFlowStateTests.swift in Sources */,
@@ -42144,6 +42197,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				8F4C0D4E7039075790FB5B53 /* SubstrateDataModel41.xcdatamodel */,
 				845E5DCA80CF3EED2C89DE09 /* SubstrateDataModel40.xcdatamodel */,
 				0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */,
 				2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */,
@@ -42185,7 +42239,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 845E5DCA80CF3EED2C89DE09 /* SubstrateDataModel40.xcdatamodel */;
+			currentVersion = 8F4C0D4E7039075790FB5B53 /* SubstrateDataModel41.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

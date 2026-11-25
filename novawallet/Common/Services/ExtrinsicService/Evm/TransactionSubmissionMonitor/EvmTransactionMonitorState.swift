@@ -6,17 +6,32 @@ struct EvmTransactionMonitorTiming {
     let waitBudget: TimeInterval
     let droppedWindow: TimeInterval
     let minHeadCheckSpacing: TimeInterval
+    let slowPollInterval: TimeInterval
+    let idlePollInterval: TimeInterval
+
+    func interval(forAge age: TimeInterval) -> TimeInterval {
+        if age < waitBudget {
+            pollInterval
+        } else if age < Constants.idleAge {
+            slowPollInterval
+        } else {
+            idlePollInterval
+        }
+    }
 }
 
 extension EvmTransactionMonitorTiming {
     init(chain: ChainModel) {
         let blockTime = chain.defaultBlockTimeMillis.map { TimeInterval($0) / 1000 } ?? Constants.fallbackBlockTime
+        let agedPollBase = min(max(blockTime, Constants.minPollInterval), Constants.maxSlowBaseInterval)
 
         self.init(
             pollInterval: min(max(blockTime, Constants.minPollInterval), Constants.maxPollInterval),
             waitBudget: max(Constants.minWaitBudget, Constants.waitBudgetBlocks * blockTime),
             droppedWindow: max(Constants.minDroppedWindow, Constants.droppedWindowBlocks * blockTime),
-            minHeadCheckSpacing: Constants.minHeadCheckSpacing
+            minHeadCheckSpacing: Constants.minHeadCheckSpacing,
+            slowPollInterval: min(Constants.maxAgedPollInterval, agedPollBase * Constants.slowPollFactor),
+            idlePollInterval: min(Constants.maxAgedPollInterval, agedPollBase * Constants.idlePollFactor)
         )
     }
 
@@ -26,9 +41,14 @@ extension EvmTransactionMonitorTiming {
         static let maxPollInterval: TimeInterval = 4
         static let minWaitBudget: TimeInterval = 60
         static let waitBudgetBlocks: TimeInterval = 10
-        static let minDroppedWindow: TimeInterval = 12
+        static let minDroppedWindow: TimeInterval = 30
         static let droppedWindowBlocks: TimeInterval = 3
         static let minHeadCheckSpacing: TimeInterval = 2
+        static let maxSlowBaseInterval: TimeInterval = 12
+        static let slowPollFactor: TimeInterval = 3
+        static let idlePollFactor: TimeInterval = 10
+        static let maxAgedPollInterval: TimeInterval = 120
+        static let idleAge: TimeInterval = 3600
     }
 }
 
@@ -42,23 +62,25 @@ struct EvmTransactionMonitorState {
     enum Decision: Equatable {
         case wait
         case verifyDropped
-        case success(transactionHash: String, blockHash: String)
-        case failure(transactionHash: String)
+        case success(EthereumTransactionReceipt)
+        case failure(EthereumTransactionReceipt)
         case dropped
         case stillPending
     }
 
-    let nonce: BigUInt
+    let nonce: BigUInt?
     let timing: EvmTransactionMonitorTiming
     let startedAt: Date
+    let deadline: TimeInterval?
 
     private(set) var consumedChecks: Int = 0
     private(set) var consumedSince: Date?
 
-    init(nonce: BigUInt, timing: EvmTransactionMonitorTiming, startedAt: Date) {
+    init(nonce: BigUInt?, timing: EvmTransactionMonitorTiming, startedAt: Date, deadline: TimeInterval?) {
         self.nonce = nonce
         self.timing = timing
         self.startedAt = startedAt
+        self.deadline = deadline
     }
 
     mutating func decide(on check: Check, at date: Date) -> Decision {
@@ -66,29 +88,22 @@ struct EvmTransactionMonitorState {
             return Self.decide(on: receipt)
         }
 
-        guard date.timeIntervalSince(startedAt) < timing.waitBudget else {
-            return .stillPending
-        }
-
         guard case let .noReceipt(latestNonce) = check else {
             return .wait
         }
 
-        guard latestNonce > nonce else {
-            consumedChecks = 0
-            consumedSince = nil
-            return .wait
+        if let nonce, latestNonce > nonce {
+            return decideConsumedNonce(at: date)
         }
 
-        consumedChecks += 1
+        if let deadline, date.timeIntervalSince(startedAt) >= deadline {
+            return .stillPending
+        }
 
-        let streakStart = consumedSince ?? date
-        consumedSince = streakStart
+        consumedChecks = 0
+        consumedSince = nil
 
-        let isDroppedCandidate = consumedChecks >= Constants.minConsumedChecks &&
-            date.timeIntervalSince(streakStart) >= timing.droppedWindow
-
-        return isDroppedCandidate ? .verifyDropped : .wait
+        return .wait
     }
 
     func decideVerification(_ result: Result<EthereumTransactionReceipt?, Error>) -> Decision {
@@ -108,11 +123,23 @@ private extension EvmTransactionMonitorState {
         static let minConsumedChecks = 4
     }
 
+    mutating func decideConsumedNonce(at date: Date) -> Decision {
+        consumedChecks += 1
+
+        let streakStart = consumedSince ?? date
+        consumedSince = streakStart
+
+        let isDroppedCandidate = consumedChecks >= Constants.minConsumedChecks &&
+            date.timeIntervalSince(streakStart) >= timing.droppedWindow
+
+        return isDroppedCandidate ? .verifyDropped : .wait
+    }
+
     static func decide(on receipt: EthereumTransactionReceipt) -> Decision {
         if receipt.isSuccess ?? true {
-            return .success(transactionHash: receipt.transactionHash, blockHash: receipt.blockHash)
+            return .success(receipt)
         } else {
-            return .failure(transactionHash: receipt.transactionHash)
+            return .failure(receipt)
         }
     }
 }

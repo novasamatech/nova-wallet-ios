@@ -157,6 +157,7 @@ sources = [
     "novawallet/Common/Services/ExtrinsicService/Substrate/Xcm/XcmTransferResolutionService.swift",
     "novawallet/Common/Services/AssetExchange/CrosschainExchange/CrosschainExchangeHost.swift",
     "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
+    "novawallet/Common/Services/TransactionTracking/TransactionTrackingProtocols.swift",
 ]
 
 exclude = [
