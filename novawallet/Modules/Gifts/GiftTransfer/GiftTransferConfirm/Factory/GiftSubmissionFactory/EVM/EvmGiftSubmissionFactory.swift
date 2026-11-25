@@ -10,6 +10,7 @@ final class EvmGiftSubmissionFactory {
     let transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
     let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
+    let persistsHistory: Bool
     let operationQueue: OperationQueue
 
     init(
@@ -19,6 +20,7 @@ final class EvmGiftSubmissionFactory {
         transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol,
         transferCommandFactory: EvmTransferCommandFactory,
         balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
+        persistsHistory: Bool,
         operationQueue: OperationQueue
     ) {
         self.submissionFactory = submissionFactory
@@ -27,6 +29,7 @@ final class EvmGiftSubmissionFactory {
         self.transactionMonitorFactory = transactionMonitorFactory
         self.transferCommandFactory = transferCommandFactory
         self.balanceQueryFactory = balanceQueryFactory
+        self.persistsHistory = persistsHistory
         self.operationQueue = operationQueue
     }
 
@@ -61,13 +64,18 @@ final class EvmGiftSubmissionFactory {
             extrinsicClosure,
             price: evmFee.transactionPrice,
             signer: signingWrapper,
-            historyDraft: { _ in nil }
+            historyDraft: createHistoryDraft(
+                giftWrapper: giftWrapper,
+                amount: amount,
+                evmFee: evmFee,
+                transferType: transferType,
+                callCodingPath: { callCodingPath }
+            )
         )
 
         let resultWrapper = createSubmissionResultWrapper(
             dependingOn: submitAndMonitorWrapper,
-            giftWrapper: giftWrapper,
-            callCodingPath: { callCodingPath }
+            giftWrapper: giftWrapper
         )
 
         resultWrapper.addDependency(wrapper: submitAndMonitorWrapper)
@@ -79,10 +87,40 @@ final class EvmGiftSubmissionFactory {
 // MARK: - Private
 
 private extension EvmGiftSubmissionFactory {
+    func createHistoryDraft(
+        giftWrapper: CompoundOperationWrapper<GiftModel>,
+        amount: OnChainTransferAmount<BigUInt>,
+        evmFee: EvmFeeModel,
+        transferType: EvmTransferType,
+        callCodingPath: @escaping () -> CallCodingPath?
+    ) -> EvmHistoryDraftClosure {
+        { [chain, persistsHistory] transaction in
+            guard persistsHistory, let callPath = callCodingPath() else {
+                return nil
+            }
+
+            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
+
+            return PersistExtrinsicFactory.createTransferItem(
+                source: transferType.transactionSource,
+                chainAssetId: gift.chainAssetId,
+                details: PersistTransferDetails(
+                    sender: try transaction.sender.toAddress(using: chain.chainFormat),
+                    receiver: try gift.giftAccountId.toAddress(using: chain.chainFormat),
+                    amount: amount.value,
+                    txHash: try Data(hexString: transaction.transactionHash),
+                    callPath: callPath,
+                    fee: evmFee.fee,
+                    feeAssetId: nil,
+                    nonce: transaction.nonce
+                )
+            )
+        }
+    }
+
     func createSubmissionResultWrapper(
         dependingOn submitAndMonitorWrapper: CompoundOperationWrapper<EvmTransactionMonitorSubmission>,
-        giftWrapper: CompoundOperationWrapper<GiftModel>,
-        callCodingPath: @escaping () -> CallCodingPath?
+        giftWrapper: CompoundOperationWrapper<GiftModel>
     ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
@@ -97,7 +135,7 @@ private extension EvmGiftSubmissionFactory {
                         SubmittedGiftTransactionMetadata(
                             txHash: successSubmission.transactionHash,
                             senderResolution: nil,
-                            callCodingPath: callCodingPath()
+                            callCodingPath: nil
                         )
                     )
                 } else {
