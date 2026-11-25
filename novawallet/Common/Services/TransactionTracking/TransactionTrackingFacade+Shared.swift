@@ -11,6 +11,7 @@ extension TransactionTrackingFacade {
         let trackers: [ChainTransactionTracking] = [
             EvmTransactionTracker(
                 chainRegistry: chainRegistry,
+                eventCenter: EventCenter.shared,
                 operationQueue: operationQueue,
                 logger: logger
             )

@@ -5,14 +5,25 @@ import BigInt
 
 final class EvmTransactionTracker {
     let chainRegistry: ChainRegistryProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let processingQueue = DispatchQueue(label: "io.novawallet.transaction.tracking.evm")
     let logger: LoggerProtocol
 
-    init(chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+    private var watchersByChain: [ChainModel.Id: NSHashTable<EvmTransactionWatcher>] = [:]
+
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        eventCenter: EventCenterProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
         self.chainRegistry = chainRegistry
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
+
+        eventCenter.add(observer: self, dispatchIn: processingQueue)
     }
 }
 
@@ -69,7 +80,6 @@ private extension EvmTransactionTracker {
                 connection: connection,
                 timeout: JSONRPCTimeout.withNodeSwitch
             ),
-            headsConnection: nil,
             timing: EvmTransactionMonitorTiming(chain: chain),
             processingQueue: processingQueue,
             operationQueue: operationQueue,
@@ -82,7 +92,9 @@ private extension EvmTransactionTracker {
             nonce: Self.watchedNonce(from: evidence.nonce, mode: request.mode)
         )
 
-        processingQueue.async {
+        processingQueue.async { [weak self] in
+            self?.addWatcher(watcher, for: chain.chainId)
+
             switch request.mode {
             case .fresh:
                 watcher.start(watching: transaction, deadline: nil, completion: onResult)
@@ -101,6 +113,20 @@ private extension EvmTransactionTracker {
         }
 
         return watcher
+    }
+
+    func addWatcher(_ watcher: EvmTransactionWatcher, for chainId: ChainModel.Id) {
+        let watchers = watchersByChain[chainId] ?? NSHashTable.weakObjects()
+        watchers.add(watcher)
+        watchersByChain[chainId] = watchers
+    }
+}
+
+// MARK: - EventVisitorProtocol
+
+extension EvmTransactionTracker: EventVisitorProtocol {
+    func processEvmNewHead(event: EvmNewHeadReceived) {
+        watchersByChain[event.chainId]?.allObjects.forEach { $0.didReceiveHead() }
     }
 }
 

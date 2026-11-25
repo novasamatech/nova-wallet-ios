@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C0501B5445E60D8436DF9EB /* EvmNewHeadReceived.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D66F54EE736491D201E23CB /* EvmNewHeadReceived.swift */; };
 		C20B6133976235717B9E2B5E /* EvmTrackedSubmissionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66C6147423DB2E0D4760F52 /* EvmTrackedSubmissionFactory.swift */; };
 		90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */; };
 		F50A10B3EAF92B21F4982687 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */; };
@@ -7329,6 +7330,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8D66F54EE736491D201E23CB /* EvmNewHeadReceived.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNewHeadReceived.swift; sourceTree = "<group>"; };
 		C66C6147423DB2E0D4760F52 /* EvmTrackedSubmissionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTrackedSubmissionFactory.swift; sourceTree = "<group>"; };
 		1D1DD6DE7E2C604F1EE1DABD /* TransactionTrackingFacade+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionTrackingFacade+Shared.swift"; sourceTree = "<group>"; };
 		8072CC1C01DB0376DDCFD3B8 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
@@ -29436,6 +29438,7 @@
 		84EBC54824F660A700459D15 /* Events */ = {
 			isa = PBXGroup;
 			children = (
+				8D66F54EE736491D201E23CB /* EvmNewHeadReceived.swift */,
 				84EBC55A24F660F500459D15 /* SelectedWalletSwitched.swift */,
 				840882AF2514024800177E20 /* SelectedConnectionChanged.swift */,
 				84FD3DBA254104B600A234E3 /* WalletTransactionListUpdated.swift */,
@@ -34036,6 +34039,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C0501B5445E60D8436DF9EB /* EvmNewHeadReceived.swift in Sources */,
 				C20B6133976235717B9E2B5E /* EvmTrackedSubmissionFactory.swift in Sources */,
 				90EE3C24FF1F1ACBF34CC67C /* TransactionTrackingFacade+Shared.swift in Sources */,
 				7EA85305BB2CD5BC5D094261 /* PendingTransactionPickup.swift in Sources */,
