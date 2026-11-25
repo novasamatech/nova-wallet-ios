@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */; };
+		DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */; };
+		12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */; };
+		7CE4F7AFD4049E8B31D412D7 /* TransactionTrackingFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */; };
+		FC750E0C720950BBB8E31EFF /* TransactionTrackingProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */; };
+		0856834E5056E1E185762910 /* TransactionTrackingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */; };
 		E120DF6E5195BCDDF1CE5871 /* EvmTransactionMonitorStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */; };
 		F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */; };
 		0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */; };
@@ -7318,6 +7324,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolutionMapper.swift; sourceTree = "<group>"; };
+		25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryResolver.swift; sourceTree = "<group>"; };
+		BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionTracker.swift; sourceTree = "<group>"; };
+		1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingFacade.swift; sourceTree = "<group>"; };
+		9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingProtocols.swift; sourceTree = "<group>"; };
+		B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTrackingModels.swift; sourceTree = "<group>"; };
 		551BE74F192909264E746D32 /* EvmTransactionMonitorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorStateTests.swift; sourceTree = "<group>"; };
 		8E326D84EECA8CA9F3CD9E0C /* EvmTransactionWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionWatcher.swift; sourceTree = "<group>"; };
 		8FDDC4F17BFFCFC488FCA749 /* EvmTransactionMonitorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionMonitorState.swift; sourceTree = "<group>"; };
@@ -23325,9 +23337,22 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		142F296907C084F48FD3F335 /* TransactionTracking */ = {
+			isa = PBXGroup;
+			children = (
+				25B0937DA8EA305BD6260C64 /* TransactionHistoryResolver.swift */,
+				BEB45D4D676FB578C0DBC112 /* EvmTransactionTracker.swift */,
+				1DD893F29EC81F197F0907DD /* TransactionTrackingFacade.swift */,
+				9C16C833DA953763F64B4C8E /* TransactionTrackingProtocols.swift */,
+				B78A3F29D98AC26164673842 /* TransactionTrackingModels.swift */,
+			);
+			path = TransactionTracking;
+			sourceTree = "<group>";
+		};
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				142F296907C084F48FD3F335 /* TransactionTracking */,
 				FEEDAA0000000000000000A1 /* Analytics */,
 				2E4ED365661A4DDB8B291B52 /* AssetVisibility */,
 				AA1014D50747A645B9585D3C /* Announcements */,
@@ -24713,6 +24738,7 @@
 		8457F91126EB9088006803E1 /* EntityToModel */ = {
 			isa = PBXGroup;
 			children = (
+				6116E10D066B8CD70A024073 /* TransactionHistoryResolutionMapper.swift */,
 				845B821826EF808D00D25C72 /* MetaAccountMapper.swift */,
 				2DB586292EB74AB700950F7D /* GiftMapper.swift */,
 				773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */,
@@ -33987,6 +34013,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F26AF33BE559991A0B8D6FF8 /* TransactionHistoryResolutionMapper.swift in Sources */,
+				DFCED386B8A5801CF38FF179 /* TransactionHistoryResolver.swift in Sources */,
+				12543EB1199681FA9F50BB27 /* EvmTransactionTracker.swift in Sources */,
+				7CE4F7AFD4049E8B31D412D7 /* TransactionTrackingFacade.swift in Sources */,
+				FC750E0C720950BBB8E31EFF /* TransactionTrackingProtocols.swift in Sources */,
+				0856834E5056E1E185762910 /* TransactionTrackingModels.swift in Sources */,
 				F0B92BC315E01630A8BD8273 /* EvmTransactionWatcher.swift in Sources */,
 				0568C055E84E5E3628CA2E00 /* EvmTransactionMonitorState.swift in Sources */,
 				645966FA0ABCEFD3670CC468 /* SwapBaseInteractor+CollateralLimit.swift in Sources */,
