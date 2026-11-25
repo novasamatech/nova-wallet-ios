@@ -89,16 +89,36 @@ Conventions:
 ### Config mirror
 
 Files of the nova-utils `master` branch are read from the nova-infra mirror
-(`ApplicationConfig.configMirrorBaseURL`) first and from GitHub when the mirror attempt fails for
-any reason (any status but 200, a network or TLS error, a timeout). Config URLs stay the GitHub
-ones: `ConfigMirrorURLResolver` maps them to the mirror at fetch time, so caches and files keyed by
-URL keep their keys. The fallback lives in three shared places and nowhere else:
-`DataOperationFactory` and `BaseFetchOperationFactory` (through
+(`ApplicationConfig.configMirrorBaseURL`) first and from GitHub when the mirror attempt fails.
+Config URLs stay the GitHub ones: `ConfigMirrorURLResolver` maps them to the mirror at fetch time,
+so caches and files keyed by URL keep their keys. The fallback lives in three shared places and
+nowhere else: `DataOperationFactory` and `BaseFetchOperationFactory` (through the injected
 `ConfigMirrorFetchOperationFactory`), and Kingfisher loads (through
 `ConfigMirrorImageSourceFactory`, used by `RemoteImageViewModel` and the remote image providers).
 Fetch a nova-utils file or image through one of them — a hand-built `NetworkOperation` or
 Kingfisher call bypasses the mirror. Other repositories and branches are not mirrored and are
 fetched as before.
+
+- **What fails a mirror attempt.** Any status but 200, a network or TLS error, a timeout, an empty
+  body and, for a `.json` file, a body that does not parse as JSON. The body is checked because
+  callers of `DataOperationFactory` decode after the operation has completed, when it is too late
+  to fall back. A mirror image that cannot be processed fails the same way. The GitHub attempt is
+  not checked and behaves as it did before the mirror.
+- **Timeouts.** The mirror attempt gets `ConfigMirrorConstants.attemptTimeout` (5 s) and never more
+  than half of the caller's own timeout; the GitHub attempt keeps the caller's timeout. Images use
+  the same mirror timeout through a Kingfisher request modifier that touches only the mirror
+  request.
+- **Cool-down.** After the mirror could not be reached (a URL session error; not a status or a
+  body failure, which are fast and concern one file) `ConfigMirrorAvailability` makes files and
+  images skip the mirror for `ConfigMirrorConstants.unavailabilityCooldown` (60 s). The state is
+  in memory, shared by both factories and injected into them. It is read when an operation or an
+  image source is created.
+- **Logging.** Every fallback is logged at `warning` with the mirror path and the error, and so is
+  the start of a cool-down. A mirror that keeps failing is otherwise invisible, because the app
+  goes on working from GitHub.
+- **Staleness is accepted.** By its contract the mirror answers 200 with its last synchronized
+  copy whatever the age of that copy, and files read separately may come from different commits.
+  The client puts no bound on the age and does not compare the mirror with GitHub.
 
 ### Backends in use
 
