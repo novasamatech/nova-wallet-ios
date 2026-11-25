@@ -5005,6 +5005,7 @@
 		84953F682934C8A70033F47D /* EtherscanERC20HistoryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F672934C8A70033F47D /* EtherscanERC20HistoryInfo.swift */; };
 		84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */; };
 		84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6B2935E1A80033F47D /* UserAgent.swift */; };
+		E8753F0812E624E888AC3FFF /* ConfigMirrorURLResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */; };
 		84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */; };
 		84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */; };
 		84953F72293630080033F47D /* AssetHistoryServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F71293630080033F47D /* AssetHistoryServiceType.swift */; };
@@ -7150,6 +7151,7 @@
 		F5F74CD4110DB94902AA836A /* ParaStkRebondViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F21FBC9BE578A300A77E9C5 /* ParaStkRebondViewLayout.swift */; };
 		F63A83EA1CA85D7A43103098 /* DAppOperationConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */; };
 		F64C5FF96250F9A59875D7D6 /* ApplicationConfig+NovaAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */; };
+		7A9833340B424BE15E23B01D /* ApplicationConfig+ConfigMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59280AC8ACD29DBFC552A0F2 /* ApplicationConfig+ConfigMirror.swift */; };
 		F652C0081A957CCE6266D204 /* ImportCloudPasswordWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7A6C0160599D75B208923D /* ImportCloudPasswordWireframe.swift */; };
 		F656EA6D54BF90FBBE6471D8 /* DAppBrowserTabListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707D69D7EC1BD4295192633F /* DAppBrowserTabListPresenter.swift */; };
 		F65CC130E018157C0778B074 /* DelegationListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF16BF87D3DEA31E6003C969 /* DelegationListWireframe.swift */; };
@@ -7211,6 +7213,7 @@
 		FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED30000000000000000001 /* PrivacyManifestTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
+		1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */; };
 		FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
 		FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000C2 /* NovaAnalytics */; };
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
@@ -9897,6 +9900,7 @@
 		39E4A6E114BBDB375D10D9EA /* HydraOmnipoolApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolApi.swift; sourceTree = "<group>"; };
 		39FC8B18780C4B728378A731 /* SubtensorValidatorChainOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorChainOperationFactory.swift; sourceTree = "<group>"; };
 		3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ApplicationConfig+NovaAuth.swift"; sourceTree = "<group>"; };
+		59280AC8ACD29DBFC552A0F2 /* ApplicationConfig+ConfigMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApplicationConfig+ConfigMirror.swift"; sourceTree = "<group>"; };
 		3A46EE888D60C1538A0A3EFC /* NftDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftDetailsProtocols.swift; sourceTree = "<group>"; };
 		3A6CDEC83D8A51FD89673C31 /* SwapFeeDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsProtocols.swift; sourceTree = "<group>"; };
 		3A7235097E09C94005B091B4 /* CommonDelegationTracksPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CommonDelegationTracksPresenter.swift; sourceTree = "<group>"; };
@@ -11980,6 +11984,7 @@
 		84953F672934C8A70033F47D /* EtherscanERC20HistoryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanERC20HistoryInfo.swift; sourceTree = "<group>"; };
 		84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanERC20OperationFactory.swift; sourceTree = "<group>"; };
 		84953F6B2935E1A80033F47D /* UserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgent.swift; sourceTree = "<group>"; };
+		0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLResolver.swift; sourceTree = "<group>"; };
 		84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryContext.swift; sourceTree = "<group>"; };
 		84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryFactoryFacade.swift; sourceTree = "<group>"; };
 		84953F71293630080033F47D /* AssetHistoryServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryServiceType.swift; sourceTree = "<group>"; };
@@ -14229,6 +14234,7 @@
 		FEED30000000000000000001 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
+		A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigMirrorURLResolverTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FF0B2F6606379CE52A1BA410 /* HydraFeeOraclePriceCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraFeeOraclePriceCalculator.swift; sourceTree = "<group>"; };
@@ -21371,9 +21377,18 @@
 			path = SubtensorStaking;
 			sourceTree = "<group>";
 		};
+		8A31C1ED1E6D1F44FCBA5D56 /* ConfigMirror */ = {
+			isa = PBXGroup;
+			children = (
+				A791F9AD28DE7E68012DB393 /* ConfigMirrorURLResolverTests.swift */,
+			);
+			path = ConfigMirror;
+			sourceTree = "<group>";
+		};
 		3F2839BD3CD74DFC806B7019 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				8A31C1ED1E6D1F44FCBA5D56 /* ConfigMirror */,
 				90D893CF46FE4A2D8A5BC95D /* Bittensor */,
 				6AC696AB8F7449D7BA5A8EF0 /* JSONRPC */,
 			);
@@ -26264,6 +26279,7 @@
 			children = (
 				849013D624A927E2008F705E /* ApplicationConfigs.swift */,
 				3A2E7A542BA8C0A6E34ADDAF /* ApplicationConfig+NovaAuth.swift */,
+				59280AC8ACD29DBFC552A0F2 /* ApplicationConfig+ConfigMirror.swift */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -27001,9 +27017,18 @@
 			path = MainTabBar;
 			sourceTree = "<group>";
 		};
+		13E0FACADD9B597623228BDF /* ConfigMirror */ = {
+			isa = PBXGroup;
+			children = (
+				0F5F9AE90635ACF64FCD8D8C /* ConfigMirrorURLResolver.swift */,
+			);
+			path = ConfigMirror;
+			sourceTree = "<group>";
+		};
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				13E0FACADD9B597623228BDF /* ConfigMirror */,
 				3DB3C0C3D87A4A24AC1B6244 /* Auth */,
 				37FE7B12BB364FD781FB7463 /* Bittensor */,
 				2DD83BC12E420C1C00E83B4C /* IPAddressProvider */,
@@ -34345,6 +34370,7 @@
 				845B08012918406A005785D3 /* Gov2ActionOperationFactory.swift in Sources */,
 				88B1C34229BA046000DCA101 /* StakingRebagConfirmError.swift in Sources */,
 				84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */,
+				E8753F0812E624E888AC3FFF /* ConfigMirrorURLResolver.swift in Sources */,
 				2D0985E62EE2BEC3007A5E54 /* PVSecretScanMatcher.swift in Sources */,
 				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
 				8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */,
@@ -34753,6 +34779,7 @@
 				0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
 				F64C5FF96250F9A59875D7D6 /* ApplicationConfig+NovaAuth.swift in Sources */,
+				7A9833340B424BE15E23B01D /* ApplicationConfig+ConfigMirror.swift in Sources */,
 				2DDC720F2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift in Sources */,
 				84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */,
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,
@@ -40636,6 +40663,7 @@
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
 				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
+				1F92B917517E40803E45DC04 /* ConfigMirrorURLResolverTests.swift in Sources */,
 				0F9122F579FF4871B1379387 /* BittensorApiDecimalTests.swift in Sources */,
 				09008728FBB34750884450BD /* SubtensorSubnetCatalogueOperationFactoryTests.swift in Sources */,
 				70E195DB466646438C57904A /* SubtensorValidatorPresetOperationFactoryTests.swift in Sources */,
