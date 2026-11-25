@@ -44,6 +44,10 @@ extension CDTransactionItem: CoreDataCodable {
 
         call = try container.decodeIfPresent(Data.self, forKey: .call)
 
+        if let nonce = try container.decodeIfPresent(String.self, forKey: .nonce) {
+            self.nonce = nonce
+        }
+
         if let swapContainer = try? container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap) {
             if swap == nil {
                 let newSwap = CDTransactionSwapItem(context: context)
@@ -87,6 +91,7 @@ extension CDTransactionItem: CoreDataCodable {
         }
 
         try container.encodeIfPresent(call, forKey: .call)
+        try container.encodeIfPresent(nonce, forKey: .nonce)
 
         if let swap = swap {
             var nestedSwap = container.nestedContainer(keyedBy: SwapHistoryData.CodingKeys.self, forKey: .swap)

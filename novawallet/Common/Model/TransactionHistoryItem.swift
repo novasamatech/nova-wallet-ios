@@ -27,6 +27,7 @@ struct TransactionHistoryItem: Codable {
         case callPath
         case call
         case swap
+        case nonce
     }
 
     enum Status: Int16, Codable {
@@ -52,6 +53,7 @@ struct TransactionHistoryItem: Codable {
     let callPath: CallCodingPath
     let call: Data?
     let swap: SwapHistoryData?
+    var nonce: String?
 }
 
 extension TransactionHistoryItem: Identifiable {
