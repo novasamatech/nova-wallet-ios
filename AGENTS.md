@@ -34,5 +34,6 @@ anything else. Docs live in `.claude/docs/`.
 | Naming, comments, file size, lint/format rules                    | `.claude/docs/code/naming-and-hygiene.md`               |
 | Writing or fixing tests, Cuckoo mocks, integration tests          | `.claude/docs/code/testing.md`                          |
 | Build commands, configurations, flags, codegen, CI, dependencies  | `.claude/docs/code/build-and-tooling.md`                |
+| Committing, naming a branch, opening a PR; Jira task keys         | `.claude/docs/code/commits-and-jira.md`                 |
 | Reviewing a PR — structure and mechanism                          | `.claude/docs/review/architecture-checklist.md`         |
 | Reviewing a PR — line by line                                     | `.claude/docs/review/code-checklist.md`                 |
