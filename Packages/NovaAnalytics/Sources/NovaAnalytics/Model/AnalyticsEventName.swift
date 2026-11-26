@@ -37,6 +37,7 @@ public enum AnalyticsEventName: String, CaseIterable {
     case buyCompleted = "buy_completed"
     case sellInitiated = "sell_initiated"
     case sellCompleted = "sell_completed"
+    case assetFundingDappOpened = "asset_funding_dapp_opened"
     case bannerClicked = "banner_clicked"
     case novaCardOpened = "nova_card_opened"
     case nftSectionOpened = "nft_section_opened"

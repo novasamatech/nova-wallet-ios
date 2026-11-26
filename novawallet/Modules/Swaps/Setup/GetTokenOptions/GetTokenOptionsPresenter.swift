@@ -102,6 +102,7 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
             wireframe.complete(on: view, result: .buy(model.buyOptions))
         case .changeNow:
             if let url = model.changeNowUrl {
+                trackChangeNowOpened()
                 wireframe.complete(on: view, result: .changeNow(url))
             }
         }

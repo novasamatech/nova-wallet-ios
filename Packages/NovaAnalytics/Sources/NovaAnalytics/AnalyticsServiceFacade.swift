@@ -8,6 +8,7 @@ public final class AnalyticsServiceFacade {
     public let consent: AnalyticsConsentManagerProtocol
 
     private let isFirstLaunch: () -> Bool
+    private let assetListStyle: () -> AnalyticsAssetListStyle
     private let service: AnalyticsService
     private let sessionTracker: AnalyticsSessionTracking
     private let availability: AnalyticsAvailabilityProvider
@@ -86,6 +87,7 @@ public final class AnalyticsServiceFacade {
         )
 
         isFirstLaunch = configuration.isFirstLaunch
+        assetListStyle = configuration.assetListStyle
         self.consent = consent
         self.service = service
         self.sessionTracker = sessionTracker
@@ -209,7 +211,10 @@ private extension AnalyticsServiceFacade {
     func activateLocked() {
         sessionTracker.setup()
 
-        let appOpened = AnalyticsEvent.appOpened(isFirstLaunch: isFirstLaunchAtSetup)
+        let appOpened = AnalyticsEvent.appOpened(
+            isFirstLaunch: isFirstLaunchAtSetup,
+            assetListStyle: assetListStyle()
+        )
 
         guard isInForeground else {
             service.trackDeferringFlush(appOpened)
