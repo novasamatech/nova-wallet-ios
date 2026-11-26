@@ -137,11 +137,15 @@ final class CrosschainExchangeAtomicOperation {
                 logger: self.host.logger
             )
 
-            return transactService.transferAndWaitArrivalWrapper(
+            let transfer = transactService.transferAndWaitArrivalWrapper(
                 transferRequest,
                 destinationChainAsset: destinationAsset,
                 signer: signer
             )
+
+            return transfer.arrivalWrapper.failingWithSubmissionStage {
+                transfer.submissionOperation.submittedTxHash
+            }
         }
     }
 

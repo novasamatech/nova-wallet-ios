@@ -2,12 +2,17 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+struct XcmTransferArrivalWrapper {
+    let submissionOperation: BaseOperation<XcmSubmitExtrinsic>
+    let arrivalWrapper: CompoundOperationWrapper<Balance>
+}
+
 protocol XcmTransactServiceProtocol {
     func transferAndWaitArrivalWrapper(
         _ transferRequest: XcmTransferRequest,
         destinationChainAsset: ChainAsset,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Balance>
+    ) -> XcmTransferArrivalWrapper
 
     func submitTransferWrapper(
         _ transferRequest: XcmTransferRequest,
@@ -42,7 +47,7 @@ extension XcmTransactService: XcmTransactServiceProtocol {
         _ transferRequest: XcmTransferRequest,
         destinationChainAsset: ChainAsset,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Balance> {
+    ) -> XcmTransferArrivalWrapper {
         let monitoringService = XcmDepositMonitoringService(
             accountId: transferRequest.unweighted.destination.accountId,
             chainAsset: destinationChainAsset,
@@ -84,7 +89,10 @@ extension XcmTransactService: XcmTransactServiceProtocol {
 
         let dependencies = monitoringWrapper.allOperations + [submittionOperation]
 
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        return XcmTransferArrivalWrapper(
+            submissionOperation: submittionOperation,
+            arrivalWrapper: CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        )
     }
 
     func submitTransferWrapper(

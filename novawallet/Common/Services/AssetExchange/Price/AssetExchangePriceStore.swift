@@ -3,7 +3,7 @@ import Foundation
 final class AssetExchangePriceStore {
     @Atomic(defaultValue: [:]) private var store: [ChainAssetId: PriceData]
 
-    init(assetListObservable: AssetListModelObservable, updateQueue: DispatchQueue = .global()) {
+    init(assetListObservable: AssetListModelObservable, updateQueue: DispatchQueue? = nil) {
         store = (try? assetListObservable.state.value.priceResult?.get()) ?? [:]
 
         assetListObservable.addObserver(

@@ -6,7 +6,7 @@ import Foundation
 
 final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetching,
     StakingDurationFetching {
-    weak var presenter: StakingUnbondSetupInteractorOutputProtocol!
+    weak var presenter: StakingUnbondSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -71,7 +71,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didReceiveUnstakingVariant(result: result)
+            self?.presenter?.didReceiveUnstakingVariant(result: result)
         }
     }
 
@@ -92,20 +92,20 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         fetchStakingDuration(
             operationFactory: stakingDurationOperationFactory,
             operationQueue: operationQueue
         ) { [weak self] result in
-            self?.presenter.didReceiveStakingDuration(result: result)
+            self?.presenter?.didReceiveStakingDuration(result: result)
         }
 
         if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
@@ -114,12 +114,12 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
                 runtimeCodingService: runtimeService,
                 operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
-                self?.presenter.didReceiveExistentialDeposit(result: result)
+                self?.presenter?.didReceiveExistentialDeposit(result: result)
             }
         } else {
             let error = ChainRegistryError.runtimeMetadaUnavailable
-            presenter.didReceiveExistentialDeposit(result: .failure(error))
-            presenter.didReceiveStakingDuration(result: .failure(error))
+            presenter?.didReceiveExistentialDeposit(result: .failure(error))
+            presenter?.didReceiveStakingDuration(result: .failure(error))
         }
 
         feeProxy.delegate = self
@@ -153,15 +153,15 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
             let maybeStashItem = try result.get()
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             if let stashItem = maybeStashItem {
                 provideUnstakingVariant(for: stashItem.stash)
             }
 
             guard let controllerId = maybeControllerId else {
-                presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
                 return
             }
 
@@ -190,16 +190,16 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                 switch result {
                 case let .success(response):
                     let account = response?.chainAccount
-                    self?.presenter.didReceiveController(result: .success(account))
+                    self?.presenter?.didReceiveController(result: .success(account))
                 case let .failure(error):
-                    self?.presenter.didReceiveController(result: .failure(error))
+                    self?.presenter?.didReceiveController(result: .failure(error))
                 }
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -208,13 +208,13 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
 extension StakingUnbondSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
@@ -225,13 +225,13 @@ extension StakingUnbondSetupInteractor: WalletLocalStorageSubscriber, WalletLoca
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingUnbondSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

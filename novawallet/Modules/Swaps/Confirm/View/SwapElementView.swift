@@ -3,7 +3,7 @@ import UIKit_iOS
 import SnapKit
 
 final class SwapElementView: UIView {
-    var contentInsets: UIEdgeInsets = .init(top: 16, left: 12, bottom: 20, right: 12) {
+    var contentInsets: UIEdgeInsets {
         didSet {
             contentView.snp.updateConstraints {
                 $0.edges.equalToSuperview().inset(contentInsets)
@@ -13,13 +13,9 @@ final class SwapElementView: UIView {
 
     static let assetIconRadius: CGFloat = 24
 
-    let backgroundView: RoundedView = .create {
-        $0.apply(style: .roundedLightCell)
-    }
+    let backgroundView = RoundedView()
 
-    let assetIconView: AssetIconView = .create {
-        $0.backgroundView.cornerRadius = SwapElementView.assetIconRadius
-    }
+    let assetIconView = AssetIconView()
 
     let valueLabel: UILabel = .init(
         style: .semiboldBodyPrimary,
@@ -34,10 +30,8 @@ final class SwapElementView: UIView {
     )
 
     let hubIconNameView: IconDetailsView = .create {
-        $0.spacing = 8
         $0.iconWidth = 16
         $0.mode = .iconDetails
-        $0.detailsLabel.apply(style: .footnoteSecondary)
     }
 
     var hidesHub: Bool = false {
@@ -46,15 +40,20 @@ final class SwapElementView: UIView {
         }
     }
 
+    private let style: Style
     private var hubImageViewModel: ImageViewModelProtocol?
     private var hubBottomConstraint: Constraint?
     private var priceBottomConstraint: Constraint?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(style: Style = .regular) {
+        self.style = style
+        contentInsets = style.contentInsets
+
+        super.init(frame: .zero)
 
         backgroundColor = .clear
 
+        applyStyle()
         setupLayout()
     }
 
@@ -63,6 +62,20 @@ final class SwapElementView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func applyStyle() {
+        backgroundView.apply(style: style.background)
+        assetIconView.backgroundView.cornerRadius = style.iconSize / 2
+        assetIconView.contentInsets = style.iconInsets
+        hubIconNameView.spacing = style.hubSpacing
+        hubIconNameView.detailsLabel.apply(style: style.hubLabel)
+        hubIconNameView.detailsLabel.numberOfLines = style.hubLabelLines
+
+        if let valueMinimumScale = style.valueMinimumScale {
+            valueLabel.adjustsFontSizeToFitWidth = true
+            valueLabel.minimumScaleFactor = valueMinimumScale
+        }
     }
 
     private func setupLayout() {
@@ -75,17 +88,17 @@ final class SwapElementView: UIView {
         contentView.addSubview(hubIconNameView)
 
         assetIconView.snp.makeConstraints {
-            $0.width.height.equalTo(48)
+            $0.width.height.equalTo(style.iconSize)
             $0.top.centerX.equalToSuperview()
         }
 
         valueLabel.snp.makeConstraints {
-            $0.top.equalTo(assetIconView.snp.bottom).offset(8)
+            $0.top.equalTo(assetIconView.snp.bottom).offset(style.valueOffset)
             $0.leading.trailing.equalToSuperview()
         }
 
         priceLabel.snp.makeConstraints {
-            $0.top.equalTo(valueLabel.snp.bottom).offset(2)
+            $0.top.equalTo(valueLabel.snp.bottom).offset(style.priceOffset)
             $0.leading.trailing.equalToSuperview()
             priceBottomConstraint = $0.bottom.equalToSuperview().constraint
         }
@@ -93,10 +106,20 @@ final class SwapElementView: UIView {
         priceBottomConstraint?.deactivate()
 
         hubIconNameView.snp.makeConstraints {
-            $0.top.equalTo(priceLabel.snp.bottom).offset(16)
-            $0.leading.greaterThanOrEqualToSuperview()
+            $0.top.equalTo(priceLabel.snp.bottom).offset(style.hubOffset)
             $0.trailing.lessThanOrEqualToSuperview()
-            $0.centerX.equalToSuperview().priority(.high)
+
+            if style.centersHub {
+                $0.leading.greaterThanOrEqualToSuperview()
+                $0.centerX.equalToSuperview().priority(.high)
+            } else {
+                $0.leading.equalToSuperview()
+            }
+
+            if let hubHeight = style.hubHeight {
+                $0.height.equalTo(hubHeight)
+            }
+
             hubBottomConstraint = $0.bottom.equalToSuperview().constraint
         }
 
@@ -123,6 +146,22 @@ final class SwapElementView: UIView {
 }
 
 extension SwapElementView {
+    struct Style {
+        let background: RoundedView.Style
+        let contentInsets: UIEdgeInsets
+        let iconSize: CGFloat
+        let iconInsets: UIEdgeInsets
+        let valueOffset: CGFloat
+        let priceOffset: CGFloat
+        let hubOffset: CGFloat
+        let hubSpacing: CGFloat
+        let hubLabel: UILabel.Style
+        let hubLabelLines: Int
+        let hubHeight: CGFloat?
+        let centersHub: Bool
+        let valueMinimumScale: CGFloat?
+    }
+
     func bind(loadableViewModel: LoadableViewModelState<SwapAssetAmountViewModel>) {
         if let viewModel = loadableViewModel.value {
             bind(viewModel: viewModel)
@@ -139,12 +178,12 @@ extension SwapElementView {
     }
 
     func bind(viewModel: SwapAssetAmountViewModel) {
-        let width = 2 * Self.assetIconRadius - assetIconView.contentInsets.left - assetIconView.contentInsets.right
-        let height = 2 * Self.assetIconRadius - assetIconView.contentInsets.top - assetIconView.contentInsets.bottom
+        let width = style.iconSize - assetIconView.contentInsets.left - assetIconView.contentInsets.right
+        let height = style.iconSize - assetIconView.contentInsets.top - assetIconView.contentInsets.bottom
         let size = CGSize(width: width, height: height)
         assetIconView.bind(viewModel: viewModel.imageViewModel, size: size)
 
-        viewModel.hub.icon?.cancel(on: hubIconNameView.imageView)
+        hubImageViewModel?.cancel(on: hubIconNameView.imageView)
         hubImageViewModel = viewModel.hub.icon
         viewModel.hub.icon?.loadImage(
             on: hubIconNameView.imageView,
@@ -158,4 +197,22 @@ extension SwapElementView {
         valueLabel.text = viewModel.amount
         priceLabel.text = viewModel.price ?? " "
     }
+}
+
+extension SwapElementView.Style {
+    static let regular = SwapElementView.Style(
+        background: .roundedLightCell,
+        contentInsets: UIEdgeInsets(top: 16, left: 12, bottom: 20, right: 12),
+        iconSize: 2 * SwapElementView.assetIconRadius,
+        iconInsets: .zero,
+        valueOffset: 8,
+        priceOffset: 2,
+        hubOffset: 16,
+        hubSpacing: 8,
+        hubLabel: .footnoteSecondary,
+        hubLabelLines: 0,
+        hubHeight: nil,
+        centersHub: true,
+        valueMinimumScale: nil
+    )
 }

@@ -13,6 +13,8 @@ final class SwapRouteDetailsViewLayout: ScrollableContainerLayoutView {
     let routeDetailsView = SwapRouteDetailsView()
 
     override func setupLayout() {
+        insertSwapBackground()
+
         super.setupLayout()
 
         addArrangedSubview(titleView, spacingAfter: 24)

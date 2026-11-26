@@ -4,7 +4,17 @@ import UIKit
 enum AssetPriceChartState {
     case loading
     case available
-    case unavailable
+    case unavailable(AssetPriceChartUnavailableReason)
+}
+
+enum AssetPriceChartUnavailableReason {
+    case noHistory
+    case failed
+}
+
+enum AssetPriceChartStyle {
+    case regular
+    case compact
 }
 
 // MARK: Module Interface
@@ -18,14 +28,31 @@ protocol AssetPriceChartInputOwnerProtocol: AnyObject {
 protocol AssetPriceChartModuleInputProtocol: AnyObject {
     func updateLocale(_ newLocale: Locale)
     func updateSelectedCurrency(_ currency: Currency)
+    func updateAsset(_ asset: AssetModel?)
+    func reload()
 }
 
 protocol AssetPriceChartModuleOutputProtocol: AnyObject {
     func didReceiveChartState(_ state: AssetPriceChartState)
+    func didSelectChartPeriod(_ period: PriceHistoryPeriod)
+}
+
+extension AssetPriceChartModuleOutputProtocol {
+    func didSelectChartPeriod(_: PriceHistoryPeriod) {}
 }
 
 protocol AssetPriceChartViewProviderProtocol: ControllerBackedProtocol {
     func getProposedHeight() -> CGFloat
+}
+
+protocol AssetPriceChartExpansionDelegate: AnyObject {
+    func priceChartDidRequestExpansion(_ isExpanded: Bool)
+}
+
+protocol AssetPriceChartCompactProviderProtocol: AssetPriceChartViewProviderProtocol {
+    var expansionDelegate: AssetPriceChartExpansionDelegate? { get set }
+
+    func setExpansion(isExpanded: Bool, isExpandable: Bool, animated: Bool)
 }
 
 extension AssetPriceChartViewProviderProtocol {
@@ -55,6 +82,7 @@ extension AssetPriceChartViewProviderProtocol {
 protocol AssetPriceChartViewProtocol: ControllerBackedProtocol {
     func update(with widgetViewModel: AssetPriceChartWidgetViewModel)
     func update(with priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel)
+    func didReceive(chartState: AssetPriceChartState)
     func chartViewWidth() -> CGFloat
 }
 
@@ -67,6 +95,8 @@ protocol AssetPriceChartPresenterProtocol: AnyObject {
 protocol AssetPriceChartInteractorInputProtocol: AnyObject {
     func setup()
     func updateSelectedCurrency(_ currency: Currency)
+    func updateAsset(_ asset: AssetModel?)
+    func reload()
 }
 
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {

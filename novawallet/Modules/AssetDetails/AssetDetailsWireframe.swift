@@ -4,7 +4,7 @@ import UIKit_iOS
 import Foundation_iOS
 import NovaAnalytics
 
-final class AssetDetailsWireframe {
+final class AssetDetailsWireframe: SwapFlowPresentable {
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
 
@@ -98,18 +98,12 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         from view: AssetDetailsViewProtocol?,
         chainAsset: ChainAsset
     ) {
-        guard let swapsView = SwapSetupViewFactory.createView(
+        presentSwapFlow(
+            from: view,
             state: swapState,
-            payChainAsset: chainAsset,
-            source: .assetDetails,
-            swapCompletionClosure: operationState.swapCompletionClosure
-        ) else {
-            return
-        }
-
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: swapsView.controller)
-
-        view?.controller.presentWithCardLayout(navigationController, animated: true)
+            initState: SwapSetupInitState(payChainAsset: chainAsset),
+            source: .assetDetails
+        )
     }
 
     func showAssetDetails(

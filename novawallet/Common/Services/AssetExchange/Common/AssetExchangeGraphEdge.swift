@@ -22,6 +22,10 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
 
+    /// Whether the edge deposits into a router account that starts empty,
+    /// so every deposit there must reach the asset's existential deposit
+    func usesRouterAccount(inMultiHopRun: Bool) -> Bool
+
     var type: AssetExchangeEdgeType { get }
 
     /// The pool the edge trades through, when the route must not enter it twice

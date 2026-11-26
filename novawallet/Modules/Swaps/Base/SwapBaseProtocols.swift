@@ -4,6 +4,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
     func setup()
     func calculateQuote(for args: AssetConversion.QuoteArgs)
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset)
+    func cancelFeeCalculation()
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
 
     func requestValidatingQuote(
@@ -13,6 +14,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
     func requestValidatingPoolTradeLimits(
         for route: AssetExchangeRoute,
+        slippage: BigRational,
         completion: @escaping (SwapPoolTradeLimitCheck) -> Void
     )
 
@@ -32,6 +34,7 @@ protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId)
     func didReceiveAssetBalance(existense: AssetBalanceExistence, chainAssetId: ChainAssetId)
     func didReceive(accountInfo: AccountInfo?, chainId: ChainModel.Id)
+    func didReceive(collateralLimit: HydraAave.CollateralLimit, for chainAssetId: ChainAssetId)
 }
 
 protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresentable,
@@ -41,4 +44,5 @@ enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
     case fetchFeeFailed(Error, ChainAssetId?)
     case assetBalanceExistence(Error, ChainAsset)
+    case collateralLimit(Error, ChainAssetId)
 }

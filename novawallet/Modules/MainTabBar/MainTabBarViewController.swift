@@ -10,9 +10,13 @@ final class MainTabBarViewController: UITabBarController {
 
     var syncStatus: SharedSyncStatus = .disabled
 
+    var moreControllers: [MainTabBarMoreItem: UIViewController] = [:]
+    var moreMenuView: MainTabBarMoreMenuView?
+
     override var selectedIndex: Int {
         didSet {
-            presenter.didSelectTab(at: selectedIndex)
+            hideMoreMenu(animated: false)
+            presenter.didSelectTab(at: selectedIndex, moreItem: currentMoreItem)
         }
     }
 
@@ -49,10 +53,26 @@ final class MainTabBarViewController: UITabBarController {
         if !viewAppeared {
             viewAppeared = true
             presenter.setup()
-            presenter.didSelectTab(at: selectedIndex)
+            presenter.didSelectTab(at: selectedIndex, moreItem: currentMoreItem)
         }
 
         presenter.viewDidAppear()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        hideMoreMenu(animated: false)
+    }
+
+    override func present(
+        _ viewControllerToPresent: UIViewController,
+        animated flag: Bool,
+        completion: (() -> Void)? = nil
+    ) {
+        hideMoreMenu(animated: false)
+
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
     }
 
     private func configureTabBar() {
@@ -86,6 +106,13 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
         _: UITabBarController,
         shouldSelect viewController: UIViewController
     ) -> Bool {
+        guard viewController !== viewControllers?[safe: MainTabBarIndex.more] else {
+            toggleMoreMenu()
+            return false
+        }
+
+        hideMoreMenu(animated: true)
+
         if viewController == viewControllers?[selectedIndex],
            let scrollableController = viewController as? ScrollsToTop {
             scrollableController.scrollToTop()
@@ -98,7 +125,7 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
         _: UITabBarController,
         didSelect _: UIViewController
     ) {
-        presenter.didSelectTab(at: selectedIndex)
+        presenter.didSelectTab(at: selectedIndex, moreItem: currentMoreItem)
     }
 }
 
@@ -144,6 +171,15 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
         newViewControllers[index] = newView
 
         setViewControllers(newViewControllers, animated: false)
+    }
+
+    func selectMoreItem(_ item: MainTabBarMoreItem) {
+        placeInMoreSlot(item)
+        selectedIndex = MainTabBarIndex.more
+    }
+
+    func moreItemNavigationController(for item: MainTabBarMoreItem) -> UINavigationController? {
+        moreControllers[item] as? UINavigationController
     }
 
     func setSyncStatus(_ syncStatus: SharedSyncStatus) {

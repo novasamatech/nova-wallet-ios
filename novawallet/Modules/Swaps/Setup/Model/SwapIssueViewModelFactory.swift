@@ -28,19 +28,28 @@ final class SwapIssueViewModelFactory {
     }
 
     func detectInsufficientBalance(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
+        if model.isPayAmountHidden {
+            return model.payAssetBalance?.transferable == 0 ? .insufficientBalance : nil
+        }
+
         guard
             let payAmount = model.payAmount,
             payAmount > 0,
-            let payChainAsset = model.payChainAsset
+            let payChainAsset = model.payChainAsset,
+            let transferable = model.payAssetBalance?.transferable
         else {
             return nil
         }
 
         let assetDisplayInfo = payChainAsset.assetDisplayInfo
-        let balance = model.payAssetBalance?.transferable.decimal(assetInfo: assetDisplayInfo) ?? 0
+        let balance = transferable.decimal(assetInfo: assetDisplayInfo)
         let fee = model.fee?.totalFeeInAssetIn(payChainAsset).decimal(assetInfo: assetDisplayInfo) ?? 0
 
-        return payAmount + fee > balance ? .insufficientBalance : nil
+        if payAmount + fee > balance {
+            return .insufficientBalance
+        }
+
+        return model.isFeePending && model.wasShowingInsufficientBalance ? .insufficientBalance : nil
     }
 
     func detectMinBalanceViolationOnReceive(in model: SwapIssueCheckParams, locale: Locale) -> SwapSetupViewIssue? {
@@ -69,10 +78,15 @@ final class SwapIssueViewModelFactory {
     }
 
     func detectNoLiquidity(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
-        if case .failure = model.quoteResult {
-            return .noLiqudity
-        } else {
+        guard case let .failure(error) = model.quoteResult else {
             return nil
+        }
+
+        switch SwapQuoteFailure(error: error) {
+        case .noLiquidity:
+            return .noLiqudity
+        case .noRoute, .fetchFailed:
+            return .quoteUnavailable
         }
     }
 }

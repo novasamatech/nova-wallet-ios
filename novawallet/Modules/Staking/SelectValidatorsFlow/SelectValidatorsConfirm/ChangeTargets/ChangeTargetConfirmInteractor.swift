@@ -136,7 +136,7 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didReceiveModel(result: result)
+            self?.presenter?.didReceiveModel(result: result)
         }
     }
 
@@ -169,16 +169,16 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
             switch result {
             case let .success(info):
-                self?.presenter.didReceive(paymentInfo: info)
+                self?.presenter?.didReceive(paymentInfo: info)
             case let .failure(error):
-                self?.presenter.didReceive(feeError: error)
+                self?.presenter?.didReceive(feeError: error)
             }
         }
     }
 
     override func submitNomination() {
         guard !nomination.targets.isEmpty else {
-            presenter.didFailNomination(error: SelectValidatorsConfirmError.extrinsicFailed)
+            presenter?.didFailNomination(error: SelectValidatorsConfirmError.extrinsicFailed)
             return
         }
 
@@ -186,7 +186,7 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             return
         }
 
-        presenter.didStartNomination()
+        presenter?.didStartNomination()
 
         let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
             extrinsicBuilderClosure: closure,
@@ -200,9 +200,9 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         ) { [weak self] result in
             switch result.mapToExtrinsicSubmittedResult() {
             case let .success(model):
-                self?.presenter.didCompleteNomination(submission: model)
+                self?.presenter?.didCompleteNomination(submission: model)
             case let .failure(error):
-                self?.presenter.didFailNomination(error: error)
+                self?.presenter?.didFailNomination(error: error)
             }
         }
     }

@@ -10,16 +10,22 @@ protocol SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel
 
     func createFailedViewModel(
-        quote: AssetExchangeQuote,
         failure: SwapExecutionState.Failure,
         locale: Locale
     ) -> SwapExecutionViewModel
 
     func createCompletedViewModel(
-        quote: AssetExchangeQuote,
         for date: Date,
+        receivedAmount: String,
+        viewedAssetSymbol: String?,
         locale: Locale
     ) -> SwapExecutionViewModel
+
+    func createStepsViewModel(
+        quote: AssetExchangeQuote,
+        failure: SwapExecutionState.Failure,
+        locale: Locale
+    ) -> [SwapExecutionStepViewModel]
 }
 
 final class SwapExecutionViewModelFactory {
@@ -29,7 +35,7 @@ final class SwapExecutionViewModelFactory {
         self.dateFormatter = dateFormatter
     }
 
-    private func createOperationDetails(
+    func createOperationDetails(
         _ operation: AssetExchangeMetaOperationProtocol,
         locale: Locale
     ) -> String {
@@ -88,42 +94,38 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     }
 
     func createFailedViewModel(
-        quote: AssetExchangeQuote,
         failure: SwapExecutionState.Failure,
         locale: Locale
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: failure.date)
-        let currentOperationIndex = failure.operationIndex
 
-        let operationLabel = quote.metaOperations[currentOperationIndex].label.getTitle(for: locale)
-
-        let operationDescription = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsExecutionSwapFailure(
-            String(currentOperationIndex + 1),
-            operationLabel
-        )
-
-        let details = if let errorDetails = failure.getErrorDetails(for: locale) {
-            operationDescription + ": " + errorDetails
-        } else {
-            operationDescription
-        }
-
-        return .failed(.init(time: time, details: details))
+        return .failed(.init(time: time))
     }
 
     func createCompletedViewModel(
-        quote: AssetExchangeQuote,
         for date: Date,
+        receivedAmount: String,
+        viewedAssetSymbol: String?,
         locale: Locale
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: date)
 
-        let operationsString = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.commonOperations(format: quote.metaOperations.count)
+        let viewAssetTitle = viewedAssetSymbol.map {
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsExecutionViewToken($0)
+        }
 
-        return .completed(.init(time: time, details: operationsString))
+        return .completed(
+            .init(
+                time: time,
+                amount: Constants.plusSign + receivedAmount,
+                viewAssetTitle: viewAssetTitle
+            )
+        )
+    }
+}
+
+private extension SwapExecutionViewModelFactory {
+    enum Constants {
+        static let plusSign = "+"
     }
 }

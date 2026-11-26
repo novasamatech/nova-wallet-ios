@@ -7,6 +7,19 @@ extension SwapSetupPresenter: AnalyticsTracking {
         trackFeatureOpened(.swap)
     }
 
+    func endRetryAttemptIfPairChanged() {
+        guard placement == .swapsTab, source == .retry else {
+            return
+        }
+
+        let isRetriedPair = getPayChainAsset()?.chainAssetId == initState.payChainAsset?.chainAssetId &&
+            getReceiveChainAsset()?.chainAssetId == initState.receiveChainAsset?.chainAssetId
+
+        if !isRetriedPair {
+            source = .swapsTab
+        }
+    }
+
     func trackProceededToConfirmation(for swapModel: SwapModel, quote: AssetExchangeQuote) {
         abandonTracker.markProceeded()
 

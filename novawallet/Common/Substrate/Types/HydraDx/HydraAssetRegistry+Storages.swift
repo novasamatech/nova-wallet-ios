@@ -28,6 +28,16 @@ extension HydraAssetRegistry {
     struct AssetLocationValue: Decodable {
         let location: XcmUni.RelativeLocation
 
+        var evmAddress: AccountId? {
+            guard
+                case let .accountKey20(account) = location.interior.items.last,
+                account.accountId.count == 20 else {
+                return nil
+            }
+
+            return account.accountId
+        }
+
         init(from decoder: Decoder) throws {
             location = try XcmUni.RelativeLocation(from: decoder, configuration: .V5)
         }

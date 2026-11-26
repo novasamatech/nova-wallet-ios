@@ -4,9 +4,10 @@ import Operation_iOS
 struct HydraExchangeSwapParams {
     struct Params {
         let referral: AccountId?
+        let accountId: AccountId
 
         var shouldSetReferral: Bool {
-            referral == nil
+            referral == nil && accountId != (try? HydraConstants.novaReferralCodeOwnerAddress.toAccountId())
         }
     }
 
@@ -200,6 +201,7 @@ final class HydraExchangeExtrinsicParamsFactory {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let swapParamsOperation = swapService.createFetchOperation()
+        let accountId = swapService.accountId
 
         let storageInfoWrapper = createCommissionStorageInfoWrapper(for: commission)
 
@@ -218,7 +220,10 @@ final class HydraExchangeExtrinsicParamsFactory {
                 codingFactory: codingFactory
             ).remoteAssetId
 
-            let params = HydraExchangeSwapParams.Params(referral: swapParams.referralLink)
+            let params = HydraExchangeSwapParams.Params(
+                referral: swapParams.referralLink,
+                accountId: accountId
+            )
 
             return try self.createSwapParams(
                 from: params,

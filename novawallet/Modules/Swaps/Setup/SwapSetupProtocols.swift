@@ -3,6 +3,9 @@ import BigInt
 import Foundation_iOS
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
+    var isChartShownExpanded: Bool { get }
+    var isFrontmost: Bool { get }
+
     func didReceiveButtonState(title: String, enabled: Bool)
     func didReceiveInputChainAsset(payViewModel viewModel: SwapAssetInputViewModel)
     func didReceiveAmount(payInputViewModel inputViewModel: AmountInputViewModelProtocol)
@@ -21,8 +24,13 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])
     func didReceive(focus: TextFieldFocus?)
+    func didReceiveChart(viewModel: SwapPriceChartViewModel)
+    func didReceive(quoteState: SwapSetupQuoteState)
+    func didReceiveSlippage(viewModel: SwapSetupSlippageViewModel)
+    func didReceiveMinReceived(viewModel: LoadableViewModelState<String>)
     func didStartLoading()
     func didStopLoading()
+    func notifyWhenFrontmost()
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {
@@ -37,8 +45,20 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRateInfo()
     func showSettings()
     func showRouteDetails()
+    func showPriceDifferenceInfo()
     func selectMaxPayAmount()
     func depositInsufficientToken()
+    func selectChartExpansion(_ isExpanded: Bool)
+    func didChangeChartVisibility()
+    func didBecomeFrontmost()
+}
+
+protocol SwapSetupModuleInputProtocol: AnyObject {
+    var currentPairInitState: SwapSetupInitState { get }
+}
+
+protocol SwapSetupModuleInputOwnerProtocol: AnyObject {
+    var swapSetupModule: SwapSetupModuleInputProtocol? { get set }
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -46,11 +66,17 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
+    func estimateMaxFee(for quoteArgs: AssetConversion.QuoteArgs, slippage: BigRational, feeAsset: ChainAsset)
+    func cancelMaxFeeEstimate()
+    func saveChartPeriod(_ period: PriceHistoryPeriod)
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
+    func didReceive(maxFeeEstimate: AssetExchangeFee, for quoteArgs: AssetConversion.QuoteArgs)
+    func didReceive(selectedCurrency: Currency)
+    func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
 }
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
@@ -59,13 +85,13 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     )
     func showReceiveTokenSelection(
         from view: ControllerBackedProtocol?,
-        chainAsset: ChainAsset?,
-        completionHandler: @escaping (ChainAsset) -> Void
+        context: SwapTokenSelectionContext,
+        completionHandler: @escaping (SwapTokenSelectionResult) -> Void
     )
     func showSettings(
         from view: ControllerBackedProtocol?,
@@ -101,5 +127,6 @@ enum SwapSetupViewIssue: Equatable {
     case insufficientBalance
     case minBalanceViolation(String)
     case noLiqudity
+    case quoteUnavailable
     case zeroReceiveAmount
 }

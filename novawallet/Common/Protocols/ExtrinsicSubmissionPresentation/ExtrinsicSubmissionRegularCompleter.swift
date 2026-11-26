@@ -25,10 +25,8 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
                 alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         case .dismissAllModals:
-            let root = view?.controller.view.window?.rootViewController
-
-            root?.dismiss(animated: true) {
-                alertPresenting.presentSuccessNotification(title, from: root, completion: nil)
+            MainTransitionHelper.dismissAllModals(from: view) { presenter in
+                alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         case .pop:
             let presenter = view?.controller.navigationController

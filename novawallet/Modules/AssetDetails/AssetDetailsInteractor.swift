@@ -336,9 +336,15 @@ extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscri
 
 extension AssetDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let priceId = chainAsset.asset.priceId {
+        guard let presenter else {
+            return
+        }
+
+        if let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
+
+        presenter.didReceive(selectedCurrency: selectedCurrency)
     }
 }
 

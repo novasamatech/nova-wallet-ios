@@ -3,7 +3,7 @@ import Keystore_iOS
 import Foundation
 
 final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetching {
-    weak var presenter: StakingRebondSetupInteractorOutputProtocol!
+    weak var presenter: StakingRebondSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -64,13 +64,13 @@ extension StakingRebondSetupInteractor: StakingRebondSetupInteractorInputProtoco
         if let address = selectedAccount.toAddress() {
             stashItemProvider = subscribeStashItemProvider(for: address, chainId: chainAsset.chain.chainId)
         } else {
-            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter?.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         feeProxy.delegate = self
@@ -102,7 +102,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
             let maybeStashItem = try result.get()
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             if let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
@@ -126,21 +126,21 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                         }
 
                         let accountResponse = maybeResponse?.chainAccount
-                        self?.presenter.didReceiveController(result: .success(accountResponse))
+                        self?.presenter?.didReceiveController(result: .success(accountResponse))
                     case let .failure(error):
-                        self?.presenter.didReceiveController(result: .failure(error))
+                        self?.presenter?.didReceiveController(result: .failure(error))
                     }
                 }
 
             } else {
-                presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -149,7 +149,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
@@ -160,19 +160,19 @@ extension StakingRebondSetupInteractor: WalletLocalStorageSubscriber, WalletLoca
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingRebondSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
 extension StakingRebondSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

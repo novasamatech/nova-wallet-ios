@@ -155,6 +155,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
             return submittionWrapper
                 .insertingHead(operations: [codingFactoryOperation])
                 .insertingTail(operation: monitorOperation)
+                .failingWithSubmissionStage { submittionWrapper.targetOperation.submittedTxHash }
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)

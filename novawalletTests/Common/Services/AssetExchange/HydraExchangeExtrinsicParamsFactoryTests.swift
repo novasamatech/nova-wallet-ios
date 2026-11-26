@@ -269,9 +269,71 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             XCTAssertEqual(params.commission?.amount, 1000)
         }
     }
+
+    func testNovaReferralCodeOwnerSwapHasNoLinkCodeCall() throws {
+        let owner = try HydraConstants.novaReferralCodeOwnerAddress.toAccountId()
+
+        let builder = try recordUnlinkedAccountSwap(for: owner)
+
+        XCTAssertEqual(builder.addedCalls, [CallCodingPath(moduleName: "Omnipool", callName: "sell")])
+    }
+
+    func testUnlinkedAccountSwapStartsWithNovaLinkCodeCall() throws {
+        let builder = try recordUnlinkedAccountSwap(for: Data(repeating: 2, count: 32))
+
+        XCTAssertEqual(
+            builder.addedCalls,
+            [
+                CallCodingPath(moduleName: "Referrals", callName: "link_code"),
+                CallCodingPath(moduleName: "Omnipool", callName: "sell")
+            ]
+        )
+
+        let linkCodeCall = try XCTUnwrap(builder.addedCallArgs.first as? HydraDx.LinkReferralCodeCall)
+
+        XCTAssertEqual(linkCodeCall.code, Data("NOVA".utf8))
+    }
 }
 
 private extension HydraExchangeExtrinsicParamsFactoryTests {
+    func recordUnlinkedAccountSwap(for accountId: AccountId) throws -> RecordingExtrinsicBuilder {
+        let runtimeProvider = try RuntimeCodingServiceStub.createWestendService()
+        let operationQueue = OperationQueue()
+
+        let swapService = HydraSwapParamsService(
+            accountId: accountId,
+            connection: MockConnection(),
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue
+        )
+        swapService.state = HydraDx.SwapRemoteState(referralLink: nil)
+
+        let factory = HydraExchangeExtrinsicParamsFactory(
+            chain: CommissionTestFixtures.chain,
+            swapService: swapService,
+            runtimeProvider: runtimeProvider,
+            assetStorageInfoFactory: AssetStorageInfoOperationFactory(
+                chainRegistry: MockChainRegistryProtocol(),
+                operationQueue: operationQueue
+            )
+        )
+
+        let wrapper = factory.createOperationWrapper(
+            for: HydraDx.RemoteSwapRoute(components: [.init(assetIn: 0, assetOut: 1, type: .omnipool)]),
+            callArgs: CommissionTestFixtures.makeCallArgs(
+                direction: .sell,
+                amountIn: 1_000_000,
+                amountOut: 1_000_000,
+                slippage: BigRational(numerator: 0, denominator: 100)
+            ),
+            commission: nil
+        )
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try CommissionTestFixtures.record(wrapper.targetOperation.extractNoCancellableResultData())
+    }
+
     func callArgs(from limit: AssetExchangeSwapLimit) -> AssetConversion.CallArgs {
         CommissionTestFixtures.makeCallArgs(
             direction: limit.direction,

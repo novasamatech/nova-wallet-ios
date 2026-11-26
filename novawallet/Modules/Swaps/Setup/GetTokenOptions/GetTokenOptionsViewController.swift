@@ -36,10 +36,23 @@ final class GetTokenOptionsViewController: ModalPickerViewController<
     }
 }
 
+extension GetTokenOptionsViewController {
+    func updatePreferredHeight(rowsCount: Int) {
+        let height = headerHeight + CGFloat(rowsCount) * cellHeight + footerHeight
+
+        guard preferredContentSize.height != height else {
+            return
+        }
+
+        applyPreferredContentHeight(height)
+    }
+}
+
 extension GetTokenOptionsViewController: GetTokenOptionsViewProtocol {
     func didReceive(viewModels: [LocalizableResource<TokenOperationTableViewCell.Model>]) {
         self.viewModels = viewModels
 
         reload()
+        updatePreferredHeight(rowsCount: viewModels.count)
     }
 }

@@ -2,17 +2,22 @@ import UIKit
 import UIKit_iOS
 
 final class SwapAmountInputView: RoundedView {
-    let assetControl = SwapAssetControl()
+    let assetControl: SwapAssetControl = .create {
+        $0.iconRadius = Constants.iconRadius
+        $0.horizontalSpacing = Constants.iconSpacing
+    }
+
     let textInputView = SwapAmountInput()
+
     private var style: Style = .normal
 
-    var contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 16) {
+    var contentInsets = UIEdgeInsets(top: 12, left: 13, bottom: 12, right: 17) {
         didSet {
             setNeedsLayout()
         }
     }
 
-    var horizontalSpacing: CGFloat = 8 {
+    var horizontalSpacing: CGFloat = 12 {
         didSet {
             setNeedsLayout()
         }
@@ -29,14 +34,7 @@ final class SwapAmountInputView: RoundedView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let leftContentHeight = assetControl.intrinsicContentSize.height
-        let rightContentHeight = textInputView.intrinsicContentSize.height
-
-        let contentHeight = max(leftContentHeight, rightContentHeight)
-
-        let height = contentInsets.top + contentHeight + contentInsets.bottom
-
-        return CGSize(width: UIView.noIntrinsicMetric, height: height)
+        CGSize(width: UIView.noIntrinsicMetric, height: Constants.height)
     }
 
     // MARK: Layout
@@ -56,7 +54,7 @@ final class SwapAmountInputView: RoundedView {
         let swapAssetControlSize = assetControl.intrinsicContentSize
 
         let width = textInputView.isHidden ? availableWidth :
-            min(min(availableWidth, swapAssetControlSize.width), 0.7 * availableWidth)
+            min(min(availableWidth, swapAssetControlSize.width), Constants.assetMaxWidthRatio * availableWidth)
 
         return CGRect(
             x: contentInsets.left,
@@ -74,13 +72,12 @@ final class SwapAmountInputView: RoundedView {
             assetControlFrame.width - contentInsets.right - horizontalSpacing
 
         let inputWidth = max(estimatedInputViewWidth, 0)
-        let inputSize = textInputView.intrinsicContentSize
 
         return CGRect(
             x: assetControlFrame.maxX + horizontalSpacing,
-            y: bounds.midY - inputSize.height / 2.0,
+            y: contentInsets.top,
             width: inputWidth,
-            height: inputSize.height
+            height: max(bounds.height - contentInsets.top - contentInsets.bottom, 0)
         )
     }
 
@@ -94,6 +91,7 @@ final class SwapAmountInputView: RoundedView {
 
         configureContent()
         configureInputViewHandlers()
+        updateFocusState()
     }
 
     private func configureContent() {
@@ -101,6 +99,7 @@ final class SwapAmountInputView: RoundedView {
         addSubview(textInputView)
 
         assetControl.contentInsets = .zero
+        assetControl.iconView.contentInsets = Constants.iconInsets
         textInputView.contentInsets = .zero
     }
 
@@ -121,18 +120,26 @@ final class SwapAmountInputView: RoundedView {
     private func updateFocusState() {
         switch style {
         case .error:
-            strokeWidth = 0.5
+            strokeWidth = Constants.borderWidth
         case .normal:
-            strokeWidth = textInputView.textField.isFirstResponder ? 0.5 : 0.0
+            strokeWidth = textInputView.textField.isFirstResponder ? Constants.borderWidth : 0.0
         }
     }
 
     @objc private func actionEditingDidBeginEnd() {
+        if textInputView.textField.isFirstResponder {
+            textInputView.setValueMasked(false)
+        }
+
         updateFocusState()
     }
 }
 
 extension SwapAmountInputView {
+    var isAmountFocused: Bool {
+        textInputView.textField.isFirstResponder
+    }
+
     func bind(assetViewModel: SwapsAssetViewModel) {
         textInputView.isHidden = false
         assetControl.bind(assetViewModel: assetViewModel)
@@ -141,6 +148,7 @@ extension SwapAmountInputView {
 
     func bind(emptyViewModel: EmptySwapsAssetViewModel) {
         textInputView.isHidden = true
+        textInputView.textField.resignFirstResponder()
         assetControl.bind(emptyViewModel: emptyViewModel)
         setNeedsLayout()
     }
@@ -155,9 +163,12 @@ extension SwapAmountInputView {
         setNeedsLayout()
     }
 
-    func bind(priceDifferenceViewModel: SwapPriceDifferenceViewModel?) {
-        textInputView.bind(priceDifferenceViewModel: priceDifferenceViewModel)
-        setNeedsLayout()
+    func setLoading(_ loading: Bool) {
+        textInputView.setLoading(loading && !textInputView.isHidden)
+    }
+
+    func setValueMasked(_ masked: Bool) {
+        textInputView.setValueMasked(masked && !isAmountFocused)
     }
 
     func set(focused: Bool) {
@@ -192,5 +203,16 @@ extension SwapAmountInputView {
         self.style = style
 
         updateFocusState()
+    }
+}
+
+extension SwapAmountInputView {
+    enum Constants {
+        static let height: CGFloat = 72
+        static let iconRadius: CGFloat = 21
+        static let iconSpacing: CGFloat = 12
+        static let iconInsets = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+        static let borderWidth: CGFloat = 1
+        static let assetMaxWidthRatio: CGFloat = 0.7
     }
 }

@@ -6,10 +6,11 @@ enum SwapExecutionState {
         let operationIndex: Int
         let date: Date
         let error: Error
+        let txHash: ExtrinsicHash?
     }
 
     case inProgress(Int)
-    case completed(Date)
+    case completed(date: Date, receivedAmount: Balance)
     case failed(Failure)
 }
 

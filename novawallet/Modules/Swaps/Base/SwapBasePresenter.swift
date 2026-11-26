@@ -9,9 +9,18 @@ class SwapBasePresenter {
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
+    var collateralLimits: [ChainAssetId: HydraAave.CollateralLimit] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }
+    }
+
+    var payAssetCollateralLimit: HydraAave.CollateralLimit? {
+        getPayChainAsset().flatMap { collateralLimits[$0.chainAssetId] }
+    }
+
+    var isPayAssetCollateralLimitPending: Bool {
+        getPayChainAsset().map { $0.mayBackHydraAaveLoan && collateralLimits[$0.chainAssetId] == nil } ?? false
     }
 
     var feeAssetBalance: AssetBalance? {
@@ -69,6 +78,7 @@ class SwapBasePresenter {
     }
 
     var fee: AssetExchangeFee?
+    var maxAmountFeeModel: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeQuote, Error>?
 
     var quote: AssetExchangeQuote? {
@@ -150,21 +160,28 @@ class SwapBasePresenter {
             slippage: getSlippage(),
             accountInfo: originAccountInfo,
             destAccountInfo: destAccountInfo,
-            destUtilityAssetExistence: destUtilityAssetBalanceExistense
+            destUtilityAssetExistence: destUtilityAssetBalanceExistense,
+            payAssetCollateralLimit: payAssetCollateralLimit,
+            maxAmountFeeModel: getMaxAmountFeeModel()
         )
     }
 
     func getMaxModel() -> SwapMaxModel {
+        getMaxModel(feeModel: fee)
+    }
+
+    func getMaxModel(feeModel: AssetExchangeFee?) -> SwapMaxModel {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
             receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
-            feeModel: fee,
+            feeModel: feeModel,
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: originAccountInfo
+            accountInfo: originAccountInfo,
+            payAssetCollateralLimit: payAssetCollateralLimit
         )
     }
 
@@ -192,6 +209,10 @@ class SwapBasePresenter {
 
     func getSpendingInputAmount() -> Decimal? {
         fatalError("Must be implemented by parent class")
+    }
+
+    func getMaxAmountFeeModel() -> AssetExchangeFee? {
+        maxAmountFeeModel
     }
 
     func getQuoteArgs() -> AssetConversion.QuoteArgs? {
@@ -245,6 +266,8 @@ class SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {}
 
+    func handleUnchangedFee(_: AssetExchangeFee, feeChainAssetId _: ChainAssetId?) {}
+
     func handleNewPrice(_: PriceData?, priceId _: AssetModel.PriceId) {}
 
     func handleNewBalance(_: AssetBalance?, for _: ChainAssetId) {}
@@ -252,6 +275,8 @@ class SwapBasePresenter {
     func handleNewBalanceExistense(_: AssetBalanceExistence, chainAssetId _: ChainAssetId) {}
 
     func handleNewAccountInfo(_: AccountInfo?, chainId _: ChainModel.Id) {}
+
+    func handleNewCollateralLimit(for _: ChainAssetId) {}
 
     func handleBaseError(
         _ error: SwapBaseError,
@@ -276,6 +301,10 @@ class SwapBasePresenter {
         case let .assetBalanceExistence(_, chainAsset):
             wireframe.presentRequestStatus(on: view, locale: locale) {
                 interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
+            }
+        case let .collateralLimit(_, chainAssetId):
+            if collateralLimits[chainAssetId] == nil {
+                didReceive(collateralLimit: .unrestricted, for: chainAssetId)
             }
         }
     }
@@ -334,7 +363,7 @@ class SwapBasePresenter {
         dataValidatingFactory.noPoolTradeLimitExceeded(
             params: swapModel,
             remoteValidatingClosure: { [weak self] route, completion in
-                interactor.requestValidatingPoolTradeLimits(for: route) { check in
+                interactor.requestValidatingPoolTradeLimits(for: route, slippage: swapModel.slippage) { check in
                     if case .withinLimits = check {
                         self?.resetPoolTradeLimitCorrection()
                     }
@@ -429,6 +458,7 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
 
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
         guard self.fee != fee else {
+            handleUnchangedFee(fee, feeChainAssetId: feeChainAssetId)
             return
         }
 
@@ -479,5 +509,17 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         accountInfoDict[chainId] = accountInfo
 
         handleNewAccountInfo(accountInfo, chainId: chainId)
+    }
+
+    func didReceive(collateralLimit: HydraAave.CollateralLimit, for chainAssetId: ChainAssetId) {
+        guard collateralLimits[chainAssetId] != collateralLimit else {
+            return
+        }
+
+        logger.debug("New collateral limit \(chainAssetId): \(collateralLimit)")
+
+        collateralLimits[chainAssetId] = collateralLimit
+
+        handleNewCollateralLimit(for: chainAssetId)
     }
 }

@@ -151,7 +151,7 @@ enum CommissionTestFixtures {
         callArgs: AssetConversion.CallArgs
     ) -> HydraExchangeSwapParams {
         HydraExchangeSwapParams(
-            params: .init(referral: Data(repeating: 9, count: 32)),
+            params: .init(referral: Data(repeating: 9, count: 32), accountId: Data(repeating: 2, count: 32)),
             updateReferral: nil,
             swap: .omniSell(
                 HydraOmnipool.SellCall(

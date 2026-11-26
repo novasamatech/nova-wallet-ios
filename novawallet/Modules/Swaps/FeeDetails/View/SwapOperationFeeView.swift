@@ -4,7 +4,11 @@ final class SwapOperationFeeView: UIView {
     private let tableView: StackTableView = .create { view in
         view.cellHeight = 44
         view.hasSeparators = true
-        view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 4, right: 16)
+        view.contentInsets = UIEdgeInsets(top: 0, left: 12, bottom: 4, right: 12)
+        view.cornerRadius = 16
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.highlightedStrokeColor = R.color.colorContainerBorder()!
+        view.strokeWidth = 1
     }
 
     private let routeCell: SwapRouteViewCell = .create { cell in

@@ -7,18 +7,24 @@ final class GetTokenOptionsPresenter {
     let wireframe: GetTokenOptionsWireframeProtocol
     let destinationChainAsset: ChainAsset
 
-    let allOperations: [GetTokenOperation] = [.crosschain, .receive, .buy]
+    let allOperations: [GetTokenOperation]
 
     private var model: GetTokenOptionsModel?
+
+    var operations: [GetTokenOperation] {
+        allOperations.filter { $0 != .swap || model?.swapState != nil }
+    }
 
     init(
         interactor: GetTokenOptionsInteractorInputProtocol,
         wireframe: GetTokenOptionsWireframeProtocol,
-        destinationChainAsset: ChainAsset
+        destinationChainAsset: ChainAsset,
+        allOperations: [GetTokenOperation]
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.destinationChainAsset = destinationChainAsset
+        self.allOperations = allOperations
     }
 
     private func isOperationAvailable(_ operation: GetTokenOperation) -> Bool {
@@ -27,17 +33,21 @@ final class GetTokenOptionsPresenter {
         }
 
         switch operation {
+        case .swap:
+            return model.swapState != nil
         case .crosschain:
             return !model.availableXcmOrigins.isEmpty
         case .receive:
             return model.receiveAccount != nil
         case .buy:
             return !model.buyOptions.isEmpty
+        case .changeNow:
+            return model.changeNowUrl != nil
         }
     }
 
     private func provideViewModel() {
-        let viewModels = allOperations.map { operation in
+        let viewModels = operations.map { operation in
             let isActive = isOperationAvailable(operation)
             let token = destinationChainAsset.asset.symbol
 
@@ -48,6 +58,7 @@ final class GetTokenOptionsPresenter {
                         subtitle: operation.subtitleForLocale(locale, token: token),
                         icon: operation.icon
                     ),
+                    chip: operation.chipForLocale(locale),
                     isActive: isActive
                 )
             }
@@ -65,11 +76,17 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
     }
 
     func selectOption(at index: Int) {
-        guard let model = model else {
+        let visibleOperations = operations
+
+        guard let model, visibleOperations.indices.contains(index) else {
             return
         }
 
-        switch allOperations[index] {
+        switch visibleOperations[index] {
+        case .swap:
+            if let swapState = model.swapState {
+                wireframe.complete(on: view, result: .swap(swapState))
+            }
         case .crosschain:
             if let xcmTransfers = model.xcmTransfers {
                 wireframe.complete(
@@ -83,6 +100,10 @@ extension GetTokenOptionsPresenter: GetTokenOptionsPresenterProtocol {
             }
         case .buy:
             wireframe.complete(on: view, result: .buy(model.buyOptions))
+        case .changeNow:
+            if let url = model.changeNowUrl {
+                wireframe.complete(on: view, result: .changeNow(url))
+            }
         }
     }
 }

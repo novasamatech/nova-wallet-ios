@@ -32,8 +32,14 @@ extension ModalCardPresentationController {
     }
 
     func applySourceDismissTransform() {
+        let sourceViewControllers = sourceViewControllers
+
+        let revealedDepth = sourceViewControllers.firstIndex { !$0.isBeingDismissed } ?? sourceViewControllers.count
+
         applySourceTransforms { depth, viewController in
-            depth == 0 ? .identity : transformFactory.createRestingTransform(for: viewController, depth: depth - 1)
+            depth <= revealedDepth
+                ? .identity
+                : transformFactory.createRestingTransform(for: viewController, depth: depth - revealedDepth - 1)
         }
     }
 

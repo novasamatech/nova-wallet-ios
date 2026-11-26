@@ -1,33 +1,6 @@
 import Foundation
-import SubstrateSdk
 
 enum HydraExtrinsicConverter {
-    static func addingOperation(
-        from params: HydraSwapParams,
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol {
-        var currentBuilder = builder
-
-        if let updateReferralCall = params.updateReferral {
-            currentBuilder = try currentBuilder
-                .with(batchType: .ignoreFails)
-                .adding(call: updateReferralCall.runtimeCall())
-        }
-
-        switch params.swap {
-        case let .omniSell(call):
-            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
-        case let .omniBuy(call):
-            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
-        case let .routedSell(call):
-            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
-        case let .routedBuy(call):
-            currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
-        }
-
-        return currentBuilder
-    }
-
     static func isOmnipoolSwap(route: HydraDx.RemoteSwapRoute) -> Bool {
         guard route.components.count == 1 else {
             return false

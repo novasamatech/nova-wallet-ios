@@ -31,6 +31,7 @@
 | Naming, comments, dead code, file size                         | code/naming-and-hygiene.md                                    |
 | Unit tests, integration tests, Cuckoo mocks                    | code/testing.md                                               |
 | Build commands, configurations, flags, codegen, CI, fastlane   | code/build-and-tooling.md                                     |
+| Commits, branch names, pull requests, Jira task keys           | code/commits-and-jira.md                                      |
 | Reviewing a PR (architecture)                                  | review/architecture-checklist.md                              |
 | Reviewing a PR (code)                                          | review/code-checklist.md                                      |
 

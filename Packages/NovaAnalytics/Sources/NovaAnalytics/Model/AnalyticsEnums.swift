@@ -21,9 +21,11 @@ public enum WalletCreationMethod: String, CaseIterable, AnalyticsPropertyConvert
 
 public enum SwapSource: String, CaseIterable, AnalyticsPropertyConvertible {
     case assetDetails = "asset_details"
+    case getToken = "get_token"
     case mainScreen = "main_screen"
     case operationDetails = "operation_details"
     case retry
+    case swapsTab = "swaps_tab"
 }
 
 public enum SwapFailureReason: String, CaseIterable, AnalyticsPropertyConvertible {
@@ -87,6 +89,7 @@ public enum AnalyticsTab: String, CaseIterable, AnalyticsPropertyConvertible {
     case assets
     case vote
     case dapps
+    case swaps
     case staking
     case settings
 }

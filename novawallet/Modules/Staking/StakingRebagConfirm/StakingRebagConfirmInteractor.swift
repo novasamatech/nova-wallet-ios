@@ -3,7 +3,7 @@ import Operation_iOS
 import BigInt
 
 final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning, AccountFetching {
-    weak var presenter: StakingRebagConfirmInteractorOutputProtocol!
+    weak var presenter: StakingRebagConfirmInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
     var chainId: ChainModel.Id { chainAsset.chain.chainId }
@@ -177,7 +177,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             case let .success(response):
                 self?.handleStashMetaAccount(response: response, stashItem: stashItem)
             case let .failure(error):
-                self?.presenter.didReceive(error: .fetchStashItemFailed(error))
+                self?.presenter?.didReceive(error: .fetchStashItemFailed(error))
             }
         }
     }
@@ -206,7 +206,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
                 do {
                     let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceive(networkInfo: info)
+                    self?.presenter?.didReceive(networkInfo: info)
                 } catch {
                     self?.presenter?.didReceive(error: .fetchNetworkInfoFailed(error))
                 }
@@ -230,7 +230,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
                 self.continueSetup()
             } catch {
                 DispatchQueue.main.async {
-                    self.presenter.didReceive(error: .cantResolveModuleName(error))
+                    self.presenter?.didReceive(error: .cantResolveModuleName(error))
                 }
             }
 
@@ -245,7 +245,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         guard let extrinsicService = extrinsicService,
               let accountId = stashAccountId(stashItem: stashItem),
               let moduleName = moduleName else {
-            presenter.didReceive(error: .fetchFeeFailed(CommonError.undefined))
+            presenter?.didReceive(error: .fetchFeeFailed(CommonError.undefined))
             return
         }
 
@@ -262,7 +262,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             let signingWrapper,
             let accountId = stashAccountId(stashItem: stashItem),
             let moduleName = moduleName else {
-            presenter.didReceive(error: .submitFailed(CommonError.undefined))
+            presenter?.didReceive(error: .submitFailed(CommonError.undefined))
             return
         }
 
@@ -284,9 +284,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         ) { [weak self] result in
             switch result.mapToExtrinsicSubmittedResult() {
             case .success:
-                self?.presenter.didSubmitRebag()
+                self?.presenter?.didSubmitRebag()
             case let .failure(error):
-                self?.presenter.didReceive(error: .submitFailed(error))
+                self?.presenter?.didReceive(error: .submitFailed(error))
             }
         }
     }
@@ -364,7 +364,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
             subscribeBagListNode(stashItem: stashItem)
             subscribeLedgerInfo(stashItem: stashItem)
             provideMetaAccount(stashItem: stashItem)
-            presenter.didReceive(stashItem: stashItem)
+            presenter?.didReceive(stashItem: stashItem)
         case let .failure(error):
             presenter?.didReceive(error: .fetchStashItemFailed(error))
         }
@@ -377,7 +377,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     ) {
         switch result {
         case let .success(ledgerInfo):
-            presenter.didReceive(ledgerInfo: ledgerInfo)
+            presenter?.didReceive(ledgerInfo: ledgerInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fetchLedgerInfoFailed(error))
         }
@@ -390,16 +390,16 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     ) {
         switch result {
         case let .success(node):
-            presenter.didReceive(currentBagListNode: node)
+            presenter?.didReceive(currentBagListNode: node)
         case let .failure(error):
-            presenter.didReceive(error: .fetchBagListNodeFailed(error))
+            presenter?.didReceive(error: .fetchBagListNodeFailed(error))
         }
     }
 
     func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(totalIssuance):
-            presenter.didReceive(totalIssuance: totalIssuance)
+            presenter?.didReceive(totalIssuance: totalIssuance)
         case let .failure(error):
             presenter?.didReceive(error: .fetchBagListScoreFactorFailed(error))
         }

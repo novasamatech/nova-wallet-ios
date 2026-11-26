@@ -211,3 +211,22 @@ extension HydraStableswapQuoteFactory {
         )
     }
 }
+
+extension HydraStableswapQuoteFactory {
+    static func tradeLimitVerdict(
+        for amount: Balance,
+        direction: AssetConversion.Direction,
+        poolPair: HydraStableswap.PoolPair,
+        minTradingLimit: Balance
+    ) -> AssetExchangeTradeLimitVerdict {
+        // Among share-token hops the runtime enforces the minimum only when adding liquidity by asset amount
+        let checksMinTradingLimit = poolPair.assetIn != poolPair.poolAsset
+            && (poolPair.assetOut != poolPair.poolAsset || direction == .sell)
+
+        guard checksMinTradingLimit, amount < minTradingLimit else {
+            return .withinLimit
+        }
+
+        return .belowMinimum(minTradingLimit)
+    }
+}
