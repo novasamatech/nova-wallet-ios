@@ -25,12 +25,12 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
-        header: SubtensorPriceHeaderParams,
+        header: SubtensorPriceHeaderParams?,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel
 
     func createHeader(
-        _ header: SubtensorPriceHeaderParams,
+        _ header: SubtensorPriceHeaderParams?,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel
@@ -97,31 +97,47 @@ private extension SubtensorPriceWidgetViewModelFactory {
         return .value(text: text, isRising: change >= 0)
     }
 
-    func createSpotHeader(
-        _ header: SubtensorPriceHeaderParams,
+    func createSpotChange(
         for params: SubtensorPriceWidgetParams,
         locale: Locale
-    ) -> SubtensorSubnetPriceHeaderViewModel {
-        let change: SubtensorSubnetPriceHeaderViewModel.Change
-
+    ) -> SubtensorSubnetPriceHeaderViewModel.Change {
         switch params.history {
         case .loading:
-            change = .loading
+            return .loading
         case .notListed, .failed:
-            change = .hidden
+            return .hidden
         case let .available(history):
-            change = createChange(
+            return createChange(
                 displayChange(history: history, params: params),
                 suffix: params.period.title(for: locale),
                 locale: locale
             )
         }
+    }
 
-        return SubtensorSubnetPriceHeaderViewModel(
+    func createSpotHeader(
+        _ header: SubtensorPriceHeaderParams,
+        for params: SubtensorPriceWidgetParams,
+        locale: Locale
+    ) -> SubtensorSubnetPriceHeaderViewModel {
+        SubtensorSubnetPriceHeaderViewModel(
             caption: header.caption,
             price: formatPrice(header.spotPrice, locale: locale),
             fiat: formatFiat(header.spotPrice, params: params, locale: locale),
-            change: change,
+            change: createSpotChange(for: params, locale: locale),
+            date: nil
+        )
+    }
+
+    func createLoadingHeader(
+        for params: SubtensorPriceWidgetParams,
+        locale: Locale
+    ) -> SubtensorSubnetPriceHeaderViewModel {
+        SubtensorSubnetPriceHeaderViewModel(
+            caption: nil,
+            price: nil,
+            fiat: nil,
+            change: createSpotChange(for: params, locale: locale),
             date: nil
         )
     }
@@ -174,7 +190,7 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
-        header: SubtensorPriceHeaderParams,
+        header: SubtensorPriceHeaderParams?,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel {
         SubtensorPriceWidgetViewModel(
@@ -185,10 +201,14 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
     }
 
     func createHeader(
-        _ header: SubtensorPriceHeaderParams,
+        _ header: SubtensorPriceHeaderParams?,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
+        guard let header else {
+            return createLoadingHeader(for: params, locale: locale)
+        }
+
         switch header.selection {
         case .none:
             return createSpotHeader(header, for: params, locale: locale)

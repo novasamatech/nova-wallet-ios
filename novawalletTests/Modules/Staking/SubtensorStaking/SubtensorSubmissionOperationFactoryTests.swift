@@ -95,7 +95,8 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
             extrinsicBuilderClosure: any(),
             payingIn: any(),
             signer: any(),
-            matchingEvents: any()
+            matchingEvents: any(),
+            completingOn: any()
         )
     }
 
@@ -172,12 +173,13 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
                 extrinsicBuilderClosure: any(),
                 payingIn: any(),
                 signer: any(),
-                matchingEvents: any()
-            )).then { _, _, signer, _ in
-                CompoundOperationWrapper(targetOperation: ClosureOperation<ExtrinsicMonitorSubmission> {
+                matchingEvents: any(),
+                completingOn: any()
+            )).then { _, _, signer, _, _ in
+                .stub {
                     _ = try signer.sign(Data(repeating: 1, count: 32), context: .rawBytes)
                     throw JSONRPCEngineError.clientCancelled
-                })
+                }
             }
         }
 

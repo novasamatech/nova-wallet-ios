@@ -9,6 +9,12 @@ protocol ExtrinsicStatusServiceProtocol {
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
 
+    func fetchFinalizedExtrinsicStatusForHash(
+        _ extrinsicHash: String,
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
+
     func fetchExtrinsicStatusesForHashes(
         _ extrinsicHashes: [String],
         inBlock blockHash: String,
@@ -27,6 +33,8 @@ final class ExtrinsicStatusService {
     let runtimeProvider: RuntimeProviderProtocol
     let eventsQueryFactory: BlockEventsQueryFactoryProtocol
     let logger: LoggerProtocol
+
+    private let blockFinalityFactory: BlockFinalityOperationFactoryProtocol = BlockFinalityOperationFactory()
 
     init(
         connection: JSONRPCEngine,
@@ -214,6 +222,34 @@ extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
+    }
+
+    func fetchFinalizedExtrinsicStatusForHash(
+        _ extrinsicHash: String,
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
+    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+        let finalityWrapper = blockFinalityFactory.createFinalityWrapper(for: blockHash, connection: connection)
+
+        let statusWrapper = fetchExtrinsicStatusForHash(
+            extrinsicHash,
+            inBlock: blockHash,
+            matchingEvents: matchingEvents
+        )
+
+        statusWrapper.addDependency(wrapper: finalityWrapper)
+
+        let finalizedStatusOperation = ClosureOperation<SubstrateExtrinsicStatus> {
+            try finalityWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try statusWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        finalizedStatusOperation.addDependency(statusWrapper.targetOperation)
+
+        return statusWrapper
+            .insertingHead(operations: finalityWrapper.allOperations)
+            .insertingTail(operation: finalizedStatusOperation)
     }
 
     func fetchExtrinsicStatusesForHashes(

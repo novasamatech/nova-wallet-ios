@@ -192,7 +192,10 @@ final class CrosschainExchangeAtomicOperation {
 }
 
 extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        hasNextOperation _: Bool
+    ) -> CompoundOperationWrapper<Balance> {
         guard
             let originChain = host.allChains[edge.origin.chainId],
             let destinationChain = host.allChains[edge.destination.chainId],

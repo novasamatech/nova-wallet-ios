@@ -971,6 +971,7 @@
 		0CA50CAF2AFE6094005668CD /* GetTokenOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */; };
 		0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */; };
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
+		3C108C96273435C5ADF93B88 /* GetTokenOptionsPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
 		0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */; };
@@ -6295,6 +6296,7 @@
 		9C26EFFECF50431CA5B7FB68 /* BittensorApi+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837C2E2D75494678B33FBEB1 /* BittensorApi+Recommendations.swift */; };
 		9C3CFFB608A44887A2628CC1 /* SubtensorValidatorDirectoryOperationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F029626E2FD4E88BC416544 /* SubtensorValidatorDirectoryOperationFactoryProtocol.swift */; };
 		9C4A1E7D3B2F5A8E6D0C1B29 /* FinalizedHeaderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */; };
+		E733610D42B6DFD39624F0B3 /* BlockFinalityOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4813B83F027BCFB2F5488C5F /* BlockFinalityOperationFactory.swift */; };
 		9C89527054E954F7AEC0142A /* SwipeGovVotingConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7942853232FD63C419EE62E3 /* SwipeGovVotingConfirmViewController.swift */; };
 		9CFA514776771FBBD64D18DB /* StakingRewardsNotificationsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577466C7C5FEA9D1A12CC400 /* StakingRewardsNotificationsProtocols.swift */; };
 		9D16EC7C162525087A0F86BD /* MythosStakingConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADC43550D6DE65A50C132E /* MythosStakingConfirmPresenter.swift */; };
@@ -8275,6 +8277,7 @@
 		0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewController.swift; sourceTree = "<group>"; };
 		0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsProtocols.swift; sourceTree = "<group>"; };
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
+		CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GetTokenOptionsPresenter+Analytics.swift"; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
 		0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -10209,6 +10212,7 @@
 		5E90D29068564E38902DA201 /* SubtensorSubnetMarketsOperationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetMarketsOperationFactoryProtocol.swift; sourceTree = "<group>"; };
 		5EBB36DB4417444D901F40DF /* SubtensorStakeSetupPresenter+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakeSetupPresenter+Delegates.swift"; sourceTree = "<group>"; };
 		5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizedHeaderOperationFactory.swift; sourceTree = "<group>"; };
+		4813B83F027BCFB2F5488C5F /* BlockFinalityOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockFinalityOperationFactory.swift; sourceTree = "<group>"; };
 		5F4838C35D0C44D98ECD3551 /* SubtensorOperationStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationStatusView.swift; sourceTree = "<group>"; };
 		5F4F3C080F3D5C1E64475903 /* PVAddressesProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PVAddressesProtocols.swift; sourceTree = "<group>"; };
 		5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewLayout.swift; sourceTree = "<group>"; };
@@ -16607,6 +16611,7 @@
 				0CA50CAE2AFE6094005668CD /* GetTokenOptionsViewController.swift */,
 				0CA50CB02AFE6F15005668CD /* GetTokenOptionsProtocols.swift */,
 				0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */,
+				CE611D26F8B977B474DE01AB /* GetTokenOptionsPresenter+Analytics.swift */,
 				0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */,
 				0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */,
 				0CB64E5F2B00AD83008F268F /* GetTokenOptionsWireframe.swift */,
@@ -27643,6 +27648,7 @@
 				ED0DC29AE2918DB25794E5F3 /* PresetNonceOperationFactory.swift */,
 				87F641D1C93864CD13747FEB /* FixedMortalEraOperationFactory.swift */,
 				5F3E2B9A7C1D4E8F0A6B2C17 /* FinalizedHeaderOperationFactory.swift */,
+				4813B83F027BCFB2F5488C5F /* BlockFinalityOperationFactory.swift */,
 				498246414B54F829F80956BD /* PresetEraOperationFactory.swift */,
 			);
 			path = Substrate;
@@ -34104,6 +34110,7 @@
 				84CAC1CC298A715900F78169 /* GovernanceOffchainVotesLocal.swift in Sources */,
 				84F2CEFC29A36CE9003EBE36 /* WalletNoAccountHandling.swift in Sources */,
 				0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */,
+				3C108C96273435C5ADF93B88 /* GetTokenOptionsPresenter+Analytics.swift in Sources */,
 				774A481129F8BFB70094635B /* OperationAuthPresentable.swift in Sources */,
 				849014C324AA87E4008F705E /* LocalAuthInteractor.swift in Sources */,
 				84BEE059255F4D5700D05EB3 /* AccountImportPreferredInfo.swift in Sources */,
@@ -40353,6 +40360,7 @@
 				1A600375C5572298E8573E4D /* PresetNonceOperationFactory.swift in Sources */,
 				3BB4C7A5F2A2A056AD119A40 /* FixedMortalEraOperationFactory.swift in Sources */,
 				9C4A1E7D3B2F5A8E6D0C1B29 /* FinalizedHeaderOperationFactory.swift in Sources */,
+				E733610D42B6DFD39624F0B3 /* BlockFinalityOperationFactory.swift in Sources */,
 				9D1D620F1D45B25DAF0305E0 /* AuthorizeOnceSigningWrapper.swift in Sources */,
 				6482AE6A1C99542F5AC78389 /* SubtensorShieldEligibility.swift in Sources */,
 				B9F92FAE51A97D45AEDED60D /* MevShieldSealing.swift in Sources */,

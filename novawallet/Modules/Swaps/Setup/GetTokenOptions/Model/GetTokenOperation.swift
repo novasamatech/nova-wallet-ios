@@ -10,8 +10,9 @@ enum GetTokenOperation {
 }
 
 extension GetTokenOperation {
+    static let changeNowName = "ChangeNOW"
+
     private enum Constants {
-        static let changeNowName = "ChangeNOW"
         static let changeNowLeadingTokens = ["DOT", "USDT"]
         static let changeNowLastToken = "USDC"
     }
@@ -31,7 +32,7 @@ extension GetTokenOperation {
         case .changeNow:
             return R.string(
                 preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupDepositByDappTitle(Constants.changeNowName)
+            ).localizable.swapsSetupDepositByDappTitle(Self.changeNowName)
         }
     }
 

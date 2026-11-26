@@ -8,6 +8,12 @@ protocol BlockHashOperationFactoryProtocol {
         for numberClosure: @escaping () throws -> BlockNumber
     ) -> BaseOperation<String>
 
+    func createBlockHashOperation(
+        connection: JSONRPCEngine,
+        timeout: Int,
+        for numberClosure: @escaping () throws -> BlockNumber
+    ) -> BaseOperation<String>
+
     func createBestBlockHashWrapper(
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<BlockHashData>
@@ -23,16 +29,21 @@ class BlockHashOperationFactory: BlockHashOperationFactoryProtocol {
             method: RPCMethod.getBlockHash
         )
 
-        requestOperation.configurationBlock = {
-            do {
-                let blockNumber = try numberClosure()
-                requestOperation.parameters = [blockNumber.toHex()]
-            } catch {
-                requestOperation.result = .failure(error)
-            }
-        }
+        return configure(requestOperation, numberClosure: numberClosure)
+    }
 
-        return requestOperation
+    func createBlockHashOperation(
+        connection: JSONRPCEngine,
+        timeout: Int,
+        for numberClosure: @escaping () throws -> BlockNumber
+    ) -> BaseOperation<String> {
+        let requestOperation = JSONRPCListOperation<String>(
+            engine: connection,
+            method: RPCMethod.getBlockHash,
+            timeout: timeout
+        )
+
+        return configure(requestOperation, numberClosure: numberClosure)
     }
 
     func createBestBlockHashWrapper(
@@ -55,5 +66,23 @@ class BlockHashOperationFactory: BlockHashOperationFactoryProtocol {
             targetOperation: mapOperation,
             dependencies: [requestOperation]
         )
+    }
+}
+
+private extension BlockHashOperationFactory {
+    func configure(
+        _ requestOperation: JSONRPCListOperation<String>,
+        numberClosure: @escaping () throws -> BlockNumber
+    ) -> BaseOperation<String> {
+        requestOperation.configurationBlock = {
+            do {
+                let blockNumber = try numberClosure()
+                requestOperation.parameters = [blockNumber.toHex()]
+            } catch {
+                requestOperation.result = .failure(error)
+            }
+        }
+
+        return requestOperation
     }
 }

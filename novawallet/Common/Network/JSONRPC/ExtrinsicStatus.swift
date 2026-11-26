@@ -15,6 +15,14 @@ struct ExtrinsicStatusUpdate {
         }
     }
 
+    func getFinalizedHash() -> BlockHash? {
+        if case let .finalized(blockHash) = extrinsicStatus {
+            blockHash
+        } else {
+            nil
+        }
+    }
+
     func getFinalExtrinsicFailure() -> FinalExtrinsicStatusError? {
         switch extrinsicStatus {
         case .invalid:

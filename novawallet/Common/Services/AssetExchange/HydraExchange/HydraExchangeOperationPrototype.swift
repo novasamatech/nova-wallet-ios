@@ -20,7 +20,7 @@ extension HydraExchangeOperationPrototype: AssetExchangeOperationPrototypeProtoc
         return converter.convertToUsdt(the: nativeAsset, decimalAmount: 0.5) ?? 0
     }
 
-    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
-        host.executionTimeEstimator.totalTimeWrapper(for: [host.chain.chainId])
+    func estimatedExecutionTimeWrapper(hasNextOperation: Bool) -> CompoundOperationWrapper<TimeInterval> {
+        host.executionTimeEstimator.totalTimeWrapper(for: [host.chain.chainId], awaitingFinality: hasNextOperation)
     }
 }

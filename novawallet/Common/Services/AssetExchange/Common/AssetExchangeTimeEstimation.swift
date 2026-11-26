@@ -5,6 +5,27 @@ protocol AssetExchangeTimeEstimating {
     func totalTimeWrapper(for chainIds: [ChainModel.Id]) -> CompoundOperationWrapper<TimeInterval>
 }
 
+extension AssetExchangeTimeEstimating {
+    func totalTimeWrapper(
+        for chainIds: [ChainModel.Id],
+        awaitingFinality: Bool
+    ) -> CompoundOperationWrapper<TimeInterval> {
+        let blocksTimeWrapper = totalTimeWrapper(for: chainIds)
+
+        guard awaitingFinality else {
+            return blocksTimeWrapper
+        }
+
+        let finalityOperation = ClosureOperation<TimeInterval> {
+            try blocksTimeWrapper.targetOperation.extractNoCancellableResultData() + AssetsExchange.finalityDelay
+        }
+
+        finalityOperation.addDependency(blocksTimeWrapper.targetOperation)
+
+        return blocksTimeWrapper.insertingTail(operation: finalityOperation)
+    }
+}
+
 final class AssetExchangeTimeEstimator {
     let chainRegistry: ChainRegistryProtocol
 

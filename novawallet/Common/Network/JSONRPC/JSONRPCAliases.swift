@@ -5,6 +5,7 @@ import SubstrateSdk
 typealias RuntimeVersionUpdate = JSONRPCSubscriptionUpdate<RuntimeVersion>
 typealias StorageSubscriptionUpdate = JSONRPCSubscriptionUpdate<StorageUpdate>
 typealias ExtrinsicSubscriptionUpdate = JSONRPCSubscriptionUpdate<ExtrinsicStatus>
+typealias FinalizedHeadUpdate = JSONRPCSubscriptionUpdate<Block.Header>
 typealias JSONRPCQueryOperation = JSONRPCOperation<StorageQuery, [StorageUpdate]>
 typealias SuperIdentityOperation = BaseOperation<[StorageResponse<SuperIdentity>]>
 typealias SuperIdentityWrapper = CompoundOperationWrapper<[StorageResponse<SuperIdentity>]>

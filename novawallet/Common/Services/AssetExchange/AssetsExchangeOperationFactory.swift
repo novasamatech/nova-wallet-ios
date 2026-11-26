@@ -177,8 +177,8 @@ final class AssetsExchangeOperationFactory {
     private func estimateExecutionTime(
         for operations: [AssetExchangeOperationPrototypeProtocol]
     ) -> CompoundOperationWrapper<[TimeInterval]> {
-        let wrappers: [CompoundOperationWrapper<TimeInterval>] = operations.map { operation in
-            operation.estimatedExecutionTimeWrapper()
+        let wrappers: [CompoundOperationWrapper<TimeInterval>] = operations.enumerated().map { index, operation in
+            operation.estimatedExecutionTimeWrapper(hasNextOperation: index < operations.count - 1)
         }
 
         let mappingOperation = ClosureOperation<[TimeInterval]> {

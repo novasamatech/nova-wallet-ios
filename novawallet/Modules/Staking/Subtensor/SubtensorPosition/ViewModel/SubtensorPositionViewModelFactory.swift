@@ -151,7 +151,7 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createAvgBuyPriceRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel? {
-        let isLoading = state.price == .loading || !state.isCatalogueResolved
+        let isLoading = state.price == .loading || !state.isCatalogueResolved || state.isOwnTradeSettling
 
         let value = isLoading
             ? .loading

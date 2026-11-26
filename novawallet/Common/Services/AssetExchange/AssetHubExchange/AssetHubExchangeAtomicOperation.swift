@@ -111,15 +111,17 @@ private extension AssetHubExchangeAtomicOperation {
     }
 
     func createSubmissionWrapper(
-        for params: AssetHubExchangeSwapParams
-    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
+        for params: AssetHubExchangeSwapParams,
+        completingOn completion: ExtrinsicMonitorCompletion
+    ) -> ExtrinsicSubmitMonitorWrapper {
         host.submissionMonitorFactory.submitAndMonitorWrapper(
             extrinsicBuilderClosure: { builder in
                 try AssetHubExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
             },
             payingIn: operationArgs.feeAsset,
             signer: host.signingWrapper,
-            matchingEvents: AssetConversionEventsMatching(commissionStorageInfo: params.commission?.assetStorageInfo)
+            matchingEvents: AssetConversionEventsMatching(commissionStorageInfo: params.commission?.assetStorageInfo),
+            completingOn: completion
         )
     }
 
@@ -214,7 +216,10 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
             .insertingTail(operation: mappingOperation)
     }
 
-    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        hasNextOperation: Bool
+    ) -> CompoundOperationWrapper<Balance> {
         let paramsWrapper = createWaivableParamsWrapper(for: swapLimit)
 
         let executionWrapper: CompoundOperationWrapper<Balance>
@@ -223,13 +228,16 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         ) {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let submissionWrapper = self.createSubmissionWrapper(for: params)
+            let monitor = self.createSubmissionWrapper(
+                for: params,
+                completingOn: hasNextOperation ? .finalized : .inBlock
+            )
 
             return self.createMeasuringWrapper(
                 for: params,
-                submissionWrapper: submissionWrapper
+                submissionWrapper: monitor.monitorWrapper
             )
-            .failingWithSubmissionStage { submissionWrapper.targetOperation.submittedTxHash }
+            .failingWithSubmissionStage { monitor.submissionOperation.submittedTxHash }
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)
@@ -248,7 +256,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         ) {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let monitorWrapper = self.createSubmissionWrapper(for: params)
+            let monitorWrapper = self.createSubmissionWrapper(for: params, completingOn: .inBlock).monitorWrapper
 
             let measuringWrapper = self.createMeasuringWrapper(
                 for: params,

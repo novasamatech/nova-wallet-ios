@@ -9,7 +9,7 @@ final class AssetExchangeOperationFailureTests: XCTestCase {
     func testHydraHopFailedAfterSubmissionReportsSubmittedTxHash() throws {
         let operation = try createHydraOperation(submitMonitor: createDispatchFailingSubmitMonitor())
 
-        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
+        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit, hasNextOperation: false))
 
         XCTAssertEqual(failure.stage, .submitted(txHash: Self.txHash))
         XCTAssertTrue(failure.error is DispatchCallError)
@@ -18,7 +18,7 @@ final class AssetExchangeOperationFailureTests: XCTestCase {
     func testHydraHopFailedBeforeSubmissionReportsNoTxHash() throws {
         let operation = try createHydraOperation(submitMonitor: createRejectingSubmitMonitor())
 
-        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
+        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit, hasNextOperation: false))
 
         XCTAssertEqual(failure.stage, .notSubmitted)
         XCTAssertEqual(failure.error as? JSONRPCEngineError, .clientCancelled)
@@ -27,7 +27,7 @@ final class AssetExchangeOperationFailureTests: XCTestCase {
     func testAssetHubHopFailedAfterSubmissionReportsSubmittedTxHash() throws {
         let operation = try createAssetHubOperation(submitMonitor: createDispatchFailingSubmitMonitor())
 
-        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
+        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit, hasNextOperation: false))
 
         XCTAssertEqual(failure.stage, .submitted(txHash: Self.txHash))
         XCTAssertTrue(failure.error is DispatchCallError)
@@ -36,7 +36,7 @@ final class AssetExchangeOperationFailureTests: XCTestCase {
     func testAssetHubHopFailedBeforeSubmissionReportsNoTxHash() throws {
         let operation = try createAssetHubOperation(submitMonitor: createRejectingSubmitMonitor())
 
-        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
+        let failure = try performFailingHop(operation.executeWrapper(for: Self.swapLimit, hasNextOperation: false))
 
         XCTAssertEqual(failure.stage, .notSubmitted)
         XCTAssertEqual(failure.error as? JSONRPCEngineError, .clientCancelled)
@@ -213,15 +213,15 @@ private extension AssetExchangeOperationFailureTests {
             status: .failure(failedExtrinsic)
         )
 
-        return createSubmitMonitor { .createWithResult(submission) }
+        return createSubmitMonitor { submission }
     }
 
     func createRejectingSubmitMonitor() -> ExtrinsicSubmitMonitorFactoryProtocol {
-        createSubmitMonitor { .createWithError(JSONRPCEngineError.clientCancelled) }
+        createSubmitMonitor { throw JSONRPCEngineError.clientCancelled }
     }
 
     func createSubmitMonitor(
-        _ wrapperClosure: @escaping () -> CompoundOperationWrapper<ExtrinsicMonitorSubmission>
+        _ submissionClosure: @escaping () throws -> ExtrinsicMonitorSubmission
     ) -> ExtrinsicSubmitMonitorFactoryProtocol {
         let submitMonitor = MockExtrinsicSubmitMonitorFactoryProtocol()
         stub(submitMonitor) { stub in
@@ -229,8 +229,9 @@ private extension AssetExchangeOperationFailureTests {
                 extrinsicBuilderClosure: any(),
                 payingIn: any(),
                 signer: any(),
-                matchingEvents: any()
-            )).then { _, _, _, _ in wrapperClosure() }
+                matchingEvents: any(),
+                completingOn: any()
+            )).then { _, _, _, _, _ in .stub(submissionClosure) }
         }
 
         return submitMonitor
@@ -292,7 +293,7 @@ private extension AssetExchangeOperationFailureTests {
             operationArgs: operationArgs
         )
 
-        return try performFailingHop(operation.executeWrapper(for: Self.swapLimit))
+        return try performFailingHop(operation.executeWrapper(for: Self.swapLimit, hasNextOperation: false))
     }
 
     func createAssetWithoutArrivalDetection() -> ChainAsset {

@@ -2393,3 +2393,4 @@
 "tabbar.more.title" = "더 보기";
 "tabbar.swaps.title" = "스왑";
 "dapp.staking.notice.bittensor.message" = "타사 Staking 사이트는 자주 더 이상 지원되지 않게 됩니다. Nova Wallet에는 Bittensor용 Staking 기능이 내장되어 있습니다.";
+"swaps.execution.funds.location" = "내 %@은(는) %@에 있습니다";

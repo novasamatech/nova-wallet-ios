@@ -13,9 +13,38 @@ final class ExtrinsicSubmitMonitorFactoryStub: ExtrinsicSubmitMonitorFactoryProt
         extrinsicBuilderClosure _: @escaping ExtrinsicBuilderClosure,
         payingIn _: ChainAssetId?,
         signer _: SigningWrapperProtocol,
-        matchingEvents _: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
-        .createWithResult(submission)
+        matchingEvents _: ExtrinsicEventsMatching?,
+        completingOn _: ExtrinsicMonitorCompletion
+    ) -> ExtrinsicSubmitMonitorWrapper {
+        .stub { self.submission }
+    }
+}
+
+extension ExtrinsicSubmitMonitorWrapper {
+    static func stub(
+        _ submissionClosure: @escaping () throws -> ExtrinsicMonitorSubmission
+    ) -> ExtrinsicSubmitMonitorWrapper {
+        let watchOperation = ClosureOperation<ExtrinsicMonitorSubmission>(closure: submissionClosure)
+
+        let submissionOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+            try watchOperation.extractNoCancellableResultData().extrinsicSubmittedModel
+        }
+
+        submissionOperation.addDependency(watchOperation)
+
+        let monitorOperation = ClosureOperation<ExtrinsicMonitorSubmission> {
+            try watchOperation.extractNoCancellableResultData()
+        }
+
+        monitorOperation.addDependency(submissionOperation)
+
+        return ExtrinsicSubmitMonitorWrapper(
+            submissionOperation: submissionOperation,
+            monitorWrapper: CompoundOperationWrapper(
+                targetOperation: monitorOperation,
+                dependencies: [watchOperation, submissionOperation]
+            )
+        )
     }
 }
 

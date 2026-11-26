@@ -2393,3 +2393,4 @@
 "tabbar.more.title" = "Plus";
 "tabbar.swaps.title" = "Échanges";
 "dapp.staking.notice.bittensor.message" = "Les sites de staking tiers deviennent souvent obsolètes. Nova Wallet intègre le staking pour Bittensor.";
+"swaps.execution.funds.location" = "Votre %@ est sur %@";
