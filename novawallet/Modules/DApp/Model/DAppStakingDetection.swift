@@ -120,7 +120,7 @@ private extension DAppStakingDetection {
                 return nil
             }
 
-            return resolveHost(for: query)
+            return DAppBrowserTab.resolveUrl(for: query)?.host
         }
     }
 
@@ -158,15 +158,5 @@ private extension DAppStakingDetection {
         return lowercasedHost.hasPrefix("www.")
             ? String(lowercasedHost.dropFirst("www.".count))
             : lowercasedHost
-    }
-
-    static func resolveHost(for query: String) -> String? {
-        var urlComponents = URLComponents(string: query)
-
-        if urlComponents?.scheme == nil {
-            urlComponents = URLComponents(string: "https://" + query)
-        }
-
-        return urlComponents?.host
     }
 }
