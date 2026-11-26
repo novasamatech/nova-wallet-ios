@@ -65,9 +65,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
 
         view?.didReceive(stakingBannerVisible: stakingQueryKind != .none)
 
-        // recorded when the banner appears or changes its kind, never per typed character;
-        // the query itself must not be recorded
-        if stakingQueryKind != previousKind {
+        if previousKind == .none, stakingQueryKind != .none {
             trackDAppStakingPromptShown(
                 placement: .searchBanner,
                 kind: stakingQueryKind.analyticsPromptKind,
