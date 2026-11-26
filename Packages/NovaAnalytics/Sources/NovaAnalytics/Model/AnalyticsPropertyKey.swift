@@ -2,6 +2,7 @@ import Foundation
 
 public enum AnalyticsPropertyKey: String, CaseIterable {
     case isFirstLaunch = "is_first_launch"
+    case assetListStyle = "asset_list_style"
     case durationBucket = "duration_bucket"
     case source
     case method
@@ -33,6 +34,7 @@ public enum AnalyticsPropertyKey: String, CaseIterable {
     case screen
     case nftCountBucket = "nft_count_bucket"
     case chain
+    case chainId = "chain_id"
     case target
     case mode
     case flow

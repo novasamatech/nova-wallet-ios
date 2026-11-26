@@ -32,6 +32,17 @@ public extension AnalyticsEvent {
     ) -> AnalyticsEvent {
         rampEvent(name: .sellCompleted, provider: provider, asset: asset, network: network)
     }
+
+    static func assetFundingDappOpened(
+        provider: AnalyticsContentValue,
+        asset: AnalyticsContentValue,
+        chainId: AnalyticsContentValue
+    ) -> AnalyticsEvent {
+        AnalyticsEvent(
+            name: .assetFundingDappOpened,
+            properties: [.provider: provider, .asset: asset, .chainId: chainId]
+        )
+    }
 }
 
 private extension AnalyticsEvent {

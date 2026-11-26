@@ -94,6 +94,11 @@ public enum AnalyticsTab: String, CaseIterable, AnalyticsPropertyConvertible {
     case settings
 }
 
+public enum AnalyticsAssetListStyle: String, CaseIterable, AnalyticsPropertyConvertible {
+    case tokens
+    case networks
+}
+
 public enum StakingAnalyticsType: String, CaseIterable, AnalyticsPropertyConvertible {
     case direct
     case pool
