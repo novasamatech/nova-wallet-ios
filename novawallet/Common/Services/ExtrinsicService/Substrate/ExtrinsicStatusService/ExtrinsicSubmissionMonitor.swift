@@ -309,6 +309,10 @@ private final class ExtrinsicSubmissionStore {
         case let .inBlock(blockHash):
             acknowledgedModel = statusModel.extrinsicSubmittedModel
             inclusion = Inclusion(model: statusModel.extrinsicSubmittedModel, blockHash: blockHash)
+        case .invalid, .usurped:
+            if inclusion == nil {
+                acknowledgedModel = nil
+            }
         default:
             break
         }
