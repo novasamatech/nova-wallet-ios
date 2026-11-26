@@ -109,14 +109,14 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
         matchingEvents: ExtrinsicEventsMatching?,
         completingOn completion: ExtrinsicMonitorCompletion
     ) -> ExtrinsicSubmitMonitorWrapper {
-        let inclusionStore = ExtrinsicInclusionStore()
+        let submissionStore = ExtrinsicSubmissionStore()
 
         let watchOperation = createSubmissionOperation(
             extrinsicBuilderClosure: extrinsicBuilderClosure,
             payingIn: feeAssetId,
             signer: signer,
             completingOn: completion,
-            inclusionStore: inclusionStore
+            submissionStore: submissionStore
         )
 
         let submittedOperation = ClosureOperation<ExtrinsicSubmittedModel> {
@@ -125,11 +125,11 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
 
                 return ExtrinsicSubmittedModel(txHash: submission.extrinsicHash, sender: submission.sender)
             } catch {
-                guard let includedModel = inclusionStore.fetchInclusion()?.model else {
+                guard let acknowledgedModel = submissionStore.fetchAcknowledgedModel() else {
                     throw error
                 }
 
-                return includedModel
+                return acknowledgedModel
             }
         }
 
@@ -170,7 +170,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
         payingIn feeAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         completingOn completion: ExtrinsicMonitorCompletion,
-        inclusionStore: ExtrinsicInclusionStore
+        submissionStore: ExtrinsicSubmissionStore
     ) -> AsyncClosureOperation<SubmissionResult> {
         var subscriptionId: UInt16?
 
@@ -187,13 +187,13 @@ private extension ExtrinsicSubmissionMonitorFactory {
                 },
                 notificationClosure: { result in
                     if case let .success(model) = result {
-                        inclusionStore.store(statusModel: model)
+                        submissionStore.store(statusModel: model)
                     }
 
                     guard let submissionResult = self.submissionResult(
                         from: result,
                         completingOn: completion,
-                        inclusionStore: inclusionStore
+                        submissionStore: submissionStore
                     ) else {
                         return
                     }
@@ -250,7 +250,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
     func submissionResult(
         from result: Result<ExtrinsicSubscribedStatusModel, Error>,
         completingOn completion: ExtrinsicMonitorCompletion,
-        inclusionStore: ExtrinsicInclusionStore
+        submissionStore: ExtrinsicSubmissionStore
     ) -> Result<SubmissionResult, Error>? {
         switch result {
         case let .success(model):
@@ -270,7 +270,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
             }
         case let .failure(error):
             // after inclusion a watch error (e.g. the node rejecting the re-sent watch) is no verdict on the extrinsic
-            guard completion == .finalized, let inclusion = inclusionStore.fetchInclusion() else {
+            guard completion == .finalized, let inclusion = submissionStore.fetchInclusion() else {
                 return .failure(error)
             }
 
@@ -286,27 +286,42 @@ private extension ExtrinsicSubmissionMonitorFactory {
     }
 }
 
-private final class ExtrinsicInclusionStore {
+private final class ExtrinsicSubmissionStore {
     struct Inclusion {
         let model: ExtrinsicSubmittedModel
         let blockHash: BlockHash
     }
 
     private let mutex = NSLock()
+    private var acknowledgedModel: ExtrinsicSubmittedModel?
     private var inclusion: Inclusion?
 
     func store(statusModel: ExtrinsicSubscribedStatusModel) {
-        guard case let .inBlock(blockHash) = statusModel.statusUpdate.extrinsicStatus else {
-            return
-        }
-
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        inclusion = Inclusion(model: statusModel.extrinsicSubmittedModel, blockHash: blockHash)
+        switch statusModel.statusUpdate.extrinsicStatus {
+        case .future, .ready, .broadcast:
+            acknowledgedModel = statusModel.extrinsicSubmittedModel
+        case let .inBlock(blockHash):
+            acknowledgedModel = statusModel.extrinsicSubmittedModel
+            inclusion = Inclusion(model: statusModel.extrinsicSubmittedModel, blockHash: blockHash)
+        default:
+            break
+        }
+    }
+
+    func fetchAcknowledgedModel() -> ExtrinsicSubmittedModel? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return acknowledgedModel
     }
 
     func fetchInclusion() -> Inclusion? {
