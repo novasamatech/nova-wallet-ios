@@ -1,7 +1,6 @@
 import Foundation
 import Foundation_iOS
 import Operation_iOS
-import NovaAnalytics
 
 final class DAppSearchPresenter: DAppSearchingByQuery {
     weak var view: DAppSearchViewProtocol?
@@ -20,7 +19,6 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
 
     let viewModelFactory: DAppListViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let analyticsTracker: AnalyticsTrackingProtocol
 
     let logger: LoggerProtocol?
 
@@ -32,7 +30,6 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
         selectedCategoryId: String?,
         delegate: DAppSearchDelegate,
         applicationConfig: ApplicationConfigProtocol,
-        analyticsTracker: AnalyticsTrackingProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -43,7 +40,6 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
         self.selectedCategoryId = selectedCategoryId
         self.delegate = delegate
         self.applicationConfig = applicationConfig
-        self.analyticsTracker = analyticsTracker
         self.localizationManager = localizationManager
         self.logger = logger
     }

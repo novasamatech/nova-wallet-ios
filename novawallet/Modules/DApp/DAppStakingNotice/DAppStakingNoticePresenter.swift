@@ -6,17 +6,14 @@ final class DAppStakingNoticePresenter: AnalyticsTracking {
     weak var view: DAppStakingNoticeViewProtocol?
     let wireframe: DAppStakingNoticeWireframeProtocol
     let context: DAppStakingNoticeContext
-    let analyticsTracker: AnalyticsTrackingProtocol
 
     init(
         context: DAppStakingNoticeContext,
         wireframe: DAppStakingNoticeWireframeProtocol,
-        analyticsTracker: AnalyticsTrackingProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.context = context
         self.wireframe = wireframe
-        self.analyticsTracker = analyticsTracker
         self.localizationManager = localizationManager
     }
 }

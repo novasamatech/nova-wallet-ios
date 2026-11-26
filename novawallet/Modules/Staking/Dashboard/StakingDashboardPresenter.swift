@@ -9,7 +9,6 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
-    let analyticsTracker: AnalyticsTrackingProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -19,7 +18,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
     private var pendingNavigation: PendingNavigation?
-    private let pendingNavigationTimeout: Debouncer
+    private let pendingNavigationTimeout = Debouncer(delay: 10)
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -29,16 +28,12 @@ final class StakingDashboardPresenter: AnalyticsTracking {
         privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
-        analyticsTracker: AnalyticsTrackingProtocol,
-        pendingNavigationTimeout: TimeInterval = Constants.pendingNavigationTimeout,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.announcementViewModelFactory = announcementViewModelFactory
-        self.analyticsTracker = analyticsTracker
-        self.pendingNavigationTimeout = Debouncer(delay: pendingNavigationTimeout)
         self.logger = logger
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
@@ -52,10 +47,6 @@ private extension StakingDashboardPresenter {
     struct PendingNavigation {
         let chainAssetId: ChainAssetId
         let source: StakingFlowSource
-    }
-
-    enum Constants {
-        static let pendingNavigationTimeout: TimeInterval = 10
     }
 
     func processPendingNavigation(waitingForSync: Bool) {

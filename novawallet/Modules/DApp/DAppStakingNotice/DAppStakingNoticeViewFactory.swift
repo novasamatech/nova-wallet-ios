@@ -12,7 +12,6 @@ struct DAppStakingNoticeViewFactory {
         let presenter = DAppStakingNoticePresenter(
             context: context,
             wireframe: wireframe,
-            analyticsTracker: AnalyticsFacadeFactory.createDefault(),
             localizationManager: LocalizationManager.shared
         )
 

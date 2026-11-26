@@ -41,7 +41,6 @@ class DAppSearchTests: XCTestCase {
             selectedCategoryId: nil,
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,
-            analyticsTracker: AnalyticsFacadeFactory.createDefault(),
             localizationManager: LocalizationManager.shared
         )
 
