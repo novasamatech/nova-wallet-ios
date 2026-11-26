@@ -2392,4 +2392,5 @@
 "swaps.token.select.your.tokens" = "Token Anda";
 "tabbar.more.title" = "Lainnya";
 "tabbar.swaps.title" = "Swap";
+"dapp.staking.notice.bittensor.message" = "Situs staking pihak ketiga sering kali tidak lagi digunakan. Nova Wallet memiliki staking bawaan untuk Bittensor.";
 "swaps.execution.funds.location" = "Aset %@ Anda berada di %@";

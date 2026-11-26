@@ -2064,6 +2064,7 @@ Do you want to continue?";
 "dapp.staking.notice.title" = "Notice";
 "dapp.staking.notice.message" = "Third-party staking sites often become deprecated. We recommend using Nova Wallet's built-in staking features.";
 "dapp.staking.notice.continue" = "Continue to site";
+"dapp.staking.notice.bittensor.message" = "Third-party staking sites often become deprecated. Nova Wallet has built-in staking for Bittensor.";
 "swaps.commission.disclosure" = "Includes %@ Nova fee.";
 "common.terms.of.service" = "Terms of Service";
 "common.privacy.notice" = "Privacy Notice";

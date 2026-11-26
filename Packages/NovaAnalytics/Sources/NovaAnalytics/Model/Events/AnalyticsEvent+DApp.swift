@@ -12,6 +12,31 @@ public extension AnalyticsEvent {
         )
     }
 
+    /// `host` is sent for the notice only; the search banner has no site yet and the typed
+    /// query must never be recorded.
+    static func dappStakingPromptShown(
+        placement: DAppStakingPromptPlacement,
+        kind: DAppStakingPromptKind,
+        host: AnalyticsContentValue?
+    ) -> AnalyticsEvent {
+        AnalyticsEvent(
+            name: .dappStakingPromptShown,
+            properties: [.placement: placement, .kind: kind, .dappHost: host]
+        )
+    }
+
+    static func dappStakingPromptAction(
+        placement: DAppStakingPromptPlacement,
+        kind: DAppStakingPromptKind,
+        action: DAppStakingPromptAction,
+        host: AnalyticsContentValue?
+    ) -> AnalyticsEvent {
+        AnalyticsEvent(
+            name: .dappStakingPromptAction,
+            properties: [.placement: placement, .kind: kind, .action: action, .dappHost: host]
+        )
+    }
+
     static func signRequestShown(
         source: SignSource,
         method: AnalyticsContentValue,

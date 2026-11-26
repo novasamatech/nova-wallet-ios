@@ -61,10 +61,6 @@ private extension DAppStakingNoticeViewController {
             preferredLanguages: languages
         ).localizable.dappStakingNoticeTitle()
 
-        rootView.subtitleLabel.text = R.string(
-            preferredLanguages: languages
-        ).localizable.dappStakingNoticeMessage()
-
         rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
         ).localizable.commonGoToStaking()
@@ -107,7 +103,16 @@ private extension DAppStakingNoticeViewController {
 
 // MARK: DAppStakingNoticeViewProtocol
 
-extension DAppStakingNoticeViewController: DAppStakingNoticeViewProtocol {}
+extension DAppStakingNoticeViewController: DAppStakingNoticeViewProtocol {
+    func didReceive(viewModel: DAppStakingNoticeViewModel) {
+        // a view model provided again after a language change must not hide the revealed action
+        isContinueRevealed = isContinueRevealed || viewModel.isContinueRevealed
+
+        rootView.subtitleLabel.text = viewModel.message
+
+        applySecondaryActionState()
+    }
+}
 
 // MARK: Localizable
 

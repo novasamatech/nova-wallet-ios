@@ -13,6 +13,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
 
     private(set) var query: String?
     private(set) var selectedCategoryId: String?
+    private var stakingQueryKind: DAppStakingQueryKind = .none
 
     weak var delegate: DAppSearchDelegate?
 
@@ -59,23 +60,31 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     }
 
     private func provideStakingBanner() {
-        view?.didReceive(stakingBannerVisible: DAppStakingDetection.isStakingQuery(query))
+        let previousKind = stakingQueryKind
+        stakingQueryKind = DAppStakingDetection.queryKind(query)
+
+        view?.didReceive(stakingBannerVisible: stakingQueryKind != .none)
+
+        if previousKind == .none, stakingQueryKind != .none {
+            trackDAppStakingPromptShown(
+                placement: .searchBanner,
+                kind: stakingQueryKind.analyticsPromptKind,
+                host: nil
+            )
+        }
     }
 
     // the classification happens here because this is the only delegate-independent
     // place that has the curated dApp list; the delegate might present a screen from
     // the underlying view, so it is notified only after the search is dismissed
     private func completeSearch(with result: DAppSearchResult) {
-        let isThirdPartyStaking = DAppStakingDetection.isThirdPartyStakingSite(
-            result: result,
-            dAppList: dAppList
+        let noticeContext = DAppStakingNoticeContext(
+            kind: DAppStakingDetection.stakingSiteKind(result: result, dAppList: dAppList),
+            host: analyticsHost(for: result)
         )
 
         wireframe.close(from: view) { [weak self] in
-            self?.delegate?.didCompleteDAppSearchResult(
-                result,
-                isThirdPartyStaking: isThirdPartyStaking
-            )
+            self?.delegate?.didCompleteDAppSearchResult(result, noticeContext: noticeContext)
         }
     }
 }
@@ -108,7 +117,19 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func activateStaking() {
-        wireframe.redirectToStaking(from: view)
+        trackDAppStakingPromptAction(
+            placement: .searchBanner,
+            kind: stakingQueryKind.analyticsPromptKind,
+            action: .goToStaking,
+            host: nil
+        )
+
+        switch stakingQueryKind {
+        case .bittensor:
+            wireframe.redirectToBittensorStaking(from: view, source: .dappSearchBanner)
+        case .staking, .none:
+            wireframe.redirectToStaking(from: view)
+        }
     }
 
     func selectDApp(viewModel: DAppViewModel) {
@@ -141,7 +162,10 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             completeSearch(with: .query(string: searchQuery))
         }
 
-        guard search(by: query, in: dAppList).isEmpty else {
+        // a TAO-related address gets the Bittensor notice in place of the unknown dApp warning
+        let isBittensorSite = DAppStakingDetection.isBittensorSite(result: .query(string: query ?? ""))
+
+        guard search(by: query, in: dAppList).isEmpty, !isBittensorSite else {
             proceedClosure()
 
             return

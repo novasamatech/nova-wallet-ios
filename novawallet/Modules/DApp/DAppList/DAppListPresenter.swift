@@ -171,11 +171,11 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(
         _ result: DAppSearchResult,
-        isThirdPartyStaking: Bool
+        noticeContext: DAppStakingNoticeContext?
     ) {
-        if isThirdPartyStaking {
+        if let noticeContext {
             pendingStakingSearchResult = result
-            wireframe.presentStakingNotice(from: view, delegate: self)
+            wireframe.presentStakingNotice(from: view, context: noticeContext, delegate: self)
         } else {
             wireframe.openBrowser(with: result)
         }

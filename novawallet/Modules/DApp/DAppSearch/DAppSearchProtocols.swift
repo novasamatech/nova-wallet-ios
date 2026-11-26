@@ -36,8 +36,9 @@ extension DAppSearchWireframeProtocol {
 }
 
 protocol DAppSearchDelegate: AnyObject {
+    /// A non-nil context means the staking notice must be shown before the result is opened.
     func didCompleteDAppSearchResult(
         _ result: DAppSearchResult,
-        isThirdPartyStaking: Bool
+        noticeContext: DAppStakingNoticeContext?
     )
 }

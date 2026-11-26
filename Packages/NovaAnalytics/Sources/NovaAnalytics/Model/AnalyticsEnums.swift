@@ -134,6 +134,21 @@ public enum DAppOpenSource: String, CaseIterable, AnalyticsPropertyConvertible {
     case manualUrl = "manual_url"
 }
 
+public enum DAppStakingPromptPlacement: String, CaseIterable, AnalyticsPropertyConvertible {
+    case searchBanner = "search_banner"
+    case notice
+}
+
+public enum DAppStakingPromptKind: String, CaseIterable, AnalyticsPropertyConvertible {
+    case bittensor
+    case staking
+}
+
+public enum DAppStakingPromptAction: String, CaseIterable, AnalyticsPropertyConvertible {
+    case goToStaking = "go_to_staking"
+    case continueToSite = "continue_to_site"
+}
+
 public enum VoteDirection: String, CaseIterable, AnalyticsPropertyConvertible {
     case aye
     case nay
@@ -156,6 +171,8 @@ public enum StakingFlowSource: String, CaseIterable, AnalyticsPropertyConvertibl
     case deepLink = "deep_link"
     case portfolioAddPosition = "portfolio_add_position"
     case resultDiscover = "result_discover"
+    case dappSearchBanner = "dapp_search_banner"
+    case dappNotice = "dapp_notice"
 }
 
 public enum AnalyticsBannerScreen: String, CaseIterable, AnalyticsPropertyConvertible {

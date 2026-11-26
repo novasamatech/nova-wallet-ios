@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import NovaAnalytics
 
 final class StakingDashboardViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingDashboardViewLayout
@@ -355,8 +356,8 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
         }
     }
 
-    func openStaking(for chainAssetId: ChainAssetId) {
-        presenter.openStaking(for: chainAssetId)
+    func openStaking(for chainAssetId: ChainAssetId, source: StakingFlowSource) {
+        presenter.openStaking(for: chainAssetId, source: source)
     }
 
     func cancelStakingOpening() {

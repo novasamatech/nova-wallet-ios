@@ -2392,4 +2392,5 @@
 "swaps.token.select.your.tokens" = "Ваши токены";
 "tabbar.more.title" = "Ещё";
 "tabbar.swaps.title" = "Обмены";
+"dapp.staking.notice.bittensor.message" = "Сторонние сайты для Staking часто устаревают. В Nova Wallet встроен Staking для Bittensor.";
 "swaps.execution.funds.location" = "Ваш %@ находится в %@.";

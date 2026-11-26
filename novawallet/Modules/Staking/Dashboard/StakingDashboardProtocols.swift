@@ -1,10 +1,11 @@
 import Operation_iOS
+import NovaAnalytics
 
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletSwitchViewModel)
     func didReceiveStakings(viewModel: StakingDashboardViewModel)
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel)
-    func openStaking(for chainAssetId: ChainAssetId)
+    func openStaking(for chainAssetId: ChainAssetId, source: StakingFlowSource)
     func cancelStakingOpening()
 }
 
@@ -17,7 +18,7 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func switchWallet()
     func refresh()
     func becomeActive()
-    func openStaking(for chainAssetId: ChainAssetId)
+    func openStaking(for chainAssetId: ChainAssetId, source: StakingFlowSource)
     func cancelStakingOpening()
 }
 

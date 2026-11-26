@@ -2392,4 +2392,5 @@
 "swaps.token.select.your.tokens" = "Tokenlarınız";
 "tabbar.more.title" = "Daha fazla";
 "tabbar.swaps.title" = "Takaslar";
+"dapp.staking.notice.bittensor.message" = "Üçüncü taraf staking siteleri genellikle kullanımdan kalkar. Nova Wallet'ta Bittensor için yerleşik staking özelliği bulunur.";
 "swaps.execution.funds.location" = "%@, %@ üzerinde.";

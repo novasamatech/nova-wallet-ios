@@ -17,7 +17,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
-    private var pendingChainAssetId: ChainAssetId?
+    private var pendingNavigation: PendingNavigation?
     private let pendingNavigationTimeout = Debouncer(delay: 10)
 
     init(
@@ -44,10 +44,17 @@ final class StakingDashboardPresenter: AnalyticsTracking {
 // MARK: - Private
 
 private extension StakingDashboardPresenter {
+    struct PendingNavigation {
+        let chainAssetId: ChainAssetId
+        let source: StakingFlowSource
+    }
+
     func processPendingNavigation(waitingForSync: Bool) {
-        guard let chainAssetId = pendingChainAssetId, let model = lastResult?.model else {
+        guard let pendingNavigation, let model = lastResult?.model else {
             return
         }
+
+        let chainAssetId = pendingNavigation.chainAssetId
 
         if let item = model.active.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
             clearPendingNavigation()
@@ -65,7 +72,7 @@ private extension StakingDashboardPresenter {
 
         clearPendingNavigation()
 
-        showStartStaking(for: item.chainAsset, source: .deepLink)
+        showStartStaking(for: item.chainAsset, source: pendingNavigation.source)
     }
 
     func completePendingNavigation() {
@@ -74,7 +81,7 @@ private extension StakingDashboardPresenter {
     }
 
     func clearPendingNavigation() {
-        pendingChainAssetId = nil
+        pendingNavigation = nil
         pendingNavigationTimeout.cancel()
     }
 
@@ -173,8 +180,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         showStartStaking(for: item.chainAsset, source: .dashboard)
     }
 
-    func openStaking(for chainAssetId: ChainAssetId) {
-        pendingChainAssetId = chainAssetId
+    func openStaking(for chainAssetId: ChainAssetId, source: StakingFlowSource) {
+        pendingNavigation = PendingNavigation(chainAssetId: chainAssetId, source: source)
 
         pendingNavigationTimeout.debounce { [weak self] in
             self?.completePendingNavigation()

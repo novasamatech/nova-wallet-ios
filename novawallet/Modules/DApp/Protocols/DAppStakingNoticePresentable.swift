@@ -4,6 +4,7 @@ import UIKit_iOS
 protocol DAppStakingNoticePresentable {
     func presentStakingNotice(
         from view: ControllerBackedProtocol?,
+        context: DAppStakingNoticeContext,
         delegate: DAppStakingNoticeDelegate
     )
 }
@@ -11,9 +12,15 @@ protocol DAppStakingNoticePresentable {
 extension DAppStakingNoticePresentable {
     func presentStakingNotice(
         from view: ControllerBackedProtocol?,
+        context: DAppStakingNoticeContext,
         delegate: DAppStakingNoticeDelegate
     ) {
-        guard let noticeView = DAppStakingNoticeViewFactory.createView(with: delegate) else {
+        guard
+            let noticeView = DAppStakingNoticeViewFactory.createView(
+                for: context,
+                delegate: delegate
+            )
+        else {
             return
         }
 
