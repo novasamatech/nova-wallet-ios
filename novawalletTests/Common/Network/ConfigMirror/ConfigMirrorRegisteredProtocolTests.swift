@@ -10,20 +10,18 @@ final class ConfigMirrorRegisteredProtocolTests: XCTestCase {
     private let redPixelPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC"
     private let expectationTimeout: TimeInterval = 10
 
-    private var savedDependencies: ConfigMirrorURLProtocol.Dependencies!
     private var loader: ConfigMirrorFakeLoader!
     private var imageManager: KingfisherManager!
 
     override func setUp() {
         super.setUp()
 
-        savedDependencies = ConfigMirrorURLProtocol.dependencies
         loader = ConfigMirrorFakeLoader()
 
-        ConfigMirrorURLProtocol.dependencies = ConfigMirrorURLProtocol.Dependencies(
+        let dependencies = ConfigMirrorURLProtocol.Dependencies(
             urlResolver: ConfigMirrorURLResolver(
                 mirrorBaseURL: URL(string: mirrorPrefix)!,
-                sources: ["github.novatest/novasamatech/nova-utils/master/"]
+                sources: [URL(string: gitHubPrefix)!]
             ),
             availability: ConfigMirrorAvailability(),
             loader: loader,
@@ -35,12 +33,13 @@ final class ConfigMirrorRegisteredProtocolTests: XCTestCase {
 
         imageManager = KingfisherManager(downloader: downloader, cache: ImageCache(name: name))
 
-        ConfigMirrorURLProtocol.register(for: downloader)
+        // the same two steps the app takes at launch
+        ConfigMirrorURLProtocol.register(dependencies: dependencies)
+        downloader.addProtocolClass(ConfigMirrorURLProtocol.self)
     }
 
     override func tearDown() {
-        URLProtocol.unregisterClass(ConfigMirrorURLProtocol.self)
-        ConfigMirrorURLProtocol.dependencies = savedDependencies
+        ConfigMirrorURLProtocol.unregister()
         imageManager.cache.clearCache()
 
         super.tearDown()
@@ -50,19 +49,13 @@ final class ConfigMirrorRegisteredProtocolTests: XCTestCase {
         // given
         let mirrorBodies = [
             mirrorPrefix + "chains/v23/chains.json": #"{"source":"mirror"}"#,
-            mirrorPrefix + "chains/v23/broken.json": "<html>",
-            mirrorPrefix + "banners/v2/banners.json": "[]"
+            mirrorPrefix + "chains/v23/broken.json": "<html>"
         ]
 
         loader.answerClosure = { url in Data((mirrorBodies[url] ?? #"{"source":"github"}"#).utf8) }
 
-        // the banners module builds such urls: they have no host for the system but are loaded all the same
-        let collapsedUrl = (gitHubPrefix as NSString).appendingPathComponent("banners/v2/banners.json")
-
-        XCTAssertNil(URL(string: collapsedUrl)?.host)
-
         // when
-        let bodies = try [gitHubPrefix + "chains/v23/chains.json", gitHubPrefix + "chains/v23/broken.json", collapsedUrl]
+        let bodies = try [gitHubPrefix + "chains/v23/chains.json", gitHubPrefix + "chains/v23/broken.json"]
             .map { try XCTUnwrap(URL(string: $0)) }
             .map { url -> String? in
                 let operation = DataOperationFactory().fetchData(from: url)
@@ -73,14 +66,13 @@ final class ConfigMirrorRegisteredProtocolTests: XCTestCase {
             }
 
         // then
-        XCTAssertEqual(bodies, [#"{"source":"mirror"}"#, #"{"source":"github"}"#, "[]"])
+        XCTAssertEqual(bodies, [#"{"source":"mirror"}"#, #"{"source":"github"}"#])
         XCTAssertEqual(
             loader.requestedUrls,
             [
                 mirrorPrefix + "chains/v23/chains.json",
                 mirrorPrefix + "chains/v23/broken.json",
-                gitHubPrefix + "chains/v23/broken.json",
-                mirrorPrefix + "banners/v2/banners.json"
+                gitHubPrefix + "chains/v23/broken.json"
             ]
         )
     }

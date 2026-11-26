@@ -8,25 +8,20 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
     private let resolver = ConfigMirrorURLResolver(
         mirrorBaseURL: URL(string: "https://mirror.novatest/v1/config/")!,
         sources: [
-            "raw.githubusercontent.com/novasamatech/nova-utils/master/",
-            "raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/"
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/")!,
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/")!
         ]
     )
 
     func testMapsBothMasterFormsKeepingPathAsIs() throws {
-        // the last url is how the banners module builds its urls: NSString helpers collapse "https://"
-        let collapsedUrl = ("\(gitHub)/nova-utils/refs/heads/master/banners/v2/" as NSString)
-            .appendingPathComponent("assets/banners.json")
-
-        XCTAssertTrue(collapsedUrl.hasPrefix("https:/raw.githubusercontent.com"))
-
         let mapping = [
             "\(gitHub)/nova-utils/master/chains/v23/chains.json": "\(mirror)/chains/v23/chains.json",
             "\(gitHub)/nova-utils/refs/heads/master/legal/v1/documents.json": "\(mirror)/legal/v1/documents.json",
             "\(gitHub)/nova-utils/master/chains/v23/preConfigured/details/0xabc.json":
                 "\(mirror)/chains/v23/preConfigured/details/0xabc.json",
             "\(gitHub)/nova-utils/master/icons/My%20Token%2B1%25.svg": "\(mirror)/icons/My%20Token%2B1%25.svg",
-            collapsedUrl: "\(mirror)/banners/v2/assets/banners.json"
+            "\(gitHub)/nova-utils/master/icons/v1.0/..hidden/a.b..svg": "\(mirror)/icons/v1.0/..hidden/a.b..svg",
+            "\(gitHub)/nova-utils/master/icons//DOT.svg": "\(mirror)/icons//DOT.svg"
         ]
 
         for (original, expected) in mapping {
@@ -36,7 +31,27 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
         }
     }
 
+    func testLeavesQueryAndFragmentBehind() throws {
+        let originals = [
+            "\(gitHub)/nova-utils/master/chains/v23/chains.json?token=abc&v=1",
+            "\(gitHub)/nova-utils/master/chains/v23/chains.json#section",
+            "\(gitHub)/nova-utils/master/chains/v23/chains.json?token=abc#section",
+            "\(gitHub)/nova-utils/master/chains/v23/chains.json?path=../../x"
+        ]
+
+        for original in originals {
+            let url = try XCTUnwrap(URL(string: original))
+
+            XCTAssertEqual(resolver.mirrorURL(for: url)?.absoluteString, "\(mirror)/chains/v23/chains.json", original)
+        }
+    }
+
     func testLeavesEverythingElseWhereItIs() throws {
+        // the last url is what string path helpers make of a url: one slash after the scheme and no host
+        let collapsedUrl = ("\(gitHub)/nova-utils/master/banners/v2/" as NSString).appendingPathComponent("banners.json")
+
+        XCTAssertTrue(collapsedUrl.hasPrefix("https:/raw.githubusercontent.com"))
+
         let notMirrored = [
             "\(gitHub)/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json",
             "\(gitHub)/nova-utils-fork/master/chains/v23/chains.json",
@@ -45,16 +60,66 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
             "\(gitHub)/nova-utils/refs/heads/develop/chains/v23/chains.json",
             "\(gitHub)/nova-utils/master-next/chains/v23/chains.json",
             "\(gitHub)/nova-utils/master/",
+            "\(gitHub)/nova-utils/master",
             "https://evil.example/raw.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
             "https://raw.githubusercontent.com.evil.example/novasamatech/nova-utils/master/chains.json",
+            "https://evil.example/?https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
+            "https://raw.githubusercontent.com@evil.example/novasamatech/nova-utils/master/chains.json",
+            "https://user@raw.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
+            "https://user:password@raw.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
+            "https://raw.githubusercontent.com:8443/novasamatech/nova-utils/master/chains.json",
+            "https://RAW.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
+            "HTTPS://raw.githubusercontent.com/novasamatech/nova-utils/master/chains.json",
             "http://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v23/chains.json",
-            "\(mirror)/chains/v23/chains.json"
+            "\(mirror)/chains/v23/chains.json",
+            collapsedUrl
         ]
 
         for original in notMirrored {
             let url = try XCTUnwrap(URL(string: original))
 
             XCTAssertNil(resolver.mirrorURL(for: url), original)
+        }
+    }
+
+    func testLeavesOnGitHubPathWithDotSegment() throws {
+        let files = [
+            "../secret.json",
+            "chains/../../secret.json",
+            "chains/..",
+            "chains/../",
+            "./chains.json",
+            "chains/./chains.json",
+            "chains/.",
+            "%2e%2e/secret.json",
+            "chains/%2E%2E/secret.json",
+            "chains/.%2e/secret.json",
+            "chains/%2e./secret.json",
+            "chains/%2e/chains.json",
+            "chains%2F..%2Fsecret.json",
+            "chains/..%2Fsecret.json",
+            "%2e%2e%2fsecret.json"
+        ]
+
+        for file in files {
+            for directory in ["nova-utils/master/", "nova-utils/refs/heads/master/"] {
+                let url = try XCTUnwrap(URL(string: "\(gitHub)/\(directory)\(file)"))
+
+                XCTAssertNil(resolver.mirrorURL(for: url), file)
+            }
+        }
+    }
+
+    func testSourceThatIsNotDirectoryIsIgnored() throws {
+        let looseResolver = ConfigMirrorURLResolver(
+            mirrorBaseURL: URL(string: "https://mirror.novatest/v1/config/")!,
+            sources: [URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master")!]
+        )
+
+        for file in ["master/chains.json", "master-next/chains.json"] {
+            let url = try XCTUnwrap(URL(string: "\(gitHub)/nova-utils/\(file)"))
+
+            XCTAssertNil(looseResolver.mirrorURL(for: url), file)
         }
     }
 
@@ -91,9 +156,10 @@ final class ConfigMirrorURLResolverTests: XCTestCase {
             config.announcementsPath
         ]
 
+        // the two ways the app completes these prefixes
         for prefix in pathPrefixes {
             try urls.append(XCTUnwrap(URL(string: prefix + "file.json")))
-            try urls.append(XCTUnwrap(URL(string: (prefix as NSString).appendingPathComponent("file.json"))))
+            try urls.append(XCTUnwrap(URL(string: prefix)).appendingPathComponent("file.json"))
         }
 
         for url in urls {

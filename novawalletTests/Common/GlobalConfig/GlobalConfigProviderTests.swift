@@ -20,6 +20,24 @@ private final class GlobalConfigStubURLProtocol: URLProtocol {
     override func stopLoading() {}
 }
 
+private final class MirrorHostCheckerSpy: ConfigMirrorHostChecking {
+    private let mutex = NSLock()
+    private var checkedUrls: [URL] = []
+
+    var infraUrls: [URL] {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return checkedUrls
+    }
+
+    func check(infraUrl: URL) {
+        mutex.lock()
+        checkedUrls.append(infraUrl)
+        mutex.unlock()
+    }
+}
+
 final class GlobalConfigProviderTests: XCTestCase {
     private let configUrl = URL(string: "\(GlobalConfigStubURLProtocol.scheme)://global/config.json")!
 
@@ -48,6 +66,24 @@ final class GlobalConfigProviderTests: XCTestCase {
             try fetch(provider.createFreshConfigWrapper()).infraUrl.absoluteString,
             "https://second.example"
         )
+    }
+
+    func testHandsTheInfraUrlOfEveryLoadedConfigToTheMirrorHostChecker() throws {
+        let checker = MirrorHostCheckerSpy()
+        let provider = GlobalConfigProvider(configUrl: configUrl, mirrorHostChecker: checker)
+
+        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://first.example")
+
+        _ = try fetch(provider.createConfigWrapper())
+
+        // answered from the process cache: nothing was loaded
+        _ = try fetch(provider.createConfigWrapper())
+
+        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://second.example")
+
+        _ = try fetch(provider.createFreshConfigWrapper())
+
+        XCTAssertEqual(checker.infraUrls.map(\.absoluteString), ["https://first.example", "https://second.example"])
     }
 
     func testDecodesTheChangeNowTaoUrlOnlyWhenPresent() throws {

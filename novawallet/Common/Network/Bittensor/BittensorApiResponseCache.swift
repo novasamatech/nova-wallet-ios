@@ -58,7 +58,7 @@ final class BittensorApiResponseCache {
     private var newestGeneration: BittensorApiGenerationOrder?
     private var drops: [BittensorApiCacheDrop: TimeInterval] = [:]
 
-    init(operationQueue: OperationQueue, timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now) {
+    init(operationQueue: OperationQueue, timeProvider: @escaping () -> TimeInterval = MonotonicClock.now) {
         self.operationQueue = operationQueue
         self.timeProvider = timeProvider
     }

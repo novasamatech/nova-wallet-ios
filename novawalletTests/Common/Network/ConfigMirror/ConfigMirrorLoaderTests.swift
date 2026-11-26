@@ -57,28 +57,73 @@ final class ConfigMirrorLoaderTests: XCTestCase {
         XCTAssertEqual(recordedEvents(of: "hang"), ["completed \(NSURLErrorCancelled)"])
     }
 
-    func testKeepsOutOfHttpCacheAnswersToRequestsThatIgnoreIt() throws {
-        let url = try XCTUnwrap(URL(string: "https://loader.novatest/file.json"))
+    func testKeepsOutOfHttpCacheAnswersToRequestsThatIgnoreItAndAnswersRulesAreAgainst() throws {
+        let url = try XCTUnwrap(URL(string: "https://loader.novatest/hang"))
         let response = try XCTUnwrap(HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil))
         let proposedResponse = CachedURLResponse(response: response, data: Data("{}".utf8))
 
-        let policies: [(policy: URLRequest.CachePolicy, isCached: Bool)] = [
-            (.useProtocolCachePolicy, true),
-            (.returnCacheDataElseLoad, true),
-            (.reloadIgnoringLocalCacheData, false),
-            (.reloadIgnoringLocalAndRemoteCacheData, false)
+        let usable = ConfigMirrorLoadRules.mirror { _, data in data == proposedResponse.data }
+        let unusable = ConfigMirrorLoadRules.mirror { _, data in data != proposedResponse.data }
+
+        let cases: [(policy: URLRequest.CachePolicy, rules: ConfigMirrorLoadRules, isCached: Bool)] = [
+            (.useProtocolCachePolicy, .original, true),
+            (.returnCacheDataElseLoad, .original, true),
+            (.reloadIgnoringLocalCacheData, .original, false),
+            (.reloadIgnoringLocalAndRemoteCacheData, .original, false),
+            (.useProtocolCachePolicy, usable, true),
+            (.useProtocolCachePolicy, unusable, false),
+            (.reloadIgnoringLocalCacheData, usable, false)
         ]
 
-        for (policy, isCached) in policies {
-            let task = URLSession.shared.dataTask(with: URLRequest(url: url, cachePolicy: policy))
+        for (index, testCase) in cases.enumerated() {
+            // the request never ends, so the loader still knows its rules
+            let task = loader.load(URLRequest(url: url, cachePolicy: testCase.policy), rules: testCase.rules) { _ in }
+            let dataTask = try XCTUnwrap(task as? URLSessionDataTask)
             var cachedResponse: CachedURLResponse?
 
-            loader.urlSession(.shared, dataTask: task, willCacheResponse: proposedResponse) { cachedResponse = $0 }
+            loader.urlSession(.shared, dataTask: dataTask, willCacheResponse: proposedResponse) { cachedResponse = $0 }
 
-            XCTAssertEqual(cachedResponse != nil, isCached, "\(policy.rawValue)")
+            XCTAssertEqual(cachedResponse != nil, testCase.isCached, "\(index)")
 
             task.cancel()
         }
+    }
+
+    func testFollowsRedirectOnlyWhenRulesAllowIt() throws {
+        let url = try XCTUnwrap(URL(string: "https://loader.novatest/hang"))
+        let newRequest = try URLRequest(url: XCTUnwrap(URL(string: "https://elsewhere.novatest/file.json")))
+        let response = try XCTUnwrap(
+            HTTPURLResponse(url: url, statusCode: 302, httpVersion: nil, headerFields: ["Location": "https://elsewhere.novatest/file.json"])
+        )
+
+        let cases: [(rules: ConfigMirrorLoadRules, isFollowed: Bool)] = [
+            (.original, true),
+            (.mirror { _, _ in true }, false)
+        ]
+
+        for testCase in cases {
+            let task = loader.load(URLRequest(url: url), rules: testCase.rules) { _ in }
+            let sessionTask = try XCTUnwrap(task as? URLSessionTask)
+            var followedRequest: URLRequest?
+
+            loader.urlSession(.shared, task: sessionTask, willPerformHTTPRedirection: response, newRequest: newRequest) {
+                followedRequest = $0
+            }
+
+            XCTAssertEqual(followedRequest?.url, testCase.isFollowed ? newRequest.url : nil)
+
+            task.cancel()
+        }
+    }
+
+    func testAnswerIsFromLocalCacheOnlyWhenServerWasNotAsked() {
+        XCTAssertTrue(ConfigMirrorLoader.isServedFromLocalCache([.localCache]))
+
+        // a cached answer the server has confirmed
+        XCTAssertFalse(ConfigMirrorLoader.isServedFromLocalCache([.localCache, .networkLoad]))
+        XCTAssertFalse(ConfigMirrorLoader.isServedFromLocalCache([.networkLoad]))
+        XCTAssertFalse(ConfigMirrorLoader.isServedFromLocalCache([.unknown]))
+        XCTAssertFalse(ConfigMirrorLoader.isServedFromLocalCache([]))
     }
 }
 
@@ -87,12 +132,13 @@ private extension ConfigMirrorLoaderTests {
         let completion = expectation(description: "\(name) completed")
         let request = URLRequest(url: URL(string: "https://loader.novatest/\(name)")!)
 
-        let task = loader.load(request) { [weak self] event in
+        let task = loader.load(request, rules: .original) { [weak self] event in
             let description: String
 
             switch event {
             case let .response(response): description = "response \((response as? HTTPURLResponse)?.statusCode ?? 0)"
             case let .data(data): description = "data \(String(data: data, encoding: .utf8) ?? "")"
+            case .servedFromLocalCache: description = "served from local cache"
             case let .completed(error): description = "completed \((error as NSError?)?.code ?? 0)"
             }
 

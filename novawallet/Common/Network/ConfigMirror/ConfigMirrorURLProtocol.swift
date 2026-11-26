@@ -1,33 +1,53 @@
 import Foundation
-import Kingfisher
 import Operation_iOS
 
 /// Reads the files of the config mirror's origin from the mirror first and from the original url when
 /// the mirror attempt fails. The caller keeps requesting the original url and receives a response for it,
 /// so nothing that is keyed by the url (caches, stored files) knows about the mirror.
+///
+/// The answer of the mirror is collected in full and checked before the caller gets any of it:
+/// whatever goes wrong with the mirror, the original url can still be read.
 final class ConfigMirrorURLProtocol: URLProtocol {
     struct Dependencies {
-        var urlResolver: ConfigMirrorURLResolverProtocol = ConfigMirrorURLResolver(
-            applicationConfig: ApplicationConfig.shared
-        )
-        var availability: ConfigMirrorAvailabilityProtocol = ConfigMirrorAvailability()
-        var loader: ConfigMirrorLoaderProtocol = ConfigMirrorLoader()
-        var mirrorTimeout: TimeInterval = ConfigMirrorConstants.attemptTimeout
-        var logger: LoggerProtocol = Logger.shared
+        let urlResolver: ConfigMirrorURLResolverProtocol
+        let availability: ConfigMirrorAvailabilityProtocol
+        let loader: ConfigMirrorLoaderProtocol
+        let logger: LoggerProtocol
+        var answerValidator: ConfigMirrorAnswerValidating = ConfigMirrorAnswerValidator()
+        var attemptDeadline: TimeInterval = ConfigMirrorConstants.attemptDeadline
+        var schedulerClosure: (SchedulerDelegate) -> SchedulerProtocol = { Scheduler(with: $0) }
     }
 
-    /// The system creates the instances itself, so the dependencies can't be passed to them.
-    /// Must be set before the class is registered.
-    static var dependencies = Dependencies()
+    private static let dependenciesMutex = NSLock()
+    private static var registeredDependencies: Dependencies?
 
-    /// Makes the requests of `URLSession.shared` and of the image downloader go through the mirror
-    static func register(for imageDownloader: ImageDownloader = KingfisherManager.shared.downloader) {
+    /// The system creates the instances itself, so the dependencies can't be passed to them
+    private(set) static var dependencies: Dependencies? {
+        get {
+            dependenciesMutex.lock()
+            defer { dependenciesMutex.unlock() }
+
+            return registeredDependencies
+        }
+        set {
+            dependenciesMutex.lock()
+            registeredDependencies = newValue
+            dependenciesMutex.unlock()
+        }
+    }
+
+    /// Makes the requests of `URLSession.shared` go through the mirror. Any other session joins
+    /// by having the class in the `protocolClasses` of its configuration.
+    static func register(dependencies: Dependencies) {
+        self.dependencies = dependencies
+
         URLProtocol.registerClass(ConfigMirrorURLProtocol.self)
+    }
 
-        // the downloader recreates its session when the configuration is assigned
-        let configuration = imageDownloader.sessionConfiguration
-        configuration.protocolClasses = [ConfigMirrorURLProtocol.self] + (configuration.protocolClasses ?? [])
-        imageDownloader.sessionConfiguration = configuration
+    static func unregister() {
+        URLProtocol.unregisterClass(ConfigMirrorURLProtocol.self)
+
+        dependencies = nil
     }
 
     private let dependencies = ConfigMirrorURLProtocol.dependencies
@@ -35,14 +55,16 @@ final class ConfigMirrorURLProtocol: URLProtocol {
     // The state below is touched on the client thread only
     private var clientThread: Thread?
     private var clientModes: [String] = []
+    private var stage = Stage.idle
     private var loadTask: ConfigMirrorLoadTaskProtocol?
-    private var isStopped = false
-    private var isMirrorAccepted = false
+    private var deadlineScheduler: SchedulerProtocol?
     private var mirrorResponse: URLResponse?
     private var mirrorData = Data()
+    private var isMirrorAnswerFromLocalCache = false
 
     override static func canInit(with request: URLRequest) -> Bool {
         guard
+            let dependencies,
             let url = request.url,
             request.httpMethod?.caseInsensitiveCompare(HttpMethod.get.rawValue) == .orderedSame,
             property(forKey: Constants.handledKey, in: request) == nil else {
@@ -62,40 +84,77 @@ final class ConfigMirrorURLProtocol: URLProtocol {
         clientThread = Thread.current
         clientModes = [RunLoop.Mode.default, currentMode].compactMap { $0?.rawValue }
 
+        // the availability goes last: an attempt it has let in must be started for it to be finished
         guard
-            dependencies.availability.isAvailable,
+            let dependencies,
             let mirrorURL = request.url.flatMap({ dependencies.urlResolver.mirrorURL(for: $0) }),
-            let mirrorRequest = createInnerRequest(for: mirrorURL) else {
+            let mirrorRequest = createInnerRequest(for: mirrorURL),
+            let attemptKind = dependencies.availability.beginAttempt() else {
             loadOriginal()
             return
         }
 
-        loadTask = dependencies.loader.load(mirrorRequest) { [weak self] event in
-            self?.performOnClientThread { self?.handleMirror(event, mirrorURL: mirrorURL) }
+        stage = .mirror(MirrorAttempt(url: mirrorURL, kind: attemptKind))
+
+        // the same time bounds the silence of the mirror request and the attempt as a whole
+        let scheduler = dependencies.schedulerClosure(self)
+        scheduler.notifyAfter(mirrorRequest.timeoutInterval)
+        deadlineScheduler = scheduler
+
+        let validator = dependencies.answerValidator
+        let rules = ConfigMirrorLoadRules.mirror { response, data in
+            validator.validate(response: response, data: data, mirrorURL: mirrorURL) == nil
+        }
+
+        loadTask = dependencies.loader.load(mirrorRequest, rules: rules) { [weak self] event in
+            self?.performOnClientThread { self?.handleMirror(event) }
         }
     }
 
     override func stopLoading() {
-        isStopped = true
+        if case let .mirror(attempt) = stage {
+            // the caller has left, which says nothing about the mirror
+            reportMirrorAttempt(attempt, verdict: .unknown)
+        }
+
+        stage = .finished
         loadTask?.cancel()
         loadTask = nil
+    }
+}
+
+extension ConfigMirrorURLProtocol: SchedulerDelegate {
+    func didTrigger(scheduler: SchedulerProtocol) {
+        performOnClientThread { [weak self] in
+            self?.handleMirrorDeadline(of: scheduler)
+        }
     }
 }
 
 // MARK: Private
 
 private extension ConfigMirrorURLProtocol {
+    struct MirrorAttempt {
+        let url: URL
+        let kind: ConfigMirrorAttemptKind
+    }
+
+    enum Stage {
+        case idle
+        case mirror(MirrorAttempt)
+        case original
+        case finished
+    }
+
     enum Constants {
         static let handledKey = "io.novawallet.configMirror.handled"
-        static let maxRequestTimeoutShare: Double = 0.5
-        static let successStatusCode = 200
-        static let jsonExtension = "json"
         static let httpVersion = "HTTP/1.1"
     }
 
     /// A copy of the caller's request marked not to be picked up by this class again.
-    /// For the mirror it gets a shorter timeout: the mirror stands in front of the request the caller
-    /// has set the timeout for, so it may take no more than a part of it before the original url is read.
+    /// For the mirror it gets the time of the whole attempt as its timeout: the mirror stands in front
+    /// of the request the caller has set the timeout for, so it may take no more than a part of it
+    /// before the original url is read.
     func createInnerRequest(for mirrorURL: URL?) -> URLRequest? {
         guard let innerRequest = (request as NSURLRequest).mutableCopy() as? NSMutableURLRequest else {
             return nil
@@ -103,19 +162,20 @@ private extension ConfigMirrorURLProtocol {
 
         URLProtocol.setProperty(true, forKey: Constants.handledKey, in: innerRequest)
 
-        if let mirrorURL {
+        if let mirrorURL, let dependencies {
             innerRequest.url = mirrorURL
             innerRequest.timeoutInterval = min(
-                dependencies.mirrorTimeout,
-                request.timeoutInterval * Constants.maxRequestTimeoutShare
+                dependencies.attemptDeadline,
+                request.timeoutInterval * ConfigMirrorConstants.maxRequestTimeoutShare
             )
         }
 
         return innerRequest as URLRequest
     }
 
-    func handleMirror(_ event: ConfigMirrorLoadEvent, mirrorURL: URL) {
-        guard !isStopped else {
+    func handleMirror(_ event: ConfigMirrorLoadEvent) {
+        // an attempt that is over, by the deadline too, may still have events on their way
+        guard case let .mirror(attempt) = stage, let dependencies else {
             return
         }
 
@@ -124,70 +184,77 @@ private extension ConfigMirrorURLProtocol {
             mirrorResponse = response
         case let .data(data):
             mirrorData.append(data)
-
-            // A json has to be complete to be checked. Anything else is passed on as it arrives
-            // for the caller's timeout to keep measuring silence and not the whole download.
-            if isMirrorAccepted || !isJson(mirrorURL), hasSuccessStatus(mirrorResponse) {
-                passMirrorDataToClient()
-            }
+        case .servedFromLocalCache:
+            isMirrorAnswerFromLocalCache = true
         case let .completed(error):
-            let failure = error ?? validateMirrorAnswer(from: mirrorURL)
+            let failure = error.map { ConfigMirrorFailure.transport($0) } ?? dependencies.answerValidator.validate(
+                response: mirrorResponse,
+                data: mirrorData,
+                mirrorURL: attempt.url
+            )
 
-            if let failure {
-                reportMirrorFailure(failure, mirrorURL: mirrorURL)
-            }
-
-            // a part of the body that the caller already has can't be taken back to read the original url
-            if failure != nil, !isMirrorAccepted {
-                mirrorResponse = nil
-                mirrorData = Data()
-
-                loadOriginal()
-            } else {
-                passMirrorDataToClient()
-                complete(with: error)
-            }
+            completeMirrorAttempt(attempt, failure: failure)
         }
     }
 
-    func isJson(_ url: URL) -> Bool {
-        url.pathExtension.lowercased() == Constants.jsonExtension
+    /// The timeout of the mirror request measures silence only, so a body that keeps dripping would
+    /// outlast it and the caller's own timeout would end the request with nothing read
+    func handleMirrorDeadline(of scheduler: SchedulerProtocol) {
+        guard case let .mirror(attempt) = stage, scheduler === deadlineScheduler else {
+            return
+        }
+
+        loadTask?.cancel()
+        loadTask = nil
+
+        completeMirrorAttempt(attempt, failure: .deadlineExceeded)
     }
 
-    func hasSuccessStatus(_ response: URLResponse?) -> Bool {
-        (response as? HTTPURLResponse)?.statusCode == Constants.successStatusCode
-    }
-
-    /// Callers that receive raw data decode it when the request is over and it is too late to fall back,
-    /// so an answer of the mirror counts only if its body is usable.
-    func validateMirrorAnswer(from mirrorURL: URL) -> Error? {
-        guard hasSuccessStatus(mirrorResponse) else {
-            return ConfigMirrorFailure.unexpectedStatus((mirrorResponse as? HTTPURLResponse)?.statusCode)
+    func completeMirrorAttempt(_ attempt: MirrorAttempt, failure: ConfigMirrorFailure?) {
+        if let failure {
+            dependencies?.logger.warning("Config mirror failed for \(attempt.url.path): \(failure)")
         }
 
-        guard isMirrorAccepted || !mirrorData.isEmpty else {
-            return ConfigMirrorFailure.emptyBody
-        }
+        // an answer of the http cache is not an answer of the mirror
+        let verdict = isMirrorAnswerFromLocalCache ? ConfigMirrorAttemptVerdict.unknown : failure?.verdict ?? .reachable
 
-        guard isJson(mirrorURL), (try? JSONSerialization.jsonObject(with: mirrorData)) == nil else {
-            return nil
-        }
+        reportMirrorAttempt(attempt, verdict: verdict)
 
-        return ConfigMirrorFailure.malformedJson
-    }
-
-    func passMirrorDataToClient() {
-        if !isMirrorAccepted, let mirrorResponse {
-            isMirrorAccepted = true
-
-            // the session that performs the inner request has already cached it under the mirror url
-            client?.urlProtocol(self, didReceive: createResponse(from: mirrorResponse), cacheStoragePolicy: .notAllowed)
-        }
-
-        if !mirrorData.isEmpty {
-            client?.urlProtocol(self, didLoad: mirrorData)
+        if failure != nil {
+            mirrorResponse = nil
             mirrorData = Data()
+
+            loadOriginal()
+        } else {
+            passMirrorAnswerToClient()
+            complete(with: nil)
         }
+    }
+
+    func reportMirrorAttempt(_ attempt: MirrorAttempt, verdict: ConfigMirrorAttemptVerdict) {
+        deadlineScheduler?.cancel()
+        deadlineScheduler = nil
+
+        guard let dependencies else {
+            return
+        }
+
+        if let pause = dependencies.availability.endAttempt(attempt.kind, verdict: verdict) {
+            dependencies.logger.warning("Config mirror is unavailable, skipping it for \(Int(pause)) s")
+        }
+    }
+
+    func passMirrorAnswerToClient() {
+        guard let mirrorResponse else {
+            return
+        }
+
+        // the session that performs the inner request has already cached it under the mirror url
+        client?.urlProtocol(self, didReceive: createResponse(from: mirrorResponse), cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: mirrorData)
+
+        self.mirrorResponse = nil
+        mirrorData = Data()
     }
 
     /// The caller has asked for the original url, so the response is made for it
@@ -206,29 +273,21 @@ private extension ConfigMirrorURLProtocol {
         return response ?? mirrorResponse
     }
 
-    func reportMirrorFailure(_ failure: Error, mirrorURL: URL) {
-        let logger = dependencies.logger
-
-        logger.warning("Config mirror failed for \(mirrorURL.path): \(failure)")
-
-        if dependencies.availability.registerFailure(failure) {
-            logger.warning("Config mirror is unavailable, skipping it until the cool-down ends")
-        }
-    }
-
     func loadOriginal() {
-        guard let originalRequest = createInnerRequest(for: nil) else {
+        guard let dependencies, let originalRequest = createInnerRequest(for: nil) else {
             complete(with: NetworkBaseError.invalidUrl)
             return
         }
 
-        loadTask = dependencies.loader.load(originalRequest) { [weak self] event in
+        stage = .original
+
+        loadTask = dependencies.loader.load(originalRequest, rules: .original) { [weak self] event in
             self?.performOnClientThread { self?.handleOriginal(event) }
         }
     }
 
     func handleOriginal(_ event: ConfigMirrorLoadEvent) {
-        guard !isStopped else {
+        guard case .original = stage else {
             return
         }
 
@@ -238,12 +297,15 @@ private extension ConfigMirrorURLProtocol {
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         case let .data(data):
             client?.urlProtocol(self, didLoad: data)
+        case .servedFromLocalCache:
+            break
         case let .completed(error):
             complete(with: error)
         }
     }
 
     func complete(with error: Error?) {
+        stage = .finished
         loadTask = nil
 
         if let error {
@@ -253,8 +315,8 @@ private extension ConfigMirrorURLProtocol {
         }
     }
 
-    /// The loader reports on a queue of its own while the client expects to be called on the thread
-    /// the loading was started on
+    /// The loader and the deadline report on queues of their own while the client expects to be called
+    /// on the thread the loading was started on
     func performOnClientThread(_ closure: @escaping () -> Void) {
         guard let clientThread, Thread.current != clientThread else {
             closure()
@@ -273,12 +335,6 @@ private extension ConfigMirrorURLProtocol {
     @objc func execute(_ box: ClosureBox) {
         box.closure()
     }
-}
-
-enum ConfigMirrorFailure: Error {
-    case unexpectedStatus(Int?)
-    case emptyBody
-    case malformedJson
 }
 
 private final class ClosureBox: NSObject {

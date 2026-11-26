@@ -1,84 +1,110 @@
 import Foundation
 
-protocol ConfigMirrorAvailabilityProtocol {
-    var isAvailable: Bool { get }
+enum ConfigMirrorAttemptKind: Equatable {
+    /// The mirror is in use and so is the request
+    case regular
+    /// The only request that asks the mirror after a pause while the others keep reading the original urls
+    case probe
+}
 
-    /// Remembers a failed mirror attempt. Returns `true` when this failure has made the mirror unavailable.
-    func registerFailure(_ error: Error) -> Bool
+protocol ConfigMirrorAvailabilityProtocol {
+    /// Says whether a request may try the mirror now: `nil` sends it to the original url.
+    /// An attempt that was let in has to be finished with `endAttempt`, whatever its end is.
+    func beginAttempt() -> ConfigMirrorAttemptKind?
+
+    /// Takes what the attempt has learned about the mirror.
+    /// Returns the length of the pause when the attempt has started one.
+    @discardableResult
+    func endAttempt(_ kind: ConfigMirrorAttemptKind, verdict: ConfigMirrorAttemptVerdict) -> TimeInterval?
 }
 
 /// Makes requests skip the mirror for a while after it turned out to be unavailable, so that
-/// it is not waited for by every request. When the pause ends every request tries the mirror again.
+/// it is not waited for by every request. When the pause ends a single request probes the mirror:
+/// its answer brings the mirror back for everyone, its failure starts a longer pause.
+/// The state is kept in memory only, a launch starts with the mirror in use.
 final class ConfigMirrorAvailability {
-    // Errors of the device's own connectivity and a cancellation say nothing about the mirror
-    private static let unrelatedErrorCodes: Set<Int> = [
-        NSURLErrorCancelled,
-        NSURLErrorNotConnectedToInternet,
-        NSURLErrorDataNotAllowed,
-        NSURLErrorInternationalRoamingOff,
-        NSURLErrorCallIsActive
-    ]
-
-    private static let serverErrorStatusCode = 500
-
-    private let cooldown: TimeInterval
-    private let uptimeClosure: () -> TimeInterval
+    private let initialPause: TimeInterval
+    private let pauseMultiplier: Double
+    private let maxPause: TimeInterval
+    private let timeProvider: () -> TimeInterval
 
     private let mutex = NSLock()
-    private var unavailableUntil: TimeInterval?
+    private var pausedUntil: TimeInterval?
+    private var isProbing = false
+    private var nextPause: TimeInterval
 
-    // The uptime is used instead of the date for the cool-down not to depend on the device clock changes
     init(
-        cooldown: TimeInterval = ConfigMirrorConstants.unavailabilityCooldown,
-        uptimeClosure: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime }
+        initialPause: TimeInterval = ConfigMirrorConstants.initialPause,
+        pauseMultiplier: Double = ConfigMirrorConstants.pauseMultiplier,
+        maxPause: TimeInterval = ConfigMirrorConstants.maxPause,
+        timeProvider: @escaping () -> TimeInterval = MonotonicClock.now
     ) {
-        self.cooldown = cooldown
-        self.uptimeClosure = uptimeClosure
+        self.initialPause = initialPause
+        self.pauseMultiplier = pauseMultiplier
+        self.maxPause = maxPause
+        self.timeProvider = timeProvider
+
+        nextPause = initialPause
     }
 }
 
 extension ConfigMirrorAvailability: ConfigMirrorAvailabilityProtocol {
-    var isAvailable: Bool {
+    func beginAttempt() -> ConfigMirrorAttemptKind? {
         mutex.lock()
         defer { mutex.unlock() }
 
-        guard let unavailableUntil else {
-            return true
+        guard let pausedUntil else {
+            return .regular
         }
 
-        return uptimeClosure() >= unavailableUntil
+        guard timeProvider() >= pausedUntil, !isProbing else {
+            return nil
+        }
+
+        isProbing = true
+
+        return .probe
     }
 
-    func registerFailure(_ error: Error) -> Bool {
-        guard isMirrorWide(error) else {
-            return false
-        }
-
+    func endAttempt(_ kind: ConfigMirrorAttemptKind, verdict: ConfigMirrorAttemptVerdict) -> TimeInterval? {
         mutex.lock()
         defer { mutex.unlock() }
 
-        let uptime = uptimeClosure()
-
-        if let unavailableUntil, uptime < unavailableUntil {
-            return false
+        switch kind {
+        case .regular:
+            // Once a pause is on only the probe speaks for the mirror. The attempts that were let in
+            // before the pause fail together with the one that started it and must not prolong it.
+            guard pausedUntil == nil else {
+                return nil
+            }
+        case .probe:
+            // whatever the verdict is the slot is free: without a verdict the next request probes
+            isProbing = false
         }
 
-        unavailableUntil = uptime + cooldown
+        switch verdict {
+        case .reachable:
+            pausedUntil = nil
+            nextPause = initialPause
 
-        return true
+            return nil
+        case .unavailable:
+            return startPause()
+        case .unknown:
+            return nil
+        }
     }
 }
 
+// MARK: Private
+
 private extension ConfigMirrorAvailability {
-    // A missing file or an unusable body concerns one file and is answered fast. A connection failure
-    // or a server error is about the mirror as a whole, so it is worth skipping.
-    func isMirrorWide(_ error: Error) -> Bool {
-        if case let ConfigMirrorFailure.unexpectedStatus(statusCode?) = error {
-            return statusCode >= Self.serverErrorStatusCode
-        }
+    func startPause() -> TimeInterval {
+        let pause = nextPause
 
-        let nsError = error as NSError
+        pausedUntil = timeProvider() + pause
+        nextPause = min(pause * pauseMultiplier, maxPause)
 
-        return nsError.domain == NSURLErrorDomain && !Self.unrelatedErrorCodes.contains(nsError.code)
+        return pause
     }
 }

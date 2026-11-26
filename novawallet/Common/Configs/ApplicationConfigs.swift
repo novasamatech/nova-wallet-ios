@@ -55,7 +55,7 @@ protocol ApplicationConfigProtocol {
     var coloredAppearanceIconsPath: String { get }
     var watchOnlyURL: URL { get }
     var configMirrorBaseURL: URL { get }
-    var configMirrorSources: [String] { get }
+    var configMirrorSources: [URL] { get }
 }
 
 extension ApplicationConfigProtocol {
