@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Tus tokens";
 "tabbar.more.title" = "Más";
 "tabbar.swaps.title" = "Swaps";
+"swaps.execution.funds.location" = "Tu %@ está en %@";
