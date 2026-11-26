@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "你的代币";
 "tabbar.more.title" = "更多";
 "tabbar.swaps.title" = "兑换";
+"dapp.staking.notice.bittensor.message" = "第三方质押网站经常会被弃用。Nova Wallet 内置了 Bittensor 质押功能。";

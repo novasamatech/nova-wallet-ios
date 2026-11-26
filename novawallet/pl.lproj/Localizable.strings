@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Twoje tokeny";
 "tabbar.more.title" = "Więcej";
 "tabbar.swaps.title" = "Swapy";
+"dapp.staking.notice.bittensor.message" = "Witryny stakingowe stron trzecich często stają się przestarzałe. Nova Wallet ma wbudowany staking dla Bittensor.";

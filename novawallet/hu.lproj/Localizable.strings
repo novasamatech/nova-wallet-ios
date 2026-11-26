@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Saját tokenek";
 "tabbar.more.title" = "Továbbiak";
 "tabbar.swaps.title" = "Cserék";
+"dapp.staking.notice.bittensor.message" = "A harmadik felek stakingwebhelyei gyakran elavulnak. A Nova Wallet beépített stakingfunkciót kínál a Bittensorhoz.";
