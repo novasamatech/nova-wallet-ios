@@ -26,7 +26,8 @@ private extension BlockFinalityOperationFactory {
         let headerOperation = JSONRPCListOperation<Block.Header>(
             engine: connection,
             method: RPCMethod.getBlockHeader,
-            parameters: [blockHash]
+            parameters: [blockHash],
+            timeout: JSONRPCTimeout.singleNode
         )
 
         let headerWrapper = CompoundOperationWrapper(targetOperation: headerOperation)
@@ -64,7 +65,10 @@ extension BlockFinalityOperationFactory: BlockFinalityOperationFactoryProtocol {
 
         finalizedHeightOperation.addDependency(heightWrapper.targetOperation)
 
-        let canonicalHashOperation = blockHashOperationFactory.createBlockHashOperation(connection: connection) {
+        let canonicalHashOperation = blockHashOperationFactory.createBlockHashOperation(
+            connection: connection,
+            timeout: JSONRPCTimeout.singleNode
+        ) {
             try finalizedHeightOperation.extractNoCancellableResultData()
         }
 
