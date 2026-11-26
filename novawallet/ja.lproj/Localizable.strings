@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "あなたのトークン";
 "tabbar.more.title" = "その他";
 "tabbar.swaps.title" = "スワップ";
+"dapp.staking.notice.bittensor.message" = "サードパーティのStakingサイトは、しばしばサービス終了となります。Nova WalletにはBittensor向けのStaking機能が組み込まれています。";

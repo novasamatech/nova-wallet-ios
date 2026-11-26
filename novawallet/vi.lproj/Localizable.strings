@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Các token của bạn";
 "tabbar.more.title" = "Thêm";
 "tabbar.swaps.title" = "Hoán đổi";
+"dapp.staking.notice.bittensor.message" = "Các trang web Staking của bên thứ ba thường trở nên lỗi thời. Nova Wallet đã tích hợp sẵn Staking cho Bittensor.";
