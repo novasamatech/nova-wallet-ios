@@ -136,7 +136,7 @@ private extension GiftTransferSetupPresenter {
         let assetInfo = chainAsset.asset.displayInfo
 
         let feeDecimal = Decimal.fromSubstrateAmount(
-            fee.value.amount,
+            fee.value.displayAmount,
             precision: assetInfo.assetPrecision
         ) ?? 0.0
 

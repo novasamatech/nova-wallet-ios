@@ -246,6 +246,7 @@ private extension DAppOperationConfirmViewFactory {
     ) -> DAppEthereumConfirmInteractor? {
         let operationFactory: EthereumOperationFactoryProtocol
         let chainId: String
+        let forcesLegacyTransactions: Bool
 
         switch chain {
         case let .left(knownChain):
@@ -258,6 +259,7 @@ private extension DAppOperationConfirmViewFactory {
 
             operationFactory = EvmWebSocketOperationFactory(connection: connection)
             chainId = BigUInt(knownChain.addressPrefix).toHexString()
+            forcesLegacyTransactions = knownChain.forcesLegacyEvmTransactions
         case let .right(unknownChain):
             guard let connection = HTTPEngine(
                 urls: [unknownChain.rpcUrl],
@@ -268,6 +270,7 @@ private extension DAppOperationConfirmViewFactory {
 
             operationFactory = EvmWebSocketOperationFactory(connection: connection)
             chainId = unknownChain.chainId
+            forcesLegacyTransactions = false
         }
 
         return DAppEthereumConfirmInteractor(
@@ -277,7 +280,8 @@ private extension DAppOperationConfirmViewFactory {
             validationProviderFactory: validationProviderFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
-            shouldSendTransaction: shouldSendTransaction
+            shouldSendTransaction: shouldSendTransaction,
+            forcesLegacyTransactions: forcesLegacyTransactions
         )
     }
 

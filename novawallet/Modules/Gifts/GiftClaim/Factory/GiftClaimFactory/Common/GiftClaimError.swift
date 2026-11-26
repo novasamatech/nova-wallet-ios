@@ -4,4 +4,5 @@ enum GiftClaimError: Error {
     case giftClaimFailed(claimingAccountId: AccountId, underlyingError: Error?)
     case claimingAccountNotFound
     case alreadyClaimed
+    case feeExceedsGift
 }

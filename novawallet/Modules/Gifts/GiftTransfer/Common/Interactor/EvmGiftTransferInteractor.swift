@@ -115,7 +115,7 @@ private extension EvmGiftTransferInteractor {
     ) {
         lastFeeModel = feeModel
 
-        let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
+        let feeValue = ExtrinsicFee(amount: feeModel.reserve, displayAmount: feeModel.fee, payer: nil, weight: .zero)
 
         guard let giftFeeDescription = giftFeeDescriptionBuilder
             .with(createFee: feeValue)
@@ -125,16 +125,10 @@ private extension EvmGiftTransferInteractor {
         do {
             let totalFee = try giftFeeDescription.createAccumulatedFee()
 
-            let totalEvmFee = EvmFeeModel(
-                gasLimit: totalFee.amount / feeModel.gasPrice,
-                defaultGasPrice: feeModel.defaultGasPrice,
-                maxPriorityGasPrice: feeModel.maxPriorityGasPrice
-            )
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: feeModel)
+            let feeOutputModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
 
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totalEvmFee)
-            let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
-
-            setupPresenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(result: .success(feeOutputModel))
             setupPresenter?.didReceiveFee(description: giftFeeDescription)
         } catch {
             logger.error("Error calculating accumulated fee: \(error)")

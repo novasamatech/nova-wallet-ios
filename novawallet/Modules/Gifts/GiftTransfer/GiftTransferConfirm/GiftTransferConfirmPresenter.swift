@@ -135,7 +135,7 @@ private extension GiftTransferConfirmPresenter {
             return
         }
 
-        let createFeeModel = createFeeViewModel(for: feeDescription.createFee.amount)
+        let createFeeModel = createFeeViewModel(for: feeDescription.createFee.displayAmount)
         let claimFeeModel = createFeeViewModel(for: feeDescription.claimFee.amount)
 
         view?.didReceiveNetworkFee(viewModel: createFeeModel)

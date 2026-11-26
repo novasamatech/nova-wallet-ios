@@ -1,0 +1,55 @@
+{
+  "eip1559NativeTransfer": {
+    "source": "trustwallet/wallet-core@7a21615fad32edd8dc0b040d845de3973cde2c5a rust/tw_evm/tests/signer.rs:199 test_sign_transaction_eip1559_native_transfer",
+    "privateKey": "4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904",
+    "chainId": "3",
+    "nonce": "6",
+    "gasLimit": "21100",
+    "maxPriorityFeePerGas": "2000000000",
+    "maxFeePerGas": "3000000000",
+    "to": "0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7",
+    "value": "543210987654321",
+    "data": "",
+    "preHash": "6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155",
+    "raw": "02f8710306847735940084b2d05e0082526c94b9f5771c27664bf2282d98e09d7f50cec7cb01a78701ee0c29f50cb180c080a092c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c64a06487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e58"
+  },
+  "eip1559Erc20Transfer": {
+    "source": "trustwallet/wallet-core@7a21615fad32edd8dc0b040d845de3973cde2c5a rust/tw_evm/tests/signer.rs:246 test_sign_transaction_eip1559_erc20_transfer",
+    "privateKey": "608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151",
+    "chainId": "1",
+    "nonce": "0",
+    "gasLimit": "78009",
+    "maxPriorityFeePerGas": "2000000000",
+    "maxFeePerGas": "3000000000",
+    "to": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "value": "0",
+    "data": "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000",
+    "preHash": "aa0ec30afa12acb48a080aa7157254193eeb2a4d248538b0747535baab98141f",
+    "raw": "02f8b00180847735940084b2d05e00830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c080a0adfcfdf98d4ed35a8967a0c1d78b42adb7c5d831cf5a3272654ec8f8bcd7be2ea011641e065684f6aa476f4fd250aa46cd0b44eccdb0a6e1650d658d1998684cdf"
+  },
+  "eip1559Unsigned": {
+    "source": "trustwallet/wallet-core@7a21615fad32edd8dc0b040d845de3973cde2c5a rust/tw_evm/src/transaction/transaction_eip1559.rs:123 test_encode_transaction_eip1559",
+    "chainId": "10",
+    "nonce": "6",
+    "gasLimit": "21100",
+    "maxPriorityFeePerGas": "2000000000",
+    "maxFeePerGas": "3000000000",
+    "to": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "value": "0",
+    "data": "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000001ee0c29f50cb1",
+    "raw": "02f86c0a06847735940084b2d05e0082526c946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000001ee0c29f50cb1c0"
+  },
+  "legacyExternalSignature": {
+    "source": "trustwallet/wallet-core@7a21615fad32edd8dc0b040d845de3973cde2c5a rust/tw_tests/tests/chains/ethereum/ethereum_compile.rs:26 test_transaction_compiler_eth",
+    "signature": "360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900",
+    "chainId": "1",
+    "nonce": "11",
+    "gasLimit": "21000",
+    "gasPrice": "20000000000",
+    "to": "0x3535353535353535353535353535353535353535",
+    "value": "1000000000000000000",
+    "data": "",
+    "preHash": "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217",
+    "raw": "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779"
+  }
+}

@@ -27,11 +27,16 @@ struct ExtrinsicFeePayer: Equatable {
 
 protocol ExtrinsicFeeProtocol {
     var amount: BigUInt { get }
+    var displayAmount: BigUInt { get }
     var payer: ExtrinsicFeePayer? { get }
     var weight: Substrate.Weight { get }
 }
 
 extension ExtrinsicFeeProtocol {
+    var displayAmount: BigUInt {
+        amount
+    }
+
     var amountForCurrentAccount: BigUInt? {
         payer == nil ? amount : nil
     }
@@ -39,6 +44,7 @@ extension ExtrinsicFeeProtocol {
 
 struct ExtrinsicFee: ExtrinsicFeeProtocol {
     let amount: BigUInt
+    let displayAmount: BigUInt
     let payer: ExtrinsicFeePayer?
     let weight: Substrate.Weight
 
@@ -48,12 +54,18 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
         }
 
         self.amount = amount
+        displayAmount = amount
         self.payer = payer
         weight = dispatchInfo.weight
     }
 
     init(amount: BigUInt, payer: ExtrinsicFeePayer?, weight: Substrate.Weight) {
+        self.init(amount: amount, displayAmount: amount, payer: payer, weight: weight)
+    }
+
+    init(amount: BigUInt, displayAmount: BigUInt, payer: ExtrinsicFeePayer?, weight: Substrate.Weight) {
         self.amount = amount
+        self.displayAmount = displayAmount
         self.payer = payer
         self.weight = weight
     }

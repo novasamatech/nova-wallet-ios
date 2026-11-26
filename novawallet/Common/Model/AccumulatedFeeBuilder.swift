@@ -36,6 +36,10 @@ struct AccumulatedFeeBuilder {
             .map(\.amount)
             .reduce(0, +)
 
+        let totalDisplayAmount = extrinsicFees
+            .map(\.displayAmount)
+            .reduce(0, +)
+
         let totalRefTime = extrinsicFees
             .map(\.weight.refTime)
             .reduce(0, +)
@@ -50,6 +54,7 @@ struct AccumulatedFeeBuilder {
 
         return ExtrinsicFee(
             amount: totalAmount,
+            displayAmount: totalDisplayAmount,
             payer: extrinsicFees.first?.payer,
             weight: totalWeight
         )

@@ -35,3 +35,28 @@ extension EvmMaxPriorityGasPriceProvider: EvmGasPriceProviderProtocol {
         )
     }
 }
+
+extension EvmMaxPriorityGasPriceProvider: EvmEip1559PriceProviderProtocol {
+    func getEip1559PriceWrapper() -> CompoundOperationWrapper<EvmEip1559Fee> {
+        let lastBlockOperation = operationFactory.createReducedBlockOperation(for: .latest)
+        let maxPriorityOperation = operationFactory.createMaxPriorityPerGasOperation()
+
+        let mapOperation = ClosureOperation<EvmEip1559Fee> {
+            guard let baseFee = try lastBlockOperation.extractNoCancellableResultData().baseFeePerGas else {
+                throw EvmGasPriceProviderError.unsupported
+            }
+
+            let nodeTip = try maxPriorityOperation.extractNoCancellableResultData().wrappedValue
+
+            return .nova(baseFee: baseFee, nodeTip: nodeTip)
+        }
+
+        mapOperation.addDependency(lastBlockOperation)
+        mapOperation.addDependency(maxPriorityOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [lastBlockOperation, maxPriorityOperation]
+        )
+    }
+}

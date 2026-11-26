@@ -3019,6 +3019,7 @@
 		4D31116B94CB85E69432B848 /* TokensManageAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6ED849A247ACCC3FB1AC3 /* TokensManageAddViewController.swift */; };
 		4D44B178F1F57FD8607E8095 /* VotesViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8602E65CC4E81A7BE1727CE3 /* VotesViewLayout.swift */; };
 		4DA2B69DD11550E592BBD3C3 /* mev-shield-vector.json in Resources */ = {isa = PBXBuildFile; fileRef = C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */; };
+		EC289A7689B931382A208353 /* transaction-vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = 4E5E2D471E4E0CD60955A024 /* transaction-vectors.json */; };
 		4DBCCC36F7CD1876D6E77ECC /* DelegatedSignFeeValidationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807220BDBBF997C9240E3C0 /* DelegatedSignFeeValidationInteractor.swift */; };
 		4DC64D83DF31411FAF62C0F8 /* SubtensorSubnetIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6758E253C50844DA88793EA4 /* SubtensorSubnetIconViewModelFactory.swift */; };
 		4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE72F2B6612508D4783A507 /* DAppAuthSettingsProtocols.swift */; };
@@ -4415,6 +4416,7 @@
 		8454C26A2632B8CE00657DAD /* BalancesPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2692632B8CE00657DAD /* BalancesPallet+Events.swift */; };
 		8454C26F2632BBAA00657DAD /* ExtrinsicProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */; };
 		8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */; };
+		0FC4DF6D784C279A7063919F /* EvmFeeModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */; };
 		845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845532CF2684690D00C2645D /* ParachainSlotLease.swift */; };
 		8455AB4528F7F05400974E88 /* ReferendumStatusViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */; };
 		8455AB4A28F80D9300974E88 /* ReferendumTrackType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */; };
@@ -4574,6 +4576,7 @@
 		8467FD2A24EA6C62005D486C /* SigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD2924EA6C62005D486C /* SigningWrapper.swift */; };
 		8467FD3924EACE08005D486C /* AccountCreationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD3824EACE08005D486C /* AccountCreationHelper.swift */; };
 		8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */; };
+		7B250B5C87127C9754D3F33D /* EthereumSerializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF99F6DA82131898FFA296 /* EthereumSerializationTests.swift */; };
 		8467FD3E24EAD66F005D486C /* validEd25519Keystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */; };
 		8467FD3F24EAD66F005D486C /* validEcdsaKeystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */; };
 		8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4024ED3C72005D486C /* AlignableContentControl.swift */; };
@@ -11381,6 +11384,7 @@
 		8454C2692632B8CE00657DAD /* BalancesPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+Events.swift"; sourceTree = "<group>"; };
 		8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessing.swift; sourceTree = "<group>"; };
 		8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessingTests.swift; sourceTree = "<group>"; };
+		D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmFeeModelTests.swift; sourceTree = "<group>"; };
 		845532CF2684690D00C2645D /* ParachainSlotLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainSlotLease.swift; sourceTree = "<group>"; };
 		8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumStatusViewModelFactory.swift; sourceTree = "<group>"; };
 		8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTrackType.swift; sourceTree = "<group>"; };
@@ -11542,6 +11546,7 @@
 		8467FD2924EA6C62005D486C /* SigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapper.swift; sourceTree = "<group>"; };
 		8467FD3824EACE08005D486C /* AccountCreationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationHelper.swift; sourceTree = "<group>"; };
 		8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningWrapperTests.swift; sourceTree = "<group>"; };
+		2DFF99F6DA82131898FFA296 /* EthereumSerializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSerializationTests.swift; sourceTree = "<group>"; };
 		8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEd25519Keystore.json; sourceTree = "<group>"; };
 		8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEcdsaKeystore.json; sourceTree = "<group>"; };
 		8467FD4024ED3C72005D486C /* AlignableContentControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignableContentControl.swift; sourceTree = "<group>"; };
@@ -13741,6 +13746,7 @@
 		C4E807E9E12A130C50E8FFDF /* StakingDashboardViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingDashboardViewFactory.swift; sourceTree = "<group>"; };
 		C52D6675524DB913210F0459 /* DAppSettingsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSettingsPresenter.swift; sourceTree = "<group>"; };
 		C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mev-shield-vector.json"; sourceTree = "<group>"; };
+		4E5E2D471E4E0CD60955A024 /* transaction-vectors.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "transaction-vectors.json"; sourceTree = "<group>"; };
 		C585109AC3A2580AB1253C31 /* SwapSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSetupInteractor.swift; sourceTree = "<group>"; };
 		C5BAAC7548C5632713607CC9 /* KnownNetworksListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewController.swift; sourceTree = "<group>"; };
 		C5E9D289393AA2CC1E34C2F4 /* AssetDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetDetailsWireframe.swift; sourceTree = "<group>"; };
@@ -22590,6 +22596,14 @@
 			path = canonicalization;
 			sourceTree = "<group>";
 		};
+		628B94C3D78470FD7131CA17 /* evm */ = {
+			isa = PBXGroup;
+			children = (
+				4E5E2D471E4E0CD60955A024 /* transaction-vectors.json */,
+			);
+			path = evm;
+			sourceTree = "<group>";
+		};
 		77AF37692BA2C19500FD1A8E /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -25133,6 +25147,7 @@
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
 				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
+				2DFF99F6DA82131898FFA296 /* EthereumSerializationTests.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -29678,6 +29693,7 @@
 				848DB992260638440055DDE7 /* rewardResponse.json */,
 				846B32A426DD07AF00250E89 /* rewardErrorResponse.json */,
 				C54172F49ADC43DCC9652C96 /* mev-shield-vector.json */,
+				628B94C3D78470FD7131CA17 /* evm */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -31140,8 +31156,17 @@
 		AC00020000000000000000FC /* ExtrinsicService */ = {
 			isa = PBXGroup;
 			children = (
+				333785B3195729DD5B42602B /* Evm */,
 			);
 			path = ExtrinsicService;
+			sourceTree = "<group>";
+		};
+		333785B3195729DD5B42602B /* Evm */ = {
+			isa = PBXGroup;
+			children = (
+				D7D2D3BAE48B11A6BEFA247C /* EvmFeeModelTests.swift */,
+			);
+			path = Evm;
 			sourceTree = "<group>";
 		};
 		AC6B93411E3444BFB71691BE /* FeeValidation */ = {
@@ -33397,6 +33422,7 @@
 				77CB33CE2A38780700B6709A /* structures_output.json in Resources */,
 				77EA2A2A2A333C1500B0670B /* weird_input.json in Resources */,
 				4DA2B69DD11550E592BBD3C3 /* mev-shield-vector.json in Resources */,
+				EC289A7689B931382A208353 /* transaction-vectors.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40455,6 +40481,7 @@
 				84B7C735289BFA79001A3566 /* StakingRedeemTests.swift in Sources */,
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
+				0FC4DF6D784C279A7063919F /* EvmFeeModelTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
@@ -40508,6 +40535,7 @@
 				84B66A1626FDF7D70038B963 /* JsonSubscriptionFactoryStub.swift in Sources */,
 				8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */,
 				8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */,
+				7B250B5C87127C9754D3F33D /* EthereumSerializationTests.swift in Sources */,
 				84B7C71D289BFA79001A3566 /* MnemonicTextNormalizerTest.swift in Sources */,
 				84893BFC24D9B0F1008F6A3F /* PredicateTests.swift in Sources */,
 				84B7C73A289BFA79001A3566 /* StakingRewardDestConfirmTests.swift in Sources */,

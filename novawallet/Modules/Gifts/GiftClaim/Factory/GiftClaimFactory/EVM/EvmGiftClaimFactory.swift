@@ -92,11 +92,6 @@ private extension EvmGiftClaimFactory {
         transactionBuilderClosure: @escaping EvmTransactionBuilderClosure
     ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let price = EvmTransactionPrice(
-                gasLimit: evmFee.gasLimit,
-                gasPrice: evmFee.gasPrice
-            )
-
             let signingData = GiftSigningData(
                 gift: try gift(),
                 ethereumBased: true,
@@ -106,7 +101,7 @@ private extension EvmGiftClaimFactory {
 
             return self.transactionMonitorFactory.submitAndMonitorWrapper(
                 transactionBuilderClosure,
-                price: price,
+                price: evmFee.transactionPrice,
                 signer: signingWrapper
             )
         }
@@ -153,7 +148,7 @@ extension EvmGiftClaimFactory: EvmGiftClaimFactoryProtocol {
                 dependingOn: giftWrapper,
                 amount: .all(value: gift.amount),
                 claimingAccountId: claimingAccountId,
-                evmFee: evmFee,
+                evmFee: evmFee.forcingLegacy(),
                 transferType: transferType,
                 chain: chainAsset.chain
             )

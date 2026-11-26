@@ -133,6 +133,17 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
                 message: localizedStrings.giftErrorAlreadyClaimedMessage(),
                 actionTitle: localizedStrings.commonGotIt()
             )
+        case .feeExceedsGift:
+            let localizedStrings = R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable
+
+            wireframe.showError(
+                from: view,
+                title: localizedStrings.commonNotEnoughFeeTitle(),
+                message: localizedStrings.commonNotEnoughFeeMessage(),
+                actionTitle: localizedStrings.commonGotIt()
+            )
         default:
             presentRetryableError()
         }

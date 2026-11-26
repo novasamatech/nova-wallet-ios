@@ -35,4 +35,8 @@ extension ChainModel {
     var evmChainId: String {
         BigUInt(addressPrefix).serialize().toHex(includePrefix: true)
     }
+
+    var forcesLegacyEvmTransactions: Bool {
+        additional?.evm?.txType?.stringValue == "legacy"
+    }
 }

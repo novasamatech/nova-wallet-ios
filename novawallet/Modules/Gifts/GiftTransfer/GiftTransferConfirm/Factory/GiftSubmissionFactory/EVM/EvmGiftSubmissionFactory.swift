@@ -51,14 +51,9 @@ final class EvmGiftSubmissionFactory {
             return newBuilder
         }
 
-        let price = EvmTransactionPrice(
-            gasLimit: evmFee.gasLimit,
-            gasPrice: evmFee.gasPrice
-        )
-
         let submitAndMonitorWrapper = transactionMonitorFactory.submitAndMonitorWrapper(
             extrinsicClosure,
-            price: price,
+            price: evmFee.transactionPrice,
             signer: signingWrapper
         )
 

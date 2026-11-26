@@ -11,6 +11,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let shouldSendTransaction: Bool
+    let forcesLegacyTransactions: Bool
     let chainId: String
 
     private var transaction: EthereumTransaction?
@@ -25,7 +26,8 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         operationQueue: OperationQueue,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
-        shouldSendTransaction: Bool
+        shouldSendTransaction: Bool,
+        forcesLegacyTransactions: Bool
     ) {
         self.chainId = chainId
         self.request = request
@@ -34,6 +36,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
         self.shouldSendTransaction = shouldSendTransaction
+        self.forcesLegacyTransactions = forcesLegacyTransactions
     }
 
     private func setupServices() {
@@ -124,9 +127,11 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
     private func createMaxPriorityGasPriceProvider(
         for transaction: EthereumTransaction
-    ) -> EvmGasPriceProviderProtocol {
-        if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
-            return EvmConstantGasPriceProvider(value: value)
+    ) -> EvmEip1559PriceProviderProtocol? {
+        if forcesLegacyTransactions {
+            return nil
+        } else if let gasPrice = transaction.gasPrice, let value = try? BigUInt(hex: gasPrice), value > 0 {
+            return nil
         } else {
             return EvmMaxPriorityGasPriceProvider(operationFactory: ethereumOperationFactory)
         }
@@ -172,7 +177,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
                 self?.lastFee = model
                 let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
                 let feeModel = FeeOutputModel(
-                    value: ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero),
+                    value: ExtrinsicFee(amount: model.reserve, displayAmount: model.fee, payer: nil, weight: .zero),
                     validationProvider: validationProvider
                 )
 
@@ -295,7 +300,7 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
             return
         }
 
-        let txPrice = EvmTransactionPrice(gasLimit: feeModel.gasLimit, gasPrice: feeModel.gasPrice)
+        let txPrice = feeModel.transactionPrice
 
         if shouldSendTransaction {
             confirmSend(for: transaction, price: txPrice, service: ethereumService, signer: signer)
