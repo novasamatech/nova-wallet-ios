@@ -295,6 +295,7 @@ private final class ExtrinsicSubmissionStore {
     private let mutex = NSLock()
     private var acknowledgedModel: ExtrinsicSubmittedModel?
     private var inclusion: Inclusion?
+    private var wasIncluded = false
 
     func store(statusModel: ExtrinsicSubscribedStatusModel) {
         mutex.lock()
@@ -309,8 +310,11 @@ private final class ExtrinsicSubmissionStore {
         case let .inBlock(blockHash):
             acknowledgedModel = statusModel.extrinsicSubmittedModel
             inclusion = Inclusion(model: statusModel.extrinsicSubmittedModel, blockHash: blockHash)
+            wasIncluded = true
+        case .retracted:
+            inclusion = nil
         case .invalid, .usurped:
-            if inclusion == nil {
+            if !wasIncluded {
                 acknowledgedModel = nil
             }
         default:
