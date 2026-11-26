@@ -24,7 +24,7 @@ extension SubtensorPositionViewModelFactory {
 
 private extension SubtensorPositionViewModelFactory {
     func createPriceWidgetParams(for state: SubtensorPositionState) -> SubtensorPriceWidgetParams? {
-        guard !state.isRoot, state.hasResolvedHistory else {
+        guard !state.isRoot else {
             return nil
         }
 
@@ -33,11 +33,15 @@ private extension SubtensorPositionViewModelFactory {
             period: state.period,
             taoPrice: state.price.value,
             chartEndDate: state.chartEndDate,
-            avgBuyPrice: state.costBasis.averagePrice
+            avgBuyPrice: state.isOwnTradeSettling ? nil : state.costBasis.averagePrice
         )
     }
 
-    func createPriceHeaderParams(for state: SubtensorPositionState, locale: Locale) -> SubtensorPriceHeaderParams {
+    func createPriceHeaderParams(for state: SubtensorPositionState, locale: Locale) -> SubtensorPriceHeaderParams? {
+        guard state.isCatalogueResolved else {
+            return nil
+        }
+
         let subnet = state.catalogue?.subnet(for: state.netuid)
 
         let caption = priceWidgetFactory.createCaption(

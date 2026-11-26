@@ -7,8 +7,8 @@ struct SubtensorSubnetPriceHeaderViewModel: Equatable {
         case value(text: String, isRising: Bool)
     }
 
-    let caption: String
-    let price: String
+    let caption: String?
+    let price: String?
     let fiat: String?
     let change: Change
     let date: String?

@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "Ваши токены";
 "tabbar.more.title" = "Ещё";
 "tabbar.swaps.title" = "Обмены";
+"swaps.execution.funds.location" = "Ваш %@ находится в %@.";

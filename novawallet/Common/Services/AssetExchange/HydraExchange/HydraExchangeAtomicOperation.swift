@@ -98,7 +98,10 @@ final class HydraExchangeAtomicOperation {
 }
 
 extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        hasNextOperation: Bool
+    ) -> CompoundOperationWrapper<Balance> {
         let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
 
         let executionWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
@@ -106,7 +109,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         ) {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
+            let monitor = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
                 extrinsicBuilderClosure: { builder in
                     try HydraExchangeExtrinsicConverter.addingOperation(
                         from: params,
@@ -115,8 +118,11 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 },
                 payingIn: self.operationArgs.feeAsset,
                 signer: self.host.signingWrapper,
-                matchingEvents: HydraSwapEventsMatcher()
+                matchingEvents: HydraSwapEventsMatcher(),
+                completingOn: hasNextOperation ? .finalized : .inBlock
             )
+
+            let submittionWrapper = monitor.monitorWrapper
 
             let codingFactoryOperation = self.host.runtimeService.fetchCoderFactoryOperation()
 
@@ -155,7 +161,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
             return submittionWrapper
                 .insertingHead(operations: [codingFactoryOperation])
                 .insertingTail(operation: monitorOperation)
-                .failingWithSubmissionStage { submittionWrapper.targetOperation.submittedTxHash }
+                .failingWithSubmissionStage { monitor.submissionOperation.submittedTxHash }
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)

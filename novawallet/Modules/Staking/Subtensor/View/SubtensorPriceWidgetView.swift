@@ -20,6 +20,10 @@ final class SubtensorPriceWidgetView: UIView {
         label.apply(style: .footnotePositive)
     }
 
+    let captionSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+
+    let priceSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+
     let changeSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let dateLabel: UILabel = .create { label in
@@ -69,8 +73,18 @@ final class SubtensorPriceWidgetView: UIView {
     }
 
     func bind(header viewModel: SubtensorSubnetPriceHeaderViewModel) {
-        captionLabel.apply(text: viewModel.caption, lineHeight: Constants.footnoteLineHeight)
-        priceLabel.apply(text: viewModel.price, lineHeight: Constants.priceLineHeight)
+        bind(
+            text: viewModel.caption,
+            to: captionLabel,
+            skeletonView: captionSkeletonView,
+            lineHeight: Constants.footnoteLineHeight
+        )
+        bind(
+            text: viewModel.price,
+            to: priceLabel,
+            skeletonView: priceSkeletonView,
+            lineHeight: Constants.priceLineHeight
+        )
         fiatLabel.text = viewModel.fiat
         fiatLabel.isHidden = viewModel.fiat == nil
 
@@ -106,12 +120,25 @@ private extension SubtensorPriceWidgetView {
         static let footnoteLineHeight: CGFloat = 18
         static let priceLineHeight: CGFloat = 28
         static let dateLineHeight: CGFloat = 16
-        static let changeSkeletonSize = CGSize(width: 90, height: 12)
+        static let skeletonHeight: CGFloat = 12
+        static let captionSkeletonWidth: CGFloat = 80
+        static let priceSkeletonWidth: CGFloat = 140
+        static let changeSkeletonWidth: CGFloat = 90
         static let tabCornerRadius: CGFloat = 8
         static let periodInset: CGFloat = 4
         static let periodTabInset: CGFloat = 12
         static let periodSize = CGSize(width: 311, height: 32)
         static let disabledAlpha: CGFloat = 0.5
+    }
+
+    func bind(text: String?, to label: UILabel, skeletonView: SubtensorSkeletonView, lineHeight: CGFloat) {
+        if let text {
+            label.apply(text: text, lineHeight: lineHeight)
+        } else {
+            label.text = nil
+        }
+
+        skeletonView.setLoading(text == nil)
     }
 
     func bindChartIfNeeded(_ viewModel: SubtensorSubnetChartViewModel) {
@@ -195,14 +222,31 @@ private extension SubtensorPriceWidgetView {
 
         fiatLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        changeLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(Constants.footnoteLineHeight)
+        let labels: [(UILabel, CGFloat)] = [
+            (captionLabel, Constants.footnoteLineHeight),
+            (priceLabel, Constants.priceLineHeight),
+            (changeLabel, Constants.footnoteLineHeight)
+        ]
+
+        for (label, lineHeight) in labels {
+            label.snp.makeConstraints { make in
+                make.height.greaterThanOrEqualTo(lineHeight)
+            }
         }
 
-        headerView.addSubview(changeSkeletonView)
-        changeSkeletonView.snp.makeConstraints { make in
-            make.leading.centerY.equalTo(changeLabel)
-            make.size.equalTo(Constants.changeSkeletonSize)
+        let skeletons: [(SubtensorSkeletonView, UILabel, CGFloat)] = [
+            (captionSkeletonView, captionLabel, Constants.captionSkeletonWidth),
+            (priceSkeletonView, priceLabel, Constants.priceSkeletonWidth),
+            (changeSkeletonView, changeLabel, Constants.changeSkeletonWidth)
+        ]
+
+        for (skeletonView, label, width) in skeletons {
+            headerView.addSubview(skeletonView)
+            skeletonView.snp.makeConstraints { make in
+                make.leading.centerY.equalTo(label)
+                make.width.equalTo(width)
+                make.height.equalTo(Constants.skeletonHeight)
+            }
         }
 
         return headerView

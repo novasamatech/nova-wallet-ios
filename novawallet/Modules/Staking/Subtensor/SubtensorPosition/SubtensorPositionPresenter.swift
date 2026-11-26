@@ -103,7 +103,6 @@ extension SubtensorPositionPresenter {
 
         guard let subnet = state.catalogue?.subnet(for: state.netuid)?.ref else {
             state.history = state.catalogue == nil ? .failed : .notListed
-            state.hasResolvedHistory = true
             return
         }
 

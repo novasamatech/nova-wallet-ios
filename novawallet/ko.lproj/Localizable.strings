@@ -2392,3 +2392,4 @@
 "swaps.token.select.your.tokens" = "내 토큰";
 "tabbar.more.title" = "더 보기";
 "tabbar.swaps.title" = "스왑";
+"swaps.execution.funds.location" = "내 %@은(는) %@에 있습니다";
