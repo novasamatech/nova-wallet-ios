@@ -230,7 +230,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     private func createFactory(
         transport: BittensorApiTransportProtocol,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
+        timeProvider: @escaping () -> TimeInterval = MonotonicClock.now
     ) -> BittensorApiOperationFactory {
         BittensorApiOperationFactory(
             transport: transport,

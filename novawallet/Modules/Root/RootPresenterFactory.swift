@@ -1,9 +1,13 @@
 import UIKit
 import Keystore_iOS
 import Foundation_iOS
+import Kingfisher
 
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
+        // goes first for every request of the launch to nova-utils to be read from the config mirror
+        registerConfigMirror()
+
         let presenter = RootPresenter()
         let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
         let keychain = Keychain()
@@ -59,6 +63,19 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         interactor.presenter = presenter
 
         return presenter
+    }
+
+    /// `URLSession.shared` and the image downloader are the two ways the app requests nova-utils files
+    static func registerConfigMirror() {
+        let dependencies = ConfigMirrorURLProtocol.Dependencies(
+            urlResolver: ConfigMirrorURLResolver(applicationConfig: ApplicationConfig.shared),
+            availability: ConfigMirrorAvailability(),
+            loader: ConfigMirrorLoader(),
+            logger: Logger.shared
+        )
+
+        ConfigMirrorURLProtocol.register(dependencies: dependencies)
+        KingfisherManager.shared.downloader.addProtocolClass(ConfigMirrorURLProtocol.self)
     }
 
     static func createUserDatabaseMigration(

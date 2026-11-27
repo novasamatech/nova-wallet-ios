@@ -38,10 +38,8 @@ class BannersFetchOperationFactory {
             Constants.bannersPath
         ]
 
-        let path = NSString.path(withComponents: pathComponents)
-        let urlString = (bannersContentPath as NSString).appendingPathComponent(path)
-
-        return URL(string: urlString)
+        // string path helpers would collapse the slashes of the scheme and leave the url without a host
+        return pathComponents.reduce(URL(string: bannersContentPath)) { $0?.appendingPathComponent($1) }
     }
 }
 

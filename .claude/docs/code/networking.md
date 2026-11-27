@@ -86,6 +86,84 @@ Conventions:
 - All base URLs come from `ApplicationConfig` or `GlobalConfig` (see
   architecture/services-lifecycle.md). API keys come from `CIKeys.generated.swift`.
 
+### Config mirror
+
+Files of the nova-utils `master` branch are read from the nova-infra mirror
+(`ApplicationConfig.configMirrorBaseURL`) first and from GitHub when the mirror attempt fails.
+There is one hook for that, below every caller: `ConfigMirrorURLProtocol`, a `URLProtocol` that
+handles a GET request when `ConfigMirrorURLResolver` maps its URL to the mirror. The caller keeps
+requesting the GitHub URL and gets a response for that URL, so caches and files keyed by URL
+(CoreData JSON providers, the Kingfisher image cache, stored XCM and types files) need no change.
+Other repositories and branches are not mirrored and their requests are not touched.
+
+The behaviour below is one policy shared with Android. Change it on both platforms or on neither.
+
+`RootPresenterFactory.registerConfigMirror()` assembles the dependencies and is called once, first
+thing in `createPresenter`. It covers `URLSession.shared` (what `NetworkOperation` uses, through
+`ConfigMirrorURLProtocol.register(dependencies:)`) and the session of
+`KingfisherManager.shared.downloader` (through `ImageDownloader.addProtocolClass`). **A nova-utils
+file or image is mirrored only when it is requested through one of these two.** A session of your
+own or another image downloader bypasses the mirror until the protocol class is added to its
+configuration. The protocol handles nothing until it is registered; tests register their own
+dependencies and call `ConfigMirrorURLProtocol.unregister()` afterwards.
+
+- **Mapping.** Only `https://raw.githubusercontent.com/novasamatech/nova-utils/master/<path>` and
+  `.../refs/heads/master/<path>` (`ApplicationConfig.configMirrorSources`) become
+  `<mirror>/<path>`. The scheme and the host are compared exactly, a URL with a port or
+  credentials is not mapped, the query and the fragment are dropped. A path with a dot segment
+  (`.` or `..`, plain or percent-encoded) is not mapped and goes to GitHub untouched. **Build a
+  nova-utils URL with `URL.appendingPathComponent`, never with `NSString` path helpers:** they
+  collapse `https://` into `https:/`, such a URL has no host and is not mirrored.
+- **Mirror attempt.** The whole attempt (connecting, headers, the full body) has one deadline:
+  `ConfigMirrorConstants.attemptDeadline` (10 s) and never more than half of the request's own
+  timeout. When it expires the attempt is cancelled and the original URL is read. The body of the
+  mirror is always collected in full and checked before the caller gets any of it; there is no
+  streaming from the mirror, so a failure at any point of the attempt can still fall back. For the
+  caller's own (idle) timeout the mirror attempt is silence, which is why the deadline takes no
+  more than half of it. The answer of the original URL is passed on as it arrives.
+- **Accepted answer** (`ConfigMirrorAnswerValidator`). Status 200, an `X-Config-Commit` header, a
+  non-empty body and, for a `.json` path, a body that parses as JSON. Anything else falls back for
+  that request. The body is checked because callers such as `DataOperationFactory` decode after
+  the request is over, when it is too late to fall back. A redirect from the mirror is not
+  followed and counts as an unusable answer. `Content-Type` is not compared (the contract tells
+  not to depend on it). The header is only required to be present: the mirror puts it on every
+  200, so its absence tells a page of a network on the way (a captive portal, a proxy) from the
+  mirror, also for an image. Its value is not read. This check is iOS-only at the moment: the
+  shared policy lists only the status and the body.
+- **Pause.** After a failure that is about the mirror as a whole — a network or TLS error,
+  a timeout, the deadline, a status of 500 and above or 429 — `ConfigMirrorAvailability` makes
+  requests skip the mirror: for 60 s first, twice as long after each failed probe, up to 30 min
+  (`ConfigMirrorConstants`). A 404 and other 4xx, an unusable body, a redirect, a request cancelled
+  by its caller and errors of the device's own connectivity (no internet, cellular data or roaming
+  off, a call in progress) don't start it. When the pause ends exactly one request probes the
+  mirror and the others keep reading GitHub until it reports: an answer over the network with any
+  status that is not a pause trigger brings the mirror back for everyone and resets the length to
+  60 s, a failure starts the next pause. A probe that learns nothing (cancelled, answered by the
+  HTTP cache, the device is offline) gives its slot to the next request. While a pause is on, the
+  results of the attempts that started before it are ignored. The state is in memory only: a
+  launch starts with the mirror in use, so a cold start against a dead mirror costs one deadline.
+  What counts as which is one exhaustive switch, `ConfigMirrorFailure.verdict`.
+- **HTTP cache.** The protocol performs its requests through `ConfigMirrorLoader`, a session of
+  its own that uses `URLCache.shared`. The mirror answer is cached under the mirror URL and the
+  GitHub one under the GitHub URL, by their own headers and the caller's cache policy. A mirror
+  answer that the validator rejects is not stored. Nothing is stored for a request whose cache
+  policy ignores the local cache, such as the image downloader's: that caller keeps the answer
+  itself. The answer handed to the caller is not stored a second time. The lifetime the mirror
+  sets in `Cache-Control` is followed as it is (see Trust).
+- **Logging.** Every fallback is logged at `warning` with the mirror path and the failure, and so
+  is the start of a pause with its length. A mirror that keeps failing is otherwise invisible,
+  because the app goes on working from GitHub. `GlobalConfigProvider.shared` logs an `error` when
+  the host of `infraUrl` in the loaded global config differs from the mirror host
+  (`ConfigMirrorHostChecker`): the mirror address is a compile-time constant, because the global
+  config is itself read through the mirror.
+- **Trust.** The mirror is trusted the way GitHub is. Its answer is not checked for integrity or
+  freshness: no signature, no comparison with GitHub, no bound on the age of the copy or on the
+  cache lifetime it asks for, and files read separately may come from different commits. This is
+  an accepted decision, not an omission.
+- **Time.** Pauses are measured with `MonotonicClock` (`Common/Helpers/`), which ignores changes
+  of the device clock and keeps counting while the device sleeps. Use it for any interval that
+  must not follow the wall clock.
+
 ### Backends in use
 
 | Directory                     | Backend                                                     |

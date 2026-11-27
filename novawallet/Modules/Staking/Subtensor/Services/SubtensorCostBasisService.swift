@@ -18,7 +18,7 @@ final class SubtensorCostBasisService {
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
+        timeProvider: @escaping () -> TimeInterval = MonotonicClock.now
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.operationQueue = operationQueue

@@ -17,8 +17,11 @@ final class GlobalConfigProvider: BaseFetchOperationFactory {
     @Atomic(defaultValue: nil)
     private var config: GlobalConfig?
 
-    init(configUrl: URL) {
+    private let mirrorHostChecker: ConfigMirrorHostChecking?
+
+    init(configUrl: URL, mirrorHostChecker: ConfigMirrorHostChecking? = nil) {
         self.configUrl = configUrl
+        self.mirrorHostChecker = mirrorHostChecker
     }
 }
 
@@ -40,6 +43,7 @@ extension GlobalConfigProvider: GlobalConfigProviding {
         let mapOperation = ClosureOperation<GlobalConfig> {
             let config = try fetchOperation.extractNoCancellableResultData()
             self.config = config
+            self.mirrorHostChecker?.check(infraUrl: config.infraUrl)
             return config
         }
 

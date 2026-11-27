@@ -6,6 +6,7 @@
 AppDelegate.didFinishLaunching
   ├─ UNUserNotificationCenter.delegate = self       (must happen before returning)
   ├─ NovaWindow + RootPresenterFactory.createPresenter(with:)
+  │    ├─ RootPresenterFactory.registerConfigMirror()      (first: every later request can use the mirror)
   │    └─ RootInteractor.setup()
   │         ├─ run migrators (SerialMigrator: shared settings, user DB, substrate DB)
   │         ├─ SecurityLayerService.shared.interactor      (pincode/biometry gate)
